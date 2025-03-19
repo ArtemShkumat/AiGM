@@ -1,0 +1,34 @@
+{
+  "id": "quest_missingHammer",
+  "title": "The Missing Hammer",
+  "currentProgress": "inProgress",
+  "questDescription": "Master Smith's enchanted hammer has gone missing. It's essential for his work and holds sentimental value. Strange footprints suggest it may have been taken by forest creatures.",
+  "achievementConditions": [
+    "Find and return the enchanted hammer to Master Smith.",
+    "Discover who or what took the hammer."
+  ],
+  "failConditions": [
+    "The player leaves the region without recovering the hammer.",
+    "Master Smith finds a replacement before the player can recover the original."
+  ],
+  "involvedLocations": [
+    "loc_havenVillage",
+    "loc_forestPath"
+  ],
+  "involvedNpcs": [
+    "npc_masterSmith"
+  ],
+  "questLog": [
+    {
+      "timestamp": "1234-06-14T16:45:00Z",
+      "entry": "Agreed to help Master Smith find his missing enchanted hammer.",
+      "locationId": "loc_havenVillage"
+    },
+    {
+      "timestamp": "1234-06-14T17:10:00Z",
+      "entry": "Found strange footprints leading from the smithy toward the forest path.",
+      "locationId": "loc_havenVillage"
+    }
+  ],
+  "notes": "The hammer is described as having a blue-tinted metal head with runes etched into the side. The handle is wrapped in dragon hide, making it resistant to heat and magic."
+} 

@@ -1,0 +1,55 @@
+{
+  "gameName": "Whispers of Eldoria",
+  "setting": "Medieval fantasy realm recovering from a recent war.",
+  "gameTime": "1234-06-15T10:30:00Z",
+  "daysSinceStart": 3,
+  "currentPlayer": "player_001",
+
+  "worldStateEffects": {
+    "weather": "sunny"
+  },
+
+  "lore": [
+    {
+      "id": "lore_dragonWar",
+      "title": "The Dragon War",
+      "summary": "A devastating conflict between dragons and humans that ended just five years ago."
+    }
+  ],
+
+  "locations": [
+    {
+      "id": "loc_havenVillage",
+      "name": "Haven Village"
+    }
+  ],
+
+  "npcs": [
+    {
+      "id": "npc_masterSmith",
+      "name": "Master Smith"
+    }
+  ],
+
+  "quests": [
+    {
+      "id": "quest_missingHammer",
+      "title": "The Missing Hammer"
+    }
+  ],
+
+  "globalFlags": ["dragonTreatyActive", "summerSolstice"],
+  "historyLog": [
+    {
+      "timestamp": "1234-06-12T09:00:00Z",
+      "event": "playerArrived",
+      "description": "The player arrived in Haven Village seeking a new start."
+    },
+    {
+      "timestamp": "1234-06-14T16:45:00Z",
+      "event": "questAccepted",
+      "description": "The player agreed to help Master Smith find his missing hammer."
+    }
+  ],
+  "notes": "The realm is peaceful but tensions remain between humans and the few remaining dragons."
+}

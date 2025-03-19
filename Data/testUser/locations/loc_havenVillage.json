@@ -1,0 +1,69 @@
+{
+  "id": "loc_havenVillage",
+  "name": "Haven Village",
+  "type": "village",
+  "description": "A small village nestled in a valley, known for its skilled craftspeople and peaceful atmosphere. The village served as a refuge during the Dragon War.",
+  "discoveredByPlayer": true,
+
+  "connectedLocations": [
+    {
+      "id": "loc_deepMines",
+      "description": "An old mine in the mountains to the north, rumored to contain precious metals and strange creatures."
+    },
+    {
+      "id": "loc_forestPath",
+      "description": "A winding path through the dense forest to the east."
+    }
+  ],
+
+  "parentLocation": {
+    "id": "loc_easternRealm",
+    "description": "Haven Village is part of the Eastern Realm, a territory recovering from the Dragon War."
+  },
+
+  "subLocations": [
+    {
+      "id": "loc_havenVillage_smithy",
+      "description": "Master Smith's forge, hot and bustling with activity even without his prized hammer."
+    },
+    {
+      "id": "loc_havenVillage_market",
+      "description": "A small market square where locals trade goods and share gossip."
+    }
+  ],
+
+  "npcs": [
+    "npc_masterSmith"
+  ],
+
+  "pointsOfInterest": [
+    {
+      "name": "Ancient Oak",
+      "description": "A massive oak tree at the center of the village, said to be older than the realm itself."
+    },
+    {
+      "name": "Mysterious Footprints",
+      "description": "Small, unusual footprints near the smithy that lead toward the forest path."
+    }
+  ],
+
+  "questIds": ["quest_missingHammer"],
+
+  "items": [],
+
+  "historyLog": [
+    {
+      "timestamp": "1234-06-12T09:15:00Z",
+      "event": "playerArrived",
+      "description": "The player arrived in Haven Village and explored the main square."
+    },
+    {
+      "timestamp": "1234-06-14T16:30:00Z",
+      "event": "npcMet",
+      "npcId": "npc_masterSmith",
+      "description": "The player met Master Smith, who was visibly frustrated."
+    }
+  ],
+
+  "notes": "Haven Village is known for its exceptional metalwork and has a legend about friendly forest spirits who sometimes borrow tools."
+} 

@@ -1,0 +1,47 @@
+{
+  "id": "npc_masterSmith",
+  "name": "Master Smith",
+  "currentLocationId": "loc_havenVillage",
+  "discoveredByPlayer": true,
+  "visibleToPlayer": true,
+  "visualDescription": {
+    "gender": "male",
+    "bodyType": "muscular",
+    "visibleClothing": "Leather apron, singed work clothes",
+    "condition": "Strong but aging, calloused hands"
+  },
+  "personality": {
+    "temperament": "Gruff but kind-hearted",
+    "traits": "Hardworking, patient, values craftsmanship"
+  },
+  "backstory": "Forged weapons during the Dragon War. His creations helped turn the tide of several battles, earning him respect throughout the realm.",
+  "dispositionTowardsPlayer": "helpful",
+  "knownEntities": {
+    "npcsKnown": [],
+    "locationsKnown": ["loc_havenVillage", "loc_deepMines"]
+  },
+  "relationships": [],
+  "questInvolvement": ["quest_missingHammer"],
+  "inventory": [
+    {
+      "itemId": "item_ironIngot",
+      "quantity": 5
+    }
+  ],
+  "statusFlags": {
+    "isAlive": true,
+    "isBusy": true,
+    "customState": "frustrated"
+  },
+  "notes": "Recently lost his prized enchanted hammer, which he suspects was stolen rather than misplaced.",
+  "conversationLog": [
+    {
+      "Player": "Good day, Master Smith. I heard you're having some trouble.",
+      "Master Smith": "Aye, stranger. My finest hammer's gone missing. Three days now I've been without it, and my work's suffering. Don't suppose you'd be willing to help an old smith out?"
+    },
+    {
+      "Player": "I could look for it. Any idea where it might be?",
+      "Master Smith": "I had it last when working on a special order. Since then, I've noticed some strange footprints around my forge. Small ones, like a child or... something else."
+    }
+  ]
+} 

@@ -1,0 +1,56 @@
+{
+  "id": "player_001",
+  "name": "Thorne",
+  "currentLocationId": "loc_havenVillage",
+  
+  "visualDescription": {
+    "gender": "male",
+    "bodyType": "lean",
+    "visibleClothing": "Simple tunic and leather boots",
+    "condition": "Rested but dusty from travel"
+  },
+  
+  "backstory": "A wanderer who lost his home during the Dragon War and now seeks purpose.",
+  
+  "relationships": [
+    {
+      "npcId": "npc_masterSmith",
+      "relationship": "acquaintance"
+    }
+  ],
+  
+  "inventory": [
+    {
+      "itemId": "item_rustySword",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_bread",
+      "quantity": 3
+    }
+  ],
+  
+  "money": 15,
+  
+  "statusEffects": [],
+
+  "rpgElements": {
+    "level": 1,
+    "skills": {
+      "swordplay": 3,
+      "persuasion": 2
+    }
+  },
+  
+  "activeQuests": ["quest_missingHammer"],
+  
+  "playerLog": [
+    {
+      "timestamp": "1234-06-14T16:45:00Z",
+      "event": "Agreed to help Master Smith find his missing hammer",
+      "locationId": "loc_havenVillage"
+    }
+  ],
+  
+  "notes": "Has recurring dreams about dragons that may hint at a deeper connection."
+}
