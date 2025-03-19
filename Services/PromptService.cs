@@ -79,22 +79,22 @@ namespace AiGMBackEnd.Services
             var exampleResponses = await LoadTemplateAsync("DmPrompt/ExampleResponses.txt");
 
             // Load player and world data
-            var player = await _storageService.LoadAsync<Player>($"userData/{userId}/player.json");
-            var world = await _storageService.LoadAsync<World>($"userData/{userId}/world.json");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>($"userData/{userId}/gameSetting.json");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>($"userData/{userId}/gamePreferences.json");
+            var player = await _storageService.LoadAsync<Player>(userId, "userData/player");
+            var world = await _storageService.LoadAsync<World>(userId, "userData/world");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "userData/gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "userData/gamePreferences");
 
             // Load current location
-            var location = await _storageService.LoadAsync<Location>($"userData/{userId}/locations/{player.CurrentLocationId}.json");
+            var location = await _storageService.LoadAsync<Location>(userId, $"userData/locations/{player.CurrentLocationId}");
 
             // Get NPCs in current location
             var npcSummaries = new List<string>();
-            foreach (var npcId in location.NPCIds)
+            foreach (var npcId in location.Npcs)
             {
                 try
                 {
-                    var npc = await _storageService.LoadAsync<Npc>($"userData/{userId}/npcs/{npcId}.json");
-                    npcSummaries.Add($"NPC ID: {npc.Id}, Name: {npc.Name}, Summary: {npc.Summary}");
+                    var npc = await _storageService.LoadAsync<Npc>(userId, $"userData/npcs/{npcId}");
+                    npcSummaries.Add($"NPC ID: {npc.Id}, Name: {npc.Name}, Summary: {npc.Backstory}");
                 }
                 catch (Exception ex)
                 {
@@ -104,12 +104,12 @@ namespace AiGMBackEnd.Services
 
             // Get active quests
             var activeQuestSummaries = new List<string>();
-            foreach (var questId in player.ActiveQuestIds)
+            foreach (var questId in player.ActiveQuests)
             {
                 try
                 {
-                    var quest = await _storageService.LoadAsync<Quest>($"userData/{userId}/quests/{questId}.json");
-                    activeQuestSummaries.Add($"Quest ID: {quest.Id}, Title: {quest.Title}, Current Step: {quest.CurrentStep}, Summary: {quest.Summary}");
+                    var quest = await _storageService.LoadAsync<Quest>(userId, $"userData/quests/{questId}");
+                    activeQuestSummaries.Add($"Quest ID: {quest.Id}, Title: {quest.Title}, Current Step: {quest.CurrentProgress}, Summary: {quest.QuestDescription}");
                 }
                 catch (Exception ex)
                 {
@@ -138,19 +138,28 @@ namespace AiGMBackEnd.Services
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
-            promptBuilder.AppendLine($"World Name: {world.Name}");
+            promptBuilder.AppendLine($"World Name: {world.GameName}");
             promptBuilder.AppendLine($"Setting: {world.Setting}");
-            promptBuilder.AppendLine($"Current Time: {world.CurrentTime}");
-            promptBuilder.AppendLine($"Current Weather: {world.CurrentWeather}");
-            promptBuilder.AppendLine($"World Summary: {world.Summary}");
+            promptBuilder.AppendLine($"Current Time: {world.GameTime}");
+            promptBuilder.AppendLine($"Current Weather: {world.WorldStateEffects.Weather}");
+            if (world.Lore.Count > 0 && world.Lore[0] != null)
+            {
+                promptBuilder.AppendLine($"World Summary: {world.Lore[0].Summary}");
+            }
             promptBuilder.AppendLine();
 
             // Add player context
             promptBuilder.AppendLine("# Player Context");
             promptBuilder.AppendLine($"Player Name: {player.Name}");
-            promptBuilder.AppendLine($"Class: {player.Class}");
-            promptBuilder.AppendLine($"Level: {player.Level}");
-            promptBuilder.AppendLine($"Background: {player.Background}");
+            if (player.RpgElements.ContainsKey("class"))
+            {
+                promptBuilder.AppendLine($"Class: {player.RpgElements["class"]}");
+            }
+            if (player.RpgElements.ContainsKey("level"))
+            {
+                promptBuilder.AppendLine($"Level: {player.RpgElements["level"]}");
+            }
+            promptBuilder.AppendLine($"Background: {player.Backstory}");
             promptBuilder.AppendLine();
 
             // Add location context
@@ -158,7 +167,7 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine($"Location Name: {location.Name}");
             promptBuilder.AppendLine($"Location Type: {location.Type}");
             promptBuilder.AppendLine($"Description: {location.Description}");
-            promptBuilder.AppendLine($"Time of Day: {world.CurrentTime}");
+            promptBuilder.AppendLine($"Time of Day: {world.GameTime}");
             promptBuilder.AppendLine();
 
             // Add NPCs
@@ -208,21 +217,24 @@ namespace AiGMBackEnd.Services
             var exampleResponses = await LoadTemplateAsync("NPCPrompt/ExampleResponses.txt");
 
             // Load player, world, and specified NPC data
-            var player = await _storageService.LoadAsync<Player>($"userData/{userId}/player.json");
-            var world = await _storageService.LoadAsync<World>($"userData/{userId}/world.json");
-            var npc = await _storageService.LoadAsync<Npc>($"userData/{userId}/npcs/{npcId}.json");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>($"userData/{userId}/gameSetting.json");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>($"userData/{userId}/gamePreferences.json");
+            var player = await _storageService.LoadAsync<Player>(userId, "userData/player");
+            var world = await _storageService.LoadAsync<World>(userId, "userData/world");
+            var npc = await _storageService.LoadAsync<Npc>(userId, $"userData/npcs/{npcId}");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "userData/gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "userData/gamePreferences");
 
             // Load current location
-            var location = await _storageService.LoadAsync<Location>($"userData/{userId}/locations/{player.CurrentLocationId}.json");
+            var location = await _storageService.LoadAsync<Location>(userId, $"userData/locations/{player.CurrentLocationId}");
 
             // Create scene context
             var sceneContext = new SceneContext
             {
-                Location = location,
-                Time = world.CurrentTime,
-                Weather = world.CurrentWeather
+                GameTime = world.GameTime,
+                LocationInfo = new SceneLocationInfo 
+                { 
+                    Name = location.Name,
+                    Description = location.Description
+                }
             };
 
             // Create the final prompt
@@ -247,33 +259,54 @@ namespace AiGMBackEnd.Services
             // Add NPC context
             promptBuilder.AppendLine("# NPC Context");
             promptBuilder.AppendLine($"NPC Name: {npc.Name}");
-            promptBuilder.AppendLine($"Age: {npc.Age}");
-            promptBuilder.AppendLine($"Role: {npc.Role}");
-            promptBuilder.AppendLine($"Description: {npc.Description}");
-            promptBuilder.AppendLine($"Personality: {npc.Personality}");
-            promptBuilder.AppendLine($"Knowledge: {npc.Knowledge}");
-            promptBuilder.AppendLine($"Goals: {npc.Goals}");
+            if (npc.VisualDescription != null)
+            {
+                promptBuilder.AppendLine($"Age: {npc.VisualDescription.BodyType}");
+            }
+            if (npc.KnownEntities != null)
+            {
+                promptBuilder.AppendLine($"Role: {npc.Personality.Traits}");
+            }
+            promptBuilder.AppendLine($"Description: {npc.Backstory}");
+            promptBuilder.AppendLine($"Personality: {npc.Personality.Temperament}");
+            promptBuilder.AppendLine($"Knowledge: {(npc.KnownEntities != null ? "Has knowledge of various entities" : "Limited knowledge")}");
+            promptBuilder.AppendLine($"Goals: {npc.DispositionTowardsPlayer}");
             promptBuilder.AppendLine();
 
             // Add scene context
             promptBuilder.AppendLine("# Scene Context");
             promptBuilder.AppendLine($"Location: {location.Name}");
             promptBuilder.AppendLine($"Location Description: {location.Description}");
-            promptBuilder.AppendLine($"Time: {world.CurrentTime}");
-            promptBuilder.AppendLine($"Weather: {world.CurrentWeather}");
+            promptBuilder.AppendLine($"Time: {world.GameTime}");
+            promptBuilder.AppendLine($"Weather: {world.WorldStateEffects.Weather}");
             promptBuilder.AppendLine();
 
             // Add player context
             promptBuilder.AppendLine("# Player Context");
             promptBuilder.AppendLine($"Player Name: {player.Name}");
-            promptBuilder.AppendLine($"Appearance: {player.Appearance}");
+            promptBuilder.AppendLine($"Appearance: {(player.VisualDescription != null ? player.VisualDescription.BodyType : "Unknown")}");
             
             // Add NPC's relationship with player if it exists
-            if (npc.Relationships.ContainsKey(player.Id))
+            var playerRelationship = npc.Relationships.Find(r => r.NpcId == player.Id);
+            if (playerRelationship != null)
             {
-                promptBuilder.AppendLine($"Relationship with player: {npc.Relationships[player.Id]}");
+                promptBuilder.AppendLine($"Relationship with player: {playerRelationship.RelationshipType}");
             }
             promptBuilder.AppendLine();
+
+            // Add conversation history if available
+            if (npc.ConversationLog != null && npc.ConversationLog.Count > 0)
+            {
+                promptBuilder.AppendLine("# Previous Conversation");
+                foreach (var entry in npc.ConversationLog)
+                {
+                    foreach (var item in entry)
+                    {
+                        promptBuilder.AppendLine($"{item.Key}: {item.Value}");
+                    }
+                }
+                promptBuilder.AppendLine();
+            }
 
             // Add response instructions
             promptBuilder.AppendLine("# Response Instructions");
@@ -284,17 +317,6 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine("# Example Responses");
             promptBuilder.AppendLine(exampleResponses);
             promptBuilder.AppendLine();
-
-            // Add conversation history if available
-            if (npc.ConversationHistory.Count > 0)
-            {
-                promptBuilder.AppendLine("# Previous Conversation");
-                foreach (var entry in npc.ConversationHistory)
-                {
-                    promptBuilder.AppendLine($"{entry}");
-                }
-                promptBuilder.AppendLine();
-            }
 
             // Add the user's input
             promptBuilder.AppendLine("# User Input");
@@ -311,10 +333,10 @@ namespace AiGMBackEnd.Services
             var exampleResponses = await LoadTemplateAsync("CreateQuest/ExampleResponses.txt");
 
             // Load player and world data for context
-            var player = await _storageService.LoadAsync<Player>($"userData/{userId}/player.json");
-            var world = await _storageService.LoadAsync<World>($"userData/{userId}/world.json");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>($"userData/{userId}/gameSetting.json");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>($"userData/{userId}/gamePreferences.json");
+            var player = await _storageService.LoadAsync<Player>(userId, "userData/player");
+            var world = await _storageService.LoadAsync<World>(userId, "userData/world");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "userData/gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "userData/gamePreferences");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -337,17 +359,17 @@ namespace AiGMBackEnd.Services
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
-            promptBuilder.AppendLine($"World Name: {world.Name}");
+            promptBuilder.AppendLine($"World Name: {world.GameName}");
             promptBuilder.AppendLine($"Setting: {world.Setting}");
-            promptBuilder.AppendLine($"Summary: {world.Summary}");
+            promptBuilder.AppendLine($"Summary: {world.Lore[0].Summary}");
             promptBuilder.AppendLine();
 
             // Add player context
             promptBuilder.AppendLine("# Player Context");
             promptBuilder.AppendLine($"Player Name: {player.Name}");
-            promptBuilder.AppendLine($"Class: {player.Class}");
-            promptBuilder.AppendLine($"Level: {player.Level}");
-            promptBuilder.AppendLine($"Background: {player.Background}");
+            promptBuilder.AppendLine($"Class: {player.RpgElements["class"]}");
+            promptBuilder.AppendLine($"Level: {player.RpgElements["level"]}");
+            promptBuilder.AppendLine($"Background: {player.Backstory}");
             promptBuilder.AppendLine();
 
             // Add trigger instructions
@@ -409,9 +431,9 @@ namespace AiGMBackEnd.Services
             var exampleResponses = await LoadTemplateAsync("NPCCreationPrompt/ExampleResponses.txt");
 
             // Load world data for context
-            var world = await _storageService.LoadAsync<World>($"userData/{userId}/world.json");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>($"userData/{userId}/gameSetting.json");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>($"userData/{userId}/gamePreferences.json");
+            var world = await _storageService.LoadAsync<World>(userId, "userData/world");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "userData/gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "userData/gamePreferences");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -434,9 +456,9 @@ namespace AiGMBackEnd.Services
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
-            promptBuilder.AppendLine($"World Name: {world.Name}");
+            promptBuilder.AppendLine($"World Name: {world.GameName}");
             promptBuilder.AppendLine($"Setting: {world.Setting}");
-            promptBuilder.AppendLine($"Summary: {world.Summary}");
+            promptBuilder.AppendLine($"Summary: {world.Lore[0].Summary}");
             promptBuilder.AppendLine();
 
             // Add trigger instructions
@@ -498,9 +520,9 @@ namespace AiGMBackEnd.Services
             var exampleResponses = await LoadTemplateAsync("CreateLocationPrompt/ExampleResponses.txt");
 
             // Load world data for context
-            var world = await _storageService.LoadAsync<World>($"userData/{userId}/world.json");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>($"userData/{userId}/gameSetting.json");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>($"userData/{userId}/gamePreferences.json");
+            var world = await _storageService.LoadAsync<World>(userId, "userData/world");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "userData/gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "userData/gamePreferences");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -523,9 +545,9 @@ namespace AiGMBackEnd.Services
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
-            promptBuilder.AppendLine($"World Name: {world.Name}");
+            promptBuilder.AppendLine($"World Name: {world.GameName}");
             promptBuilder.AppendLine($"Setting: {world.Setting}");
-            promptBuilder.AppendLine($"Summary: {world.Summary}");
+            promptBuilder.AppendLine($"Summary: {world.Lore[0].Summary}");
             promptBuilder.AppendLine();
 
             // Add trigger instructions
