@@ -1,0 +1,6 @@
+@AiGMBackEnd_HostAddress = http://localhost:5166
+
+GET {{AiGMBackEnd_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
