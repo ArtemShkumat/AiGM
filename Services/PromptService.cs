@@ -79,11 +79,13 @@ namespace AiGMBackEnd.Services
             var exampleResponses = await LoadTemplateAsync("DmPrompt/ExampleResponses.txt");
 
             // Load player and world data
-            var player = await _storageService.LoadAsync<Player>($"{userId}/player.json");
-            var world = await _storageService.LoadAsync<World>($"{userId}/world.json");
+            var player = await _storageService.LoadAsync<Player>($"userData/{userId}/player.json");
+            var world = await _storageService.LoadAsync<World>($"userData/{userId}/world.json");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>($"userData/{userId}/gameSetting.json");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>($"userData/{userId}/gamePreferences.json");
 
             // Load current location
-            var location = await _storageService.LoadAsync<Location>($"{userId}/locations/{player.CurrentLocationId}.json");
+            var location = await _storageService.LoadAsync<Location>($"userData/{userId}/locations/{player.CurrentLocationId}.json");
 
             // Get NPCs in current location
             var npcSummaries = new List<string>();
@@ -91,7 +93,7 @@ namespace AiGMBackEnd.Services
             {
                 try
                 {
-                    var npc = await _storageService.LoadAsync<Npc>($"{userId}/npcs/{npcId}.json");
+                    var npc = await _storageService.LoadAsync<Npc>($"userData/{userId}/npcs/{npcId}.json");
                     npcSummaries.Add($"NPC ID: {npc.Id}, Name: {npc.Name}, Summary: {npc.Summary}");
                 }
                 catch (Exception ex)
@@ -106,7 +108,7 @@ namespace AiGMBackEnd.Services
             {
                 try
                 {
-                    var quest = await _storageService.LoadAsync<Quest>($"{userId}/quests/{questId}.json");
+                    var quest = await _storageService.LoadAsync<Quest>($"userData/{userId}/quests/{questId}.json");
                     activeQuestSummaries.Add($"Quest ID: {quest.Id}, Title: {quest.Title}, Current Step: {quest.CurrentStep}, Summary: {quest.Summary}");
                 }
                 catch (Exception ex)
@@ -118,6 +120,20 @@ namespace AiGMBackEnd.Services
             // Create the final prompt
             var promptBuilder = new StringBuilder();
             promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add game setting and preferences
+            promptBuilder.AppendLine("# Game Setting");
+            promptBuilder.AppendLine($"Genre: {gamePreferences.Genre}");
+            promptBuilder.AppendLine($"Theme: {gamePreferences.Theme}");
+            promptBuilder.AppendLine($"Description: {gamePreferences.Description}");
+            promptBuilder.AppendLine();
+
+            // Add game preferences
+            promptBuilder.AppendLine("# Game Preferences");
+            promptBuilder.AppendLine($"Tone: {gameSetting.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gameSetting.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gameSetting.AgeAppropriateness}");
             promptBuilder.AppendLine();
 
             // Add world context
@@ -192,12 +208,14 @@ namespace AiGMBackEnd.Services
             var exampleResponses = await LoadTemplateAsync("NPCPrompt/ExampleResponses.txt");
 
             // Load player, world, and specified NPC data
-            var player = await _storageService.LoadAsync<Player>($"{userId}/player.json");
-            var world = await _storageService.LoadAsync<World>($"{userId}/world.json");
-            var npc = await _storageService.LoadAsync<Npc>($"{userId}/npcs/{npcId}.json");
+            var player = await _storageService.LoadAsync<Player>($"userData/{userId}/player.json");
+            var world = await _storageService.LoadAsync<World>($"userData/{userId}/world.json");
+            var npc = await _storageService.LoadAsync<Npc>($"userData/{userId}/npcs/{npcId}.json");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>($"userData/{userId}/gameSetting.json");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>($"userData/{userId}/gamePreferences.json");
 
             // Load current location
-            var location = await _storageService.LoadAsync<Location>($"{userId}/locations/{player.CurrentLocationId}.json");
+            var location = await _storageService.LoadAsync<Location>($"userData/{userId}/locations/{player.CurrentLocationId}.json");
 
             // Create scene context
             var sceneContext = new SceneContext
@@ -210,6 +228,20 @@ namespace AiGMBackEnd.Services
             // Create the final prompt
             var promptBuilder = new StringBuilder();
             promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add game setting and preferences
+            promptBuilder.AppendLine("# Game Setting");
+            promptBuilder.AppendLine($"Genre: {gamePreferences.Genre}");
+            promptBuilder.AppendLine($"Theme: {gamePreferences.Theme}");
+            promptBuilder.AppendLine($"Description: {gamePreferences.Description}");
+            promptBuilder.AppendLine();
+
+            // Add game preferences
+            promptBuilder.AppendLine("# Game Preferences");
+            promptBuilder.AppendLine($"Tone: {gameSetting.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gameSetting.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gameSetting.AgeAppropriateness}");
             promptBuilder.AppendLine();
 
             // Add NPC context
@@ -279,12 +311,28 @@ namespace AiGMBackEnd.Services
             var exampleResponses = await LoadTemplateAsync("CreateQuest/ExampleResponses.txt");
 
             // Load player and world data for context
-            var player = await _storageService.LoadAsync<Player>($"{userId}/player.json");
-            var world = await _storageService.LoadAsync<World>($"{userId}/world.json");
+            var player = await _storageService.LoadAsync<Player>($"userData/{userId}/player.json");
+            var world = await _storageService.LoadAsync<World>($"userData/{userId}/world.json");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>($"userData/{userId}/gameSetting.json");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>($"userData/{userId}/gamePreferences.json");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
             promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add game setting and preferences
+            promptBuilder.AppendLine("# Game Setting");
+            promptBuilder.AppendLine($"Genre: {gamePreferences.Genre}");
+            promptBuilder.AppendLine($"Theme: {gamePreferences.Theme}");
+            promptBuilder.AppendLine($"Description: {gamePreferences.Description}");
+            promptBuilder.AppendLine();
+
+            // Add game preferences
+            promptBuilder.AppendLine("# Game Preferences");
+            promptBuilder.AppendLine($"Tone: {gameSetting.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gameSetting.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gameSetting.AgeAppropriateness}");
             promptBuilder.AppendLine();
 
             // Add world context
@@ -300,6 +348,11 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine($"Class: {player.Class}");
             promptBuilder.AppendLine($"Level: {player.Level}");
             promptBuilder.AppendLine($"Background: {player.Background}");
+            promptBuilder.AppendLine();
+
+            // Add trigger instructions
+            promptBuilder.AppendLine("# Trigger Instructions");
+            promptBuilder.AppendLine("This quest is being created based on a specific trigger in the game world.");
             promptBuilder.AppendLine();
 
             // Add response instructions
@@ -356,11 +409,27 @@ namespace AiGMBackEnd.Services
             var exampleResponses = await LoadTemplateAsync("NPCCreationPrompt/ExampleResponses.txt");
 
             // Load world data for context
-            var world = await _storageService.LoadAsync<World>($"{userId}/world.json");
+            var world = await _storageService.LoadAsync<World>($"userData/{userId}/world.json");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>($"userData/{userId}/gameSetting.json");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>($"userData/{userId}/gamePreferences.json");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
             promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add game setting and preferences
+            promptBuilder.AppendLine("# Game Setting");
+            promptBuilder.AppendLine($"Genre: {gamePreferences.Genre}");
+            promptBuilder.AppendLine($"Theme: {gamePreferences.Theme}");
+            promptBuilder.AppendLine($"Description: {gamePreferences.Description}");
+            promptBuilder.AppendLine();
+
+            // Add game preferences
+            promptBuilder.AppendLine("# Game Preferences");
+            promptBuilder.AppendLine($"Tone: {gameSetting.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gameSetting.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gameSetting.AgeAppropriateness}");
             promptBuilder.AppendLine();
 
             // Add world context
@@ -368,6 +437,11 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine($"World Name: {world.Name}");
             promptBuilder.AppendLine($"Setting: {world.Setting}");
             promptBuilder.AppendLine($"Summary: {world.Summary}");
+            promptBuilder.AppendLine();
+
+            // Add trigger instructions
+            promptBuilder.AppendLine("# Trigger Instructions");
+            promptBuilder.AppendLine("This NPC is being created based on a specific need in the game world.");
             promptBuilder.AppendLine();
 
             // Add response instructions
@@ -424,11 +498,27 @@ namespace AiGMBackEnd.Services
             var exampleResponses = await LoadTemplateAsync("CreateLocationPrompt/ExampleResponses.txt");
 
             // Load world data for context
-            var world = await _storageService.LoadAsync<World>($"{userId}/world.json");
+            var world = await _storageService.LoadAsync<World>($"userData/{userId}/world.json");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>($"userData/{userId}/gameSetting.json");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>($"userData/{userId}/gamePreferences.json");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
             promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add game setting and preferences
+            promptBuilder.AppendLine("# Game Setting");
+            promptBuilder.AppendLine($"Genre: {gamePreferences.Genre}");
+            promptBuilder.AppendLine($"Theme: {gamePreferences.Theme}");
+            promptBuilder.AppendLine($"Description: {gamePreferences.Description}");
+            promptBuilder.AppendLine();
+
+            // Add game preferences
+            promptBuilder.AppendLine("# Game Preferences");
+            promptBuilder.AppendLine($"Tone: {gameSetting.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gameSetting.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gameSetting.AgeAppropriateness}");
             promptBuilder.AppendLine();
 
             // Add world context
@@ -436,6 +526,11 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine($"World Name: {world.Name}");
             promptBuilder.AppendLine($"Setting: {world.Setting}");
             promptBuilder.AppendLine($"Summary: {world.Summary}");
+            promptBuilder.AppendLine();
+
+            // Add trigger instructions
+            promptBuilder.AppendLine("# Trigger Instructions");
+            promptBuilder.AppendLine("This location is being created based on a specific need in the game world.");
             promptBuilder.AppendLine();
 
             // Add response instructions
