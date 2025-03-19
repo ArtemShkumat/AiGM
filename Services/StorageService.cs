@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AiGMBackEnd.Services
 {
@@ -28,7 +30,7 @@ namespace AiGMBackEnd.Services
                 }
 
                 var json = await File.ReadAllTextAsync(filePath);
-                return JsonSerializer.Deserialize<T>(json);
+                return System.Text.Json.JsonSerializer.Deserialize<T>(json);
             }
             catch (Exception ex)
             {
@@ -49,7 +51,7 @@ namespace AiGMBackEnd.Services
                     Directory.CreateDirectory(directory);
                 }
 
-                var json = JsonSerializer.Serialize(entity, new JsonSerializerOptions
+                var json = System.Text.Json.JsonSerializer.Serialize(entity, new JsonSerializerOptions
                 {
                     WriteIndented = true
                 });
@@ -67,8 +69,41 @@ namespace AiGMBackEnd.Services
         {
             try
             {
-                // TODO: Implement partial update logic
-                // This would merge the patch into the existing JSON file
+                var filePath = GetFilePath(userId, fileId);
+                
+                if (!File.Exists(filePath))
+                {
+                    _loggingService.LogWarning($"Cannot apply partial update to non-existent file: {fileId}");
+                    
+                    // Create the file with just the patch data
+                    var directory = Path.GetDirectoryName(filePath);
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+                    
+                    await File.WriteAllTextAsync(filePath, jsonPatch);
+                    return;
+                }
+                
+                // Read the existing JSON file
+                var existingJson = await File.ReadAllTextAsync(filePath);
+                
+                // Parse existing JSON and the patch
+                var existingObject = JObject.Parse(existingJson);
+                var patchObject = JObject.Parse(jsonPatch);
+                
+                // Merge the patch into the existing object
+                existingObject.Merge(patchObject, new JsonMergeSettings
+                {
+                    MergeArrayHandling = MergeArrayHandling.Union,
+                    MergeNullValueHandling = MergeNullValueHandling.Merge
+                });
+                
+                // Save the updated JSON back to the file
+                await File.WriteAllTextAsync(filePath, existingObject.ToString(Formatting.Indented));
+                
+                _loggingService.LogInfo($"Applied partial update to {fileId}");
             }
             catch (Exception ex)
             {

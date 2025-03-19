@@ -14,21 +14,25 @@ namespace AiGMBackEnd.Services
         private readonly LoggingService _loggingService;
         private readonly PromptService _promptService;
         private readonly AiService _aiService;
-        private readonly ResponseProcessingService _responseProcessingService;
+        private Func<ResponseProcessingService>? _responseProcessingServiceFactory;
 
         public BackgroundJobService(
             LoggingService loggingService,
             PromptService promptService,
-            AiService aiService,
-            ResponseProcessingService responseProcessingService)
+            AiService aiService)
         {
             _loggingService = loggingService;
             _promptService = promptService;
             _aiService = aiService;
-            _responseProcessingService = responseProcessingService;
             
             // Start the background processing task
             _processingTask = Task.Run(ProcessJobsAsync);
+        }
+        
+        // Method to set the ResponseProcessingService factory after construction
+        public void SetResponseProcessingServiceFactory(Func<ResponseProcessingService> factory)
+        {
+            _responseProcessingServiceFactory = factory;
         }
 
         public async Task<string> EnqueuePromptAsync(PromptJob job)
@@ -62,7 +66,18 @@ namespace AiGMBackEnd.Services
                         var llmResponse = await _aiService.GetCompletionAsync(prompt, job.PromptType);
                         
                         // 3. Process response
-                        var processedResult = await _responseProcessingService.HandleResponseAsync(llmResponse, job.PromptType, job.UserId);
+                        if (_responseProcessingServiceFactory == null)
+                        {
+                            throw new InvalidOperationException("ResponseProcessingService factory not set");
+                        }
+                        
+                        var responseProcessingService = _responseProcessingServiceFactory();
+                        if (responseProcessingService == null)
+                        {
+                            throw new InvalidOperationException("ResponseProcessingService factory returned null");
+                        }
+                        
+                        var processedResult = await responseProcessingService.HandleResponseAsync(llmResponse, job.PromptType, job.UserId);
                         
                         // 4. Set result
                         job.CompletionSource.SetResult(processedResult.UserFacingText);
@@ -81,9 +96,9 @@ namespace AiGMBackEnd.Services
 
     public class PromptJob
     {
-        public string UserId { get; set; }
-        public string UserInput { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public string UserInput { get; set; } = string.Empty;
         public PromptType PromptType { get; set; } = PromptType.DM;
-        public TaskCompletionSource<string> CompletionSource { get; set; }
+        public TaskCompletionSource<string> CompletionSource { get; set; } = null!;
     }
 }

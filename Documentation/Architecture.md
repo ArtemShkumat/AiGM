@@ -131,7 +131,7 @@ Edit
    <- (returns string to user)
 7. Implementation Tips
 Prompt Templates: Keep them modifiable text files (System instructions, example responses). Load them in PromptService to reduce hard-coded strings.
-Partial Updates: If the LLM says “containsNewStuff: true” with new NPC or location data, parse that JSON in ResponseProcessingService and create new .json files.
+Partial Updates: If the LLM response contains "partialUpdates" or "newEntities" with new NPC or location data, parse that JSON in ResponseProcessingService and create new .json files.
 Multiple “Queues” (Optional): If you want short user interactions to skip the queue for speed, have a “quick lane” for single calls and a “heavy lane” for multi-entity generation.
 Guard Rails: You might want to validate new IDs or ensure no collisions when the LLM introduces an NPC with an existing ID.
 Summaries: If conversation logs get large, you can summarize them in ResponseProcessingService or in a specialized SummarizationService.

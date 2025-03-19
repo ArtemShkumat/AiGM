@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AiGMBackEnd.Models;
@@ -11,13 +12,16 @@ namespace AiGMBackEnd.Services
     {
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;
+        private readonly BackgroundJobService _backgroundJobService;
 
         public ResponseProcessingService(
             StorageService storageService,
-            LoggingService loggingService)
+            LoggingService loggingService,
+            BackgroundJobService backgroundJobService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
+            _backgroundJobService = backgroundJobService;
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId)
@@ -38,13 +42,19 @@ namespace AiGMBackEnd.Services
                 return new ProcessedResult
                 {
                     UserFacingText = userFacingText,
-                    Success = true
+                    Success = true,
+                    ErrorMessage = string.Empty
                 };
             }
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error processing response: {ex.Message}");
-                throw;
+                return new ProcessedResult
+                {
+                    UserFacingText = "Something went wrong when processing the response.",
+                    Success = false,
+                    ErrorMessage = ex.Message
+                };
             }
         }
 
@@ -86,42 +96,299 @@ namespace AiGMBackEnd.Services
 
         private async Task ProcessDMUpdatesAsync(JObject updates, string userId)
         {
-            // Process DM updates - updating world state, player state, etc.
-            _loggingService.LogInfo("Processing DM updates");
-            
-            // TODO: Implement specific DM update logic
+            try
+            {
+                _loggingService.LogInfo("Processing DM updates");
+                
+                // Check if there are dmUpdates
+                if (updates["dmUpdates"] != null)
+                {
+                    var dmUpdates = updates["dmUpdates"];
+                    
+                    // Process new entities
+                    if (dmUpdates["newEntities"] != null)
+                    {
+                        var newEntities = dmUpdates["newEntities"] as JArray;
+                        if (newEntities != null)
+                        {
+                            foreach (var entity in newEntities)
+                            {
+                                var entityType = entity["type"]?.ToString()?.ToLower();
+                                var entityId = entity["id"]?.ToString();
+                                
+                                if (string.IsNullOrEmpty(entityType) || string.IsNullOrEmpty(entityId))
+                                {
+                                    _loggingService.LogWarning($"Skipping entity with missing type or id: {entity}");
+                                    continue;
+                                }
+                                
+                                switch (entityType)
+                                {
+                                    case "npc":
+                                        await CreateNewEntityAsync(entity, userId, "npcs", entityId);
+                                        break;
+                                    case "location":
+                                        await CreateNewEntityAsync(entity, userId, "locations", entityId);
+                                        // Trigger a background job to fully create the location
+                                        var locationName = entity["name"]?.ToString() ?? "New Location";
+                                        await TriggerEntityCreationJob(PromptType.CreateLocation, userId, $"Create {locationName}");
+                                        break;
+                                    case "quest":
+                                        await CreateNewEntityAsync(entity, userId, "quests", entityId);
+                                        // Trigger a background job to fully create the quest
+                                        var questTitle = entity["title"]?.ToString() ?? "New Quest";
+                                        await TriggerEntityCreationJob(PromptType.CreateQuest, userId, $"Create {questTitle}");
+                                        break;
+                                    default:
+                                        _loggingService.LogWarning($"Unknown entity type: {entityType}");
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Process partial updates
+                    if (dmUpdates["partialUpdates"] != null)
+                    {
+                        var partialUpdates = dmUpdates["partialUpdates"] as JObject;
+                        if (partialUpdates != null)
+                        {
+                            foreach (var property in partialUpdates.Properties())
+                            {
+                                var entityId = property.Name;
+                                var updateData = property.Value.ToString();
+                                
+                                // Determine entity type from ID prefix
+                                if (entityId.StartsWith("npc_"))
+                                {
+                                    await UpdateEntityAsync(userId, "npcs", entityId, updateData);
+                                }
+                                else if (entityId.StartsWith("loc_"))
+                                {
+                                    await UpdateEntityAsync(userId, "locations", entityId, updateData);
+                                }
+                                else if (entityId.StartsWith("quest_"))
+                                {
+                                    await UpdateEntityAsync(userId, "quests", entityId, updateData);
+                                }
+                                else if (entityId == "world")
+                                {
+                                    await UpdateEntityAsync(userId, "", "world", updateData);
+                                }
+                                else if (entityId == "player")
+                                {
+                                    await UpdateEntityAsync(userId, "", "player", updateData);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error in ProcessDMUpdatesAsync: {ex.Message}");
+                throw;
+            }
         }
 
         private async Task ProcessNPCUpdatesAsync(JObject updates, string userId)
         {
-            // Process NPC updates - updating NPC state, conversation history, etc.
-            _loggingService.LogInfo("Processing NPC updates");
-            
-            // TODO: Implement specific NPC update logic
+            try
+            {
+                _loggingService.LogInfo("Processing NPC updates");
+                
+                // Check if there are npcUpdates
+                if (updates["npcUpdates"] != null)
+                {
+                    var npcUpdates = updates["npcUpdates"];
+                    
+                    // Process new entities
+                    if (npcUpdates["newEntities"] != null)
+                    {
+                        var newEntities = npcUpdates["newEntities"] as JArray;
+                        if (newEntities != null)
+                        {
+                            foreach (var entity in newEntities)
+                            {
+                                var entityType = entity["type"]?.ToString()?.ToLower();
+                                var entityId = entity["id"]?.ToString();
+                                
+                                if (string.IsNullOrEmpty(entityType) || string.IsNullOrEmpty(entityId))
+                                {
+                                    _loggingService.LogWarning($"Skipping entity with missing type or id: {entity}");
+                                    continue;
+                                }
+                                
+                                switch (entityType)
+                                {
+                                    case "npc":
+                                        await CreateNewEntityAsync(entity, userId, "npcs", entityId);
+                                        break;
+                                    case "quest":
+                                        await CreateNewEntityAsync(entity, userId, "quests", entityId);
+                                        var questTitle = entity["title"]?.ToString() ?? "New Quest";
+                                        await TriggerEntityCreationJob(PromptType.CreateQuest, userId, $"Create {questTitle}");
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Process partial updates
+                    if (npcUpdates["partialUpdates"] != null)
+                    {
+                        var partialUpdates = npcUpdates["partialUpdates"] as JObject;
+                        if (partialUpdates != null)
+                        {
+                            foreach (var property in partialUpdates.Properties())
+                            {
+                                var entityId = property.Name;
+                                var updateData = property.Value.ToString();
+                                
+                                // Handle NPC updates
+                                if (entityId.StartsWith("npc_"))
+                                {
+                                    await UpdateEntityAsync(userId, "npcs", entityId, updateData);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error in ProcessNPCUpdatesAsync: {ex.Message}");
+                throw;
+            }
         }
 
         private async Task ProcessQuestCreationAsync(JObject questData, string userId)
         {
-            // Process quest creation - creating a new quest
-            _loggingService.LogInfo("Processing quest creation");
-            
-            // TODO: Implement quest creation logic
+            try
+            {
+                _loggingService.LogInfo("Processing quest creation");
+                
+                // Extract quest details
+                var questId = questData["id"]?.ToString();
+                
+                if (string.IsNullOrEmpty(questId))
+                {
+                    _loggingService.LogError("Quest ID is missing");
+                    return;
+                }
+                
+                // Save the quest data
+                await _storageService.SaveAsync(userId, $"quests/{questId}", questData.ToString());
+                
+                // Check if there are associated entities to create
+                if (questData["involvedLocations"] != null || questData["involvedNpcs"] != null)
+                {
+                    // TODO: Trigger jobs to create missing locations and NPCs if needed
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing quest creation: {ex.Message}");
+                throw;
+            }
         }
 
         private async Task ProcessNPCCreationAsync(JObject npcData, string userId)
         {
-            // Process NPC creation - creating a new NPC
-            _loggingService.LogInfo("Processing NPC creation");
-            
-            // TODO: Implement NPC creation logic
+            try
+            {
+                _loggingService.LogInfo("Processing NPC creation");
+                
+                // Extract NPC details
+                var npcId = npcData["id"]?.ToString();
+                
+                if (string.IsNullOrEmpty(npcId))
+                {
+                    _loggingService.LogError("NPC ID is missing");
+                    return;
+                }
+                
+                // Save the NPC data
+                await _storageService.SaveAsync(userId, $"npcs/{npcId}", npcData.ToString());
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing NPC creation: {ex.Message}");
+                throw;
+            }
         }
 
         private async Task ProcessLocationCreationAsync(JObject locationData, string userId)
         {
-            // Process location creation - creating a new location
-            _loggingService.LogInfo("Processing location creation");
-            
-            // TODO: Implement location creation logic
+            try
+            {
+                _loggingService.LogInfo("Processing location creation");
+                
+                // Extract location details
+                var locationId = locationData["id"]?.ToString();
+                
+                if (string.IsNullOrEmpty(locationId))
+                {
+                    _loggingService.LogError("Location ID is missing");
+                    return;
+                }
+                
+                // Save the location data
+                await _storageService.SaveAsync(userId, $"locations/{locationId}", locationData.ToString());
+                
+                // Check if there are associated NPCs to create
+                if (locationData["npcs"] != null)
+                {
+                    var npcs = locationData["npcs"] as JArray;
+                    if (npcs != null && npcs.Count > 0)
+                    {
+                        // TODO: Trigger jobs to create missing NPCs if needed
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing location creation: {ex.Message}");
+                throw;
+            }
+        }
+        
+        private async Task CreateNewEntityAsync(JToken entity, string userId, string entityType, string entityId)
+        {
+            // Save the new entity to storage
+            await _storageService.SaveAsync(userId, $"{entityType}/{entityId}", entity.ToString());
+            _loggingService.LogInfo($"Created new {entityType} entity: {entityId}");
+        }
+        
+        private async Task UpdateEntityAsync(string userId, string entityType, string entityId, string updateData)
+        {
+            var filePath = string.IsNullOrEmpty(entityType) 
+                ? entityId 
+                : $"{entityType}/{entityId}";
+                
+            await _storageService.ApplyPartialUpdateAsync(userId, filePath, updateData);
+            _loggingService.LogInfo($"Updated {entityType} entity: {entityId}");
+        }
+        
+        private async Task TriggerEntityCreationJob(PromptType promptType, string userId, string userInput)
+        {
+            try
+            {
+                var job = new PromptJob
+                {
+                    UserId = userId,
+                    UserInput = userInput,
+                    PromptType = promptType
+                };
+                
+                await _backgroundJobService.EnqueuePromptAsync(job);
+                _loggingService.LogInfo($"Triggered {promptType} job for user {userId}");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error triggering entity creation job: {ex.Message}");
+                // We don't rethrow here to avoid cascading failures
+            }
         }
 
         private (string userFacingText, string hiddenJson) ExtractHiddenJson(string llmResponse)
@@ -143,7 +410,7 @@ namespace AiGMBackEnd.Services
             }
 
             // No hidden content found
-            return (llmResponse, null);
+            return (llmResponse, string.Empty);
         }
     }
 }

@@ -5,12 +5,12 @@ namespace AiGMBackEnd.Models
     public class ProcessedResult
     {
         [JsonPropertyName("userFacingText")]
-        public string UserFacingText { get; set; }
+        public string UserFacingText { get; set; } = string.Empty;
         
         [JsonPropertyName("success")]
         public bool Success { get; set; }
         
         [JsonPropertyName("errorMessage")]
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
     }
 }
