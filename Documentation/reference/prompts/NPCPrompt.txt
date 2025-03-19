@@ -1,6 +1,6 @@
-1. SystemNPC	Tells the LLM it is playing a specific NPC.
-2. ResponseInstructions	Defines how NPCs should respond.
-3. ExampleResponses	Few-shot examples to improve reliability.
+1. SystemNPC	Tells the LLM it is playing a specific NPC.//from txt
+2. ResponseInstructions	Defines how NPCs should respond.//from txt
+3. ExampleResponses	Few-shot examples to improve reliability.//from txt
 4. GameSetting	Ensures the NPC stays consistent with the world.
 5. GamePreferences	Defines tone, complexity, and age rating.
 6. NPCJson	Provides the NPC’s full knowledge, relationships, and personality.

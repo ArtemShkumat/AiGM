@@ -1,12 +1,12 @@
- SystemDM: Role instructions.
- ResponseInstructions: How LLM formats replies.
- ExampleResponses: Few-shot examples.
+ SystemDM: Role instructions. //from txt
+ ResponseInstructions: How LLM formats replies. //from txt
+ ExampleResponses: Few-shot examples. //from txt
  GameSetting: Game theme/genre/context.
  GamePreferences: Player-defined feel, tone, complexity, etc.
- world.json: global game state.
- Player.json: player state.
- CurrentLocation: JSON details.
- VisibleNPCs: NPC JSON (summaries).
- RelevantQuests: Brief info if relevant.
- UserPrompt: Player input.
- RecentConversationHistory
+ world.json: global game state. //from world.json in data/{userId}
+ Player.json: player state. //from world.json in data/{userId}
+ CurrentLocation: JSON details. //from world.json in data/{userId}
+ VisibleNPCs: NPC JSON (summaries). //from world.json in data/{userId}
+ RelevantQuests: Brief info if relevant. //from world.json in data/{userId}
+ UserPrompt: Player input. //from input in UserInputRequest
+ RecentConversationHistory //we'll figure this out later

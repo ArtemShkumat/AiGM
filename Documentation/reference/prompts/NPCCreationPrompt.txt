@@ -1,8 +1,8 @@
-1. SystemNPCGeneratorInstructions	Instructs LLM to create a rich, detailed NPC.
-2. ResponseInstructions	Defines output format (freeform, not JSON).
-3. ExampleResponses	Guides the LLM towards creative but useful results.
-4. GameSetting	Ensures NPC fits within the established world.
+1. SystemNPCGeneratorInstructions	Instructs LLM to create a rich, detailed NPC. //from txt
+2. ResponseInstructions	Defines output format (freeform, not JSON). //from txt
+3. ExampleResponses	Guides the LLM towards creative but useful results. //from txt
+4. GameSetting	Ensures NPC fits within the established world. 
 5. GamePreferences	Adjusts tone, complexity, and age rating.
-6. TriggerInstructions
-6. Trigger	Defines why this NPC is being created (e.g., quest, location, random encounter).
-7. TriggeringContext	Passes relevant world data (quest details, location traits, or player request).
+6. TriggerInstructions //from txt
+6. Trigger	Defines why this NPC is being created (e.g., quest, location, random encounter). //from txt
+7. TriggeringContext	Passes relevant world data (quest details, location traits, or player request). //from txt
