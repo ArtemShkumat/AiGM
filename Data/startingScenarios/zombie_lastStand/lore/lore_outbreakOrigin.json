@@ -1,0 +1,44 @@
+{
+  "id": "lore_outbreakOrigin",
+  "title": "The Genesis Outbreak",
+  "summary": "The catastrophic emergence and spread of the Necromorph virus that decimated global civilization in a matter of weeks.",
+  "fullDescription": "On February 3, 2023, the first confirmed case of the Necromorph virus was documented at Meridian BioTech's research facility outside Chicago. Within 24 hours, the facility was quarantined, but it was already too late. The initial infection vector remains disputed—some blame corporate espionage, others point to a lab accident, while conspiracy theories about deliberate release abound. What's undeniable is the virus's unprecedented infection rate and lethality. The infected exhibited extreme aggression, diminished pain response, and an insatiable drive to bite and consume living tissue. What made containment impossible was the 12-36 hour asymptomatic period during which carriers showed no symptoms but remained highly contagious. By February 15, major cities across North America reported widespread outbreaks. By March 1, global infrastructure began collapsing as infection rates surpassed 30% of the population. The military's attempts to establish quarantine zones largely failed, and by April, organized government response had effectively ceased in most regions.",
+  "relevance": {
+    "currentImportance": "high", 
+    "associatedQuests": [],
+    "associatedNpcs": ["npc_captainRivera"],
+    "associatedLocations": ["loc_safetyZone", "loc_hospitalRuins"]
+  },
+  "rumors": [
+    "Some survivors claim that certain people are naturally immune to the virus, but this remains unconfirmed by any scientific authority.",
+    "There are whispers about a secure government facility in the mountains where scientists are working on a cure."
+  ],
+  "historicalEvents": [
+    {
+      "timestamp": "2023-02-03",
+      "event": "patientZero",
+      "description": "First confirmed Necromorph infection at Meridian BioTech research facility."
+    },
+    {
+      "timestamp": "2023-02-15",
+      "event": "majorCityOutbreaks",
+      "description": "Simultaneous outbreaks reported in New York, Los Angeles, Chicago, and other major metropolitan areas."
+    },
+    {
+      "timestamp": "2023-02-28",
+      "event": "martialLaw",
+      "description": "President declares nationwide martial law as infection rates climb exponentially."
+    },
+    {
+      "timestamp": "2023-03-12",
+      "event": "broadcastCessation",
+      "description": "Last official emergency broadcast from federal government. No further centralized communications have been received."
+    },
+    {
+      "timestamp": "2023-03-21",
+      "event": "safetyZoneEstablishment",
+      "description": "Captain Sophia Rivera establishes the Eastbrook Safety Zone, gathering survivors from surrounding areas."
+    }
+  ],
+  "notes": "Recent observations suggest the infected are evolving. The earliest cases showed minimal coordination and operated on base instinct. Recent infected demonstrate pack behaviors, basic problem-solving, and even primitive ambush tactics. This evolution is particularly concerning for remaining survivor enclaves."
+} 

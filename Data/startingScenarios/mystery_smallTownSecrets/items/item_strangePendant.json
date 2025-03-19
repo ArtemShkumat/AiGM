@@ -1,0 +1,19 @@
+{
+  "id": "item_strangePendant",
+  "name": "Strange Silver Pendant",
+  "description": "An old silver pendant on a broken chain. The pendant is circular with three wavy lines etched across its surface. The back bears the initials 'E.T.' and the date '1998' - the year the Thomas family disappeared.",
+  "type": "clue",
+  "canBePickedUp": true,
+  "isConsumable": false,
+  "physicalDescription": "The silver is tarnished but high quality. The chain appears to have been forcibly broken. The symbol matches carvings seen in the ritual circle and documents mentioned in Maya's notes.",
+  "locationId": "loc_sirensCove",
+  "status": {
+    "isExamined": false,
+    "isHidden": true
+  },
+  "associatedQuestIds": ["quest_missingJournalist"],
+  "requiredToProgress": true,
+  "discoveryText": "Half-buried in the sand near the entrance to the northern caves, you spot something metallic glinting in the light. Brushing away the sand reveals a silver pendant on a broken chain.",
+  "examinationText": "Upon closer inspection, you see the pendant bears the same symbol Maya mentioned in her notes - three wavy lines within a circle. Turning it over, you find the initials 'E.T.' and the date '1998' engraved on the back. This must have belonged to Elizabeth Thomas, and it's been here since the night the family disappeared.",
+  "tags": ["evidence", "thomas_family", "cult_symbol", "jewelry"]
+} 

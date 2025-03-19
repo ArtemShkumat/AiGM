@@ -1,0 +1,69 @@
+{
+  "id": "loc_axiomStation",
+  "name": "Axiom Research Station",
+  "type": "space_station",
+  "description": "A massive orbital research facility stationed at the edge of the Orion Sector. Known for cutting-edge xenobiology and physics research, the station has recently gone into lockdown after an apparent security breach.",
+  "discoveredByPlayer": true,
+
+  "connectedLocations": [
+    {
+      "id": "loc_shuttleBay",
+      "description": "The main docking area for transport shuttles, currently locked down with only emergency access available."
+    },
+    {
+      "id": "loc_maintenanceTunnels",
+      "description": "A network of maintenance tunnels that run throughout the station, accessible only to authorized personnel."
+    }
+  ],
+
+  "parentLocation": {
+    "id": "loc_orionSector",
+    "description": "Axiom Station orbits a gas giant in the Orion Sector, a contested region between human and Xenovek territories."
+  },
+
+  "subLocations": [
+    {
+      "id": "loc_axiomStation_commandCenter",
+      "description": "The nerve center of the station, where Commander Voss coordinates security and research operations."
+    },
+    {
+      "id": "loc_axiomStation_researchLab",
+      "description": "The primary research laboratory, containing sensitive equipment and the station's quantum data cores."
+    }
+  ],
+
+  "npcs": [
+    "npc_commanderVoss"
+  ],
+
+  "pointsOfInterest": [
+    {
+      "name": "Damaged Security Door",
+      "description": "A security door showing signs of forced entry, with burn marks suggesting advanced energy weapons."
+    },
+    {
+      "name": "Holographic Star Map",
+      "description": "A detailed 3D projection of the Orion Sector, with several systems marked as classified research locations."
+    }
+  ],
+
+  "questIds": ["quest_missingData"],
+
+  "items": [],
+
+  "historyLog": [
+    {
+      "timestamp": "2487-03-21T14:30:00Z",
+      "event": "playerArrived",
+      "description": "The player's transport ship docked at Axiom Station and they proceeded through standard security protocols."
+    },
+    {
+      "timestamp": "2487-03-21T16:45:00Z",
+      "event": "lockdownInitiated",
+      "npcId": "npc_commanderVoss",
+      "description": "Commander Voss activated station-wide lockdown protocols after discovering a breach in the research lab."
+    }
+  ],
+
+  "notes": "Axiom Station houses classified research on Xenovek technology and potential weaknesses. The station AI, IRIS, has been exhibiting unusual behavior patterns recently."
+} 

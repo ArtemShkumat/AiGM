@@ -1,0 +1,56 @@
+{
+  "id": "npc_commanderVoss",
+  "name": "Commander Elara Voss",
+  "currentLocationId": "loc_axiomStation_commandCenter",
+  "discoveredByPlayer": true,
+  "visibleToPlayer": true,
+  "visualDescription": {
+    "gender": "female",
+    "bodyType": "athletic",
+    "visibleClothing": "Tailored navy uniform with security insignia",
+    "condition": "Alert but visibly stressed"
+  },
+  "personality": {
+    "temperament": "Decisive and authoritative",
+    "traits": "Pragmatic, loyal to mission, cautious with strangers"
+  },
+  "backstory": "Former military intelligence officer who transitioned to station security after being wounded in a Xenovek border skirmish. Has been running Axiom Station's security division for seven years with an impeccable record until now.",
+  "dispositionTowardsPlayer": "suspicious",
+  "knownEntities": {
+    "npcsKnown": ["npc_drChen", "npc_techSingh"],
+    "locationsKnown": ["loc_axiomStation", "loc_shuttleBay", "loc_researchLab", "loc_orionSector"]
+  },
+  "relationships": [
+    {
+      "npcId": "npc_drChen",
+      "relationshipType": "professional respect"
+    }
+  ],
+  "questInvolvement": ["quest_missingData"],
+  "inventory": [
+    {
+      "itemId": "item_securityBadge",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_plasmaPistol",
+      "quantity": 1
+    }
+  ],
+  "statusFlags": {
+    "isAlive": true,
+    "isBusy": true,
+    "customState": "managing crisis"
+  },
+  "notes": "Commander Voss suspects the station's security breach is linked to classified Xenovek research. She is torn between protocol (which demands destroying all data) and the value of preserving the research.",
+  "conversationLog": [
+    {
+      "Player": "Commander, what happened here?",
+      "Commander Voss": "We had a breach in Research Lab Alpha at 1630 hours. Automated security systems detected an unauthorized data transfer from our quantum cores. I initiated lockdown protocols immediately, but whoever did this is still on the station."
+    },
+    {
+      "Player": "Any idea who's responsible?",
+      "Commander Voss": "I have theories, but no concrete evidence yet. The burns on the security door suggest Xenovek energy signatures, but it could be someone using their tech to throw us off. I'll need help investigating, but I can't trust just anyone right now."
+    }
+  ]
+} 

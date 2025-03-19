@@ -1,0 +1,60 @@
+{
+  "id": "npc_hotelManager",
+  "name": "Roland Wells",
+  "currentLocationId": "loc_harbourPointHotel",
+  "discoveredByPlayer": true,
+  "visibleToPlayer": true,
+  "visualDescription": {
+    "gender": "male",
+    "bodyType": "slight and wiry",
+    "visibleClothing": "Well-worn but impeccably clean dark suit with a burgundy tie",
+    "condition": "Early 60s, balding, with thin wire-rimmed glasses and nervous hands"
+  },
+  "personality": {
+    "temperament": "Anxious but outwardly polite",
+    "traits": "Detail-oriented, gossip collector, conflict-avoidant, people-pleaser"
+  },
+  "backstory": "Roland has managed the Harbour Point Hotel for over thirty years. His family has worked at the hotel for three generations, and he knows every creaking floorboard and secret passage. Roland was working the night the Thomas family disappeared and was one of the last people to see them. This experience left him permanently anxious, especially around authority figures. He's deeply protective of the hotel's reputation.",
+  "dispositionTowardsPlayer": "cautiously helpful",
+  "knownEntities": {
+    "npcsKnown": ["npc_sheriffCarter", "npc_mayorFletcher", "npc_doctorReeves"],
+    "locationsKnown": ["loc_harbourPointHotel", "loc_mainStreet", "loc_sirensCove", "loc_blackwaterBay"]
+  },
+  "relationships": [
+    {
+      "npcId": "npc_sheriffCarter",
+      "relationshipType": "fearful"
+    },
+    {
+      "npcId": "npc_mayorFletcher",
+      "relationshipType": "subservient"
+    }
+  ],
+  "questInvolvement": ["quest_missingJournalist"],
+  "inventory": [
+    {
+      "itemId": "item_masterKeyring",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_hotelGuestBook",
+      "quantity": 1
+    }
+  ],
+  "statusFlags": {
+    "isAlive": true,
+    "isBusy": false,
+    "customState": "nervous"
+  },
+  "notes": "Roland keeps meticulous records of all hotel guests. He noticed Maya Chen's unusual behavior during her stay, including late-night departures and her interest in the hotel's history. He has access to all rooms but tends to respect guest privacy unless directed otherwise by authorities.",
+  "conversationLog": [
+    {
+      "Player": "I understand the missing journalist stayed in my room?",
+      "Roland": "Yes, Ms. Chen was in Room 312. Lovely woman, very inquisitive about the hotel's history and the town. Asked all sorts of questions about the old families—especially the Thomases. I—I shouldn't gossip about guests, of course. Is your room satisfactory?"
+    },
+    {
+      "Player": "Did she leave anything behind in the room?",
+      "Roland": "Sheriff Carter collected her belongings. Standard procedure for... missing persons. Though I believe they missed a few items. Housekeeping found a notebook page under the bed yesterday. I put it in the lost and found behind the desk. I could... retrieve it for you, if you're curious. Sometimes guests like to know the history of their rooms."
+    }
+  ]
+} 

@@ -1,0 +1,60 @@
+{
+  "id": "npc_sheriffCarter",
+  "name": "Sheriff Evelyn Carter",
+  "currentLocationId": "loc_sheriffStation",
+  "discoveredByPlayer": false,
+  "visibleToPlayer": true,
+  "visualDescription": {
+    "gender": "female",
+    "bodyType": "tall and lean",
+    "visibleClothing": "Neatly pressed sheriff's uniform with a weathered leather jacket",
+    "condition": "Mid-50s, with sharp eyes and premature gray hair"
+  },
+  "personality": {
+    "temperament": "Reserved and analytical",
+    "traits": "Observant, protective of the town, tightly controlled emotions, skeptical of outsiders"
+  },
+  "backstory": "Born and raised in Blackwater Bay, Evelyn left to join the FBI for fifteen years before returning after the Thomas family disappearance to become sheriff. She was childhood friends with Elizabeth Thomas and took her disappearance personally. Has maintained law and order with an iron grip for two decades.",
+  "dispositionTowardsPlayer": "suspicious",
+  "knownEntities": {
+    "npcsKnown": ["npc_mayorFletcher", "npc_hotelManager", "npc_doctorReeves"],
+    "locationsKnown": ["loc_harbourPointHotel", "loc_mainStreet", "loc_sheriffStation", "loc_sirensCove", "loc_blackwaterBay"]
+  },
+  "relationships": [
+    {
+      "npcId": "npc_mayorFletcher",
+      "relationshipType": "complicated"
+    }
+  ],
+  "questInvolvement": ["quest_missingJournalist"],
+  "inventory": [
+    {
+      "itemId": "item_sheriffBadge",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_serviceRevolver",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_oldCaseFiles",
+      "quantity": 1
+    }
+  ],
+  "statusFlags": {
+    "isAlive": true,
+    "isBusy": true,
+    "customState": "investigating"
+  },
+  "notes": "Sheriff Carter knows more about the town's history than she lets on. She keeps a private journal about the Thomas case that she reviews regularly. She's torn between protecting the town's reputation and uncovering the truth about the recent disappearances.",
+  "conversationLog": [
+    {
+      "Player": "I'm curious about the journalist who went missing.",
+      "Sheriff Carter": "Ms. Chen? Yes, we're looking into her disappearance. Not our first visitor to wander off in unfamiliar territory. Tourists often underestimate the dangers of our coastal paths. Why exactly are you interested in her case?"
+    },
+    {
+      "Player": "Just concerned. Has anyone else gone missing recently?",
+      "Sheriff Carter": "We're a small town with limited resources, not a resort with lifeguards at every corner. People need to exercise caution. But to answer your question directly: no. Ms. Chen's case is isolated. I suggest you enjoy your stay and leave the investigating to professionals. Tourist accidents bring unwanted attention that hurts our community."
+    }
+  ]
+} 

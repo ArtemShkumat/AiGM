@@ -1,0 +1,60 @@
+{
+  "id": "npc_captainRivera",
+  "name": "Captain Sophia Rivera",
+  "currentLocationId": "loc_safetyZone_commandCenter",
+  "discoveredByPlayer": true,
+  "visibleToPlayer": true,
+  "visualDescription": {
+    "gender": "female",
+    "bodyType": "athletic",
+    "visibleClothing": "Faded police tactical uniform with makeshift additions",
+    "condition": "Alert but exhausted, with a healing scar across her left cheek"
+  },
+  "personality": {
+    "temperament": "Stern but fair",
+    "traits": "Disciplined, pragmatic to a fault, distrusts strangers, protective of her people"
+  },
+  "backstory": "Former SWAT captain who led the evacuation of survivors during the initial outbreak. Lost her wife and daughter in the chaos. Established the Eastbrook Safety Zone and has kept it running against impossible odds for three months through strict discipline and tough decisions.",
+  "dispositionTowardsPlayer": "cautious",
+  "knownEntities": {
+    "npcsKnown": ["npc_drMartin", "npc_mechanicRodriguez"],
+    "locationsKnown": ["loc_safetyZone", "loc_abandonedMall", "loc_hospitalRuins", "loc_midwestRegion"]
+  },
+  "relationships": [
+    {
+      "npcId": "npc_drMartin",
+      "relationshipType": "ally"
+    }
+  ],
+  "questInvolvement": ["quest_medicalSupplies"],
+  "inventory": [
+    {
+      "itemId": "item_tacticalPistol",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_zoneAccessCard",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_binoculars",
+      "quantity": 1
+    }
+  ],
+  "statusFlags": {
+    "isAlive": true,
+    "isBusy": true,
+    "customState": "planning_defense"
+  },
+  "notes": "Captain Rivera is torn between prioritizing the safety of the community and obtaining necessary supplies. She's increasingly concerned that the infected are evolving more strategic behaviors.",
+  "conversationLog": [
+    {
+      "Player": "I heard you're having trouble with medical supplies.",
+      "Captain Rivera": "We're critically low on antibiotics. Dr. Martin has three patients with infections that could turn fatal without them. County General Hospital should have what we need, but it's overrun. Lost a team there last month."
+    },
+    {
+      "Player": "I could try to get in there.",
+      "Captain Rivera": "Bold offer. I appreciate that, but I don't send people on suicide missions. That said... we're desperate. If you're serious, talk to Dr. Martin about exactly what we need. Maybe you'll see an angle my scouts missed."
+    }
+  ]
+} 

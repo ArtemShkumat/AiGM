@@ -1,0 +1,54 @@
+{
+  "id": "quest_missingJournalist",
+  "title": "The Missing Journalist",
+  "currentProgress": "discovering",
+  "questDescription": "Investigative journalist Maya Chen came to Blackwater Bay to research the historic Thomas family disappearance, but vanished three days ago. Her last known location was Room 312 of the Harbour Point Hotel—the room you're now staying in. Sheriff Carter claims she likely had an accident on the coastal paths, but evidence suggests something more sinister.",
+  "achievementConditions": [
+    "Discover Maya Chen's notes about the Thomas family",
+    "Find Maya's hidden camera with photographic evidence",
+    "Determine what happened to Maya Chen",
+    "Expose the truth behind both Maya's disappearance and the Thomas family case"
+  ],
+  "failConditions": [
+    "Get arrested by Sheriff Carter",
+    "Fall victim to the same fate as Maya",
+    "Destroy key evidence"
+  ],
+  "involvedLocations": [
+    {
+      "id": "loc_harbourPointHotel",
+      "relevance": "Maya's last known whereabouts and your base of operations"
+    },
+    {
+      "id": "loc_sirensCove",
+      "relevance": "Possible location of evidence related to Maya's disappearance"
+    },
+    {
+      "id": "loc_sheriffStation",
+      "relevance": "Contains official reports and evidence collected by local authorities"
+    }
+  ],
+  "involvedNpcs": [
+    {
+      "id": "npc_sheriffCarter",
+      "relevance": "Leading the official investigation into Maya's disappearance"
+    },
+    {
+      "id": "npc_hotelManager",
+      "relevance": "One of the last people to see Maya before her disappearance"
+    }
+  ],
+  "questLog": [
+    {
+      "timestamp": "2023-10-23T20:15:00Z",
+      "event": "questDiscovered",
+      "description": "You learn about Maya Chen's disappearance from the hotel manager when checking into Room 312, which was previously occupied by her."
+    },
+    {
+      "timestamp": "2023-10-24T08:30:00Z",
+      "event": "clueDiscovered",
+      "description": "Upon closer inspection of your hotel room, you notice scratches on the window frame and signs that someone may have searched the room before your arrival."
+    }
+  ],
+  "notes": "This quest connects to the town's deeper mystery involving the Thomas family disappearance from 20 years ago. Maya seems to have uncovered something that connects the two cases. Her editor in Boston hasn't heard from her in days and is increasingly concerned. The town's annual Founder's Day Festival in three days may be relevant, as it commemorates the founding of the town by ancestors of the Thomas family."
+} 

@@ -1,0 +1,109 @@
+{
+  "id": "player_001",
+  "name": "Alex Morgan",
+  "profession": "Investigative Writer",
+  "backgroundStory": "You're a freelance writer who specializes in cold cases and unsolved mysteries. After reading about Maya Chen's disappearance in a Boston newspaper and recognizing her name from journalism circles, you've come to Blackwater Bay under the pretense of writing a travel piece about coastal towns. Your real motive is to discover what happened to Maya and potentially uncover the story she was working on.",
+  "visualDescription": {
+    "gender": "unspecified",
+    "bodyType": "average build",
+    "visibleClothing": "Casual but professional attire suitable for a traveling writer"
+  },
+  "traits": [
+    "Observant",
+    "Persistent",
+    "Skeptical",
+    "Empathetic"
+  ],
+  "currentLocationId": "loc_harbourPointHotel_room312",
+  "inventory": [
+    {
+      "itemId": "item_smartphone",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_notebook",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_penLight",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_pressCredentials",
+      "quantity": 1
+    }
+  ],
+  "activeQuests": [
+    "quest_missingJournalist"
+  ],
+  "completedQuests": [],
+  "failedQuests": [],
+  "knownLocations": [
+    "loc_harbourPointHotel",
+    "loc_harbourPointHotel_lobby",
+    "loc_harbourPointHotel_room312",
+    "loc_mainStreet",
+    "loc_sheriffStation"
+  ],
+  "knownNpcs": [
+    "npc_hotelManager",
+    "npc_sheriffCarter"
+  ],
+  "worldKnowledge": [
+    "Maya Chen disappeared while investigating the Thomas family case",
+    "The Thomas family disappeared mysteriously 20 years ago",
+    "Blackwater Bay will celebrate its Founder's Day Festival in three days",
+    "The town seems protective of its secrets and wary of outsiders"
+  ],
+  "personalNotes": [
+    {
+      "timestamp": "2023-10-23T19:45:00Z",
+      "title": "Initial Impressions",
+      "content": "The town has an undeniable charm but feels oddly tense. People clam up when I mention Maya or ask about the town's history. The hotel manager seems nervous but potentially helpful. Need to establish why Maya was interested in the Thomas family disappearance."
+    },
+    {
+      "timestamp": "2023-10-24T08:15:00Z",
+      "title": "Room 312",
+      "content": "Strange that I was assigned the same room where Maya stayed. Coincidence? The room looks recently cleaned, but there are signs that someone searched it thoroughly. Window frame has fresh scratches. Need to inspect more carefully when I have time alone."
+    }
+  ],
+  "relationships": [
+    {
+      "npcId": "npc_hotelManager",
+      "relationshipValue": 40,
+      "relationshipType": "cautious alliance"
+    },
+    {
+      "npcId": "npc_sheriffCarter",
+      "relationshipValue": 20,
+      "relationshipType": "suspicious"
+    }
+  ],
+  "skillsAndAbilities": [
+    {
+      "name": "Research",
+      "level": "Expert",
+      "description": "Years of investigative writing have made you adept at finding information and connecting seemingly unrelated facts."
+    },
+    {
+      "name": "Interviewing",
+      "level": "Expert",
+      "description": "You know how to get people talking and can often extract information they didn't intend to share."
+    },
+    {
+      "name": "Photography",
+      "level": "Intermediate",
+      "description": "You can document scenes effectively and know how to spot details others might miss."
+    },
+    {
+      "name": "Lock Picking",
+      "level": "Novice",
+      "description": "A skill acquired from a former source who was an ex-burglar. You're not expert but can handle basic locks with the right tools."
+    }
+  ],
+  "statusFlags": {
+    "health": "healthy",
+    "fatigue": "rested",
+    "mentalState": "alert"
+  }
+} 

@@ -1,0 +1,64 @@
+{
+  "id": "npc_deputyParker",
+  "name": "Deputy Marcus Parker",
+  "currentLocationId": "loc_sheriffStation",
+  "discoveredByPlayer": false,
+  "visibleToPlayer": true,
+  "visualDescription": {
+    "gender": "male",
+    "bodyType": "athletic, broad-shouldered",
+    "visibleClothing": "Crisp deputy uniform, always perfectly maintained",
+    "condition": "Early 30s, with a military-style haircut and alert posture"
+  },
+  "personality": {
+    "temperament": "By-the-book and efficient",
+    "traits": "Loyal, ambitious, detail-oriented, uncomfortable with deception"
+  },
+  "backstory": "Marcus Parker grew up in Blackwater Bay, left for military service, and returned four years ago to join the sheriff's department. He respects Sheriff Carter immensely but is beginning to question some of the department's handling of certain cases. His father was a deputy during the Thomas family disappearance, and Marcus has grown up hearing conflicting stories about that night. He's engaged to the town librarian, who has been helping Maya Chen research local history.",
+  "dispositionTowardsPlayer": "professionally cordial",
+  "knownEntities": {
+    "npcsKnown": ["npc_sheriffCarter", "npc_mayorFletcher", "npc_librarian"],
+    "locationsKnown": ["loc_harbourPointHotel", "loc_mainStreet", "loc_sheriffStation", "loc_sirensCove", "loc_library"]
+  },
+  "relationships": [
+    {
+      "npcId": "npc_sheriffCarter",
+      "relationshipType": "respectful but increasingly doubtful"
+    },
+    {
+      "npcId": "npc_librarian",
+      "relationshipType": "engaged"
+    }
+  ],
+  "questInvolvement": ["quest_missingJournalist"],
+  "inventory": [
+    {
+      "itemId": "item_deputyBadge",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_serviceWeapon",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_personalNotepad",
+      "quantity": 1
+    }
+  ],
+  "statusFlags": {
+    "isAlive": true,
+    "isBusy": false,
+    "customState": "conflicted"
+  },
+  "notes": "Deputy Parker keeps his own notes on the Maya Chen case, separate from the official files. He's noticed inconsistencies in the search patterns ordered by Sheriff Carter but hasn't voiced his concerns openly. When alone, he can be found reviewing old police reports from the Thomas family case. His loyalty to the department and his growing suspicions create significant inner conflict.",
+  "conversationLog": [
+    {
+      "Player": "What can you tell me about the missing journalist?",
+      "Deputy Parker": "Official statement is she likely took a walk along the cliffs and had an accident. Happens every few years with tourists. But... [glances around] search protocols have been strange. Sheriff's got us avoiding the north caves and old cannery entirely. Those would be standard search areas. I've said too much already."
+    },
+    {
+      "Player": "Did you interact with Maya Chen before she disappeared?",
+      "Deputy Parker": "Just once. She came in requesting public records about the Thomas family incident. Sheriff took over personally, which isn't standard procedure. My fiancée at the library said Ms. Chen was researching town founders and property records dating back to the 1920s. She seemed... troubled the last time she visited the library. Like she'd found something that scared her."
+    }
+  ]
+} 

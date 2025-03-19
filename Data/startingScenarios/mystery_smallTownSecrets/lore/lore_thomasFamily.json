@@ -1,0 +1,15 @@
+{
+  "id": "lore_thomasFamily",
+  "title": "The Thomas Family Disappearance",
+  "category": "town history",
+  "content": "In the summer of 1998, the Thomas family—Richard (42), Elizabeth (39), and their twins James and Sarah (16)—vanished without a trace from Blackwater Bay. As descendants of one of the town's founding families, the Thomases were prominent figures in the community. Richard owned the local cannery and several other properties, while Elizabeth was head of the historical society.\n\nOn the night of June 17, 1998, the family checked into Room 312 at Harbour Point Hotel, despite living in a mansion on the edge of town. According to the official report filed by then-Deputy Carter (now Sheriff), the family left on the last ferry that night, heading for the mainland. Their car was later found abandoned at a rest stop 100 miles away. The case was eventually classified as a voluntary disappearance, with rumors that Richard had been involved in financial improprieties and fled with his family to avoid prosecution.\n\nHowever, inconsistencies in the official account have fueled speculation for decades. No security footage ever showed the family boarding the ferry. Several personal items were left in their hotel room. In the weeks before disappearing, Elizabeth had reportedly been researching the town's earliest days and had become increasingly agitated. Some locals claim to have seen lights in the northern caves at Siren's Cove the night before the disappearance, while others whisper about a conflict between Richard Thomas and other town elders regarding development plans.\n\nMost discussion of the case has been discouraged by local authorities, who maintain the official account and cite the negative impact on tourism that comes from highlighting such stories. The Thomases' property was quickly sold in estate sales that some considered suspiciously rapid.",
+  "discoveredByPlayer": true,
+  "relatedEntities": {
+    "npcs": ["npc_sheriffCarter", "npc_hotelManager"],
+    "locations": ["loc_harbourPointHotel", "loc_sirensCove"],
+    "items": ["item_strangePendant", "item_pageFromMayasNotebook"]
+  },
+  "sources": ["Blackwater Bay Gazette archives", "Sheriff Department records", "Town Historical Society"],
+  "tags": ["missing persons", "town secrets", "founding families", "conspiracy"],
+  "notes": "This disappearance forms the historical backbone of the current mystery. Maya Chen was researching this case when she disappeared, suggesting she may have discovered new information that threatened someone in town. The player should uncover the connections between these two disappearances."
+} 

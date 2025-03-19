@@ -1,0 +1,55 @@
+{
+  "gameName": "Last Stand: Deadwatch",
+  "setting": "A modern world three months after a viral outbreak turned most of humanity into ravenous infected.",
+  "gameTime": "2023-05-15T18:30:00Z",
+  "daysSinceStart": 0,
+  "currentPlayer": "player_001",
+
+  "worldStateEffects": {
+    "weather": "rainy"
+  },
+
+  "lore": [
+    {
+      "id": "lore_outbreakOrigin",
+      "title": "The Genesis Outbreak",
+      "summary": "The catastrophic emergence and spread of the Necromorph virus that decimated global civilization in a matter of weeks."
+    }
+  ],
+
+  "locations": [
+    {
+      "id": "loc_safetyZone",
+      "name": "Eastbrook Safety Zone"
+    }
+  ],
+
+  "npcs": [
+    {
+      "id": "npc_captainRivera",
+      "name": "Captain Sophia Rivera"
+    }
+  ],
+
+  "quests": [
+    {
+      "id": "quest_medicalSupplies",
+      "title": "Critical Medicine"
+    }
+  ],
+
+  "globalFlags": ["militaryQuarantine", "lowFuelReserves", "communicationBlackout"],
+  "historyLog": [
+    {
+      "timestamp": "2023-05-15T12:00:00Z",
+      "event": "playerArrived",
+      "description": "The player arrived at Eastbrook Safety Zone, one of the last secure havens in the region."
+    },
+    {
+      "timestamp": "2023-05-15T16:45:00Z",
+      "event": "perimeteBreach",
+      "description": "Eastern perimeter sensors detected movement, triggering heightened alert status."
+    }
+  ],
+  "notes": "Resources are dwindling throughout the safety zone. The infected have been showing signs of coordinated behavior in recent weeks, leading some to speculate they're evolving."
+} 

@@ -1,0 +1,27 @@
+{
+  "id": "quest_medicalSupplies",
+  "title": "Critical Medicine",
+  "currentProgress": "not_started",
+  "questDescription": "The safety zone is desperately low on antibiotics. Without them, several patients in the medical wing will likely die from infected wounds. Captain Rivera believes County General Hospital still has supplies in its pharmacy, but previous recovery attempts have failed due to heavy infected presence.",
+  "achievementConditions": [
+    "Obtain antibiotics from County General Hospital",
+    "Return the medical supplies to Dr. Martin at the safety zone",
+    "Survive the mission with minimal injuries"
+  ],
+  "failConditions": [
+    "The player dies",
+    "The medical supplies are destroyed or contaminated",
+    "The patients die before medicine can be retrieved"
+  ],
+  "involvedLocations": [
+    "loc_safetyZone",
+    "loc_safetyZone_medicalWing",
+    "loc_hospitalRuins"
+  ],
+  "involvedNpcs": [
+    "npc_captainRivera",
+    "npc_drMartin"
+  ],
+  "questLog": [],
+  "notes": "The most direct route to the hospital pharmacy is through the main entrance, but it's heavily infested. Alternative approaches include the emergency room loading dock (less infected but may require keycard access) or the roof (difficult climbing but potentially safer). Time is critical, as patients are deteriorating rapidly."
+} 
