@@ -1,0 +1,3 @@
+1. SystemJsonConversionInstructions	Instructs LLM to only convert, not generate new details.
+2. ExampleResponses	Few-shot examples to ensure proper structuring.
+3. NPCDescription	The raw freeform NPC description from createNPC.

@@ -4,13 +4,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Register application services
-builder.Services.AddSingleton<AiGMBackEnd.Services.PresenterService>();
-builder.Services.AddSingleton<AiGMBackEnd.Services.PromptService>();
+builder.Services.AddSingleton<AiGMBackEnd.Services.LoggingService>();
+builder.Services.AddSingleton<AiGMBackEnd.Services.StorageService>();
+builder.Services.AddSingleton<AiGMBackEnd.Services.AIProviders.AIProviderFactory>();
 builder.Services.AddSingleton<AiGMBackEnd.Services.AiService>();
 builder.Services.AddSingleton<AiGMBackEnd.Services.ResponseProcessingService>();
-builder.Services.AddSingleton<AiGMBackEnd.Services.StorageService>();
-builder.Services.AddSingleton<AiGMBackEnd.Services.LoggingService>();
+builder.Services.AddSingleton<AiGMBackEnd.Services.PromptService>();
 builder.Services.AddSingleton<AiGMBackEnd.Services.BackgroundJobService>();
+builder.Services.AddSingleton<AiGMBackEnd.Services.PresenterService>();
 
 // Configure Swagger
 builder.Services.AddEndpointsApiExplorer();

@@ -1,0 +1,30 @@
+{
+    "id": "lore_greatPlague",
+    "title": "The Great Plague of the East",
+    "summary": "A deadly plague wiped out half of the eastern kingdom, leaving entire cities abandoned.",
+    "fullDescription": "During the reign of King Aldric, a mysterious illness ravaged the eastern provinces. It was said to have originated from the ruins of an ancient temple, but others believed it was punishment from the gods. Entire cities fell silent, and even today, few dare to enter the cursed lands.",
+    "relevance": {
+      "currentImportance": "low", 
+      "associatedQuests": ["quest_cureThePlague"],
+      "associatedNpcs": ["npc_wanderingHealer"],
+      "associatedLocations": ["loc_easternRuins"]
+    },
+    "rumors": [
+      "Some say the plague was actually a failed necromantic ritual.",
+      "A wandering healer claims to have a cure but demands an outrageous price."
+    ],
+    "historicalEvents": [
+      {
+        "timestamp": "-150 years",
+        "event": "plagueOutbreak",
+        "description": "The Great Plague began in the eastern provinces and rapidly spread westward."
+      },
+      {
+        "timestamp": "-140 years",
+        "event": "kingdomResponse",
+        "description": "The royal family sealed off the east, abandoning its people to the disease."
+      }
+    ],
+    "notes": "If the player ventures into the eastern ruins, they may still find remnants of the afflicted."
+  }
+  

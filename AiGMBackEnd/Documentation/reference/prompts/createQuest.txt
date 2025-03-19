@@ -1,0 +1,8 @@
+1. SystemQuestGeneratorInstructions	Instructs LLM to create a rich, multi-layered quest.
+2. ResponseInstructions	Ensures the response is freeform, not JSON.
+3. ExampleResponses	Shows good quest structures (multi-stage, challenges, fail conditions).
+4. GameSetting	Ensures the quest fits the world (genre, theme).
+5. GamePreferences	Adjusts tone, complexity, and player involvement.
+6. TriggerInstructions	Prepares LLM for why this quest is being generated.
+7. Trigger	Why the quest is being created (e.g., story-driven, player-initiated, world event).
+8. TriggeringContext	Relevant world data (locations, factions, NPCs, history).

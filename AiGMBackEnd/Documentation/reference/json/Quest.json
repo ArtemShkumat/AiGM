@@ -1,0 +1,26 @@
+{
+    "id": "quest_becomeKing",
+    "title": "Become a King",
+    "currentProgress": "notDiscovered",
+    "questDescription": "A grand, open-ended quest where the player must find a way to ascend to the throne. Multiple paths are possible, including military conquest, political maneuvering, divine selection, or usurpation.",
+    "achievementConditions": [
+      "The player is officially crowned and recognized as the ruler.",
+      "The player eliminates or neutralizes all major challengers to the throne."
+    ],
+    "failConditions": [
+      "The player dies before claiming the throne.",
+      "A rival secures the throne first.",
+      "The kingdom collapses due to instability."
+    ],
+    "involvedLocations": [
+      "loc_capitalCity",
+      "loc_northernRebelCamp"
+    ],
+    "involvedNpcs": [
+      "npc_dukeAldric",
+      "npc_highPriestVarro"
+    ],
+    "questLog": [],
+    "notes": "Multiple factions and betrayals will shape the outcome."
+  }
+  

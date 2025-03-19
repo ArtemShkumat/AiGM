@@ -1,0 +1,37 @@
+{
+    "id": "player_001",
+    "name": "Avery",
+    "currentLocationId": "loc_startingTown",
+    
+    "visualDescription": {
+      "gender": "",
+      "bodyType": "",
+      "visibleClothing": "",
+      "condition": ""
+    },
+    
+    "backstory": "Once an adventurer, retired due to an injury.",
+    
+    "relationships": [
+      {
+        "npcId": "npc_guardThomas",
+        "relationship": "childhoodFriend"
+      }
+    ],
+    
+    "inventory": [],
+    
+    "money": 0,
+    
+    "statusEffects": [],
+  
+    "rpgElements": {
+    },
+    
+    "activeQuests": [],
+    
+    "playerLog": [],
+    
+    "notes": ""
+  }
+  

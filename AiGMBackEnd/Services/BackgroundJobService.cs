@@ -36,6 +36,7 @@ namespace AiGMBackEnd.Services
             var tcs = new TaskCompletionSource<string>();
             job.CompletionSource = tcs;
             
+            _loggingService.LogInfo($"Enqueueing job for user {job.UserId} with prompt type {job.PromptType}");
             _jobQueue.Enqueue(job);
             _semaphore.Release();
             
@@ -52,13 +53,21 @@ namespace AiGMBackEnd.Services
                 {
                     try
                     {
-                        // TODO: Implement job processing logic
-                        // 1. Build prompt
-                        // 2. Call LLM
-                        // 3. Process response
-                        // 4. Set result
+                        _loggingService.LogInfo($"Processing job for user {job.UserId}");
                         
-                        job.CompletionSource.SetResult("Not implemented yet");
+                        // 1. Build prompt
+                        var prompt = await _promptService.BuildPromptAsync(job.PromptType, job.UserId, job.UserInput);
+                        
+                        // 2. Call LLM
+                        var llmResponse = await _aiService.GetCompletionAsync(prompt, job.PromptType);
+                        
+                        // 3. Process response
+                        var processedResult = await _responseProcessingService.HandleResponseAsync(llmResponse, job.PromptType, job.UserId);
+                        
+                        // 4. Set result
+                        job.CompletionSource.SetResult(processedResult.UserFacingText);
+                        
+                        _loggingService.LogInfo($"Successfully processed job for user {job.UserId}");
                     }
                     catch (Exception ex)
                     {

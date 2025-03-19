@@ -1,26 +1,44 @@
 using System;
 using System.Threading.Tasks;
+using AiGMBackEnd.Services.AIProviders;
+using Microsoft.Extensions.Configuration;
 
 namespace AiGMBackEnd.Services
 {
     public class AiService
     {
+        private readonly AIProviderFactory _providerFactory;
         private readonly LoggingService _loggingService;
+        private readonly IConfiguration _configuration;
+        private readonly string _defaultProvider;
 
-        public AiService(LoggingService loggingService)
+        public AiService(
+            IConfiguration configuration,
+            LoggingService loggingService)
         {
+            _configuration = configuration;
             _loggingService = loggingService;
+            _providerFactory = new AIProviderFactory(configuration, loggingService);
+            
+            // Get default provider from configuration or use OpenAI
+            _defaultProvider = configuration["AIProviders:DefaultProvider"] ?? "OpenAI";
         }
 
         public async Task<string> GetCompletionAsync(string prompt, string promptType)
         {
             try
             {
-                // TODO: Implement LLM call
-                // This could be a local model or external API like OpenAI
+                _loggingService.LogInfo($"Requesting completion for {promptType} prompt");
                 
-                // Simulate LLM response for now
-                return "This is a simulated response from the LLM. <donotshow>{\"status\": \"success\"}</donotshow>";
+                // Create the provider (will use default if not specified)
+                var provider = _providerFactory.CreateProvider(_defaultProvider);
+                
+                // Get completion from provider
+                var response = await provider.GetCompletionAsync(prompt, promptType);
+                
+                _loggingService.LogInfo($"Received completion response from {provider.Name}");
+                
+                return response;
             }
             catch (Exception ex)
             {

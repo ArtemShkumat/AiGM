@@ -1,0 +1,49 @@
+{
+    "id": "npc_elenaBlacksmith",
+    "name": "Elena the Blacksmith",
+    "currentLocationId": "loc_springvale",
+    "discoveredByPlayer": true,
+    "visibleToPlayer": true,
+    "visualDescription": {
+      "gender": "female",
+      "bodyType": "stocky",
+      "visibleClothing": "Leather apron, sturdy boots",
+      "condition": "Soot-stained hands, slight limp"
+    },
+    "personality": {
+      "temperament": "Stubborn but fair",
+      "traits": "Hard-working, methodical"
+    },
+    "backstory": "Once an adventurer, retired due to an injury.",
+    "dispositionTowardsPlayer": "friendly",
+    "knownEntities": {
+      "npcsKnown": ["npc_guardThomas"],
+      "locationsKnown": ["loc_springvale"]
+    },
+    "relationships": [
+      {
+        "npcId": "npc_guardThomas",
+        "relationship": "childhoodFriend"
+      }
+    ],
+    "questInvolvement": ["quest_lostSword"],
+    "inventory": [
+      {
+        "itemId": "item_ironSword",
+        "quantity": 1
+      }
+    ],
+    "statusFlags": {
+      "isAlive": true,
+      "isBusy": false,
+      "customState": ""
+    },
+    "notes": "Skilled in forging swords, rumored dwarven ancestry.",
+    "conversationLog": [
+      {
+        "Player": "Hi there, what's your name",
+        "Elena the Blacksmith": "Hi, I'm Elena"
+      }
+    ]
+  }
+  

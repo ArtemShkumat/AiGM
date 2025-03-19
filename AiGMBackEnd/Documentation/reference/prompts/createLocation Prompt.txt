@@ -1,0 +1,9 @@
+LEGO Brick	Purpose
+1. SystemLocationGeneratorInstructions	Instructs LLM to create a rich, interactive location.
+2. ResponseInstructions	Ensures response is freeform, not JSON.
+3. ExampleResponses	Guides how to create a dynamic location.
+4. GameSetting	Ensures the location fits the world (genre, history).
+5. GamePreferences	Adjusts tone, complexity, realism.
+6. TriggerInstructions	Explains why this location is needed.
+7. Trigger	Defines why the location is generated (e.g., quest, city expansion).
+8. TriggeringContext	Provides relevant world data (adjacent locations, factions, history).

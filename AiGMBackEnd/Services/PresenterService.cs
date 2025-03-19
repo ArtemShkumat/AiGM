@@ -27,8 +27,34 @@ namespace AiGMBackEnd.Services
 
         public async Task<string> HandleUserInputAsync(string userId, string userInput)
         {
-            // TODO: Implement logic to either use BackgroundJobService or direct call to PromptService
-            return "Not implemented yet";
+            try
+            {
+                _loggingService.LogInfo($"Handling input for user {userId}: {userInput}");
+                
+                // Determine if this should be a DM prompt or NPC prompt
+                // For now, we'll just use "DM" as the default prompt type
+                var promptType = "DM";
+                
+                // For now, we'll use the background job service for all requests
+                // In the future, we might want to bypass it for simple requests
+                var job = new PromptJob
+                {
+                    UserId = userId,
+                    UserInput = userInput,
+                    PromptType = promptType
+                };
+                
+                var response = await _backgroundJobService.EnqueuePromptAsync(job);
+                
+                _loggingService.LogInfo($"Completed handling input for user {userId}");
+                
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error handling user input: {ex.Message}");
+                return $"Error processing your request: {ex.Message}";
+            }
         }
     }
 }

@@ -1,0 +1,10 @@
+1. SystemNPC	Tells the LLM it is playing a specific NPC.
+2. ResponseInstructions	Defines how NPCs should respond.
+3. ExampleResponses	Few-shot examples to improve reliability.
+4. GameSetting	Ensures the NPC stays consistent with the world.
+5. GamePreferences	Defines tone, complexity, and age rating.
+6. NPCJson	Provides the NPC’s full knowledge, relationships, and personality.
+7. Location.json	So NPCs are aware of their surroundings.
+8. SceneObject	A combined object that provides only relevant world, player, and quest details.
+9. Current conversation log.
+10. PlayerInput	The user’s direct message to the NPC.

@@ -1,0 +1,68 @@
+{
+    "gameName": "Kingdom of Eldoria",
+    "setting": "Medieval fantasy kingdom in turmoil.",
+    "gameTime": "1052-03-12T15:30:00Z",
+    "daysSinceStart": 12,
+    "currentPlayer": "player_001",
+  
+    "worldStateEffects": {
+      "weather": "clear"
+    },
+  
+    "lore": [
+      {
+        "id": "lore_greatPlague",
+        "title": "The Great Plague of the East",
+        "summary": "A deadly plague that wiped out half of the eastern kingdom."
+      },
+      {
+        "id": "lore_dragonProphecy",
+        "title": "The Sleeping Dragon Prophecy",
+        "summary": "An ancient legend speaks of a dragon awakening to shape the fate of the world."
+      }
+    ],
+  
+    "locations": [
+      {
+        "id": "loc_capitalCity",
+        "name": "The Grand Capital"
+      },
+      {
+        "id": "loc_darkForest",
+        "name": "Dark Forest"
+      }
+    ],
+  
+    "npcs": [
+      {
+        "id": "npc_elenaBlacksmith",
+        "name": "Elena the Blacksmith"
+      },
+      {
+        "id": "npc_guardThomas",
+        "name": "Guard Thomas"
+      }
+    ],
+  
+    "quests": [
+      {
+        "id": "quest_lostSword",
+        "title": "Find the Lost Sword"
+      },
+      {
+        "id": "quest_becomeKing",
+        "title": "Become a King"
+      }
+    ],
+  
+    "globalFlags": ["ancientDragonAwake", "plagueInEasternKingdom"],
+    "historyLog": [
+      {
+        "timestamp": "2025-03-16T10:00:00Z",
+        "event": "playerArrived",
+        "description": "The player first set foot in the world."
+      }
+    ],
+    "notes": "This world is in turmoil; power struggles define its future."
+  }
+  

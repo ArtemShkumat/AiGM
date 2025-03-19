@@ -1,0 +1,71 @@
+{
+    "id": "loc_springvale",
+    "name": "Springvale",
+    "type": "town",
+    "description": "A quaint town known for its fresh water springs.",
+    "discoveredByPlayer": true,
+  
+    "connectedLocations": [
+      {
+        "id": "loc_darkForest",
+        "description": "Surrounds this location, dense and mysterious."
+      },
+      {
+        "id": "loc_westRoad",
+        "description": "The western exit leads toward the trade route."
+      }
+    ],
+  
+    "parentLocation": {
+      "id": "loc_kingdomA",
+      "description": "Springvale is part of Kingdom A, a prosperous land."
+    },
+  
+    "subLocations": [
+      {
+        "id": "loc_springvale_blacksmithShop",
+        "description": "Elena's forge, filled with tools and iron."
+      },
+      {
+        "id": "loc_springvale_market",
+        "description": "Bustling with traders selling fresh produce."
+      }
+    ],
+  
+    "npcs": [
+      "npc_elenaBlacksmith",
+      "npc_guardThomas"
+    ],
+  
+    "pointsOfInterest": [
+      {
+        "name": "Ancient Stone Fountain",
+        "description": "A moss-covered fountain, water still trickling from its mouth."
+      },
+      {
+        "name": "Town Notice Board",
+        "description": "A wooden board covered with old and new postings."
+      }
+    ],
+  
+    "questIds": ["quest_lostSword"],
+
+    "items": [],
+  
+    "historyLog": [
+      {
+        "timestamp": "2025-03-16T10:00:00Z",
+        "event": "playerArrived",
+        "description": "The player entered Springvale."
+      },
+      {
+        "timestamp": "2025-03-16T10:15:00Z",
+        "event": "npcSpoke",
+        "npcId": "npc_guardThomas",
+        "description": "Guard Thomas warned the player about bandits."
+      }
+    ],
+  
+    "notes": "Springvale is known for its friendly people and secret underground tunnels."
+  }
+  

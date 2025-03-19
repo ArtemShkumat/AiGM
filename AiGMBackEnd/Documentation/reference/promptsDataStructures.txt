@@ -1,0 +1,25 @@
+public interface IGamePrompt
+{
+    string PromptBody { get; set; }
+    string Model { get; set; }
+    Dictionary<string, object> Context { get; set; }
+}
+
+public class DMPrompt : IGamePrompt
+{
+    public string PromptBody { get; set; }
+    public string Model { get; set; }
+    public Dictionary<string, object> Context { get; set; } 
+      = new Dictionary<string, object>();
+    // DM-specific fields...
+}
+
+public class NPCPrompt : IGamePrompt
+{
+    public string PromptBody { get; set; }
+    public string Model { get; set; }
+    public Dictionary<string, object> Context { get; set; } 
+      = new Dictionary<string, object>();
+    public string NpcId { get; set; }
+    // NPC-specific fields...
+}

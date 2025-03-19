@@ -1,0 +1,3 @@
+1. SystemJsonConversionInstructions	Ensures only JSON output, no new details.
+2. ExampleResponses	Shows correctly formatted JSON locations.
+3. LocationDescription	Raw output from createLocation that needs structuring.
