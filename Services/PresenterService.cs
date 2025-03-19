@@ -25,15 +25,11 @@ namespace AiGMBackEnd.Services
             _loggingService = loggingService;
         }
 
-        public async Task<string> HandleUserInputAsync(string userId, string userInput)
+        public async Task<string> HandleUserInputAsync(string userId, string userInput, PromptType promptType = PromptType.DM)
         {
             try
             {
-                _loggingService.LogInfo($"Handling input for user {userId}: {userInput}");
-                
-                // Determine if this should be a DM prompt or NPC prompt
-                // For now, we'll just use "DM" as the default prompt type
-                var promptType = "DM";
+                _loggingService.LogInfo($"Handling input for user {userId} with promptType {promptType}: {userInput}");
                 
                 // For now, we'll use the background job service for all requests
                 // In the future, we might want to bypass it for simple requests

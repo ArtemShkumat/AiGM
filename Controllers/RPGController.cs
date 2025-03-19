@@ -32,7 +32,7 @@ namespace AiGMBackEnd.Controllers
 
             try
             {
-                var response = await _presenterService.HandleUserInputAsync(request.UserId, request.UserInput);
+                var response = await _presenterService.HandleUserInputAsync(request.UserId, request.UserInput, request.PromptType);
                 
                 return Ok(new UserInputResponse
                 {
@@ -58,6 +58,7 @@ namespace AiGMBackEnd.Controllers
     {
         public string UserId { get; set; }
         public string UserInput { get; set; }
+        public PromptType PromptType { get; set; } = PromptType.DM; // Default to DM prompt
     }
 
     public class UserInputResponse

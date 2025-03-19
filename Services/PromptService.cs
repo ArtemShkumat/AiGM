@@ -1,9 +1,27 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Prompts;
+using Newtonsoft.Json;
 
 namespace AiGMBackEnd.Services
 {
+    public enum PromptType
+    {
+        DM,
+        NPC,
+        CreateQuest,
+        CreateQuestJson,
+        CreateNPC,
+        CreateNPCJson,
+        CreateLocation,
+        CreateLocationJson
+    }
+
     public class PromptService
     {
         private readonly StorageService _storageService;
@@ -19,16 +37,32 @@ namespace AiGMBackEnd.Services
             _promptTemplatesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PromptTemplates");
         }
 
-        public async Task<string> BuildPromptAsync(string promptType, string userId, string userInput)
+        public async Task<string> BuildPromptAsync(PromptType promptType, string userId, string userInput)
         {
             try
             {
-                // TODO: Implement prompt building logic
-                // 1. Load appropriate template based on promptType
-                // 2. Merge relevant game data (world, player, location, NPCs)
-                // 3. Return final prompt
-
-                return "Not implemented yet";
+                switch (promptType)
+                {
+                    case PromptType.DM:
+                        return await BuildDMPromptAsync(userId, userInput);
+                    case PromptType.NPC:
+                        string npcId = ParseNpcId(userInput);
+                        return await BuildNPCPromptAsync(userId, npcId, userInput);
+                    case PromptType.CreateQuest:
+                        return await BuildCreateQuestPromptAsync(userId, userInput);
+                    case PromptType.CreateQuestJson:
+                        return await BuildCreateQuestJsonPromptAsync(userId, userInput);
+                    case PromptType.CreateNPC:
+                        return await BuildCreateNPCPromptAsync(userId, userInput);
+                    case PromptType.CreateNPCJson:
+                        return await BuildCreateNPCJsonPromptAsync(userId, userInput);
+                    case PromptType.CreateLocation:
+                        return await BuildCreateLocationPromptAsync(userId, userInput);
+                    case PromptType.CreateLocationJson:
+                        return await BuildCreateLocationJsonPromptAsync(userId, userInput);
+                    default:
+                        throw new ArgumentException($"Unsupported prompt type: {promptType}");
+                }
             }
             catch (Exception ex)
             {
@@ -37,15 +71,450 @@ namespace AiGMBackEnd.Services
             }
         }
 
+        private async Task<string> BuildDMPromptAsync(string userId, string userInput)
+        {
+            // Load DM template files
+            var systemPrompt = await LoadTemplateAsync("DmPrompt/SystemDM.txt");
+            var responseInstructions = await LoadTemplateAsync("DmPrompt/ResponseInstructions.txt");
+            var exampleResponses = await LoadTemplateAsync("DmPrompt/ExampleResponses.txt");
+
+            // Load player and world data
+            var player = await _storageService.LoadAsync<Player>($"{userId}/player.json");
+            var world = await _storageService.LoadAsync<World>($"{userId}/world.json");
+
+            // Load current location
+            var location = await _storageService.LoadAsync<Location>($"{userId}/locations/{player.CurrentLocationId}.json");
+
+            // Get NPCs in current location
+            var npcSummaries = new List<string>();
+            foreach (var npcId in location.NPCIds)
+            {
+                try
+                {
+                    var npc = await _storageService.LoadAsync<Npc>($"{userId}/npcs/{npcId}.json");
+                    npcSummaries.Add($"NPC ID: {npc.Id}, Name: {npc.Name}, Summary: {npc.Summary}");
+                }
+                catch (Exception ex)
+                {
+                    _loggingService.LogWarning($"Failed to load NPC {npcId}: {ex.Message}");
+                }
+            }
+
+            // Get active quests
+            var activeQuestSummaries = new List<string>();
+            foreach (var questId in player.ActiveQuestIds)
+            {
+                try
+                {
+                    var quest = await _storageService.LoadAsync<Quest>($"{userId}/quests/{questId}.json");
+                    activeQuestSummaries.Add($"Quest ID: {quest.Id}, Title: {quest.Title}, Current Step: {quest.CurrentStep}, Summary: {quest.Summary}");
+                }
+                catch (Exception ex)
+                {
+                    _loggingService.LogWarning($"Failed to load quest {questId}: {ex.Message}");
+                }
+            }
+
+            // Create the final prompt
+            var promptBuilder = new StringBuilder();
+            promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add world context
+            promptBuilder.AppendLine("# World Context");
+            promptBuilder.AppendLine($"World Name: {world.Name}");
+            promptBuilder.AppendLine($"Setting: {world.Setting}");
+            promptBuilder.AppendLine($"Current Time: {world.CurrentTime}");
+            promptBuilder.AppendLine($"Current Weather: {world.CurrentWeather}");
+            promptBuilder.AppendLine($"World Summary: {world.Summary}");
+            promptBuilder.AppendLine();
+
+            // Add player context
+            promptBuilder.AppendLine("# Player Context");
+            promptBuilder.AppendLine($"Player Name: {player.Name}");
+            promptBuilder.AppendLine($"Class: {player.Class}");
+            promptBuilder.AppendLine($"Level: {player.Level}");
+            promptBuilder.AppendLine($"Background: {player.Background}");
+            promptBuilder.AppendLine();
+
+            // Add location context
+            promptBuilder.AppendLine("# Current Location");
+            promptBuilder.AppendLine($"Location Name: {location.Name}");
+            promptBuilder.AppendLine($"Location Type: {location.Type}");
+            promptBuilder.AppendLine($"Description: {location.Description}");
+            promptBuilder.AppendLine($"Time of Day: {world.CurrentTime}");
+            promptBuilder.AppendLine();
+
+            // Add NPCs
+            if (npcSummaries.Count > 0)
+            {
+                promptBuilder.AppendLine("# NPCs in current location");
+                foreach (var npcSummary in npcSummaries)
+                {
+                    promptBuilder.AppendLine(npcSummary);
+                }
+                promptBuilder.AppendLine();
+            }
+
+            // Add active quests
+            if (activeQuestSummaries.Count > 0)
+            {
+                promptBuilder.AppendLine("# Active Quests");
+                foreach (var questSummary in activeQuestSummaries)
+                {
+                    promptBuilder.AppendLine(questSummary);
+                }
+                promptBuilder.AppendLine();
+            }
+
+            // Add response instructions
+            promptBuilder.AppendLine("# Response Instructions");
+            promptBuilder.AppendLine(responseInstructions);
+            promptBuilder.AppendLine();
+
+            // Add example responses
+            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine(exampleResponses);
+            promptBuilder.AppendLine();
+
+            // Add the user's input
+            promptBuilder.AppendLine("# User Input");
+            promptBuilder.AppendLine(userInput);
+
+            return promptBuilder.ToString();
+        }
+
+        private async Task<string> BuildNPCPromptAsync(string userId, string npcId, string userInput)
+        {
+            // Load NPC template files
+            var systemPrompt = await LoadTemplateAsync("NPCPrompt/SystemNPC.txt");
+            var responseInstructions = await LoadTemplateAsync("NPCPrompt/ResponseInstructions.txt");
+            var exampleResponses = await LoadTemplateAsync("NPCPrompt/ExampleResponses.txt");
+
+            // Load player, world, and specified NPC data
+            var player = await _storageService.LoadAsync<Player>($"{userId}/player.json");
+            var world = await _storageService.LoadAsync<World>($"{userId}/world.json");
+            var npc = await _storageService.LoadAsync<Npc>($"{userId}/npcs/{npcId}.json");
+
+            // Load current location
+            var location = await _storageService.LoadAsync<Location>($"{userId}/locations/{player.CurrentLocationId}.json");
+
+            // Create scene context
+            var sceneContext = new SceneContext
+            {
+                Location = location,
+                Time = world.CurrentTime,
+                Weather = world.CurrentWeather
+            };
+
+            // Create the final prompt
+            var promptBuilder = new StringBuilder();
+            promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add NPC context
+            promptBuilder.AppendLine("# NPC Context");
+            promptBuilder.AppendLine($"NPC Name: {npc.Name}");
+            promptBuilder.AppendLine($"Age: {npc.Age}");
+            promptBuilder.AppendLine($"Role: {npc.Role}");
+            promptBuilder.AppendLine($"Description: {npc.Description}");
+            promptBuilder.AppendLine($"Personality: {npc.Personality}");
+            promptBuilder.AppendLine($"Knowledge: {npc.Knowledge}");
+            promptBuilder.AppendLine($"Goals: {npc.Goals}");
+            promptBuilder.AppendLine();
+
+            // Add scene context
+            promptBuilder.AppendLine("# Scene Context");
+            promptBuilder.AppendLine($"Location: {location.Name}");
+            promptBuilder.AppendLine($"Location Description: {location.Description}");
+            promptBuilder.AppendLine($"Time: {world.CurrentTime}");
+            promptBuilder.AppendLine($"Weather: {world.CurrentWeather}");
+            promptBuilder.AppendLine();
+
+            // Add player context
+            promptBuilder.AppendLine("# Player Context");
+            promptBuilder.AppendLine($"Player Name: {player.Name}");
+            promptBuilder.AppendLine($"Appearance: {player.Appearance}");
+            
+            // Add NPC's relationship with player if it exists
+            if (npc.Relationships.ContainsKey(player.Id))
+            {
+                promptBuilder.AppendLine($"Relationship with player: {npc.Relationships[player.Id]}");
+            }
+            promptBuilder.AppendLine();
+
+            // Add response instructions
+            promptBuilder.AppendLine("# Response Instructions");
+            promptBuilder.AppendLine(responseInstructions);
+            promptBuilder.AppendLine();
+
+            // Add example responses
+            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine(exampleResponses);
+            promptBuilder.AppendLine();
+
+            // Add conversation history if available
+            if (npc.ConversationHistory.Count > 0)
+            {
+                promptBuilder.AppendLine("# Previous Conversation");
+                foreach (var entry in npc.ConversationHistory)
+                {
+                    promptBuilder.AppendLine($"{entry}");
+                }
+                promptBuilder.AppendLine();
+            }
+
+            // Add the user's input
+            promptBuilder.AppendLine("# User Input");
+            promptBuilder.AppendLine(userInput);
+
+            return promptBuilder.ToString();
+        }
+
+        private async Task<string> BuildCreateQuestPromptAsync(string userId, string userInput)
+        {
+            // Load create quest template files
+            var systemPrompt = await LoadTemplateAsync("CreateQuest/SystemCreateQuest.txt");
+            var responseInstructions = await LoadTemplateAsync("CreateQuest/ResponseInstructions.txt");
+            var exampleResponses = await LoadTemplateAsync("CreateQuest/ExampleResponses.txt");
+
+            // Load player and world data for context
+            var player = await _storageService.LoadAsync<Player>($"{userId}/player.json");
+            var world = await _storageService.LoadAsync<World>($"{userId}/world.json");
+
+            // Create the final prompt
+            var promptBuilder = new StringBuilder();
+            promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add world context
+            promptBuilder.AppendLine("# World Context");
+            promptBuilder.AppendLine($"World Name: {world.Name}");
+            promptBuilder.AppendLine($"Setting: {world.Setting}");
+            promptBuilder.AppendLine($"Summary: {world.Summary}");
+            promptBuilder.AppendLine();
+
+            // Add player context
+            promptBuilder.AppendLine("# Player Context");
+            promptBuilder.AppendLine($"Player Name: {player.Name}");
+            promptBuilder.AppendLine($"Class: {player.Class}");
+            promptBuilder.AppendLine($"Level: {player.Level}");
+            promptBuilder.AppendLine($"Background: {player.Background}");
+            promptBuilder.AppendLine();
+
+            // Add response instructions
+            promptBuilder.AppendLine("# Response Instructions");
+            promptBuilder.AppendLine(responseInstructions);
+            promptBuilder.AppendLine();
+
+            // Add example responses
+            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine(exampleResponses);
+            promptBuilder.AppendLine();
+
+            // Add the user's input
+            promptBuilder.AppendLine("# Quest Request");
+            promptBuilder.AppendLine(userInput);
+
+            return promptBuilder.ToString();
+        }
+
+        private async Task<string> BuildCreateQuestJsonPromptAsync(string userId, string userInput)
+        {
+            // Load create quest JSON template files
+            var systemPrompt = await LoadTemplateAsync("CreateQuestJson/SystemCreateQuestJson.txt");
+            var responseInstructions = await LoadTemplateAsync("CreateQuestJson/ResponseInstructions.txt");
+            var exampleResponses = await LoadTemplateAsync("CreateQuestJson/ExampleResponses.txt");
+
+            // Create the final prompt
+            var promptBuilder = new StringBuilder();
+            promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add response instructions
+            promptBuilder.AppendLine("# Response Instructions");
+            promptBuilder.AppendLine(responseInstructions);
+            promptBuilder.AppendLine();
+
+            // Add example responses
+            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine(exampleResponses);
+            promptBuilder.AppendLine();
+
+            // Add the user's input containing the quest description
+            promptBuilder.AppendLine("# Quest Description to Convert to JSON");
+            promptBuilder.AppendLine(userInput);
+
+            return promptBuilder.ToString();
+        }
+
+        private async Task<string> BuildCreateNPCPromptAsync(string userId, string userInput)
+        {
+            // Load create NPC template files
+            var systemPrompt = await LoadTemplateAsync("NPCCreationPrompt/SystemCreateNPC.txt");
+            var responseInstructions = await LoadTemplateAsync("NPCCreationPrompt/ResponseInstructions.txt");
+            var exampleResponses = await LoadTemplateAsync("NPCCreationPrompt/ExampleResponses.txt");
+
+            // Load world data for context
+            var world = await _storageService.LoadAsync<World>($"{userId}/world.json");
+
+            // Create the final prompt
+            var promptBuilder = new StringBuilder();
+            promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add world context
+            promptBuilder.AppendLine("# World Context");
+            promptBuilder.AppendLine($"World Name: {world.Name}");
+            promptBuilder.AppendLine($"Setting: {world.Setting}");
+            promptBuilder.AppendLine($"Summary: {world.Summary}");
+            promptBuilder.AppendLine();
+
+            // Add response instructions
+            promptBuilder.AppendLine("# Response Instructions");
+            promptBuilder.AppendLine(responseInstructions);
+            promptBuilder.AppendLine();
+
+            // Add example responses
+            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine(exampleResponses);
+            promptBuilder.AppendLine();
+
+            // Add the user's input
+            promptBuilder.AppendLine("# NPC Creation Request");
+            promptBuilder.AppendLine(userInput);
+
+            return promptBuilder.ToString();
+        }
+
+        private async Task<string> BuildCreateNPCJsonPromptAsync(string userId, string userInput)
+        {
+            // Load create NPC JSON template files
+            var systemPrompt = await LoadTemplateAsync("NPCJsonCreationPrompt/SystemCreateNPCJson.txt");
+            var responseInstructions = await LoadTemplateAsync("NPCJsonCreationPrompt/ResponseInstructions.txt");
+            var exampleResponses = await LoadTemplateAsync("NPCJsonCreationPrompt/ExampleResponses.txt");
+
+            // Create the final prompt
+            var promptBuilder = new StringBuilder();
+            promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add response instructions
+            promptBuilder.AppendLine("# Response Instructions");
+            promptBuilder.AppendLine(responseInstructions);
+            promptBuilder.AppendLine();
+
+            // Add example responses
+            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine(exampleResponses);
+            promptBuilder.AppendLine();
+
+            // Add the user's input containing the NPC description
+            promptBuilder.AppendLine("# NPC Description to Convert to JSON");
+            promptBuilder.AppendLine(userInput);
+
+            return promptBuilder.ToString();
+        }
+
+        private async Task<string> BuildCreateLocationPromptAsync(string userId, string userInput)
+        {
+            // Load create location template files
+            var systemPrompt = await LoadTemplateAsync("CreateLocationPrompt/SystemCreateLocation.txt");
+            var responseInstructions = await LoadTemplateAsync("CreateLocationPrompt/ResponseInstructions.txt");
+            var exampleResponses = await LoadTemplateAsync("CreateLocationPrompt/ExampleResponses.txt");
+
+            // Load world data for context
+            var world = await _storageService.LoadAsync<World>($"{userId}/world.json");
+
+            // Create the final prompt
+            var promptBuilder = new StringBuilder();
+            promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add world context
+            promptBuilder.AppendLine("# World Context");
+            promptBuilder.AppendLine($"World Name: {world.Name}");
+            promptBuilder.AppendLine($"Setting: {world.Setting}");
+            promptBuilder.AppendLine($"Summary: {world.Summary}");
+            promptBuilder.AppendLine();
+
+            // Add response instructions
+            promptBuilder.AppendLine("# Response Instructions");
+            promptBuilder.AppendLine(responseInstructions);
+            promptBuilder.AppendLine();
+
+            // Add example responses
+            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine(exampleResponses);
+            promptBuilder.AppendLine();
+
+            // Add the user's input
+            promptBuilder.AppendLine("# Location Creation Request");
+            promptBuilder.AppendLine(userInput);
+
+            return promptBuilder.ToString();
+        }
+
+        private async Task<string> BuildCreateLocationJsonPromptAsync(string userId, string userInput)
+        {
+            // Load create location JSON template files
+            var systemPrompt = await LoadTemplateAsync("CreateLocationJson/SystemCreateLocationJson.txt");
+            var responseInstructions = await LoadTemplateAsync("CreateLocationJson/ResponseInstructions.txt");
+            var exampleResponses = await LoadTemplateAsync("CreateLocationJson/ExampleResponses.txt");
+
+            // Create the final prompt
+            var promptBuilder = new StringBuilder();
+            promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add response instructions
+            promptBuilder.AppendLine("# Response Instructions");
+            promptBuilder.AppendLine(responseInstructions);
+            promptBuilder.AppendLine();
+
+            // Add example responses
+            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine(exampleResponses);
+            promptBuilder.AppendLine();
+
+            // Add the user's input containing the location description
+            promptBuilder.AppendLine("# Location Description to Convert to JSON");
+            promptBuilder.AppendLine(userInput);
+
+            return promptBuilder.ToString();
+        }
+
         private async Task<string> LoadTemplateAsync(string templateName)
         {
             var templatePath = Path.Combine(_promptTemplatesPath, templateName);
             if (!File.Exists(templatePath))
             {
-                throw new FileNotFoundException($"Template file not found: {templatePath}");
+                _loggingService.LogWarning($"Template file not found: {templatePath}. Using empty template.");
+                return string.Empty;
             }
 
             return await File.ReadAllTextAsync(templatePath);
+        }
+
+        private string ParseNpcId(string userInput)
+        {
+            // Basic parsing to extract NPC ID from user input
+            // Format expected: "talk to <npc_name>" or "interact with <npc_id>"
+            // This is a simple implementation - could be enhanced with regex or more sophisticated parsing
+            
+            if (userInput.Contains("npc_id:"))
+            {
+                var parts = userInput.Split("npc_id:");
+                if (parts.Length > 1)
+                {
+                    var idPart = parts[1].Trim();
+                    return idPart.Split(' ')[0]; // Take first part before any space
+                }
+            }
+            
+            // Default to a placeholder - in a real implementation, you'd want better NPC targeting logic
+            _loggingService.LogWarning($"Could not parse NPC ID from input: {userInput}. Using default logic.");
+            return "generic_npc";
         }
     }
 }

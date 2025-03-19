@@ -13,18 +13,19 @@ namespace AiGMBackEnd.Services
         private readonly string _defaultProvider;
 
         public AiService(
+            AIProviderFactory providerFactory,
             IConfiguration configuration,
             LoggingService loggingService)
         {
+            _providerFactory = providerFactory;
             _configuration = configuration;
             _loggingService = loggingService;
-            _providerFactory = new AIProviderFactory(configuration, loggingService);
             
             // Get default provider from configuration or use OpenAI
             _defaultProvider = configuration["AIProviders:DefaultProvider"] ?? "OpenAI";
         }
 
-        public async Task<string> GetCompletionAsync(string prompt, string promptType)
+        public async Task<string> GetCompletionAsync(string prompt, PromptType promptType)
         {
             try
             {
@@ -34,7 +35,7 @@ namespace AiGMBackEnd.Services
                 var provider = _providerFactory.CreateProvider(_defaultProvider);
                 
                 // Get completion from provider
-                var response = await provider.GetCompletionAsync(prompt, promptType);
+                var response = await provider.GetCompletionAsync(prompt, promptType.ToString());
                 
                 _loggingService.LogInfo($"Received completion response from {provider.Name}");
                 

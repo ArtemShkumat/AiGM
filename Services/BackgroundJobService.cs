@@ -83,7 +83,7 @@ namespace AiGMBackEnd.Services
     {
         public string UserId { get; set; }
         public string UserInput { get; set; }
-        public string PromptType { get; set; }
+        public PromptType PromptType { get; set; } = PromptType.DM;
         public TaskCompletionSource<string> CompletionSource { get; set; }
     }
 }
