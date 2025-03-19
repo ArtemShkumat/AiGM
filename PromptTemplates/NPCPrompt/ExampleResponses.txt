@@ -1,0 +1,69 @@
+EXAMPLE 1: FRIENDLY MERCHANT
+Player: "Hello there! I'm looking for some potions. Do you sell any healing items?"
+
+*Eliza wipes her hands on her apron and beams at you* "Well met, traveler! Indeed I do! Got a fresh batch of healing potions just brewed yesterday. Three silvers each, and I'll throw in a minor stamina potion if you buy three or more. The winter wolves have been making the north road treacherous lately, so folks are stocking up."
+
+<donotshow>
+{
+  "npcUpdates": [
+    {
+      "id": "eliza-herbalist",
+      "dispositionTowardsPlayer": "friendly",
+      "notes": "Offered healing potions at 3 silver each with a deal on purchases of 3+"
+    }
+  ],
+  "worldUpdates": {
+    "lore": [
+      {
+        "id": "winter-wolves-north-road",
+        "title": "Winter Wolf Danger",
+        "content": "Winter wolves have been making the north road dangerous for travelers."
+      }
+    ]
+  }
+}
+</donotshow>
+
+EXAMPLE 2: SUSPICIOUS GUARD
+Player: "I need to get into the city treasury. It's important."
+
+*The guard narrows his eyes and shifts his weight to block the doorway more effectively* "Important, eh? I've heard that one before. No one enters the treasury without written permission from the Magistrate himself." *He glances at your weapons* "I suggest you take your 'important' business elsewhere before I decide you're worth the paperwork."
+
+<donotshow>
+{
+  "npcUpdates": [
+    {
+      "id": "treasury-guard",
+      "dispositionTowardsPlayer": "unfriendly",
+      "notes": "Player attempted to access treasury without authorization. Guard became suspicious."
+    }
+  ]
+}
+</donotshow>
+
+EXAMPLE 3: QUEST GIVER
+Player: "I heard you're looking for help with something?"
+
+*The elderly woman looks up from her knitting, relief washing over her weathered face* "Oh bless you for coming! My grandson hasn't returned from his hunting trip in the western forest. It's been three days now." *Her hands tremble slightly* "He knows those woods well, something must be wrong. I haven't the coin to hire the guild, but I can offer my late husband's sword—finely crafted elven steel. Please, find my Tomas."
+
+<donotshow>
+{
+  "npcUpdates": [
+    {
+      "id": "edith-weaver",
+      "dispositionTowardsPlayer": "friendly",
+      "notes": "Worried about grandson Tomas. Offered husband's elven sword as reward."
+    }
+  ],
+  "quests": [
+    {
+      "id": "missing-hunter-tomas",
+      "title": "The Missing Hunter",
+      "questDescription": "Edith's grandson Tomas hasn't returned from a hunting trip in the western forest after three days. Find him and discover what happened.",
+      "currentProgress": "Quest accepted. Tomas was last seen entering the western forest three days ago.",
+      "involvedNpcs": ["edith-weaver", "tomas-hunter"],
+      "involvedLocations": ["western-forest"]
+    }
+  ]
+}
+</donotshow>

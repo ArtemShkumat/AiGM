@@ -1,0 +1,30 @@
+A location trigger is a description of how players might discover or be led to a particular location within the game world. Your task is to create triggers that feel natural and compelling while fitting the location's purpose in the overall game experience.
+
+TRIGGER TYPES:
+1. EXPLORATION DISCOVERY: Players find the location while exploring an area
+   - Example: "While traveling through the dense forest, you notice stone markers leading off the main path"
+   - Should specify visual or sensory clues that would draw attention
+
+2. NPC DIRECTIONS: An NPC tells players about the location
+   - Example: "The village elder mentions ruins to the north that no one dares approach"
+   - Should specify which NPC provides this information and why
+
+3. MAP/DOCUMENT DISCOVERY: Players find reference to the location on a map or in a document
+   - Example: "An old journal found in the abandoned camp mentions a hidden cave behind the waterfall"
+   - Should specify what document contains this information and where it might be found
+
+4. QUEST OBJECTIVE: The location is directly tied to a quest objective
+   - Example: "To find the missing heirloom, you must explore the family's ancestral crypt"
+   - Should specify which quest leads here and why this location is significant
+
+5. ENVIRONMENTAL CUE: Natural phenomena or events lead players to the location
+   - Example: "Strange lights seen in the night sky always appear above that distant mountain"
+   - Should specify what observable phenomena might draw players to investigate
+
+When defining a location trigger, provide:
+1. The trigger type from the categories above
+2. A narrative description of how players would encounter this trigger
+3. Any prerequisites (areas previously explored, NPCs met, quests accepted, etc.)
+4. How the trigger creates interest or motivation to visit the location
+
+Your trigger should build anticipation and curiosity while providing enough information for players to reasonably locate the place. Consider how the trigger contributes to the overall atmosphere or theme of the location itself.

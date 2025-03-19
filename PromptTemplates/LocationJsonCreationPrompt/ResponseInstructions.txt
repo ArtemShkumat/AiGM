@@ -1,0 +1,85 @@
+Your response should be a properly formatted JSON object that follows the exact Location model structure used in the game system. This JSON object should be derived from the narrative location description provided to you.
+
+1. EXTRACT DATA FROM NARRATIVE
+   - Carefully read the narrative description
+   - Identify all location details that map to fields in the Location model
+   - Make reasonable inferences for any required fields not explicitly stated
+
+2. CREATE VALID JSON
+   - Ensure the JSON strictly follows the model structure
+   - Include all required properties with appropriate values
+   - Use the correct data types for each field
+   - Properly format nested objects and arrays
+
+3. RESPONSE FORMAT
+   - Your response should ONLY contain the JSON object
+   - Do not include explanations, introductions, or comments
+   - Place the JSON object within <donotshow> tags
+
+Example format:
+<donotshow>
+{
+  "id": "silver-leaf-inn",
+  "name": "The Silver Leaf Inn and Tavern",
+  "type": "Settlement",
+  "description": "A welcoming two-story inn of stone and timber at the heart of Oakvale, featuring a large common room with a central hearth, eight guest rooms upstairs, and a reputation for excellent food and as the social center of the village.",
+  "discoveredByPlayer": false,
+  "connectedLocations": [
+    {
+      "id": "oakvale-market-square",
+      "description": "The front door opens directly onto the village market square"
+    },
+    {
+      "id": "oakvale-north-road",
+      "description": "The back door leads to a small stable and the north road out of town"
+    }
+  ],
+  "parentLocation": {
+    "id": "oakvale-village",
+    "description": "The Silver Leaf stands at the heart of Oakvale village"
+  },
+  "subLocations": [
+    {
+      "id": "silver-leaf-common-room",
+      "description": "A spacious room dominated by a central hearth, with polished wooden tables and a long bar against the far wall"
+    },
+    {
+      "id": "silver-leaf-guest-rooms",
+      "description": "Eight private rooms upstairs offering comfortable accommodations for travelers"
+    }
+  ],
+  "npcs": [
+    "elias-thorncrest",
+    "sera-barkeep",
+    "old-tom"
+  ],
+  "pointsOfInterest": [
+    {
+      "name": "Central Hearth",
+      "description": "A large stone fireplace where flames dance year-round, with cryptic tally marks carved into the corner of the mantle"
+    },
+    {
+      "name": "Bar Collection",
+      "description": "A collection of oddities above the bar left by grateful travelers over the years"
+    },
+    {
+      "name": "Elder's Table",
+      "description": "A reserved table where the village elder holds court each Thirdday"
+    },
+    {
+      "name": "Ancient Guestbook",
+      "description": "A leather-bound book containing signatures dating back a century, including those of several notable heroes"
+    },
+    {
+      "name": "Creaking Floorboard",
+      "description": "A worn section of floorboard near the southeastern corner that squeaks mysteriously and conceals a small hidden compartment"
+    }
+  ],
+  "questIds": ["missing-merchant"],
+  "items": ["silver-leaf-guestbook"],
+  "historyLog": [],
+  "notes": "Built after the Winter of Sorrows when the original village hall burned down. Has been operated by the Thorncrest family for four generations. Excellent source of rumors and quest hooks."
+}
+</donotshow>
+
+Only include fields that exist in the Location model and for which you have information or can make reasonable inferences. Don't invent complex details that aren't suggested by the narrative description. The goal is to accurately represent the location in the game's data structure. 

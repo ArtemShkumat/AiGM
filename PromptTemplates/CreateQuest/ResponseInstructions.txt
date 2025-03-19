@@ -1,0 +1,35 @@
+Your response should be a detailed narrative description of a quest, covering the following aspects:
+
+1. QUEST OVERVIEW
+   - Begin with a compelling title for the quest
+   - Provide a brief summary of the quest's core concept
+   - Explain the primary objective and its significance
+   - Establish the quest type (main, side, mystery, etc.)
+
+2. KEY CHARACTERS & MOTIVATIONS
+   - Describe the quest giver and their reasons for enlisting help
+   - Identify important NPCs involved in the quest
+   - Explain the motivations and goals of the antagonists or opposing forces
+   - Detail how the various parties' interests conflict or align
+
+3. NARRATIVE PROGRESSION
+   - Outline how the player discovers or is introduced to the quest
+   - Describe the initial situation and challenges
+   - Detail the middle progression with meaningful developments and twists
+   - Suggest possible resolutions and outcomes
+
+4. WORLD INTEGRATION
+   - Explain how the quest connects to the game world's existing lore
+   - Identify specific locations where quest activities take place
+   - Tie the quest to relevant historical events or ongoing conflicts
+   - Show how quest outcomes might affect the wider game world
+
+5. PLAYER EXPERIENCE
+   - Highlight interesting choices players will make during the quest
+   - Describe memorable moments or set pieces
+   - Suggest potential moral dilemmas or complex decisions
+   - Outline different approaches players might take (combat, stealth, diplomacy, etc.)
+
+Your description should be comprehensive but focused on narrative elements. Create a quest that feels like it belongs naturally in the game world while providing engaging content for players. Include elements that make this quest distinctive and memorable.
+
+Remember that this is a purely narrative description. Do not include any JSON formatting or technical implementation details in your response.

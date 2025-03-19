@@ -1,0 +1,35 @@
+Your response should be a detailed narrative description of an NPC, covering the following aspects:
+
+1. OVERVIEW & APPEARANCE
+   - Begin with a concise introduction to who this character is
+   - Describe their physical appearance in detail, including distinctive features
+   - Note their typical clothing, accessories, and overall presentation
+   - Include mannerisms, speech patterns, and behavioral quirks
+
+2. PERSONALITY & MOTIVATIONS
+   - Outline their core personality traits and temperament
+   - Explain their primary goals, desires, and fears
+   - Describe what drives them and what they value most
+   - Include any internal conflicts or contradictions
+
+3. HISTORY & BACKSTORY
+   - Provide a coherent personal history that explains how they came to be who they are
+   - Include formative experiences that shaped them
+   - Mention any significant relationships or affiliations from their past
+   - Connect their history to their current situation
+
+4. ROLE & SOCIAL CONNECTIONS
+   - Describe their occupation or role within the community
+   - Outline how they typically interact with others
+   - Detail any important relationships with other NPCs
+   - Explain their status or standing within relevant social structures
+
+5. PLAYER INTERACTIONS
+   - Suggest how this NPC might interact with the player initially
+   - Describe what services, information, or assistance they might offer
+   - Include potential conversation topics they would be knowledgeable about
+   - Note how their disposition might evolve based on player actions
+
+Your description should be comprehensive but focused. Create a character who feels like a real person with a life independent of the player, while ensuring they serve a clear purpose in the game world. Avoid stereotypes unless deliberately subverting them, and try to include at least one surprising or unique element that makes this character memorable.
+
+Remember that this is a purely narrative description. Do not include any JSON formatting or technical implementation details in your response.

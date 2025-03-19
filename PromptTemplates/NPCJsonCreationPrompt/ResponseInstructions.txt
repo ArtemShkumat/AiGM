@@ -1,0 +1,66 @@
+Your response should be a properly formatted JSON object that follows the exact NPC model structure used in the game system. This JSON object should be derived from the narrative NPC description provided to you.
+
+1. EXTRACT DATA FROM NARRATIVE
+   - Carefully read the narrative description
+   - Identify all character details that map to fields in the NPC model
+   - Make reasonable inferences for any required fields not explicitly stated
+
+2. CREATE VALID JSON
+   - Ensure the JSON strictly follows the model structure
+   - Include all required properties with appropriate values
+   - Use the correct data types for each field
+   - Properly format nested objects and arrays
+
+3. RESPONSE FORMAT
+   - Your response should ONLY contain the JSON object
+   - Do not include explanations, introductions, or comments
+   - Place the JSON object within <donotshow> tags
+
+Example format:
+<donotshow>
+{
+  "id": "elias-innkeeper",
+  "name": "Elias Thornbrook",
+  "currentLocationId": "oakvale-silver-leaf-inn",
+  "discoveredByPlayer": false,
+  "visibleToPlayer": true,
+  "visualDescription": {
+    "gender": "Male",
+    "bodyType": "Burly, strong build",
+    "visibleClothing": "Clean apron over simple linen clothing",
+    "condition": "Healthy, middle-aged"
+  },
+  "personality": {
+    "temperament": "Boisterous and welcoming",
+    "traits": "Observant, generous, protective of his establishment"
+  },
+  "backstory": "Fourth-generation innkeeper who inherited the Silver Leaf from his mother. The inn has been in his family since it was built after the old gathering hall burned down during the Winter of Sorrows.",
+  "dispositionTowardsPlayer": "friendly",
+  "knownEntities": {
+    "npcsKnown": ["old-tom", "sera-barkeep", "village-elder"],
+    "locationsKnown": ["oakvale-village", "oakvale-market-square", "oakvale-north-road"]
+  },
+  "relationships": [
+    {
+      "npcId": "sera-barkeep",
+      "relationshipType": "cousin"
+    }
+  ],
+  "questInvolvement": [],
+  "inventory": [
+    {
+      "itemId": "inn-keys",
+      "quantity": 1
+    }
+  ],
+  "statusFlags": {
+    "isAlive": true,
+    "isBusy": false,
+    "customState": ""
+  },
+  "notes": "Knows the perfect balance between respecting patrons' privacy and facilitating connections. Inn is known for having the best mutton stew in the eastern provinces.",
+  "conversationLog": []
+}
+</donotshow>
+
+Only include fields that exist in the NPC model and for which you have information or can make reasonable inferences. Don't invent complex details that aren't suggested by the narrative description. The goal is to accurately represent the character in the game's data structure. 

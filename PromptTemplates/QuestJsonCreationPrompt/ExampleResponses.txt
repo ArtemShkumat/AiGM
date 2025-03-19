@@ -1,0 +1,96 @@
+EXAMPLE 1: MYSTERY QUEST
+
+<donotshow>
+{
+  "id": "ardith-sapphire-pendant",
+  "title": "The Lost Heirloom of House Ardith",
+  "currentProgress": "Lady Ellaria Ardith has requested your help in recovering her family's stolen sapphire pendant. She suspects the theft occurred during her recent gathering at Westport Manor.",
+  "questDescription": "Lady Ellaria Ardith's family pendant has been stolen. This sapphire heirloom contains ancient magic that has protected her family for generations. Find the thief and recover this precious item before its power is misused or destroyed.",
+  "achievementConditions": [
+    "Recover the Sapphire Pendant",
+    "Return the pendant to Lady Ellaria",
+    "Determine who was behind the theft"
+  ],
+  "failConditions": [
+    "The pendant is destroyed",
+    "Lady Ellaria is harmed"
+  ],
+  "involvedLocations": [
+    "westport-manor",
+    "masked-crow-tavern",
+    "eastside-marketplace"
+  ],
+  "involvedNpcs": [
+    "lady-ellaria-ardith",
+    "silas-morrow",
+    "tavern-keeper-dorian"
+  ],
+  "questLog": [],
+  "notes": "The quest can be resolved in multiple ways: combat with Silas, persuading him to return the pendant, or finding a compromise that addresses historical grievances."
+}
+</donotshow>
+
+EXAMPLE 2: RESCUE MISSION
+
+<donotshow>
+{
+  "id": "trapped-blackrock-miners",
+  "title": "The Miner's Salvation",
+  "currentProgress": "Durgan Ironhammer has requested immediate assistance at Blackrock Mine. Twelve miners are trapped after a cave-in, with limited air and unknown dangers threatening their lives.",
+  "questDescription": "A catastrophic cave-in has trapped miners deep within Blackrock Mine. Oxygen is running low, and strange creatures have been awakened in the depths. Rescue the miners before it's too late.",
+  "achievementConditions": [
+    "Find a safe path to the trapped miners",
+    "Rescue at least 8 of the 12 miners",
+    "Secure a way out of the mine"
+  ],
+  "failConditions": [
+    "All miners perish",
+    "The mine completely collapses"
+  ],
+  "involvedLocations": [
+    "blackrock-mine-entrance",
+    "collapsed-tunnels",
+    "deepling-cavern"
+  ],
+  "involvedNpcs": [
+    "durgan-ironhammer",
+    "chief-deepling",
+    "trapped-miner-leader"
+  ],
+  "questLog": [],
+  "notes": "Quest has a time pressure element. Each significant delay reduces the number of miners who can be saved. The Deepling conflict can be resolved multiple ways, affecting future relations."
+}
+</donotshow>
+
+EXAMPLE 3: DELIVERY QUEST
+
+<donotshow>
+{
+  "id": "alchemists-rare-ingredient",
+  "title": "The Moonflower Delivery",
+  "currentProgress": "Master Alchemist Lydia has hired you to collect a rare flower that only blooms during the full moon in the Mistwood Grove. She needs it for a critical healing potion.",
+  "questDescription": "Master Alchemist Lydia requires the rare Moonflower that only blooms in Mistwood Grove during the full moon. The flower loses its potency within 24 hours of being picked, and dangerous creatures are drawn to its scent. Collect and deliver it safely to her workshop.",
+  "achievementConditions": [
+    "Locate a Moonflower during the full moon",
+    "Protect the flower during transport",
+    "Deliver it to Master Lydia within 24 hours"
+  ],
+  "failConditions": [
+    "The Moonflower wilts before delivery",
+    "Master Lydia's patient dies due to delayed delivery"
+  ],
+  "involvedLocations": [
+    "mistwood-grove",
+    "forest-trail",
+    "riverford-village",
+    "lydias-workshop"
+  ],
+  "involvedNpcs": [
+    "master-lydia",
+    "forest-guardian",
+    "injured-noble"
+  ],
+  "questLog": [],
+  "notes": "The quest has a strict time limit. Players must choose between safer but longer routes or dangerous shortcuts. The flower's scent attracts creatures, making combat encounters more likely the longer it's carried."
+}
+</donotshow> 

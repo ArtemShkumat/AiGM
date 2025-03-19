@@ -1,0 +1,35 @@
+Your response should be a detailed narrative description of a location, covering the following aspects:
+
+1. OVERVIEW & ATMOSPHERE
+   - Begin with a compelling name for the location
+   - Provide a vivid description of the location's appearance and atmosphere
+   - Use rich sensory details to convey sights, sounds, smells, and textures
+   - Establish the location type (settlement, wilderness, dungeon, special)
+
+2. HISTORY & SIGNIFICANCE
+   - Explain the location's origins and how it came to its current state
+   - Detail significant historical events that took place here
+   - Describe its importance to the surrounding region or broader world
+   - Suggest how knowledge of its history might affect gameplay
+
+3. NOTABLE FEATURES
+   - Identify distinct physical landmarks or architectural elements
+   - Describe environmental conditions or unusual properties
+   - Detail natural or constructed features worth investigating
+   - Include hidden areas or secrets that reward thorough exploration
+
+4. INHABITANTS & SOCIAL DYNAMICS
+   - Describe the typical residents or creatures found here
+   - Explain social structures, factions, or power relationships
+   - Detail how inhabitants interact with each other and outsiders
+   - Suggest potential allies, adversaries, or neutral parties
+
+5. GAMEPLAY OPPORTUNITIES
+   - Highlight points of interest for player interaction
+   - Suggest activities, challenges, or conflicts to engage with
+   - Describe resources, treasures, or knowledge that might be obtained
+   - Note connections to other locations, quests, or storylines
+
+Your description should be comprehensive but focused. Create a location that feels like a real place with its own history and character, while ensuring it provides interesting opportunities for player exploration and interaction. Include enough specific details to make the location distinctive and memorable.
+
+Remember that this is a purely narrative description. Do not include any JSON formatting or technical implementation details in your response.

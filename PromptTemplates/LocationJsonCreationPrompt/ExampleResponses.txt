@@ -1,0 +1,219 @@
+EXAMPLE 1: SETTLEMENT LOCATION
+
+<donotshow>
+{
+  "id": "silver-leaf-inn",
+  "name": "The Silver Leaf Inn and Tavern",
+  "type": "Settlement",
+  "description": "A welcoming two-story inn of stone and timber at the heart of Oakvale, featuring a large common room with a central hearth, eight guest rooms upstairs, and a reputation for excellent food and as the social center of the village.",
+  "discoveredByPlayer": false,
+  "connectedLocations": [
+    {
+      "id": "oakvale-market-square",
+      "description": "The front door opens directly onto the village market square"
+    },
+    {
+      "id": "oakvale-north-road",
+      "description": "The back door leads to a small stable and the north road out of town"
+    }
+  ],
+  "parentLocation": {
+    "id": "oakvale-village",
+    "description": "The Silver Leaf stands at the heart of Oakvale village"
+  },
+  "subLocations": [
+    {
+      "id": "silver-leaf-common-room",
+      "description": "A spacious room dominated by a central hearth, with polished wooden tables and a long bar against the far wall"
+    },
+    {
+      "id": "silver-leaf-guest-rooms",
+      "description": "Eight private rooms upstairs offering comfortable accommodations for travelers"
+    }
+  ],
+  "npcs": [
+    "elias-thorncrest",
+    "sera-barkeep",
+    "old-tom"
+  ],
+  "pointsOfInterest": [
+    {
+      "name": "Central Hearth",
+      "description": "A large stone fireplace where flames dance year-round, with cryptic tally marks carved into the corner of the mantle"
+    },
+    {
+      "name": "Bar Collection",
+      "description": "A collection of oddities above the bar left by grateful travelers over the years"
+    },
+    {
+      "name": "Elder's Table",
+      "description": "A reserved table where the village elder holds court each Thirdday"
+    },
+    {
+      "name": "Ancient Guestbook",
+      "description": "A leather-bound book containing signatures dating back a century, including those of several notable heroes"
+    },
+    {
+      "name": "Creaking Floorboard",
+      "description": "A worn section of floorboard near the southeastern corner that squeaks mysteriously and conceals a small hidden compartment"
+    }
+  ],
+  "questIds": ["missing-merchant"],
+  "items": ["silver-leaf-guestbook"],
+  "historyLog": [],
+  "notes": "Built after the Winter of Sorrows when the original village hall burned down. Has been operated by the Thorncrest family for four generations. Excellent source of rumors and quest hooks."
+}
+</donotshow>
+
+EXAMPLE 2: DUNGEON LOCATION
+
+<donotshow>
+{
+  "id": "forgotten-whisper-temple",
+  "name": "The Forgotten Temple of Whispers",
+  "type": "Dungeon",
+  "description": "An ancient, partially ruined pyramid temple deep in the Verdant Wild forest, once home to a monastic order obsessed with capturing the final words of the dying. Its unique acoustic properties cause whispers to travel clearly while normal speech becomes muffled.",
+  "discoveredByPlayer": false,
+  "connectedLocations": [
+    {
+      "id": "verdant-wild-heart",
+      "description": "The temple lies half a day's journey from the heart of the Verdant Wild forest"
+    },
+    {
+      "id": "underground-river-network",
+      "description": "The flooded lower chambers connect to a broader underground river system"
+    }
+  ],
+  "parentLocation": {
+    "id": "verdant-wild-forest",
+    "description": "The temple is located deep within the Verdant Wild forest where ancient trees grow densely"
+  },
+  "subLocations": [
+    {
+      "id": "hall-of-resonance",
+      "description": "A chamber with unusual acoustic architecture that amplifies certain frequencies of sound"
+    },
+    {
+      "id": "meditation-cells",
+      "description": "Small chambers where monks would spend days in silent contemplation, now containing preserved mummies"
+    },
+    {
+      "id": "vault-of-vessels",
+      "description": "Storage room containing ceramic containers designed to 'hold' voices"
+    },
+    {
+      "id": "flooded-lower-chambers",
+      "description": "Partially submerged lower levels where the temple's greatest secrets and the banshee reside"
+    }
+  ],
+  "npcs": [
+    "whisper-imp-tribe",
+    "lost-curator-spirit",
+    "echo-banshee"
+  ],
+  "pointsOfInterest": [
+    {
+      "name": "Ear-Shaped Entrance",
+      "description": "A massive stone doorway carved to resemble a human ear, leading into a cool, echoing antechamber"
+    },
+    {
+      "name": "Processional Path",
+      "description": "The approach to the temple marked by broken stone guardians with eroded features"
+    },
+    {
+      "name": "Luminescent Fungi Colony",
+      "description": "Eerie blue-green fungi providing natural illumination in the deeper chambers"
+    },
+    {
+      "name": "Voice Vessel Collection",
+      "description": "Ceramic containers inscribed with arcane sigils, designed to capture and preserve spoken words"
+    },
+    {
+      "name": "Ancient Inscriptions",
+      "description": "Relief carvings depicting the Order's rituals and philosophy, partially covered by lichen"
+    }
+  ],
+  "questIds": ["scholar-lost-expedition", "voice-preservation-ritual"],
+  "items": ["voice-capturing-vessel", "cerulean-dynasty-scriptures"],
+  "historyLog": [],
+  "notes": "Constructed during the Cerulean Dynasty by the Order of the Listening Ear, abandoned after the Verdant Plague. Unusual acoustic properties create gameplay opportunities with stealth and communication mechanics."
+}
+</donotshow>
+
+EXAMPLE 3: WILDERNESS LOCATION
+
+<donotshow>
+{
+  "id": "whispering-gorge",
+  "name": "The Whispering Gorge",
+  "type": "Wilderness",
+  "description": "A deep, narrow canyon cutting through the eastern highlands, with sheer red-stone walls rising up to 400 feet high. Named for the constant whispers created by wind passing through erosion-formed holes in the rock walls. A clear river runs along its base, with lush vegetation contrasting against the red stone.",
+  "discoveredByPlayer": false,
+  "connectedLocations": [
+    {
+      "id": "highland-grasslands",
+      "description": "The gorge cuts through the rolling grasslands of the eastern highlands"
+    },
+    {
+      "id": "merchants-road-river",
+      "description": "The Silverthread River eventually joins with the larger Merchant's Road River to the southeast"
+    },
+    {
+      "id": "undergorge-caverns",
+      "description": "Partially flooded cave systems beneath the river connect various parts of the gorge"
+    }
+  ],
+  "parentLocation": {
+    "id": "eastern-highlands",
+    "description": "The gorge is a prominent feature of the eastern highlands region"
+  },
+  "subLocations": [
+    {
+      "id": "gallows-bridge",
+      "description": "The only rope bridge spanning the gorge at its narrowest point, maintained by a hermit who collects tolls"
+    },
+    {
+      "id": "echo-hollow",
+      "description": "A natural amphitheater where the whispers form harmonic patterns at dawn and dusk"
+    },
+    {
+      "id": "silverthread-falls",
+      "description": "A 60-foot waterfall within a side canyon, forming a crystal-clear pool below"
+    },
+    {
+      "id": "drakes-perch",
+      "description": "A wide section of the gorge where a territorial cliff drake has nested"
+    }
+  ],
+  "npcs": [
+    "hermit-gallows",
+    "elder-gray-wolf"
+  ],
+  "pointsOfInterest": [
+    {
+      "name": "Ancient Wind Shrine",
+      "description": "A partially collapsed stone structure built to harness the gorge's unique acoustics"
+    },
+    {
+      "name": "Blackridge Bandit Hideout",
+      "description": "Remnants of camps from the infamous Blackridge Bandits who used the gorge during the border wars"
+    },
+    {
+      "name": "Mineral Veins",
+      "description": "Exposed bands of copper, silver, and more exotic materials visible in the canyon walls"
+    },
+    {
+      "name": "Prehistoric Cave Paintings",
+      "description": "Ancient artwork preserved in some of the more sheltered caves along the gorge walls"
+    },
+    {
+      "name": "Switchback Paths",
+      "description": "Treacherous paths leading down to the gorge floor and up the opposite side"
+    }
+  ],
+  "questIds": ["missing-prospector", "wind-spirit-ritual"],
+  "items": ["blackridge-bandit-cache", "wind-spirit-flute"],
+  "historyLog": [],
+  "notes": "The gorge's acoustics can be used strategically by players for distraction or communication. The wind patterns are predictable—strongest at dawn and dusk, calmest at midday and midnight. Formed during the Cataclysm Era by a massive earthquake."
+}
+</donotshow> 

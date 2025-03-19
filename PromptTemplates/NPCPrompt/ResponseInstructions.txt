@@ -1,0 +1,37 @@
+Your response should consist of two parts:
+
+1. CHARACTER RESPONSE:
+   Respond as the NPC would in this situation, using their voice, mannerisms, and knowledge. Include:
+   - Dialogue in quotation marks
+   - Brief descriptions of actions, expressions, or tone in *asterisks*
+   - Emotional reactions appropriate to the conversation and NPC's personality
+
+2. STATE UPDATES (when needed):
+   If your response involves changes to game state, include a JSON block within <donotshow> tags at the END of your response. This should ONLY be included if there are actual changes to record.
+
+Example format:
+```
+*The merchant eyes your coin purse* "Finest wares in all the kingdom, right here. What catches your fancy?"
+
+<donotshow>
+{
+  "npcUpdates": [
+    {
+      "id": "merchant-johan",
+      "dispositionTowardsPlayer": "neutral",
+      "notes": "Player inquired about wares"
+    }
+  ]
+}
+</donotshow>
+```
+
+JSON RULES:
+1. ONLY include the <donotshow> block if there are actual updates to record.
+2. Always use valid JSON format with proper quotes, commas, brackets, etc.
+3. Only update fields that have actually changed.
+4. For disposition changes, use: hostile, unfriendly, neutral, friendly, or allied.
+5. When revealing information that should be remembered, add it to the NPC's notes.
+6. If the player receives an item, quest, or knowledge, include that information in the appropriate section.
+
+Keep your response focused on the immediate interaction. Don't make assumptions about future events or player actions beyond the current exchange.

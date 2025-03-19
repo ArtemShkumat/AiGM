@@ -1,0 +1,230 @@
+EXAMPLE 1: TOWN MERCHANT
+
+Mariel Thornbrook is the proprietor of "Thornbrook Sundries," the main general store in the village of Oakvale. A middle-aged human woman with streaks of gray in her auburn hair, Mariel carries herself with the confident posture of someone who has spent decades managing a successful business. Her shop is meticulously organized, a reflection of her detail-oriented personality.
+
+Mariel speaks with a warm but no-nonsense tone, often punctuating her sentences with a knowing nod. She has a remarkable memory for her customers' preferences and family details, which she strategically weaves into conversations. Her hands bear the calluses of someone who unpacks crates and manages inventory daily, and she often wears practical clothing in earth tones with an immaculate shopkeeper's apron.
+
+Behind her friendly merchant facade, Mariel is a shrewd businesswoman who has expanded her once-small family shop into Oakvale's commercial center. She maintains a network of trade contacts throughout the region and is often the first to hear news from neighboring towns via traveling merchants. Mariel serves as an unofficial town leader, though she prefers influencing decisions behind the scenes rather than holding formal authority.
+
+Mariel's husband died in a bandit attack ten years ago while on a supply run, leaving her to raise their son Tomas alone. This tragedy has made her a strong advocate for the village militia, and she often provides them with supplies at cost. She dreams of her son taking over the business someday, but worries about his apparent lack of interest in merchant life as he approaches adulthood.
+
+For players, Mariel serves as both a reliable source of basic supplies and a font of local information. She's friendly to newcomers who are respectful, but truly opens up once she considers someone a regular. She can direct players to other services in town, share local rumors, and occasionally has special items available for those she trusts.
+
+<donotshow>
+{
+  "npc": {
+    "id": "mariel-thornbrook-merchant",
+    "name": "Mariel Thornbrook",
+    "race": "Human",
+    "gender": "Female",
+    "occupation": "General Store Owner",
+    "backstory": "Widowed ten years ago when bandits killed her husband during a supply run. Has single-handedly expanded her family's shop into the commercial heart of Oakvale while raising her son Tomas. Uses her merchant connections to maintain influence in town affairs.",
+    "description": "A middle-aged woman with auburn hair streaked with gray, tied back in a practical bun. Has alert hazel eyes that miss nothing happening in her shop. Wears quality but simple clothing in earth tones and an impeccable shopkeeper's apron.",
+    "personality": "Warm but shrewd, detail-oriented, protective of her community, ambitious for her business, worried about her son's future. Maintains a facade of simple shopkeeper while actually being one of the most influential people in town.",
+    "disposition": "friendly",
+    "location": "oakvale-general-store",
+    "inventory": ["basic-supplies", "local-produce", "household-goods", "traveling-gear", "mariel-ledger"],
+    "services": ["buy-goods", "sell-goods", "local-information"],
+    "knowledge": ["oakvale-residents", "local-economy", "regional-trade-routes", "bandit-activity", "nearby-towns"],
+    "quests": ["missing-shipment", "tomas-apprenticeship"],
+    "relationships": [
+      {
+        "npcId": "tomas-thornbrook",
+        "relationship": "son",
+        "notes": "Loves him deeply but worries about his lack of interest in the family business"
+      },
+      {
+        "npcId": "mayor-harkins",
+        "relationship": "political-ally",
+        "notes": "Supports his leadership but isn't afraid to influence his decisions through economic pressure"
+      },
+      {
+        "npcId": "captain-brooks",
+        "relationship": "supplier",
+        "notes": "Provides militia supplies at cost, expects protection priority in return"
+      }
+    ],
+    "schedule": "Opens shop at dawn, manages inventory and customers through the day. Closes at dusk, then often attends town meetings or does bookkeeping. Visits her husband's grave every Firstday.",
+    "dialogue": {
+      "greeting": "Welcome to Thornbrook Sundries! If we don't have it, you probably don't need it. What can I help you find today?",
+      "topics": [
+        {
+          "topic": "Oakvale",
+          "response": "Been here my whole life, just like my parents before me. It's a fine community, especially if you don't mind everyone knowing your business by sundown. We look after our own here."
+        },
+        {
+          "topic": "Recent News",
+          "response": "Well, the Greenfeld caravan is three days late, and that's not like Daria at all. Could be the spring mud on the north road, but... between you and me, there've been rumors of bandit activity that way."
+        },
+        {
+          "topic": "Mayor Harkins",
+          "response": "A decent man who means well. Sometimes needs a bit of... guidance... on matters of commerce. *smiles knowingly* But he keeps the peace and that's what matters for business."
+        },
+        {
+          "topic": "Her Son Tomas",
+          "response": "*sighs* My boy has his head in the clouds these days. Seventeen and talking about joining caravans or worse, adventuring parties. *lowers voice* If you have a moment to speak with him, maybe share some of the harsher realities of the road? He might listen to someone besides his mother."
+        },
+        {
+          "topic": "Special Items",
+          "response": "*looks you over appraisingly* I might have some items not on regular display for the right customers. Come back when we know each other better, and I'll see what I can do."
+        }
+      ]
+    },
+    "notes": "Can become a valuable ally for players who build reputation in Oakvale. Has a hidden room in her shop with higher-quality merchandise reserved for trusted customers. Keeps a detailed ledger that contains information about regional trade that could be valuable if players need to track commercial activities."
+  }
+}
+</donotshow>
+
+EXAMPLE 2: QUEST-GIVING WARRIOR
+
+Korrigan Ironfist stands out even among the battle-hardened patrons of The Broken Shield tavern. This middle-aged dwarf's scarred face tells the story of decades spent as a mercenary on the frontlines of countless conflicts. His once-fiery red beard now sports streaks of gray, and he keeps it braided with small metal rings commemorating significant battles. Despite missing two fingers on his left hand and walking with a slight limp, his muscular build and alert posture make it clear he remains a formidable fighter.
+
+Korrigan speaks in a gravelly voice seasoned by years of shouting commands over the clash of steel and screams of the dying. He has a habit of unconsciously rubbing the worn pommel of his axe while in conversation. Though generally taciturn with strangers, once he warms to someone, he becomes surprisingly eloquent, especially when discussing tactics or recounting war stories. His rough laugh often punctuates these tales, though it never fully reaches his weary eyes.
+
+After years leading the renowned mercenary company "Ironfist's Vanguard," Korrigan now finds himself in a difficult position. His last contract ended in disaster when his company was ambushed in Blackmire Pass. He was one of only three survivors, and now bears the guilt of having led his loyal followers into a trap. Recent nightmares suggest something more sinister than bandits was responsible for the ambush, and he suspects betrayal from his employer, the merchant lord Darius Vane.
+
+Now Korrigan seeks skilled individuals to help investigate what truly happened and to recover the company's ancestral battle standard from the ambush site—both to restore his honor and to give proper rites to his fallen comrades. Too recognizable to pursue this himself and with limited funds remaining, he observes potential recruits carefully from his corner table at The Broken Shield.
+
+Players who approach Korrigan will find him initially suspicious but fair in his dealings. He offers modest payment but the potential for greater rewards if his suspicions about Vane prove correct. For those who prove their worth, Korrigan can become a valuable ally, offering combat training and connections to legitimate mercenary contracts throughout the region.
+
+<donotshow>
+{
+  "npc": {
+    "id": "korrigan-ironfist-veteran",
+    "name": "Korrigan Ironfist",
+    "race": "Dwarf",
+    "gender": "Male",
+    "occupation": "Former Mercenary Captain",
+    "backstory": "Led the famous mercenary company 'Ironfist's Vanguard' for twenty years before losing most of his men in an ambush at Blackmire Pass. One of only three survivors, he now seeks to uncover the truth behind the ambush and recover his company's battle standard.",
+    "description": "A grizzled dwarf with a scarred face and a once-red beard now streaked with gray, braided with small metal rings. Missing two fingers on his left hand and walks with a slight limp. Wears well-maintained but battle-worn armor when traveling.",
+    "personality": "Gruff, honorable, and direct. Carries survivor's guilt that manifests as nightmares. Suspicious of new faces but loyal to those who earn his trust. Strategic thinker with a lifetime of combat experience.",
+    "disposition": "neutral",
+    "location": "broken-shield-tavern",
+    "inventory": ["masterwork-battleaxe", "vanguard-signet-ring", "map-to-blackmire-pass", "mercenary-contract-scroll"],
+    "services": ["combat-training", "mercenary-connections", "tactical-consultation"],
+    "knowledge": ["regional-conflicts", "mercenary-companies", "merchant-lord-vane", "blackmire-pass", "combat-tactics"],
+    "quests": ["recover-vanguard-standard", "investigate-vane-treachery"],
+    "relationships": [
+      {
+        "npcId": "thordak-ironbeard",
+        "relationship": "surviving-comrade",
+        "notes": "One of the only other survivors of the ambush, now working as a blacksmith in Oakvale"
+      },
+      {
+        "npcId": "darius-vane",
+        "relationship": "former-employer",
+        "notes": "Wealthy merchant lord whom Korrigan suspects of betraying his company"
+      },
+      {
+        "npcId": "innkeeper-marta",
+        "relationship": "friend",
+        "notes": "Allows him to stay at The Broken Shield at reduced rates and keeps unwanted visitors away"
+      }
+    ],
+    "schedule": "Spends mornings maintaining his equipment, afternoons gathering information around town, and evenings observing patrons at The Broken Shield. Visits a small shrine to the fallen every seventh day.",
+    "dialogue": {
+      "greeting": "*eyes you warily* What business have you with Korrigan Ironfist? Speak plainly or move along.",
+      "topics": [
+        {
+          "topic": "Ironfist's Vanguard",
+          "response": "*expression darkens* Twenty years we fought together. Best damned soldiers you'd ever meet. Loyal to the end. *stares into his drink* And the end came at Blackmire Pass. Something wasn't right about that ambush. Too coordinated. Too... prepared."
+        },
+        {
+          "topic": "Merchant Lord Vane",
+          "response": "*lowers voice* Darius Vane. Man has enough gold to buy half the kingdoms if he wanted. Hired us to protect a 'special shipment' through Blackmire. *spits* Never said what was in it, never said who might want it. If you ever cross paths with him, watch your back and check your purse."
+        },
+        {
+          "topic": "Battle Standard",
+          "response": "The Vanguard Standard isn't just a flag. It's our honor, our history. Blessed by three different clerics and stained with the blood of every captain before me. *clenches fist* Without it, the fallen can't find their way to the halls of their ancestors. I'd give my remaining fingers to have it back."
+        },
+        {
+          "topic": "Combat Training",
+          "response": "*looks you up and down appraisingly* Could teach you a thing or two that might keep you alive when steel starts singing. Not for free, mind you, but fair rates for those who prove useful. First lesson's always the same: the fighter who keeps their footing lives longer than the one who doesn't."
+        },
+        {
+          "topic": "Blackmire Pass",
+          "response": "*unrolls a worn map* Treacherous even without ambushers. Narrow passages, blind corners, unstable ground. Perfect for an ambush. *points to a marked location* Here's where it happened. Two dozen went in. Only three came out. Something unnatural about those attackers... moved too fast in the darkness."
+        }
+      ]
+    },
+    "notes": "Can become a combat trainer for martial characters if his quest is completed successfully. Has nightmares that may contain clues about supernatural elements involved in the ambush. The battle standard has minor magical properties that will be revealed if recovered."
+  }
+}
+</donotshow>
+
+EXAMPLE 3: MYSTERIOUS ANTAGONIST
+
+Lady Sylvia Nightshade makes an unforgettable impression wherever she goes. This high elven noblewoman appears to be in her prime years, though rumors suggest she's far older than her youthful appearance indicates. Her striking features are framed by raven-black hair that seems to absorb light rather than reflect it. She dresses in elegant, dark clothing of the finest quality, often accented with subtle arcane symbols that the educated might recognize as ancient binding sigils.
+
+Lady Nightshade moves with unnatural grace and speaks in a melodic voice that somehow commands complete attention. Her words are carefully chosen, often layered with double meanings, and delivered with a slight, enigmatic smile. When amused, her laugh is like crystal chimes, but her anger—rarely displayed openly—brings a cold stillness that empties rooms and silences even the most boisterous taverns.
+
+Behind her aristocratic facade, Sylvia harbors dangerous secrets and considerable magical power. Once a respected magical researcher, her obsession with immortality led her down forbidden paths. Two centuries ago, she entered into a pact with an ancient entity known as the Void Weaver, gaining extended life and arcane knowledge in exchange for regular tributes of mystical artifacts and rare components that further her patron's mysterious agenda.
+
+Her current objective is acquiring a set of dispersed artifacts called the Moonshard Fragments. She operates through a network of loyal agents and enthralled servants, maintaining a public persona as a wealthy collector of antiquities and patron of the arts. This cover allows her to travel between major cities, attend high society functions, and gain access to private collections and archaeological sites.
+
+For players, Lady Nightshade initially appears as an intriguing noble who might offer patronage or rewards for acquiring unusual items. Only gradually would her true nature be revealed, as players notice her unaging appearance in old portraits, discover her connection to missing artifacts, or cross paths with her agents. She prefers manipulation to direct confrontation, but those who threaten her plans soon discover she commands formidable eldritch powers.
+
+<donotshow>
+{
+  "npc": {
+    "id": "sylvia-nightshade-void-servant",
+    "name": "Lady Sylvia Nightshade",
+    "race": "High Elf",
+    "gender": "Female",
+    "occupation": "Aristocrat/Secret Cultist",
+    "backstory": "A once-respected magical researcher whose fear of mortality led her to forbidden magic. Made a pact with an entity called the Void Weaver two centuries ago, granting her extended life in exchange for service. Now collects mystical artifacts for her patron while maintaining a cover as a wealthy aristocrat.",
+    "description": "A striking high elven woman with pale skin and raven-black hair that seems to absorb light. Wears elegant, expensive clothing with subtle arcane symbols woven into the fabric. Moves with unnatural grace and speaks with a voice that commands attention.",
+    "personality": "Calculating, patient, and ruthlessly pragmatic. Maintains a facade of refined nobility and generous patron. Genuinely appreciates beauty and art but views most people as tools or obstacles. Condescending toward those she deems inferior, which includes most mortals.",
+    "disposition": "neutral",
+    "location": "nightshade-manor",
+    "inventory": ["void-touched-amulet", "ancient-elven-grimoire", "shadowsteel-dagger", "moonshard-fragment-3"],
+    "services": ["magical-lore", "aristocratic-connections", "rare-item-acquisition"],
+    "knowledge": ["ancient-artifacts", "eldritch-entities", "void-magic", "noble-houses", "forbidden-history"],
+    "quests": ["acquire-moonshard-fragment", "infiltrate-mages-archive"],
+    "relationships": [
+      {
+        "npcId": "void-weaver",
+        "relationship": "patron-entity",
+        "notes": "The otherworldly being she serves in exchange for extended life and magical knowledge"
+      },
+      {
+        "npcId": "marcus-thornfield",
+        "relationship": "enthralled-servant",
+        "notes": "Royal court advisor under her magical influence who provides political information"
+      },
+      {
+        "npcId": "archmage-valerian",
+        "relationship": "former-colleague",
+        "notes": "Suspects her true nature but lacks proof; they maintain a facade of professional respect"
+      }
+    ],
+    "schedule": "Divides time between her manor and social engagements in major cities. Conducts arcane rituals during void moon phases. Hosts exclusive salons for the elite to gather information and identify useful pawns.",
+    "dialogue": {
+      "greeting": "*regards you with an appraising smile* How delightful to make your acquaintance. Talented individuals are so rare these days. Perhaps we might find our interests... aligned.",
+      "topics": [
+        {
+          "topic": "Antiquities Collection",
+          "response": "Yes, I've cultivated quite the collection over the years. *gestures elegantly* I have a particular interest in artifacts of... historical significance. I compensate generously for those who can procure such items discreetly. The Moonshards, for instance, are fascinating fragments of pre-Sundering magic."
+        },
+        {
+          "topic": "Her Age/Past",
+          "response": "*laughs like tinkling crystal* A lady never reveals her age, my dear. The elven bloodline is known for its longevity. *changes subject smoothly* Though I've had the pleasure of witnessing many fascinating moments in history. The architectural styles of the Cerulean Dynasty were particularly captivating."
+        },
+        {
+          "topic": "Void Magic",
+          "response": "*expression cools noticeably* An obscure and largely misunderstood field of academic study. Most so-called scholars spread superstitious nonsense about it. *studies you carefully* Though I'm curious why someone of your... background... would inquire about such esoteric matters."
+        },
+        {
+          "topic": "Nightshade Manor",
+          "response": "My humble retreat from the tedium of court politics. *smiles* I do host select gatherings for those of refined taste and intellectual curiosity. Perhaps you might receive an invitation someday. The lower levels house my private research collection—not open to visitors, I'm afraid."
+        },
+        {
+          "topic": "Local Disappearances",
+          "response": "*feigns concern* How dreadful. The countryside has grown so dangerous these days. Though I find it curious how quick people are to blame the supernatural when human cruelty is far more common. *changes subject* Have you tried the wine? It's from my private vineyard."
+        }
+      ]
+    },
+    "notes": "A long-term antagonist who initially appears as a potential ally. Uses charm and manipulation before resorting to magical means. Surrounded by subtle magical wards and enchantments that alert her to scrying or magical investigation. Her manor contains a hidden chamber for communicating with the Void Weaver."
+  }
+}
+</donotshow>
