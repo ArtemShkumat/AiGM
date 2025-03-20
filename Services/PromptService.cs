@@ -35,7 +35,10 @@ namespace AiGMBackEnd.Services
         {
             _storageService = storageService;
             _loggingService = loggingService;
-            _promptTemplatesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PromptTemplates");
+            
+            // Change from using the runtime directory to using a PromptTemplates folder in the project root
+            string rootDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
+            _promptTemplatesPath = Path.Combine(rootDirectory, "PromptTemplates");
         }
 
         public async Task<string> BuildPromptAsync(PromptType promptType, string userId, string userInput)
@@ -81,14 +84,14 @@ namespace AiGMBackEnd.Services
             var responseInstructions = await LoadTemplateAsync("DmPrompt/ResponseInstructions.txt");
             var exampleResponses = await LoadTemplateAsync("DmPrompt/ExampleResponses.txt");
 
-            // Load player and world data
-            var player = await _storageService.LoadAsync<Player>(userId, "userData/player");
-            var world = await _storageService.LoadAsync<World>(userId, "userData/world");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "userData/gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "userData/gamePreferences");
+            // Load player and world data - Fix paths
+            var player = await _storageService.LoadAsync<Player>(userId, "player");
+            var world = await _storageService.LoadAsync<World>(userId, "world");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
 
-            // Load current location
-            var location = await _storageService.LoadAsync<Location>(userId, $"userData/locations/{player.CurrentLocationId}");
+            // Load current location - Fix path
+            var location = await _storageService.LoadAsync<Location>(userId, $"locations/{player.CurrentLocationId}");
 
             // Get NPCs in current location
             var npcSummaries = new List<string>();
@@ -96,7 +99,7 @@ namespace AiGMBackEnd.Services
             {
                 try
                 {
-                    var npc = await _storageService.LoadAsync<Npc>(userId, $"userData/npcs/{npcId}");
+                    var npc = await _storageService.LoadAsync<Npc>(userId, $"npcs/{npcId}");
                     npcSummaries.Add($"NPC ID: {npc.Id}, Name: {npc.Name}, Summary: {npc.Backstory}");
                 }
                 catch (Exception ex)
@@ -111,7 +114,7 @@ namespace AiGMBackEnd.Services
             {
                 try
                 {
-                    var quest = await _storageService.LoadAsync<Quest>(userId, $"userData/quests/{questId}");
+                    var quest = await _storageService.LoadAsync<Quest>(userId, $"quests/{questId}");
                     activeQuestSummaries.Add($"Quest ID: {quest.Id}, Title: {quest.Title}, Current Step: {quest.CurrentProgress}, Summary: {quest.QuestDescription}");
                 }
                 catch (Exception ex)
@@ -219,15 +222,15 @@ namespace AiGMBackEnd.Services
             var responseInstructions = await LoadTemplateAsync("NPCPrompt/ResponseInstructions.txt");
             var exampleResponses = await LoadTemplateAsync("NPCPrompt/ExampleResponses.txt");
 
-            // Load player, world, and specified NPC data
-            var player = await _storageService.LoadAsync<Player>(userId, "userData/player");
-            var world = await _storageService.LoadAsync<World>(userId, "userData/world");
-            var npc = await _storageService.LoadAsync<Npc>(userId, $"userData/npcs/{npcId}");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "userData/gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "userData/gamePreferences");
+            // Load player, world, and specified NPC data - Fix paths
+            var player = await _storageService.LoadAsync<Player>(userId, "player");
+            var world = await _storageService.LoadAsync<World>(userId, "world");
+            var npc = await _storageService.LoadAsync<Npc>(userId, $"npcs/{npcId}");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
 
-            // Load current location
-            var location = await _storageService.LoadAsync<Location>(userId, $"userData/locations/{player.CurrentLocationId}");
+            // Load current location - Fix path
+            var location = await _storageService.LoadAsync<Location>(userId, $"locations/{player.CurrentLocationId}");
 
             // Create scene context
             var sceneContext = new SceneContext
@@ -335,11 +338,11 @@ namespace AiGMBackEnd.Services
             var responseInstructions = await LoadTemplateAsync("CreateQuest/ResponseInstructions.txt");
             var exampleResponses = await LoadTemplateAsync("CreateQuest/ExampleResponses.txt");
 
-            // Load player and world data for context
-            var player = await _storageService.LoadAsync<Player>(userId, "userData/player");
-            var world = await _storageService.LoadAsync<World>(userId, "userData/world");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "userData/gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "userData/gamePreferences");
+            // Load player and world data for context - Fix paths
+            var player = await _storageService.LoadAsync<Player>(userId, "player");
+            var world = await _storageService.LoadAsync<World>(userId, "world");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -433,10 +436,10 @@ namespace AiGMBackEnd.Services
             var responseInstructions = await LoadTemplateAsync("NPCCreationPrompt/ResponseInstructions.txt");
             var exampleResponses = await LoadTemplateAsync("NPCCreationPrompt/ExampleResponses.txt");
 
-            // Load world data for context
-            var world = await _storageService.LoadAsync<World>(userId, "userData/world");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "userData/gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "userData/gamePreferences");
+            // Load world data for context - Fix paths
+            var world = await _storageService.LoadAsync<World>(userId, "world");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -522,10 +525,10 @@ namespace AiGMBackEnd.Services
             var responseInstructions = await LoadTemplateAsync("CreateLocationPrompt/ResponseInstructions.txt");
             var exampleResponses = await LoadTemplateAsync("CreateLocationPrompt/ExampleResponses.txt");
 
-            // Load world data for context
-            var world = await _storageService.LoadAsync<World>(userId, "userData/world");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "userData/gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "userData/gamePreferences");
+            // Load world data for context - Fix paths
+            var world = await _storageService.LoadAsync<World>(userId, "world");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
