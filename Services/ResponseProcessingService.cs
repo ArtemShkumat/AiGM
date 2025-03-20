@@ -280,8 +280,8 @@ namespace AiGMBackEnd.Services
                     return;
                 }
                 
-                // Save the quest data
-                await _storageService.SaveAsync(userId, $"quests/{questId}", questData.ToString());
+                // Save the quest data - pass the JObject directly
+                await _storageService.SaveAsync(userId, $"quests/{questId}", questData);
                 
                 // Check if there are associated entities to create
                 if (questData["involvedLocations"] != null || questData["involvedNpcs"] != null)
@@ -311,8 +311,8 @@ namespace AiGMBackEnd.Services
                     return;
                 }
                 
-                // Save the NPC data
-                await _storageService.SaveAsync(userId, $"npcs/{npcId}", npcData.ToString());
+                // Save the NPC data - pass the JObject directly
+                await _storageService.SaveAsync(userId, $"npcs/{npcId}", npcData);
             }
             catch (Exception ex)
             {
@@ -336,8 +336,8 @@ namespace AiGMBackEnd.Services
                     return;
                 }
                 
-                // Save the location data
-                await _storageService.SaveAsync(userId, $"locations/{locationId}", locationData.ToString());
+                // Save the location data - pass the JObject directly
+                await _storageService.SaveAsync(userId, $"locations/{locationId}", locationData);
                 
                 // Check if there are associated NPCs to create
                 if (locationData["npcs"] != null)
@@ -371,8 +371,8 @@ namespace AiGMBackEnd.Services
                     return;
                 }
                 
-                // Save the player data
-                await _storageService.SaveAsync(userId, "player", playerData.ToString());
+                // Save the player data - pass the JObject directly instead of converting to string
+                await _storageService.SaveAsync(userId, "player", playerData);
                 _loggingService.LogInfo($"Created/Updated player: {playerId}");
             }
             catch (Exception ex)
@@ -384,8 +384,8 @@ namespace AiGMBackEnd.Services
         
         private async Task CreateNewEntityAsync(JToken entity, string userId, string entityType, string entityId)
         {
-            // Save the new entity to storage
-            await _storageService.SaveAsync(userId, $"{entityType}/{entityId}", entity.ToString());
+            // Save the new entity to storage - pass the JToken directly
+            await _storageService.SaveAsync(userId, $"{entityType}/{entityId}", entity);
             _loggingService.LogInfo($"Created new {entityType} entity: {entityId}");
         }
         

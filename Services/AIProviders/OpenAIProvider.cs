@@ -70,7 +70,7 @@ namespace AiGMBackEnd.Services.AIProviders
                     Encoding.UTF8,
                     "application/json");
 
-                _loggingService.LogInfo("request:"+ requestData.ToString());
+                _loggingService.LogInfo("request:"+ requestContent.ReadAsStringAsync());
                 var response = await _httpClient.PostAsync("chat/completions", requestContent);
                 response.EnsureSuccessStatusCode();
 
