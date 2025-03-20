@@ -3,6 +3,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Add CORS policy for frontend
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000") // Assuming frontend runs on port 3000
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // Register application services
 builder.Services.AddSingleton<AiGMBackEnd.Services.LoggingService>();
 builder.Services.AddSingleton<AiGMBackEnd.Services.StorageService>();
@@ -32,6 +44,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Enable CORS
+app.UseCors();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
