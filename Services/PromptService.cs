@@ -626,6 +626,8 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine(exampleResponses);
             promptBuilder.AppendLine();
 
+            promptBuilder.AppendLine("# Use this for currentLocation: loc_harbourPointHotel");
+
             // Add the user's input containing the player description
             promptBuilder.AppendLine("# Player Description to Convert to JSON");
             promptBuilder.AppendLine(userInput);

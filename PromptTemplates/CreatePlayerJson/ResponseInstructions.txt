@@ -1,0 +1,96 @@
+Your response should be a properly formatted JSON object that follows the exact Player model structure used in the game system. This JSON object should be derived from the narrative player description provided to you.
+
+1. EXTRACT DATA FROM NARRATIVE
+   - Carefully read the narrative description
+   - Identify all character details that map to fields in the Player model
+   - Make reasonable inferences for any required fields not explicitly stated
+   - Use sensible defaults for a starting player when information is missing
+
+2. CREATE VALID JSON
+   - Ensure the JSON strictly follows the model structure
+   - Include all required properties with appropriate values
+   - Use the correct data types for each field
+   - Properly format nested objects and arrays
+
+3. RESPONSE FORMAT
+   - Your response should ONLY contain the JSON object
+   - Do not include explanations, introductions, or comments
+   - Place the JSON object within <donotshow> tags
+
+Example format:
+<donotshow>
+{
+  "id": "player_thorne",
+  "name": "Thorne",
+  "currentLocationId": "loc_havenVillage",
+  
+  "visualDescription": {
+    "gender": "Male",
+    "bodyType": "Lean and athletic",
+    "visibleClothing": "Leather armor with a forest-green cloak",
+    "condition": "Weathered but healthy"
+  },
+  
+  "backstory": "Raised in a small woodland village that was destroyed by bandits. Spent years honing survival skills before deciding to seek out adventure and purpose beyond mere survival.",
+  
+  "relationships": [
+    {
+      "npcId": "npc_elderOak",
+      "relationshipType": "mentor"
+    }
+  ],
+  
+  "inventory": [
+    {
+      "itemId": "item_huntingBow",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_dagger",
+      "quantity": 1
+    },
+    {
+      "itemId": "item_healingHerb",
+      "quantity": 3
+    }
+  ],
+  
+  "money": 25,
+  
+  "statusEffects": [],
+
+  "rpgElements": {
+    "level": 1,
+    "class": "ranger",
+    "skills": {
+      "archery": 3,
+      "tracking": 2,
+      "herbalism": 2
+    },
+    "attributes": {
+      "strength": 12,
+      "dexterity": 15,
+      "constitution": 13,
+      "intelligence": 10,
+      "wisdom": 14,
+      "charisma": 11
+    }
+  },
+  
+  "activeQuests": [],
+  
+  "completedQuests": [],
+  
+  "playerLog": [
+    {
+      "timestamp": "1234-06-14T10:00:00Z",
+      "event": "Arrived at Haven Village seeking information about bandit activity",
+      "locationId": "loc_havenVillage"
+    }
+  ],
+  
+  "notes": "Has a distinctive scar across left forearm. Seeks to eventually track down the bandit leader who destroyed his village."
+}
+</donotshow>
+
+Only include fields that exist in the Player model and for which you have information or can make reasonable inferences. The goal is to accurately represent the player character in the game's data structure while providing a solid foundation for gameplay. 

@@ -70,12 +70,12 @@ namespace AiGMBackEnd.Services.AIProviders
                     Encoding.UTF8,
                     "application/json");
 
-                _loggingService.LogInfo("request:"+requestContent);
+                _loggingService.LogInfo("request:"+ requestData.ToString());
                 var response = await _httpClient.PostAsync("chat/completions", requestContent);
                 response.EnsureSuccessStatusCode();
 
                 var responseContent = await response.Content.ReadAsStringAsync();
-                _loggingService.LogInfo("response:" + responseContent);
+                _loggingService.LogInfo("response:" + responseContent.ToString());
                 var responseObject = JsonSerializer.Deserialize<JsonElement>(responseContent);
 
                 if (responseObject.TryGetProperty("choices", out var choices) && 
