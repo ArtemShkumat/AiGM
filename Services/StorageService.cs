@@ -4,6 +4,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Collections.Generic;
+using AiGMBackEnd.Models;
 
 namespace AiGMBackEnd.Services
 {
@@ -123,5 +126,165 @@ namespace AiGMBackEnd.Services
             // Handle simple file names like "world.json"
             return Path.Combine(_dataPath, userId, $"{fileId}.json");
         }
+        
+        // Methods to support RPGController
+        
+        public List<string> GetScenarioIds()
+        {
+            var scenariosPath = Path.Combine(_dataPath, "startingScenarios");
+            if (!Directory.Exists(scenariosPath))
+            {
+                return new List<string>();
+            }
+            
+            return Directory.GetDirectories(scenariosPath)
+                .Select(Path.GetFileName)
+                .ToList();
+        }
+        
+        public async Task<T> LoadScenarioSettingAsync<T>(string scenarioId, string fileId) where T : class
+        {
+            try
+            {
+                var filePath = Path.Combine(_dataPath, "startingScenarios", scenarioId, fileId);
+                
+                if (!File.Exists(filePath))
+                {
+                    return null;
+                }
+
+                var json = await File.ReadAllTextAsync(filePath);
+                return System.Text.Json.JsonSerializer.Deserialize<T>(json);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error loading scenario setting {fileId}: {ex.Message}");
+                return null;
+            }
+        }
+        
+        public async Task<string> CreateGameFromScenarioAsync(string scenarioId, GamePreferences preferences = null)
+        {
+            try
+            {
+                var scenarioPath = Path.Combine(_dataPath, "startingScenarios", scenarioId);
+                
+                if (!Directory.Exists(scenarioPath))
+                {
+                    throw new DirectoryNotFoundException($"Scenario '{scenarioId}' not found");
+                }
+                
+                // Generate new game ID
+                var gameId = Guid.NewGuid().ToString();
+                var userGamePath = Path.Combine(_dataPath, "userData", gameId);
+                
+                // Create user game directory
+                Directory.CreateDirectory(userGamePath);
+                
+                // Copy scenario files and folders to the user's game directory
+                CopyDirectory(scenarioPath, userGamePath);
+                
+                // Save game preferences if provided
+                if (preferences != null)
+                {
+                    await SaveAsync(gameId, "gamePreferences", preferences);
+                }
+                
+                _loggingService.LogInfo($"Created new game with ID: {gameId} based on scenario: {scenarioId}");
+                
+                return gameId;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error creating game from scenario: {ex.Message}");
+                throw;
+            }
+        }
+        
+        public List<string> GetGameIds()
+        {
+            var userDataPath = Path.Combine(_dataPath, "userData");
+            if (!Directory.Exists(userDataPath))
+            {
+                return new List<string>();
+            }
+            
+            return Directory.GetDirectories(userDataPath)
+                .Select(Path.GetFileName)
+                .ToList();
+        }
+        
+        public async Task<List<NpcInfo>> GetVisibleNpcsInLocationAsync(string gameId, string locationId)
+        {
+            try
+            {
+                var visibleNpcs = new List<NpcInfo>();
+                var npcsPath = Path.Combine(_dataPath, "userData", gameId, "npcs");
+                
+                if (!Directory.Exists(npcsPath))
+                {
+                    return visibleNpcs;
+                }
+                
+                foreach (var npcFile in Directory.GetFiles(npcsPath, "*.json"))
+                {
+                    try
+                    {
+                        var npcJson = await File.ReadAllTextAsync(npcFile);
+                        var npc = System.Text.Json.JsonSerializer.Deserialize<Npc>(npcJson);
+                        
+                        if (npc.VisibleToPlayer && npc.CurrentLocationId == locationId)
+                        {
+                            visibleNpcs.Add(new NpcInfo
+                            {
+                                Id = npc.Id,
+                                Name = npc.Name
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _loggingService.LogWarning($"Error reading NPC file {npcFile}: {ex.Message}");
+                    }
+                }
+                
+                return visibleNpcs;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting visible NPCs: {ex.Message}");
+                throw;
+            }
+        }
+        
+        // Helper method to copy directory and its contents
+        private void CopyDirectory(string sourceDir, string destinationDir)
+        {
+            // Create the destination directory if it doesn't exist
+            Directory.CreateDirectory(destinationDir);
+            
+            // Copy all files from source to destination
+            foreach (var file in Directory.GetFiles(sourceDir))
+            {
+                var fileName = Path.GetFileName(file);
+                var destFile = Path.Combine(destinationDir, fileName);
+                File.Copy(file, destFile);
+            }
+            
+            // Copy all subdirectories recursively
+            foreach (var directory in Directory.GetDirectories(sourceDir))
+            {
+                var dirName = Path.GetFileName(directory);
+                var destDir = Path.Combine(destinationDir, dirName);
+                CopyDirectory(directory, destDir);
+            }
+        }
+    }
+    
+    // Class to use in the StorageService methods
+    public class NpcInfo
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
     }
 }

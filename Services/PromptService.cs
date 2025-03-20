@@ -19,7 +19,8 @@ namespace AiGMBackEnd.Services
         CreateNPC,
         CreateNPCJson,
         CreateLocation,
-        CreateLocationJson
+        CreateLocationJson,
+        CreatePlayerJson
     }
 
     public class PromptService

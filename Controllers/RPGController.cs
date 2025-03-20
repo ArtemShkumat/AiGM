@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Services;
@@ -11,11 +13,13 @@ namespace AiGMBackEnd.Controllers
     {
         private readonly PresenterService _presenterService;
         private readonly LoggingService _loggingService;
+        private readonly StorageService _storageService;
 
-        public RPGController(PresenterService presenterService, LoggingService loggingService)
+        public RPGController(PresenterService presenterService, LoggingService loggingService, StorageService storageService)
         {
             _presenterService = presenterService;
             _loggingService = loggingService;
+            _storageService = storageService;
         }
 
         [HttpPost("input")]
@@ -55,50 +59,207 @@ namespace AiGMBackEnd.Controllers
         }
 
         [HttpGet("scenarios")]
-        public IActionResult GetScenarios()
+        public async Task<IActionResult> GetScenarios()
         {
-            var scenarios = new List<ScenarioInfo> {
-                //load from data/startingScenarios. You can use the name of the startingScenario folder as the scenarioId
-            };
-            return Ok(scenarios);
+            try
+            {
+                var scenarioIds = _storageService.GetScenarioIds();
+                var scenarios = new List<ScenarioInfo>();
+                
+                foreach (var scenarioId in scenarioIds)
+                {
+                    var gameSetting = await _storageService.LoadScenarioSettingAsync<GameSetting>(scenarioId, "gameSetting.json");
+                    
+                    if (gameSetting != null)
+                    {
+                        scenarios.Add(new ScenarioInfo
+                        {
+                            ScenarioId = scenarioId,
+                            Name = scenarioId.Replace("_", " "),
+                            Description = gameSetting.Description
+                        });
+                    }
+                    else
+                    {
+                        scenarios.Add(new ScenarioInfo
+                        {
+                            ScenarioId = scenarioId,
+                            Name = scenarioId.Replace("_", " "),
+                            Description = "No description available."
+                        });
+                    }
+                }
+                
+                return Ok(scenarios);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error retrieving scenarios: {ex.Message}");
+                return StatusCode(500, "Error retrieving available scenarios.");
+            }
         }
 
         [HttpPost("createGame")]
-        public IActionResult CreateNewGame([FromBody] NewGameRequest req)
+        public async Task<IActionResult> CreateNewGame([FromBody] NewGameRequest req)
         {
-            // e.g. create a game folder in Data/userData with folder name as gameId
-            // copy or reference the prebuilt scenario JSON files, etc.
-            // generate a gameId
+            try
+            {
+                if (string.IsNullOrEmpty(req.ScenarioId))
+                {
+                    return BadRequest("ScenarioId is required");
+                }
 
-            var gameId = Guid.NewGuid().ToString();
-
-            // Save scenario + preferences to some store if needed
-            // or do PresenterService.NewGame(...) logic
-
-            return Ok(new { gameId });
+                var gameId = await _storageService.CreateGameFromScenarioAsync(req.ScenarioId, req.Preferences);
+                
+                return Ok(new { gameId });
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error creating new game: {ex.Message}");
+                return StatusCode(500, $"Error creating new game: {ex.Message}");
+            }
         }
 
         [HttpGet("listGames")]
-        public IActionResult ListGames()
+        public async Task<IActionResult> ListGames()
         {
-            //Get all the games from data/userData and return the list of their ids, and names.
-            return Ok();//and a list of games
+            try
+            {
+                var gameIds = _storageService.GetGameIds();
+                var games = new List<GameInfo>();
+                
+                foreach (var gameId in gameIds)
+                {
+                    var world = await _storageService.LoadAsync<World>(gameId, "world");
+                    var gameSetting = await _storageService.LoadAsync<GameSetting>(gameId, "gameSetting");
+                    
+                    var gameName = gameId;
+                    var gameDescription = "No description available";
+                    
+                    if (world != null)
+                    {
+                        if (!string.IsNullOrEmpty(world.GameName))
+                        {
+                            gameName = world.GameName;
+                        }
+                        if (!string.IsNullOrEmpty(world.Setting))
+                        {
+                            gameDescription = world.Setting;
+                        }
+                    }
+                    else if (gameSetting != null)
+                    {
+                        if (!string.IsNullOrEmpty(gameSetting.Genre))
+                        {
+                            gameName = gameSetting.Genre;
+                        }
+                        if (!string.IsNullOrEmpty(gameSetting.Description))
+                        {
+                            gameDescription = gameSetting.Description;
+                        }
+                    }
+                    
+                    games.Add(new GameInfo
+                    {
+                        GameId = gameId,
+                        Name = gameName,
+                        Description = gameDescription
+                    });
+                }
+                
+                return Ok(games);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error listing games: {ex.Message}");
+                return StatusCode(500, "Error retrieving available games.");
+            }
         }
 
         [HttpPost("createCharacter")]
-        public IActionResult CreateCharacter(string characterDescription)
+        public async Task<IActionResult> CreateCharacter([FromBody] CreateCharacterRequest request)
         {
-            //Call presenter service, pass it characterDescription and tell it to create a job using "createPlayerJson" template. We'll add createPlayerJson template soon.
-            return Ok();
+            if (string.IsNullOrEmpty(request.GameId))
+            {
+                return BadRequest("GameId is required");
+            }
+            
+            if (string.IsNullOrEmpty(request.CharacterDescription))
+            {
+                return BadRequest("CharacterDescription is required");
+            }
+            
+            try
+            {
+                // Create a job using the CreatePlayerJson prompt type
+                var result = await _presenterService.HandleUserInputAsync(
+                    request.GameId, 
+                    request.CharacterDescription, 
+                    PromptType.CreatePlayerJson);
+                
+                return Ok(new { 
+                    Success = true,
+                    Message = "Character created successfully", 
+                    Details = result 
+                });
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error creating character: {ex.Message}");
+                return StatusCode(500, new { 
+                    Success = false, 
+                    Error = $"Error creating character: {ex.Message}" 
+                });
+            }
         }
 
         [HttpGet("scene")]
-        public IActionResult Scene(string gameId)
+        public async Task<IActionResult> Scene(string gameId)
         {
-            //Call storage service to return the list of NPC ids and Names that have visibleToPlayer: true. We may expand this later to return other scene elements.
-            return Ok();
+            if (string.IsNullOrEmpty(gameId))
+            {
+                return BadRequest("GameId is required");
+            }
+            
+            try
+            {
+                // Load player data to get current location
+                var player = await _storageService.LoadAsync<Player>(gameId, "player");
+                
+                if (player == null)
+                {
+                    return BadRequest("Player data not found. Character may not have been created yet.");
+                }
+                
+                var currentLocationId = player.CurrentLocationId;
+                
+                // Get visible NPCs in the location
+                var visibleNpcs = await _storageService.GetVisibleNpcsInLocationAsync(gameId, currentLocationId);
+                
+                // Get location data
+                var location = await _storageService.LoadAsync<Location>(gameId, $"locations/{currentLocationId}");
+                
+                var sceneElements = new SceneInfo
+                {
+                    GameId = gameId,
+                    CurrentLocationId = currentLocationId,
+                    VisibleNpcs = visibleNpcs
+                };
+                
+                if (location != null)
+                {
+                    sceneElements.LocationName = location.Name;
+                    sceneElements.LocationDescription = location.Description;
+                }
+                
+                return Ok(sceneElements);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting scene for game {gameId}: {ex.Message}");
+                return StatusCode(500, $"Error retrieving scene: {ex.Message}");
+            }
         }
-
     }
 
     public class NewGameRequest
@@ -114,7 +275,6 @@ namespace AiGMBackEnd.Controllers
         public string Description { get; set; }
     }
 
-
     public class UserInputRequest
     {
         public string GameId { get; set; }
@@ -127,5 +287,27 @@ namespace AiGMBackEnd.Controllers
         public string Response { get; set; }
         public bool Success { get; set; }
         public string Error { get; set; }
+    }
+
+    public class GameInfo
+    {
+        public string GameId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+    }
+
+    public class CreateCharacterRequest
+    {
+        public string GameId { get; set; }
+        public string CharacterDescription { get; set; }
+    }
+
+    public class SceneInfo
+    {
+        public string GameId { get; set; }
+        public string CurrentLocationId { get; set; }
+        public string LocationName { get; set; }
+        public string LocationDescription { get; set; }
+        public List<Services.NpcInfo> VisibleNpcs { get; set; } = new List<Services.NpcInfo>();
     }
 }
