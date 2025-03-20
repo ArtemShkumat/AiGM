@@ -61,6 +61,8 @@ namespace AiGMBackEnd.Services
                         return await BuildCreateLocationPromptAsync(userId, userInput);
                     case PromptType.CreateLocationJson:
                         return await BuildCreateLocationJsonPromptAsync(userId, userInput);
+                    case PromptType.CreatePlayerJson:
+                        return await BuildCreatePlayerJsonPromptAsync(userId, userInput);
                     default:
                         throw new ArgumentException($"Unsupported prompt type: {promptType}");
                 }
@@ -597,6 +599,35 @@ namespace AiGMBackEnd.Services
 
             // Add the user's input containing the location description
             promptBuilder.AppendLine("# Location Description to Convert to JSON");
+            promptBuilder.AppendLine(userInput);
+
+            return promptBuilder.ToString();
+        }
+
+        private async Task<string> BuildCreatePlayerJsonPromptAsync(string userId, string userInput)
+        {
+            // Load create player JSON template files
+            var systemPrompt = await LoadTemplateAsync("CreatePlayerJson/SystemCreatePlayerJson.txt");
+            var responseInstructions = await LoadTemplateAsync("CreatePlayerJson/ResponseInstructions.txt");
+            var exampleResponses = await LoadTemplateAsync("CreatePlayerJson/ExampleResponses.txt");
+
+            // Create the final prompt
+            var promptBuilder = new StringBuilder();
+            promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add response instructions
+            promptBuilder.AppendLine("# Response Instructions");
+            promptBuilder.AppendLine(responseInstructions);
+            promptBuilder.AppendLine();
+
+            // Add example responses
+            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine(exampleResponses);
+            promptBuilder.AppendLine();
+
+            // Add the user's input containing the player description
+            promptBuilder.AppendLine("# Player Description to Convert to JSON");
             promptBuilder.AppendLine(userInput);
 
             return promptBuilder.ToString();

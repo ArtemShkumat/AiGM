@@ -11,7 +11,9 @@ namespace AiGMBackEnd.Services
 
         public LoggingService()
         {
-            var logsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+            string rootDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
+            var logsDirectory = Path.Combine(rootDirectory, "Logs");
+            
             if (!Directory.Exists(logsDirectory))
             {
                 Directory.CreateDirectory(logsDirectory);

@@ -85,6 +85,9 @@ namespace AiGMBackEnd.Services
                     case PromptType.CreateLocationJson:
                         await ProcessLocationCreationAsync(jsonObject, userId);
                         break;
+                    case PromptType.CreatePlayerJson:
+                        await ProcessPlayerCreationAsync(jsonObject, userId);
+                        break;
                 }
             }
             catch (Exception ex)
@@ -349,6 +352,32 @@ namespace AiGMBackEnd.Services
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error processing location creation: {ex.Message}");
+                throw;
+            }
+        }
+        
+        private async Task ProcessPlayerCreationAsync(JObject playerData, string userId)
+        {
+            try
+            {
+                _loggingService.LogInfo("Processing player creation");
+                
+                // Extract player details
+                var playerId = playerData["id"]?.ToString();
+                
+                if (string.IsNullOrEmpty(playerId))
+                {
+                    _loggingService.LogError("Player ID is missing");
+                    return;
+                }
+                
+                // Save the player data
+                await _storageService.SaveAsync(userId, "player", playerData.ToString());
+                _loggingService.LogInfo($"Created/Updated player: {playerId}");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing player creation: {ex.Message}");
                 throw;
             }
         }

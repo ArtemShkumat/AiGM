@@ -120,14 +120,15 @@ namespace AiGMBackEnd.Services
 
         private string GetFilePath(string userId, string fileId)
         {
+            // Ensure everything goes to Data/userData/{userId}
             if (fileId.Contains('/'))
             {
                 // Handle paths like "npcs/npc_001.json"
-                return Path.Combine(_dataPath, userId, fileId);
+                return Path.Combine(_dataPath, "userData", userId, fileId);
             }
             
             // Handle simple file names like "world.json"
-            return Path.Combine(_dataPath, userId, $"{fileId}.json");
+            return Path.Combine(_dataPath, "userData", userId, $"{fileId}.json");
         }
         
         // Methods to support RPGController
