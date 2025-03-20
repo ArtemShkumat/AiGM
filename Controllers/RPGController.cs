@@ -69,25 +69,17 @@ namespace AiGMBackEnd.Controllers
                 foreach (var scenarioId in scenarioIds)
                 {
                     var gameSetting = await _storageService.LoadScenarioSettingAsync<GameSetting>(scenarioId, "gameSetting.json");
+                    var gamePreferences = await _storageService.LoadScenarioSettingAsync<GamePreferences>(scenarioId, "gamePreferences.json");
                     
-                    if (gameSetting != null)
+                    var scenarioInfo = new ScenarioInfo
                     {
-                        scenarios.Add(new ScenarioInfo
-                        {
-                            ScenarioId = scenarioId,
-                            Name = scenarioId.Replace("_", " "),
-                            Description = gameSetting.Description
-                        });
-                    }
-                    else
-                    {
-                        scenarios.Add(new ScenarioInfo
-                        {
-                            ScenarioId = scenarioId,
-                            Name = scenarioId.Replace("_", " "),
-                            Description = "No description available."
-                        });
-                    }
+                        ScenarioId = scenarioId,
+                        Name = scenarioId.Replace("_", " "),
+                        GameSetting = gameSetting,
+                        GamePreferences = gamePreferences
+                    };
+                    
+                    scenarios.Add(scenarioInfo);
                 }
                 
                 return Ok(scenarios);
@@ -272,7 +264,8 @@ namespace AiGMBackEnd.Controllers
     {
         public string ScenarioId { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
+        public GameSetting GameSetting { get; set; }
+        public GamePreferences GamePreferences { get; set; }
     }
 
     public class UserInputRequest
