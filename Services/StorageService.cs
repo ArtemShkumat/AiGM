@@ -18,7 +18,10 @@ namespace AiGMBackEnd.Services
         public StorageService(LoggingService loggingService)
         {
             _loggingService = loggingService;
-            _dataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+            
+            // Change from using the runtime directory to using a Data folder in the project root
+            string rootDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
+            _dataPath = Path.Combine(rootDirectory, "Data");            
         }
 
         public async Task<T> LoadAsync<T>(string userId, string fileId) where T : class
