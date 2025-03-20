@@ -124,16 +124,16 @@ namespace AiGMBackEnd.Services
 
             // Add game setting and preferences
             promptBuilder.AppendLine("# Game Setting");
-            promptBuilder.AppendLine($"Genre: {gamePreferences.Genre}");
-            promptBuilder.AppendLine($"Theme: {gamePreferences.Theme}");
-            promptBuilder.AppendLine($"Description: {gamePreferences.Description}");
+            promptBuilder.AppendLine($"Genre: {gameSetting.Genre}");
+            promptBuilder.AppendLine($"Theme: {gameSetting.Theme}");
+            promptBuilder.AppendLine($"Description: {gameSetting.Description}");
             promptBuilder.AppendLine();
 
             // Add game preferences
             promptBuilder.AppendLine("# Game Preferences");
-            promptBuilder.AppendLine($"Tone: {gameSetting.Tone}");
-            promptBuilder.AppendLine($"Complexity: {gameSetting.Complexity}");
-            promptBuilder.AppendLine($"Age Appropriateness: {gameSetting.AgeAppropriateness}");
+            promptBuilder.AppendLine($"Tone: {gamePreferences.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gamePreferences.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gamePreferences.AgeAppropriateness}");
             promptBuilder.AppendLine();
 
             // Add world context
@@ -244,16 +244,16 @@ namespace AiGMBackEnd.Services
 
             // Add game setting and preferences
             promptBuilder.AppendLine("# Game Setting");
-            promptBuilder.AppendLine($"Genre: {gamePreferences.Genre}");
-            promptBuilder.AppendLine($"Theme: {gamePreferences.Theme}");
-            promptBuilder.AppendLine($"Description: {gamePreferences.Description}");
+            promptBuilder.AppendLine($"Genre: {gameSetting.Genre}");
+            promptBuilder.AppendLine($"Theme: {gameSetting.Theme}");
+            promptBuilder.AppendLine($"Description: {gameSetting.Description}");
             promptBuilder.AppendLine();
 
             // Add game preferences
             promptBuilder.AppendLine("# Game Preferences");
-            promptBuilder.AppendLine($"Tone: {gameSetting.Tone}");
-            promptBuilder.AppendLine($"Complexity: {gameSetting.Complexity}");
-            promptBuilder.AppendLine($"Age Appropriateness: {gameSetting.AgeAppropriateness}");
+            promptBuilder.AppendLine($"Tone: {gamePreferences.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gamePreferences.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gamePreferences.AgeAppropriateness}");
             promptBuilder.AppendLine();
 
             // Add NPC context
@@ -345,16 +345,16 @@ namespace AiGMBackEnd.Services
 
             // Add game setting and preferences
             promptBuilder.AppendLine("# Game Setting");
-            promptBuilder.AppendLine($"Genre: {gamePreferences.Genre}");
-            promptBuilder.AppendLine($"Theme: {gamePreferences.Theme}");
-            promptBuilder.AppendLine($"Description: {gamePreferences.Description}");
+            promptBuilder.AppendLine($"Genre: {gameSetting.Genre}");
+            promptBuilder.AppendLine($"Theme: {gameSetting.Theme}");
+            promptBuilder.AppendLine($"Description: {gameSetting.Description}");
             promptBuilder.AppendLine();
 
             // Add game preferences
             promptBuilder.AppendLine("# Game Preferences");
-            promptBuilder.AppendLine($"Tone: {gameSetting.Tone}");
-            promptBuilder.AppendLine($"Complexity: {gameSetting.Complexity}");
-            promptBuilder.AppendLine($"Age Appropriateness: {gameSetting.AgeAppropriateness}");
+            promptBuilder.AppendLine($"Tone: {gamePreferences.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gamePreferences.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gamePreferences.AgeAppropriateness}");
             promptBuilder.AppendLine();
 
             // Add world context
@@ -442,16 +442,16 @@ namespace AiGMBackEnd.Services
 
             // Add game setting and preferences
             promptBuilder.AppendLine("# Game Setting");
-            promptBuilder.AppendLine($"Genre: {gamePreferences.Genre}");
-            promptBuilder.AppendLine($"Theme: {gamePreferences.Theme}");
-            promptBuilder.AppendLine($"Description: {gamePreferences.Description}");
+            promptBuilder.AppendLine($"Genre: {gameSetting.Genre}");
+            promptBuilder.AppendLine($"Theme: {gameSetting.Theme}");
+            promptBuilder.AppendLine($"Description: {gameSetting.Description}");
             promptBuilder.AppendLine();
 
             // Add game preferences
             promptBuilder.AppendLine("# Game Preferences");
-            promptBuilder.AppendLine($"Tone: {gameSetting.Tone}");
-            promptBuilder.AppendLine($"Complexity: {gameSetting.Complexity}");
-            promptBuilder.AppendLine($"Age Appropriateness: {gameSetting.AgeAppropriateness}");
+            promptBuilder.AppendLine($"Tone: {gamePreferences.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gamePreferences.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gamePreferences.AgeAppropriateness}");
             promptBuilder.AppendLine();
 
             // Add world context
@@ -531,16 +531,16 @@ namespace AiGMBackEnd.Services
 
             // Add game setting and preferences
             promptBuilder.AppendLine("# Game Setting");
-            promptBuilder.AppendLine($"Genre: {gamePreferences.Genre}");
-            promptBuilder.AppendLine($"Theme: {gamePreferences.Theme}");
-            promptBuilder.AppendLine($"Description: {gamePreferences.Description}");
+            promptBuilder.AppendLine($"Genre: {gameSetting.Genre}");
+            promptBuilder.AppendLine($"Theme: {gameSetting.Theme}");
+            promptBuilder.AppendLine($"Description: {gameSetting.Description}");
             promptBuilder.AppendLine();
 
             // Add game preferences
             promptBuilder.AppendLine("# Game Preferences");
-            promptBuilder.AppendLine($"Tone: {gameSetting.Tone}");
-            promptBuilder.AppendLine($"Complexity: {gameSetting.Complexity}");
-            promptBuilder.AppendLine($"Age Appropriateness: {gameSetting.AgeAppropriateness}");
+            promptBuilder.AppendLine($"Tone: {gamePreferences.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gamePreferences.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gamePreferences.AgeAppropriateness}");
             promptBuilder.AppendLine();
 
             // Add world context
