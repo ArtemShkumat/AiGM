@@ -4,13 +4,14 @@ namespace AiGMBackEnd.Models
 {
     public class GameSetting
     {
-        [JsonPropertyName("tone")]
-        public string Tone { get; set; } = "neutral";
 
-        [JsonPropertyName("complexity")]
-        public string Complexity { get; set; } = "medium";
+        [JsonPropertyName("genre")]
+        public string Genre { get; set; } = "fantasy";
 
-        [JsonPropertyName("ageAppropriateness")]
-        public string AgeAppropriateness { get; set; } = "teen";
+        [JsonPropertyName("theme")]
+        public string Theme { get; set; } = "adventure";
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = "A standard fantasy adventure in a magical world.";
     }
 } 
