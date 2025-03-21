@@ -16,7 +16,10 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("visualDescription")]
         public VisualDescription VisualDescription { get; set; } = new VisualDescription();
-        
+
+        [JsonPropertyName("age")]
+        public int Age { get; set; }
+
         [JsonPropertyName("backstory")]
         public string Backstory { get; set; }
         

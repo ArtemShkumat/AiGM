@@ -1,6 +1,7 @@
 {
   "id": "npc_commanderVoss",
   "name": "Commander Elara Voss",
+  "age": 47,
   "currentLocationId": "loc_axiomStation_commandCenter",
   "discoveredByPlayer": true,
   "visibleToPlayer": true,

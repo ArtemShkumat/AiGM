@@ -1,6 +1,7 @@
 {
   "id": "npc_hotelManager",
   "name": "Roland Wells",
+  "age": 63,
   "currentLocationId": "loc_harbourPointHotel",
   "discoveredByPlayer": true,
   "visibleToPlayer": true,

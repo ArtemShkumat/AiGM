@@ -28,7 +28,10 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("backstory")]
         public string Backstory { get; set; }
-        
+
+        [JsonPropertyName("age")]
+        public int Age { get; set; }
+
         [JsonPropertyName("dispositionTowardsPlayer")]
         public string DispositionTowardsPlayer { get; set; }
         

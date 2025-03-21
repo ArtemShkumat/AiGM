@@ -1,6 +1,7 @@
 {
   "id": "npc_captainRivera",
   "name": "Captain Sophia Rivera",
+  "age": 42,
   "currentLocationId": "loc_safetyZone_commandCenter",
   "discoveredByPlayer": true,
   "visibleToPlayer": true,
