@@ -1,5 +1,6 @@
 {
   "genre": "hard science fiction",
   "theme": "Space exploration with political intrigue and alien threats",
-  "description": "A high-stakes adventure in humanity's far future, where scientific discovery, interspecies politics, and personal survival are interwoven challenges."
+  "description": "A high-stakes adventure in humanity's far future, where scientific discovery, interspecies politics, and personal survival are interwoven challenges.",
+  "startingLocation": "loc_axiomStation"
 } 
