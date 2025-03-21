@@ -74,9 +74,12 @@ namespace AiGMBackEnd.Models
 
     public class InventoryItem
     {
-        [JsonPropertyName("itemId")]
-        public string ItemId { get; set; }
-        
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
+
         [JsonPropertyName("quantity")]
         public int Quantity { get; set; }
     }

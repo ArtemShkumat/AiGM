@@ -577,6 +577,10 @@ namespace AiGMBackEnd.Services
             var responseInstructions = await LoadTemplateAsync("CreateLocationJson/ResponseInstructions.txt");
             var exampleResponses = await LoadTemplateAsync("CreateLocationJson/ExampleResponses.txt");
 
+            var world = await _storageService.LoadAsync<World>(userId, "world");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
+
             // Create the final prompt
             var promptBuilder = new StringBuilder();
             promptBuilder.AppendLine(systemPrompt);

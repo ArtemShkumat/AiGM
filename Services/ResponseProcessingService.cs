@@ -662,7 +662,8 @@ namespace AiGMBackEnd.Services
                         {
                             npc.Inventory.Add(new Models.InventoryItem
                             {
-                                ItemId = itemObj["itemId"]?.ToString(),
+                                Name = itemObj["name"]?.ToString(),
+                                Description = itemObj["description"]?.ToString(),
                                 Quantity = itemObj["quantity"]?.Value<int>() ?? 1
                             });
                         }
@@ -768,7 +769,8 @@ namespace AiGMBackEnd.Services
                         {
                             player.Inventory.Add(new Models.InventoryItem
                             {
-                                ItemId = itemObj["itemId"]?.ToString(),
+                                Name = itemObj["name"]?.ToString(),
+                                Description = itemObj["description"]?.ToString(),
                                 Quantity = itemObj["quantity"]?.Value<int>() ?? 1
                             });
                         }
