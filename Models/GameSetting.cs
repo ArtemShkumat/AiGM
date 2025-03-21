@@ -13,5 +13,8 @@ namespace AiGMBackEnd.Models
 
         [JsonPropertyName("description")]
         public string Description { get; set; } = "A standard fantasy adventure in a magical world.";
+
+        [JsonPropertyName("startingLocation")]
+        public string StartingLocation { get; set; };
     }
 } 

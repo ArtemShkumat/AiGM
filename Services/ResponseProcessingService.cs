@@ -63,7 +63,17 @@ namespace AiGMBackEnd.Services
             try
             {
                 // Parse JSON
-                var jsonObject = JObject.Parse(hiddenJson);
+                JObject jsonObject;
+                try
+                {
+                    jsonObject = JObject.Parse(hiddenJson);
+                }
+                catch (JsonException)
+                {
+                    // Try to fix common JSON issues like extra newlines
+                    hiddenJson = hiddenJson.Trim();
+                    jsonObject = JObject.Parse(hiddenJson);
+                }
 
                 switch (promptType)
                 {
@@ -265,6 +275,167 @@ namespace AiGMBackEnd.Services
             }
         }
 
+        private async Task ProcessLocationCreationAsync(JObject locationData, string userId)
+        {
+            try
+            {
+                _loggingService.LogInfo("Processing location creation");
+                
+                // Extract location details
+                var locationId = locationData["id"]?.ToString();
+                
+                if (string.IsNullOrEmpty(locationId))
+                {
+                    _loggingService.LogError("Location ID is missing");
+                    return;
+                }
+                
+                // Create a new Location object based on our model class
+                var location = new Models.Location
+                {
+                    Id = locationId,
+                    Name = locationData["name"]?.ToString() ?? "Unknown Location",
+                    Type = locationData["type"]?.ToString(),
+                    Description = locationData["description"]?.ToString(),
+                    DiscoveredByPlayer = locationData["discoveredByPlayer"]?.Value<bool>() ?? false,
+                    Notes = locationData["notes"]?.ToString()
+                };
+                
+                // Handle Connected Locations
+                if (locationData["connectedLocations"] is JArray connectedLocations)
+                {
+                    foreach (var conn in connectedLocations)
+                    {
+                        if (conn is JObject connObj)
+                        {
+                            location.ConnectedLocations.Add(new Models.ConnectedLocation
+                            {
+                                Id = connObj["id"]?.ToString(),
+                                Description = connObj["description"]?.ToString()
+                            });
+                        }
+                    }
+                }
+                
+                // Handle Parent Location
+                if (locationData["parentLocation"] is JObject parentLoc)
+                {
+                    location.ParentLocation = new Models.ParentLocation
+                    {
+                        Id = parentLoc["id"]?.ToString(),
+                        Description = parentLoc["description"]?.ToString()
+                    };
+                }
+                
+                // Handle Sub Locations
+                if (locationData["subLocations"] is JArray subLocations)
+                {
+                    foreach (var sub in subLocations)
+                    {
+                        if (sub is JObject subObj)
+                        {
+                            location.SubLocations.Add(new Models.SubLocation
+                            {
+                                Id = subObj["id"]?.ToString(),
+                                Description = subObj["description"]?.ToString()
+                            });
+                        }
+                    }
+                }
+                
+                // Handle NPCs
+                if (locationData["npcs"] is JArray npcs)
+                {
+                    foreach (var npc in npcs)
+                    {
+                        var npcStr = npc.ToString();
+                        if (!string.IsNullOrEmpty(npcStr))
+                        {
+                            location.Npcs.Add(npcStr);
+                        }
+                    }
+                }
+                
+                // Handle Points of Interest
+                if (locationData["pointsOfInterest"] is JArray pois)
+                {
+                    foreach (var poi in pois)
+                    {
+                        if (poi is JObject poiObj)
+                        {
+                            location.PointsOfInterest.Add(new Models.PointOfInterest
+                            {
+                                Name = poiObj["name"]?.ToString(),
+                                Description = poiObj["description"]?.ToString()
+                            });
+                        }
+                    }
+                }
+                
+                // Handle Quest IDs
+                if (locationData["questIds"] is JArray questIds)
+                {
+                    foreach (var quest in questIds)
+                    {
+                        var questStr = quest.ToString();
+                        if (!string.IsNullOrEmpty(questStr))
+                        {
+                            location.QuestIds.Add(questStr);
+                        }
+                    }
+                }
+                
+                // Handle Items
+                if (locationData["items"] is JArray items)
+                {
+                    foreach (var item in items)
+                    {
+                        var itemStr = item.ToString();
+                        if (!string.IsNullOrEmpty(itemStr))
+                        {
+                            location.Items.Add(itemStr);
+                        }
+                    }
+                }
+                
+                // Handle History Log
+                if (locationData["historyLog"] is JArray historyLog)
+                {
+                    foreach (var log in historyLog)
+                    {
+                        if (log is JObject logObj)
+                        {
+                            location.HistoryLog.Add(new Models.HistoryLogEntry
+                            {
+                                Timestamp = logObj["timestamp"]?.ToString(),
+                                Event = logObj["event"]?.ToString(),
+                                NpcId = logObj["npcId"]?.ToString(),
+                                Description = logObj["description"]?.ToString()
+                            });
+                        }
+                    }
+                }
+                
+                // Save the location data
+                await _storageService.SaveAsync(userId, $"locations/{locationId}", location);
+                
+                // Check if there are associated NPCs to create
+                if (locationData["npcs"] != null)
+                {
+                    var npcsArray = locationData["npcs"] as JArray;
+                    if (npcsArray != null && npcsArray.Count > 0)
+                    {
+                        // TODO: Trigger jobs to create missing NPCs if needed
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing location creation: {ex.Message}");
+                throw;
+            }
+        }
+
         private async Task ProcessQuestCreationAsync(JObject questData, string userId)
         {
             try
@@ -280,8 +451,87 @@ namespace AiGMBackEnd.Services
                     return;
                 }
                 
-                // Save the quest data - pass the JObject directly
-                await _storageService.SaveAsync(userId, $"quests/{questId}", questData);
+                // Create a new Quest object based on our model class
+                var quest = new Models.Quest
+                {
+                    Id = questId,
+                    Title = questData["title"]?.ToString() ?? "Unknown Quest",
+                    CurrentProgress = questData["currentProgress"]?.ToString(),
+                    QuestDescription = questData["questDescription"]?.ToString(),
+                    Notes = questData["notes"]?.ToString()
+                };
+                
+                // Handle Achievement Conditions
+                if (questData["achievementConditions"] is JArray achievementConditions)
+                {
+                    foreach (var condition in achievementConditions)
+                    {
+                        var conditionStr = condition.ToString();
+                        if (!string.IsNullOrEmpty(conditionStr))
+                        {
+                            quest.AchievementConditions.Add(conditionStr);
+                        }
+                    }
+                }
+                
+                // Handle Fail Conditions
+                if (questData["failConditions"] is JArray failConditions)
+                {
+                    foreach (var condition in failConditions)
+                    {
+                        var conditionStr = condition.ToString();
+                        if (!string.IsNullOrEmpty(conditionStr))
+                        {
+                            quest.FailConditions.Add(conditionStr);
+                        }
+                    }
+                }
+                
+                // Handle Involved Locations
+                if (questData["involvedLocations"] is JArray involvedLocations)
+                {
+                    foreach (var location in involvedLocations)
+                    {
+                        var locationStr = location.ToString();
+                        if (!string.IsNullOrEmpty(locationStr))
+                        {
+                            quest.InvolvedLocations.Add(locationStr);
+                        }
+                    }
+                }
+                
+                // Handle Involved NPCs
+                if (questData["involvedNpcs"] is JArray involvedNpcs)
+                {
+                    foreach (var npc in involvedNpcs)
+                    {
+                        var npcStr = npc.ToString();
+                        if (!string.IsNullOrEmpty(npcStr))
+                        {
+                            quest.InvolvedNpcs.Add(npcStr);
+                        }
+                    }
+                }
+                
+                // Handle Quest Log
+                if (questData["questLog"] is JArray questLog)
+                {
+                    foreach (var log in questLog)
+                    {
+                        if (log is JObject logObj)
+                        {
+                            quest.QuestLog.Add(new Models.QuestLogEntry
+                            {
+                                Timestamp = logObj["timestamp"]?.ToString(),
+                                Event = logObj["event"]?.ToString(),
+                                Description = logObj["description"]?.ToString()
+                            });
+                        }
+                    }
+                }
+                
+                // Save the quest data
+                await _storageService.SaveAsync(userId, $"quests/{questId}", quest);
                 
                 // Check if there are associated entities to create
                 if (questData["involvedLocations"] != null || questData["involvedNpcs"] != null)
@@ -311,8 +561,144 @@ namespace AiGMBackEnd.Services
                     return;
                 }
                 
-                // Save the NPC data - pass the JObject directly
-                await _storageService.SaveAsync(userId, $"npcs/{npcId}", npcData);
+                // Create a new NPC object based on our model class
+                var npc = new Models.Npc
+                {
+                    Id = npcId,
+                    Name = npcData["name"]?.ToString() ?? "Unknown NPC",
+                    CurrentLocationId = npcData["currentLocationId"]?.ToString(),
+                    DiscoveredByPlayer = npcData["discoveredByPlayer"]?.Value<bool>() ?? false,
+                    VisibleToPlayer = npcData["visibleToPlayer"]?.Value<bool>() ?? true,
+                    Backstory = npcData["backstory"]?.ToString(),
+                    DispositionTowardsPlayer = npcData["dispositionTowardsPlayer"]?.ToString(),
+                    Notes = npcData["notes"]?.ToString()
+                };
+                
+                // Handle Visual Description
+                if (npcData["visualDescription"] is JObject visualDesc)
+                {
+                    npc.VisualDescription = new Models.VisualDescription
+                    {
+                        Gender = visualDesc["gender"]?.ToString(),
+                        BodyType = visualDesc["bodyType"]?.ToString(),
+                        VisibleClothing = visualDesc["visibleClothing"]?.ToString(),
+                        Condition = visualDesc["condition"]?.ToString()
+                    };
+                }
+                
+                // Handle Personality
+                if (npcData["personality"] is JObject personality)
+                {
+                    npc.Personality = new Models.Personality
+                    {
+                        Temperament = personality["temperament"]?.ToString(),
+                        Traits = personality["traits"]?.ToString()
+                    };
+                }
+                
+                // Handle Known Entities
+                if (npcData["knownEntities"] is JObject knownEntities)
+                {
+                    if (knownEntities["npcsKnown"] is JArray npcsKnown)
+                    {
+                        foreach (var knownNpc in npcsKnown)
+                        {
+                            var knownNpcStr = knownNpc.ToString();
+                            if (!string.IsNullOrEmpty(knownNpcStr))
+                            {
+                                npc.KnownEntities.NpcsKnown.Add(knownNpcStr);
+                            }
+                        }
+                    }
+                    
+                    if (knownEntities["locationsKnown"] is JArray locationsKnown)
+                    {
+                        foreach (var knownLoc in locationsKnown)
+                        {
+                            var knownLocStr = knownLoc.ToString();
+                            if (!string.IsNullOrEmpty(knownLocStr))
+                            {
+                                npc.KnownEntities.LocationsKnown.Add(knownLocStr);
+                            }
+                        }
+                    }
+                }
+                
+                // Handle Relationships
+                if (npcData["relationships"] is JArray relationships)
+                {
+                    foreach (var rel in relationships)
+                    {
+                        if (rel is JObject relObj)
+                        {
+                            npc.Relationships.Add(new Models.Relationship
+                            {
+                                NpcId = relObj["npcId"]?.ToString(),
+                                RelationshipType = relObj["relationship"]?.ToString()
+                            });
+                        }
+                    }
+                }
+                
+                // Handle Quest Involvement
+                if (npcData["questInvolvement"] is JArray questInvolvement)
+                {
+                    foreach (var quest in questInvolvement)
+                    {
+                        var questStr = quest.ToString();
+                        if (!string.IsNullOrEmpty(questStr))
+                        {
+                            npc.QuestInvolvement.Add(questStr);
+                        }
+                    }
+                }
+                
+                // Handle Inventory
+                if (npcData["inventory"] is JArray inventory)
+                {
+                    foreach (var item in inventory)
+                    {
+                        if (item is JObject itemObj)
+                        {
+                            npc.Inventory.Add(new Models.InventoryItem
+                            {
+                                ItemId = itemObj["itemId"]?.ToString(),
+                                Quantity = itemObj["quantity"]?.Value<int>() ?? 1
+                            });
+                        }
+                    }
+                }
+                
+                // Handle Status Flags
+                if (npcData["statusFlags"] is JObject statusFlags)
+                {
+                    npc.StatusFlags = new Models.StatusFlags
+                    {
+                        IsAlive = statusFlags["isAlive"]?.Value<bool>() ?? true,
+                        IsBusy = statusFlags["isBusy"]?.Value<bool>() ?? false,
+                        CustomState = statusFlags["customState"]?.ToString()
+                    };
+                }
+                
+                // Handle Conversation Log
+                if (npcData["conversationLog"] is JArray conversationLog)
+                {
+                    foreach (var log in conversationLog)
+                    {
+                        if (log is JObject logObj)
+                        {
+                            var entry = new Dictionary<string, string>();
+                            foreach (var prop in logObj.Properties())
+                            {
+                                entry[prop.Name] = prop.Value.ToString();
+                            }
+                            npc.ConversationLog.Add(entry);
+                        }
+                    }
+                }
+                
+                // Save the NPC data
+                await _storageService.SaveAsync(userId, $"npcs/{npcId}", npc);
             }
             catch (Exception ex)
             {
@@ -321,41 +707,6 @@ namespace AiGMBackEnd.Services
             }
         }
 
-        private async Task ProcessLocationCreationAsync(JObject locationData, string userId)
-        {
-            try
-            {
-                _loggingService.LogInfo("Processing location creation");
-                
-                // Extract location details
-                var locationId = locationData["id"]?.ToString();
-                
-                if (string.IsNullOrEmpty(locationId))
-                {
-                    _loggingService.LogError("Location ID is missing");
-                    return;
-                }
-                
-                // Save the location data - pass the JObject directly
-                await _storageService.SaveAsync(userId, $"locations/{locationId}", locationData);
-                
-                // Check if there are associated NPCs to create
-                if (locationData["npcs"] != null)
-                {
-                    var npcs = locationData["npcs"] as JArray;
-                    if (npcs != null && npcs.Count > 0)
-                    {
-                        // TODO: Trigger jobs to create missing NPCs if needed
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _loggingService.LogError($"Error processing location creation: {ex.Message}");
-                throw;
-            }
-        }
-        
         private async Task ProcessPlayerCreationAsync(JObject playerData, string userId)
         {
             try
@@ -371,8 +722,165 @@ namespace AiGMBackEnd.Services
                     return;
                 }
                 
-                // Save the player data - pass the JObject directly instead of converting to string
-                await _storageService.SaveAsync(userId, "player", playerData);
+                // Create a new Player object
+                var player = new Models.Player
+                {
+                    Id = playerId,
+                    Name = playerData["name"]?.ToString() ?? "Unknown",
+                    CurrentLocationId = playerData["currentLocationId"]?.ToString(),
+                    Backstory = playerData["backstory"]?.ToString()
+                };
+                
+                // Handle VisualDescription
+                if (playerData["visualDescription"] is JObject visualDesc)
+                {
+                    player.VisualDescription = new Models.VisualDescription
+                    {
+                        Gender = visualDesc["gender"]?.ToString(),
+                        BodyType = visualDesc["bodyType"]?.ToString(),
+                        VisibleClothing = visualDesc["visibleClothing"]?.ToString(),
+                        Condition = visualDesc["condition"]?.ToString()
+                    };
+                }
+                
+                // Handle relationships
+                if (playerData["relationships"] is JArray relationships)
+                {
+                    foreach (var rel in relationships)
+                    {
+                        if (rel is JObject relObj)
+                        {
+                            player.Relationships.Add(new Models.Relationship
+                            {
+                                NpcId = relObj["npcId"]?.ToString(),
+                                RelationshipType = relObj["relationship"]?.ToString()
+                            });
+                        }
+                    }
+                }
+                
+                // Handle inventory
+                if (playerData["inventory"] is JArray inventory)
+                {
+                    foreach (var item in inventory)
+                    {
+                        if (item is JObject itemObj)
+                        {
+                            player.Inventory.Add(new Models.InventoryItem
+                            {
+                                ItemId = itemObj["itemId"]?.ToString(),
+                                Quantity = itemObj["quantity"]?.Value<int>() ?? 1
+                            });
+                        }
+                    }
+                }
+                
+                // Handle money
+                if (playerData["money"] != null)
+                {
+                    player.Money = playerData["money"].Value<int>();
+                }
+                
+                // Handle status effects
+                if (playerData["statusEffects"] is JArray statusEffects)
+                {
+                    foreach (var effect in statusEffects)
+                    {
+                        var effectStr = effect.ToString();
+                        if (!string.IsNullOrEmpty(effectStr))
+                        {
+                            player.StatusEffects.Add(effectStr);
+                        }
+                    }
+                }
+                
+                // Handle RPG elements - this is a special case as it's a dictionary
+                if (playerData["rpgElements"] is JObject rpgElements)
+                {
+                    foreach (var prop in rpgElements.Properties())
+                    {
+                        // Handle different value types
+                        if (prop.Value is JObject)
+                        {
+                            // Convert JObject to Dictionary
+                            var dict = prop.Value.ToObject<Dictionary<string, object>>();
+                            player.RpgElements[prop.Name] = dict;
+                        }
+                        else if (prop.Value is JArray)
+                        {
+                            // Convert JArray to List
+                            var list = prop.Value.ToObject<List<object>>();
+                            player.RpgElements[prop.Name] = list;
+                        }
+                        else
+                        {
+                            // Simple properties
+                            player.RpgElements[prop.Name] = prop.Value.ToObject<object>();
+                        }
+                    }
+                }
+                
+                // Handle active quests
+                if (playerData["activeQuests"] is JArray activeQuests)
+                {
+                    foreach (var quest in activeQuests)
+                    {
+                        var questStr = quest.ToString();
+                        if (!string.IsNullOrEmpty(questStr))
+                        {
+                            player.ActiveQuests.Add(questStr);
+                        }
+                    }
+                }
+                
+                // Handle completed quests
+                if (playerData["completedQuests"] is JArray completedQuests)
+                {
+                    if (player.RpgElements.ContainsKey("completedQuests"))
+                    {
+                        // Update existing
+                        var existing = player.RpgElements["completedQuests"] as List<object>;
+                        if (existing != null)
+                        {
+                            foreach (var quest in completedQuests)
+                            {
+                                var questStr = quest.ToString();
+                                if (!string.IsNullOrEmpty(questStr) && !existing.Contains(questStr))
+                                {
+                                    existing.Add(questStr);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Create new
+                        player.RpgElements["completedQuests"] = completedQuests.ToObject<List<object>>();
+                    }
+                }
+                
+                // Handle player log
+                if (playerData["playerLog"] is JArray playerLog)
+                {
+                    foreach (var log in playerLog)
+                    {
+                        if (log is JObject logObj)
+                        {
+                            player.PlayerLog.Add(new Models.LogEntry
+                            {
+                                Timestamp = logObj["timestamp"]?.ToString(),
+                                Event = logObj["event"]?.ToString(),
+                                Description = logObj["description"]?.ToString()
+                            });
+                        }
+                    }
+                }
+                
+                // Handle notes
+                player.Notes = playerData["notes"]?.ToString() ?? "";
+                
+                // Save the player data
+                await _storageService.SaveAsync(userId, "player", player);
                 _loggingService.LogInfo($"Created/Updated player: {playerId}");
             }
             catch (Exception ex)
@@ -384,9 +892,38 @@ namespace AiGMBackEnd.Services
         
         private async Task CreateNewEntityAsync(JToken entity, string userId, string entityType, string entityId)
         {
-            // Save the new entity to storage - pass the JToken directly
-            await _storageService.SaveAsync(userId, $"{entityType}/{entityId}", entity);
-            _loggingService.LogInfo($"Created new {entityType} entity: {entityId}");
+            try
+            {
+                switch (entityType)
+                {
+                    case "npcs":
+                        if (entity is JObject npcObj)
+                        {
+                            await ProcessNPCCreationAsync(npcObj, userId);
+                        }
+                        break;
+                    case "locations":
+                        if (entity is JObject locationObj)
+                        {
+                            await ProcessLocationCreationAsync(locationObj, userId);
+                        }
+                        break;
+                    case "quests":
+                        if (entity is JObject questObj)
+                        {
+                            await ProcessQuestCreationAsync(questObj, userId);
+                        }
+                        break;
+                    default:
+                        _loggingService.LogWarning($"Unknown entity type: {entityType}");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error creating entity {entityType}/{entityId}: {ex.Message}");
+                throw;
+            }
         }
         
         private async Task UpdateEntityAsync(string userId, string entityType, string entityId, string updateData)

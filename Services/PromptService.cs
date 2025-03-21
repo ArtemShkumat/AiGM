@@ -157,14 +157,6 @@ namespace AiGMBackEnd.Services
             // Add player context
             promptBuilder.AppendLine("# Player Context");
             promptBuilder.AppendLine($"Player Name: {player.Name}");
-            if (player.RpgElements.ContainsKey("class"))
-            {
-                promptBuilder.AppendLine($"Class: {player.RpgElements["class"]}");
-            }
-            if (player.RpgElements.ContainsKey("level"))
-            {
-                promptBuilder.AppendLine($"Level: {player.RpgElements["level"]}");
-            }
             promptBuilder.AppendLine($"Background: {player.Backstory}");
             promptBuilder.AppendLine();
 
