@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace AiGMBackEnd.Services
 {
@@ -577,6 +578,7 @@ namespace AiGMBackEnd.Services
             var responseInstructions = await LoadTemplateAsync("CreateLocationJson/ResponseInstructions.txt");
             var exampleResponses = await LoadTemplateAsync("CreateLocationJson/ExampleResponses.txt");
 
+            // Load world data for context - Fix paths
             var world = await _storageService.LoadAsync<World>(userId, "world");
             var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
             var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
@@ -607,25 +609,44 @@ namespace AiGMBackEnd.Services
         {
             // Load create player JSON template files
             var systemPrompt = await LoadTemplateAsync("CreatePlayerJson/SystemCreatePlayerJson.txt");
-            var responseInstructions = await LoadTemplateAsync("CreatePlayerJson/ResponseInstructions.txt");
             var exampleResponses = await LoadTemplateAsync("CreatePlayerJson/ExampleResponses.txt");
+
+            // Load world data for context - Fix paths
+            var world = await _storageService.LoadAsync<World>(userId, "world");
+            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
+            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
             promptBuilder.AppendLine(systemPrompt);
             promptBuilder.AppendLine();
 
-            // Add response instructions
-            promptBuilder.AppendLine("# Response Instructions");
-            promptBuilder.AppendLine(responseInstructions);
-            promptBuilder.AppendLine();
-
             // Add example responses
-            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine("# Example Prompts and Responses");
             promptBuilder.AppendLine(exampleResponses);
             promptBuilder.AppendLine();
 
-            promptBuilder.AppendLine("# Use this for currentLocation: loc_harbourPointHotel");
+            // Add game setting and preferences
+            promptBuilder.AppendLine("# Game Setting");
+            promptBuilder.AppendLine($"Genre: {gameSetting.Genre}");
+            promptBuilder.AppendLine($"Theme: {gameSetting.Theme}");
+            promptBuilder.AppendLine($"Description: {gameSetting.Description}");
+            promptBuilder.AppendLine($"Starting location: {gameSetting.StartingLocation}");
+            promptBuilder.AppendLine();
+
+            // Add game preferences
+            promptBuilder.AppendLine("# Game Preferences");
+            promptBuilder.AppendLine($"Tone: {gamePreferences.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gamePreferences.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gamePreferences.AgeAppropriateness}");
+            promptBuilder.AppendLine();
+
+            // Add world context
+            promptBuilder.AppendLine("# World Context");
+            promptBuilder.AppendLine($"World Name: {world.GameName}");
+            promptBuilder.AppendLine($"Setting: {world.Setting}");
+            promptBuilder.AppendLine($"Player ID: {userId}");
+            promptBuilder.AppendLine();
 
             // Add the user's input containing the player description
             promptBuilder.AppendLine("# Player Description to Convert to JSON");
