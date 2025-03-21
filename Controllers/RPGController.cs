@@ -122,8 +122,8 @@ namespace AiGMBackEnd.Controllers
                 
                 foreach (var gameId in gameIds)
                 {
-                    var world = await _storageService.LoadAsync<World>(gameId, "world");
-                    var gameSetting = await _storageService.LoadAsync<GameSetting>(gameId, "gameSetting");
+                    var world = await _storageService.GetWorldAsync(gameId);
+                    var gameSetting = await _storageService.GetGameSettingAsync(gameId);
                     
                     var gameName = gameId;
                     var gameDescription = "No description available";
@@ -216,7 +216,7 @@ namespace AiGMBackEnd.Controllers
             try
             {
                 // Load player data to get current location
-                var player = await _storageService.LoadAsync<Player>(gameId, "player");
+                var player = await _storageService.GetPlayerAsync(gameId);
                 
                 if (player == null)
                 {
@@ -229,7 +229,7 @@ namespace AiGMBackEnd.Controllers
                 var visibleNpcs = await _storageService.GetVisibleNpcsInLocationAsync(gameId, currentLocationId);
                 
                 // Get location data
-                var location = await _storageService.LoadAsync<Location>(gameId, $"locations/{currentLocationId}");
+                var location = await _storageService.GetLocationAsync(gameId, currentLocationId);
                 
                 var sceneElements = new SceneInfo
                 {

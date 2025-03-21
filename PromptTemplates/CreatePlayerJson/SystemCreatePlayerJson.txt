@@ -50,7 +50,7 @@ THE CORE PLAYER MODEL STRUCTURE:
 {
   "id": "string (GUID)",
   "name": "string",
-  "age": number,
+  "age": number, //just assume the player's age here.
   "currentLocationId": "string",
   
   "visualDescription": {

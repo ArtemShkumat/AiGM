@@ -1,13 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using AiGMBackEnd.Models;
-using AiGMBackEnd.Models.Prompts;
-using Newtonsoft.Json;
-using System.Linq;
+using System.Text;
 
 namespace AiGMBackEnd.Services
 {
@@ -28,7 +20,6 @@ namespace AiGMBackEnd.Services
     {
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;
-        private readonly string _promptTemplatesPath;
 
         public PromptService(
             StorageService storageService,
@@ -36,10 +27,6 @@ namespace AiGMBackEnd.Services
         {
             _storageService = storageService;
             _loggingService = loggingService;
-            
-            // Change from using the runtime directory to using a PromptTemplates folder in the project root
-            string rootDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
-            _promptTemplatesPath = Path.Combine(rootDirectory, "PromptTemplates");
         }
 
         public async Task<string> BuildPromptAsync(PromptType promptType, string userId, string userInput)
@@ -81,18 +68,18 @@ namespace AiGMBackEnd.Services
         private async Task<string> BuildDMPromptAsync(string userId, string userInput)
         {
             // Load DM template files
-            var systemPrompt = await LoadTemplateAsync("DmPrompt/SystemDM.txt");
-            var responseInstructions = await LoadTemplateAsync("DmPrompt/ResponseInstructions.txt");
-            var exampleResponses = await LoadTemplateAsync("DmPrompt/ExampleResponses.txt");
+            var systemPrompt = await _storageService.GetDmTemplateAsync("SystemDM");
+            var responseInstructions = await _storageService.GetDmTemplateAsync("ResponseInstructions");
+            var exampleResponses = await _storageService.GetDmTemplateAsync("ExampleResponses");
 
-            // Load player and world data - Fix paths
-            var player = await _storageService.LoadAsync<Player>(userId, "player");
-            var world = await _storageService.LoadAsync<World>(userId, "world");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
+            // Load player and world data
+            var player = await _storageService.GetPlayerAsync(userId);
+            var world = await _storageService.GetWorldAsync(userId);
+            var gameSetting = await _storageService.GetGameSettingAsync(userId);
+            var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
 
-            // Load current location - Fix path
-            var location = await _storageService.LoadAsync<Location>(userId, $"locations\\{player.CurrentLocationId}");
+            // Load current location
+            var location = await _storageService.GetLocationAsync(userId, player.CurrentLocationId);
 
             // Get NPCs in current location
             var npcSummaries = new List<string>();
@@ -100,7 +87,7 @@ namespace AiGMBackEnd.Services
             {
                 try
                 {
-                    var npc = await _storageService.LoadAsync<Npc>(userId, $"npcs/{npcId}");
+                    var npc = await _storageService.GetNpcAsync(userId, npcId);
                     npcSummaries.Add($"NPC ID: {npc.Id}, Name: {npc.Name}, Summary: {npc.Backstory}");
                 }
                 catch (Exception ex)
@@ -115,7 +102,7 @@ namespace AiGMBackEnd.Services
             {
                 try
                 {
-                    var quest = await _storageService.LoadAsync<Quest>(userId, $"quests/{questId}");
+                    var quest = await _storageService.GetQuestAsync(userId, questId);
                     activeQuestSummaries.Add($"Quest ID: {quest.Id}, Title: {quest.Title}, Current Step: {quest.CurrentProgress}, Summary: {quest.QuestDescription}");
                 }
                 catch (Exception ex)
@@ -211,19 +198,19 @@ namespace AiGMBackEnd.Services
         private async Task<string> BuildNPCPromptAsync(string userId, string npcId, string userInput)
         {
             // Load NPC template files
-            var systemPrompt = await LoadTemplateAsync("NPCPrompt/SystemNPC.txt");
-            var responseInstructions = await LoadTemplateAsync("NPCPrompt/ResponseInstructions.txt");
-            var exampleResponses = await LoadTemplateAsync("NPCPrompt/ExampleResponses.txt");
+            var systemPrompt = await _storageService.GetNpcTemplateAsync("SystemNPC");
+            var responseInstructions = await _storageService.GetNpcTemplateAsync("ResponseInstructions");
+            var exampleResponses = await _storageService.GetNpcTemplateAsync("ExampleResponses");
 
-            // Load player, world, and specified NPC data - Fix paths
-            var player = await _storageService.LoadAsync<Player>(userId, "player");
-            var world = await _storageService.LoadAsync<World>(userId, "world");
-            var npc = await _storageService.LoadAsync<Npc>(userId, $"npcs/{npcId}");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
+            // Load player, world, and specified NPC data
+            var player = await _storageService.GetPlayerAsync(userId);
+            var world = await _storageService.GetWorldAsync(userId);
+            var npc = await _storageService.GetNpcAsync(userId, npcId);
+            var gameSetting = await _storageService.GetGameSettingAsync(userId);
+            var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
 
-            // Load current location - Fix path
-            var location = await _storageService.LoadAsync<Location>(userId, $"locations/{player.CurrentLocationId}");
+            // Load current location
+            var location = await _storageService.GetLocationAsync(userId, player.CurrentLocationId);
 
             // Create scene context
             var sceneContext = new SceneContext
@@ -327,15 +314,15 @@ namespace AiGMBackEnd.Services
         private async Task<string> BuildCreateQuestPromptAsync(string userId, string userInput)
         {
             // Load create quest template files
-            var systemPrompt = await LoadTemplateAsync("CreateQuest/SystemCreateQuest.txt");
-            var responseInstructions = await LoadTemplateAsync("CreateQuest/ResponseInstructions.txt");
-            var exampleResponses = await LoadTemplateAsync("CreateQuest/ExampleResponses.txt");
+            var systemPrompt = await _storageService.GetCreateQuestTemplateAsync("SystemCreateQuest");
+            var responseInstructions = await _storageService.GetCreateQuestTemplateAsync("ResponseInstructions");
+            var exampleResponses = await _storageService.GetCreateQuestTemplateAsync("ExampleResponses");
 
-            // Load player and world data for context - Fix paths
-            var player = await _storageService.LoadAsync<Player>(userId, "player");
-            var world = await _storageService.LoadAsync<World>(userId, "world");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
+            // Load player and world data for context
+            var player = await _storageService.GetPlayerAsync(userId);
+            var world = await _storageService.GetWorldAsync(userId);
+            var gameSetting = await _storageService.GetGameSettingAsync(userId);
+            var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -396,9 +383,9 @@ namespace AiGMBackEnd.Services
         private async Task<string> BuildCreateQuestJsonPromptAsync(string userId, string userInput)
         {
             // Load create quest JSON template files
-            var systemPrompt = await LoadTemplateAsync("CreateQuestJson/SystemCreateQuestJson.txt");
-            var responseInstructions = await LoadTemplateAsync("CreateQuestJson/ResponseInstructions.txt");
-            var exampleResponses = await LoadTemplateAsync("CreateQuestJson/ExampleResponses.txt");
+            var systemPrompt = await _storageService.GetCreateQuestJsonTemplateAsync("SystemCreateQuestJson");
+            var responseInstructions = await _storageService.GetCreateQuestJsonTemplateAsync("ResponseInstructions");
+            var exampleResponses = await _storageService.GetCreateQuestJsonTemplateAsync("ExampleResponses");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -425,14 +412,14 @@ namespace AiGMBackEnd.Services
         private async Task<string> BuildCreateNPCPromptAsync(string userId, string userInput)
         {
             // Load create NPC template files
-            var systemPrompt = await LoadTemplateAsync("NPCCreationPrompt/SystemCreateNPC.txt");
-            var responseInstructions = await LoadTemplateAsync("NPCCreationPrompt/ResponseInstructions.txt");
-            var exampleResponses = await LoadTemplateAsync("NPCCreationPrompt/ExampleResponses.txt");
+            var systemPrompt = await _storageService.GetCreateNpcTemplateAsync("SystemCreateNPC");
+            var responseInstructions = await _storageService.GetCreateNpcTemplateAsync("ResponseInstructions");
+            var exampleResponses = await _storageService.GetCreateNpcTemplateAsync("ExampleResponses");
 
-            // Load world data for context - Fix paths
-            var world = await _storageService.LoadAsync<World>(userId, "world");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
+            // Load world data for context
+            var world = await _storageService.GetWorldAsync(userId);
+            var gameSetting = await _storageService.GetGameSettingAsync(userId);
+            var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -485,9 +472,9 @@ namespace AiGMBackEnd.Services
         private async Task<string> BuildCreateNPCJsonPromptAsync(string userId, string userInput)
         {
             // Load create NPC JSON template files
-            var systemPrompt = await LoadTemplateAsync("NPCJsonCreationPrompt/SystemCreateNPCJson.txt");
-            var responseInstructions = await LoadTemplateAsync("NPCJsonCreationPrompt/ResponseInstructions.txt");
-            var exampleResponses = await LoadTemplateAsync("NPCJsonCreationPrompt/ExampleResponses.txt");
+            var systemPrompt = await _storageService.GetCreateNpcJsonTemplateAsync("SystemCreateNPCJson");
+            var responseInstructions = await _storageService.GetCreateNpcJsonTemplateAsync("ResponseInstructions");
+            var exampleResponses = await _storageService.GetCreateNpcJsonTemplateAsync("ExampleResponses");
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -514,14 +501,14 @@ namespace AiGMBackEnd.Services
         private async Task<string> BuildCreateLocationPromptAsync(string userId, string userInput)
         {
             // Load create location template files
-            var systemPrompt = await LoadTemplateAsync("CreateLocationPrompt/SystemCreateLocation.txt");
-            var responseInstructions = await LoadTemplateAsync("CreateLocationPrompt/ResponseInstructions.txt");
-            var exampleResponses = await LoadTemplateAsync("CreateLocationPrompt/ExampleResponses.txt");
+            var systemPrompt = await _storageService.GetCreateLocationTemplateAsync("SystemCreateLocation");
+            var responseInstructions = await _storageService.GetCreateLocationTemplateAsync("ResponseInstructions");
+            var exampleResponses = await _storageService.GetCreateLocationTemplateAsync("ExampleResponses");
 
-            // Load world data for context - Fix paths
-            var world = await _storageService.LoadAsync<World>(userId, "world");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
+            // Load world data for context
+            var world = await _storageService.GetWorldAsync(userId);
+            var gameSetting = await _storageService.GetGameSettingAsync(userId);
+            var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -574,18 +561,44 @@ namespace AiGMBackEnd.Services
         private async Task<string> BuildCreateLocationJsonPromptAsync(string userId, string userInput)
         {
             // Load create location JSON template files
-            var systemPrompt = await LoadTemplateAsync("CreateLocationJson/SystemCreateLocationJson.txt");
-            var responseInstructions = await LoadTemplateAsync("CreateLocationJson/ResponseInstructions.txt");
-            var exampleResponses = await LoadTemplateAsync("CreateLocationJson/ExampleResponses.txt");
+            var systemPrompt = await _storageService.GetCreateLocationJsonTemplateAsync("SystemCreateLocationJson");
+            var responseInstructions = await _storageService.GetCreateLocationJsonTemplateAsync("ResponseInstructions");
+            var exampleResponses = await _storageService.GetCreateLocationJsonTemplateAsync("ExampleResponses");
 
-            // Load world data for context - Fix paths
-            var world = await _storageService.LoadAsync<World>(userId, "world");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
+            // Load world data for context
+            var world = await _storageService.GetWorldAsync(userId);
+            var gameSetting = await _storageService.GetGameSettingAsync(userId);
+            var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
             promptBuilder.AppendLine(systemPrompt);
+            promptBuilder.AppendLine();
+
+            // Add game setting and preferences
+            promptBuilder.AppendLine("# Game Setting");
+            promptBuilder.AppendLine($"Genre: {gameSetting.Genre}");
+            promptBuilder.AppendLine($"Theme: {gameSetting.Theme}");
+            promptBuilder.AppendLine($"Description: {gameSetting.Description}");
+            promptBuilder.AppendLine();
+
+            // Add game preferences
+            promptBuilder.AppendLine("# Game Preferences");
+            promptBuilder.AppendLine($"Tone: {gamePreferences.Tone}");
+            promptBuilder.AppendLine($"Complexity: {gamePreferences.Complexity}");
+            promptBuilder.AppendLine($"Age Appropriateness: {gamePreferences.AgeAppropriateness}");
+            promptBuilder.AppendLine();
+
+            // Add world context
+            promptBuilder.AppendLine("# World Context");
+            promptBuilder.AppendLine($"World Name: {world.GameName}");
+            promptBuilder.AppendLine($"Setting: {world.Setting}");
+            promptBuilder.AppendLine($"Summary: {world.Lore[0].Summary}");
+            promptBuilder.AppendLine();
+
+            // Add trigger instructions
+            promptBuilder.AppendLine("# Trigger Instructions");
+            promptBuilder.AppendLine("This location is being created based on a specific need in the game world.");
             promptBuilder.AppendLine();
 
             // Add response instructions
@@ -598,7 +611,7 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine(exampleResponses);
             promptBuilder.AppendLine();
 
-            // Add the user's input containing the location description
+            // Add the user's input
             promptBuilder.AppendLine("# Location Description to Convert to JSON");
             promptBuilder.AppendLine(userInput);
 
@@ -608,13 +621,13 @@ namespace AiGMBackEnd.Services
         private async Task<string> BuildCreatePlayerJsonPromptAsync(string userId, string userInput)
         {
             // Load create player JSON template files
-            var systemPrompt = await LoadTemplateAsync("CreatePlayerJson/SystemCreatePlayerJson.txt");
-            var exampleResponses = await LoadTemplateAsync("CreatePlayerJson/ExampleResponses.txt");
+            var systemPrompt = await _storageService.GetCreatePlayerJsonTemplateAsync("SystemCreatePlayerJson");
+            var exampleResponses = await _storageService.GetCreatePlayerJsonTemplateAsync("ExampleResponses");
 
-            // Load world data for context - Fix paths
-            var world = await _storageService.LoadAsync<World>(userId, "world");
-            var gameSetting = await _storageService.LoadAsync<GameSetting>(userId, "gameSetting");
-            var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
+            // Load world data for context
+            var world = await _storageService.GetWorldAsync(userId);
+            var gameSetting = await _storageService.GetGameSettingAsync(userId);
+            var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -653,18 +666,6 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine(userInput);
 
             return promptBuilder.ToString();
-        }
-
-        private async Task<string> LoadTemplateAsync(string templateName)
-        {
-            var templatePath = Path.Combine(_promptTemplatesPath, templateName);
-            if (!File.Exists(templatePath))
-            {
-                _loggingService.LogWarning($"Template file not found: {templatePath}. Using empty template.");
-                return string.Empty;
-            }
-
-            return await File.ReadAllTextAsync(templatePath);
         }
 
         private string ParseNpcId(string userInput)

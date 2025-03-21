@@ -14,6 +14,7 @@ namespace AiGMBackEnd.Services
     {
         private readonly LoggingService _loggingService;
         private readonly string _dataPath;
+        private readonly string _promptTemplatesPath;
 
         public StorageService(LoggingService loggingService)
         {
@@ -21,8 +22,117 @@ namespace AiGMBackEnd.Services
             
             // Change from using the runtime directory to using a Data folder in the project root
             string rootDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
-            _dataPath = Path.Combine(rootDirectory, "Data");            
+            _dataPath = Path.Combine(rootDirectory, "Data");
+            _promptTemplatesPath = Path.Combine(rootDirectory, "PromptTemplates");
         }
+
+        #region Entity-specific accessor methods
+
+        // Player accessors
+        public async Task<Player> GetPlayerAsync(string userId)
+        {
+            return await LoadAsync<Player>(userId, "player");
+        }
+
+        // World accessors
+        public async Task<World> GetWorldAsync(string userId)
+        {
+            return await LoadAsync<World>(userId, "world");
+        }
+
+        // Game Setting accessors
+        public async Task<GameSetting> GetGameSettingAsync(string userId)
+        {
+            return await LoadAsync<GameSetting>(userId, "gameSetting");
+        }
+
+        // Game Preferences accessors
+        public async Task<GamePreferences> GetGamePreferencesAsync(string userId)
+        {
+            return await LoadAsync<GamePreferences>(userId, "gamePreferences");
+        }
+
+        // Location accessors
+        public async Task<Location> GetLocationAsync(string userId, string locationId)
+        {
+            return await LoadAsync<Location>(userId, $"locations\\{locationId}");
+        }
+
+        // NPC accessors
+        public async Task<Npc> GetNpcAsync(string userId, string npcId)
+        {
+            return await LoadAsync<Npc>(userId, $"npcs/{npcId}");
+        }
+
+        // Quest accessors
+        public async Task<Quest> GetQuestAsync(string userId, string questId)
+        {
+            return await LoadAsync<Quest>(userId, $"quests/{questId}");
+        }
+
+        #endregion
+
+        #region Template access methods
+
+        public async Task<string> GetTemplateAsync(string templatePath)
+        {
+            var fullPath = Path.Combine(_promptTemplatesPath, templatePath);
+            if (!File.Exists(fullPath))
+            {
+                _loggingService.LogWarning($"Template file not found: {fullPath}. Using empty template.");
+                return string.Empty;
+            }
+
+            return await File.ReadAllTextAsync(fullPath);
+        }
+
+        // Specific template accessor methods for different prompt types
+        public async Task<string> GetDmTemplateAsync(string templateName)
+        {
+            return await GetTemplateAsync($"DmPrompt/{templateName}.txt");
+        }
+
+        public async Task<string> GetNpcTemplateAsync(string templateName)
+        {
+            return await GetTemplateAsync($"NPCPrompt/{templateName}.txt");
+        }
+
+        public async Task<string> GetCreateQuestTemplateAsync(string templateName)
+        {
+            return await GetTemplateAsync($"CreateQuest/{templateName}.txt");
+        }
+
+        public async Task<string> GetCreateQuestJsonTemplateAsync(string templateName)
+        {
+            return await GetTemplateAsync($"CreateQuestJson/{templateName}.txt");
+        }
+
+        public async Task<string> GetCreateNpcTemplateAsync(string templateName)
+        {
+            return await GetTemplateAsync($"NPCCreationPrompt/{templateName}.txt");
+        }
+
+        public async Task<string> GetCreateNpcJsonTemplateAsync(string templateName)
+        {
+            return await GetTemplateAsync($"NPCJsonCreationPrompt/{templateName}.txt");
+        }
+
+        public async Task<string> GetCreateLocationTemplateAsync(string templateName)
+        {
+            return await GetTemplateAsync($"CreateLocationPrompt/{templateName}.txt");
+        }
+
+        public async Task<string> GetCreateLocationJsonTemplateAsync(string templateName)
+        {
+            return await GetTemplateAsync($"CreateLocationJson/{templateName}.txt");
+        }
+
+        public async Task<string> GetCreatePlayerJsonTemplateAsync(string templateName)
+        {
+            return await GetTemplateAsync($"CreatePlayerJson/{templateName}.txt");
+        }
+
+        #endregion
 
         public async Task<T> LoadAsync<T>(string userId, string fileId) where T : class
         {
