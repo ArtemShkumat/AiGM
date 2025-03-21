@@ -5,6 +5,9 @@ namespace AiGMBackEnd.Models
 {
     public class Player
     {
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = "Player";
+
         [JsonPropertyName("id")]
         public string Id { get; set; }
         

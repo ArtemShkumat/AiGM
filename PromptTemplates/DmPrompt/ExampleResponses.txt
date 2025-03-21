@@ -7,7 +7,7 @@ The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma
 
 Behind the bar, a burly man with an impressive red beard polishes a mug with a rag that's seen better days. He notices your entrance and offers a curt nod of acknowledgment.
 
-<donotshow/>
+<donotshow>
 {
   "dmUpdates": {
     "newEntities": [
@@ -22,12 +22,13 @@ Behind the bar, a burly man with an impressive red beard polishes a mug with a r
         "type": "npc",
         "id": "npc_mysteriousStranger",
         "name": "Hooded Stranger",
-        "currentLocationId": "loc_rustyAnchorTavern", 
+        "currentLocationId": "loc_rustyAnchorTavern",
         "notes": "Mysterious figure watching the tavern entrance carefully."
       }
     ],
     "partialUpdates": {
       "player": {
+        "type": "PLAYER",
         "currentLocationId": "loc_rustyAnchorTavern"
       }
     }

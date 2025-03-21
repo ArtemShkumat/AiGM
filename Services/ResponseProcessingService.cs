@@ -143,6 +143,9 @@ namespace AiGMBackEnd.Services
                                 {
                                     case "npc":
                                         await CreateNewEntityAsync(entity, userId, "npcs", entityId);
+                                        // Trigger a background job to fully create the location
+                                        var npcName = entity["name"]?.ToString() ?? "New NPC";
+                                        await TriggerEntityCreationJob(PromptType.CreateNPC, userId, $"Create {npcName}");
                                         break;
                                     case "location":
                                         await CreateNewEntityAsync(entity, userId, "locations", entityId);
@@ -173,29 +176,52 @@ namespace AiGMBackEnd.Services
                             foreach (var property in partialUpdates.Properties())
                             {
                                 var entityId = property.Name;
-                                var updateData = property.Value.ToString();
+                                var updateData = property.Value as JObject;
                                 
-                                // Determine entity type from ID prefix
-                                if (entityId.StartsWith("npc_"))
+                                if (updateData == null)
                                 {
-                                    await UpdateEntityAsync(userId, "npcs", entityId, updateData);
+                                    _loggingService.LogWarning($"Invalid update data for entity {entityId}");
+                                    continue;
                                 }
-                                else if (entityId.StartsWith("loc_"))
+                                
+                                // Get the entity type from the update data
+                                var entityType = updateData["type"]?.ToString();
+                                if (string.IsNullOrEmpty(entityType))
                                 {
-                                    await UpdateEntityAsync(userId, "locations", entityId, updateData);
+                                    _loggingService.LogWarning($"Entity type missing for {entityId}");
+                                    continue;
                                 }
-                                else if (entityId.StartsWith("quest_"))
+                                
+                                // Remove ID and Type from update data to preserve them
+                                updateData.Remove("id");
+                                updateData.Remove("type");
+                                
+                                // Determine collection based on the entity type
+                                string collection = "";
+                                switch (entityType.ToLower())
                                 {
-                                    await UpdateEntityAsync(userId, "quests", entityId, updateData);
+                                    case "npc":
+                                        collection = "npcs";
+                                        break;
+                                    case "location":
+                                        collection = "locations";
+                                        break;
+                                    case "quest":
+                                        collection = "quests";
+                                        break;
+                                    case "world":
+                                        // Special case, no collection
+                                        break;
+                                    case "player":
+                                        // Special case, no collection
+                                        break;
+                                    default:
+                                        _loggingService.LogWarning($"Unknown entity type: {entityType} for entity {entityId}");
+                                        continue;
                                 }
-                                else if (entityId == "world")
-                                {
-                                    await UpdateEntityAsync(userId, "", "world", updateData);
-                                }
-                                else if (entityId == "player")
-                                {
-                                    await UpdateEntityAsync(userId, "", "player", updateData);
-                                }
+                                
+                                // Only apply the update for the fields that were provided
+                                await UpdateEntityAsync(userId, collection, entityId, updateData.ToString());
                             }
                         }
                     }
@@ -260,12 +286,34 @@ namespace AiGMBackEnd.Services
                             foreach (var property in partialUpdates.Properties())
                             {
                                 var entityId = property.Name;
-                                var updateData = property.Value.ToString();
+                                var updateData = property.Value as JObject;
                                 
-                                // Handle NPC updates
-                                if (entityId.StartsWith("npc_"))
+                                if (updateData == null)
                                 {
-                                    await UpdateEntityAsync(userId, "npcs", entityId, updateData);
+                                    _loggingService.LogWarning($"Invalid update data for entity {entityId}");
+                                    continue;
+                                }
+                                
+                                // Get the entity type from the update data
+                                var entityType = updateData["type"]?.ToString();
+                                if (string.IsNullOrEmpty(entityType))
+                                {
+                                    _loggingService.LogWarning($"Entity type missing for {entityId}");
+                                    continue;
+                                }
+                                
+                                // Remove ID and Type from update data to preserve them
+                                updateData.Remove("id");
+                                updateData.Remove("type");
+                                
+                                // For NPC updates, we only handle NPCs in this method
+                                if (entityType.ToLower() == "npc")
+                                {
+                                    await UpdateEntityAsync(userId, "npcs", entityId, updateData.ToString());
+                                }
+                                else
+                                {
+                                    _loggingService.LogWarning($"Unexpected entity type {entityType} in NPC updates for entity {entityId}");
                                 }
                             }
                         }

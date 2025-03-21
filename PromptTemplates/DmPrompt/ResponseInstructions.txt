@@ -25,7 +25,7 @@ Your hidden JSON (after <donotshow>) will typically have two key arrays/objects:
   "dmUpdates": {
     "newEntities": [
       {
-        "type": "npc",
+        "type": "NPC",
         "id": "npc_newMerchant",
         "name": "Marcel the Merchant",
         "notes": "Sells exotic spices."
@@ -38,7 +38,7 @@ Your hidden JSON (after <donotshow>) will typically have two key arrays/objects:
         "dispositionTowardsPlayer": "hostile"
       },
       "loc_townSquare": {
-        "type": "Location",
+        "type": "LOCATION",
         "notes": "Now more crowded than usual"
       }
     }

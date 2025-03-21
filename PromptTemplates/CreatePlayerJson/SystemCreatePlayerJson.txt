@@ -48,6 +48,7 @@ Your goal is to create a technical implementation of the player character that p
 THE CORE PLAYER MODEL STRUCTURE:
 
 {
+  "type": "string", //always set to "PLAYER"
   "id": "string (GUID)",
   "name": "string",
   "age": number, //just assume the player's age here.
