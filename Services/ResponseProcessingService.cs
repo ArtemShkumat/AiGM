@@ -38,6 +38,10 @@ namespace AiGMBackEnd.Services
                 {
                     await ProcessHiddenJsonAsync(hiddenJson, promptType, userId);
                 }
+                else
+                {
+                    _loggingService.LogInfo($"No hiddenJson in response for user {userId}");
+                }
 
                 return new ProcessedResult
                 {
@@ -962,18 +966,13 @@ namespace AiGMBackEnd.Services
         private (string userFacingText, string hiddenJson) ExtractHiddenJson(string llmResponse)
         {
             // Pattern to extract content between <donotshow> tags
-            var regex = new Regex(@"(.*?)<donotshow>(.*?)</donotshow>(.*?)", RegexOptions.Singleline);
+            var regex = new Regex(@"^(.*?)<donotshow>(.*)$", RegexOptions.Singleline);
             var match = regex.Match(llmResponse);
 
             if (match.Success)
             {
-                var beforeTag = match.Groups[1].Value.Trim();
-                var jsonContent = match.Groups[2].Value.Trim();
-                var afterTag = match.Groups[3].Value.Trim();
-
-                // Combine text before and after the tags
-                var userFacingText = (beforeTag + " " + afterTag).Trim();
-                
+                var userFacingText = match.Groups[1].Value.Trim();
+                var jsonContent = match.Groups[2].Value.Trim();                
                 return (userFacingText, jsonContent);
             }
 

@@ -92,7 +92,7 @@ namespace AiGMBackEnd.Services
             var gamePreferences = await _storageService.LoadAsync<GamePreferences>(userId, "gamePreferences");
 
             // Load current location - Fix path
-            var location = await _storageService.LoadAsync<Location>(userId, $"locations/{player.CurrentLocationId}");
+            var location = await _storageService.LoadAsync<Location>(userId, $"locations\\{player.CurrentLocationId}");
 
             // Get NPCs in current location
             var npcSummaries = new List<string>();

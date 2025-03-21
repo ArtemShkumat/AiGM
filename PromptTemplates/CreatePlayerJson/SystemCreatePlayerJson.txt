@@ -40,6 +40,8 @@ IMPORTANT GUIDELINES:
    - Zombie survival games might focus on abilities without levels
    - Sci-fi games might include tech skills and different attributes
    - See examples for different possible structures
+8. IMPORTANT NOTE
+   - each response should be prepended with <donotshow>
 
 Your goal is to create a technical implementation of the player character that precisely follows the game's data model while capturing all the important character details from the narrative description and aligning with the game world.
 

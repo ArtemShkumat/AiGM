@@ -65,12 +65,13 @@ namespace AiGMBackEnd.Services.AIProviders
                     temperature = _temperature
                 };
 
+                var json = JsonSerializer.Serialize(requestData);
                 var requestContent = new StringContent(
                     JsonSerializer.Serialize(requestData),
                     Encoding.UTF8,
                     "application/json");
 
-                _loggingService.LogInfo("request:"+ requestContent.ReadAsStringAsync());
+                _loggingService.LogInfo("request:"+ json);
                 var response = await _httpClient.PostAsync("chat/completions", requestContent);
                 response.EnsureSuccessStatusCode();
 
