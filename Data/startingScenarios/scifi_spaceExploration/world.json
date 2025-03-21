@@ -1,4 +1,5 @@
 {
+  "type": "world",
   "gameName": "Frontier: Edge of Infinity",
   "setting": "A far-future universe where humanity has colonized dozens of star systems.",
   "gameTime": "2487-03-22T08:15:00Z",
@@ -38,7 +39,7 @@
     }
   ],
 
-  "globalFlags": ["xenoTreatyActive", "stationLockdown"],
+  "globalFlags": [ "xenoTreatyActive", "stationLockdown" ],
   "historyLog": [
     {
       "timestamp": "2487-03-21T14:30:00Z",

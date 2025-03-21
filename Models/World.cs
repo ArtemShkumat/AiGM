@@ -5,6 +5,9 @@ namespace AiGMBackEnd.Models
 {
     public class World
     {
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = "WORLD";
+
         [JsonPropertyName("gameName")]
         public string GameName { get; set; }
         

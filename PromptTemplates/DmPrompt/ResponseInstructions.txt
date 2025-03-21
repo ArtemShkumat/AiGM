@@ -19,7 +19,7 @@ In "partialUpdates", keep the same ID. If it’s npc_elenaBlacksmith in the data, 
 Only fields like "dispositionTowardsPlayer", "notes", or others can be modified or added.
 Data Structure in the Hidden JSON
 
-Your hidden JSON (after <donotshow>) will typically have two key arrays/objects:
+Your hidden JSON (after <donotshow/>) will typically have two key arrays/objects:
 
 {
   "dmUpdates": {

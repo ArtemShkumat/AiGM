@@ -7,7 +7,7 @@ The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma
 
 Behind the bar, a burly man with an impressive red beard polishes a mug with a rag that's seen better days. He notices your entrance and offers a curt nod of acknowledgment.
 
-<donotshow>
+<donotshow/>
 {
   "dmUpdates": {
     "newEntities": [
@@ -50,6 +50,7 @@ You make your way to the bar counter, navigating between the crowded tables. The
   "dmUpdates": {
     "partialUpdates": {
       "npc_barkeepGormund": {
+        "type": "NPC",
         "dispositionTowardsPlayer": "neutral"
       }
     }
@@ -87,7 +88,8 @@ She gestures for you to sit. "Perceptive barkeep," she mutters. "Yes, I need som
       }
     ],
     "partialUpdates": {
-      "npc_mysteriousStranger": {
+      "npc_vessa": {
+        "type": "NPC",
         "name": "Vessa the Relic Hunter",
         "notes": "Scarred woman hunting stolen artifacts. Hired the player to retrieve a blue amulet.",
         "dispositionTowardsPlayer": "cautious"

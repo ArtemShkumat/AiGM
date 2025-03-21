@@ -1,4 +1,5 @@
 {
+  "type": "world",
   "gameName": "Last Stand: Deadwatch",
   "setting": "A modern world three months after a viral outbreak turned most of humanity into ravenous infected.",
   "gameTime": "2023-05-15T18:30:00Z",
@@ -38,7 +39,7 @@
     }
   ],
 
-  "globalFlags": ["militaryQuarantine", "lowFuelReserves", "communicationBlackout"],
+  "globalFlags": [ "militaryQuarantine", "lowFuelReserves", "communicationBlackout" ],
   "historyLog": [
     {
       "timestamp": "2023-05-15T12:00:00Z",

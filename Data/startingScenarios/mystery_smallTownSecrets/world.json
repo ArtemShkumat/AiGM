@@ -1,4 +1,5 @@
 {
+  "type": "world",
   "gameName": "Blackwater Bay: Beneath the Surface",
   "setting": "A picturesque coastal town with dark secrets hidden beneath its charming facade.",
   "gameTime": "2023-10-24T19:45:00Z",
@@ -38,7 +39,7 @@
     }
   ],
 
-  "globalFlags": ["anniversaryFestivalPreparations", "increasedPolicePresence", "strangeTides"],
+  "globalFlags": [ "anniversaryFestivalPreparations", "increasedPolicePresence", "strangeTides" ],
   "historyLog": [
     {
       "timestamp": "2023-10-23T16:30:00Z",
