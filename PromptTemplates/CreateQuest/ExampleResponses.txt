@@ -10,7 +10,7 @@ As the investigation deepens, players discover the theft wasn't motivated by gre
 
 The quest explores themes of family legacy, historical wrongs, and whether justice and revenge are truly different. It connects to the broader world by revealing tensions between Westport's merchant class and nobility, while also hinting at the magical protections that keep certain families in power.
 
-<donotshow>
+<donotshow/>
 {
   "quest": {
     "id": "ardith-sapphire-pendant",
@@ -99,7 +99,7 @@ The quest explores themes of family legacy, historical wrongs, and whether justi
     ]
   }
 }
-</donotshow>
+
 
 EXAMPLE 2: RESCUE MISSION
 
@@ -113,7 +113,7 @@ The quest culminates in a moral choice: the miners discovered a rich vein of rar
 
 This quest introduces the Deepling race to the game world, establishes the economic importance of Blackrock Mine to the region, and can set up future conflicts or alliances with the underground dwellers depending on player choices.
 
-<donotshow>
+<donotshow/>
 {
   "quest": {
     "id": "trapped-blackrock-miners",
@@ -202,4 +202,4 @@ This quest introduces the Deepling race to the game world, establishes the econo
     ]
   }
 }
-</donotshow>
+

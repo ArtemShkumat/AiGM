@@ -3,7 +3,7 @@ Player: "Hello there! I'm looking for some potions. Do you sell any healing item
 
 *Eliza wipes her hands on her apron and beams at you* "Well met, traveler! Indeed I do! Got a fresh batch of healing potions just brewed yesterday. Three silvers each, and I'll throw in a minor stamina potion if you buy three or more. The winter wolves have been making the north road treacherous lately, so folks are stocking up."
 
-<donotshow>
+<donotshow/>
 {
   "npcUpdates": [
     {
@@ -22,14 +22,14 @@ Player: "Hello there! I'm looking for some potions. Do you sell any healing item
     ]
   }
 }
-</donotshow>
+
 
 EXAMPLE 2: SUSPICIOUS GUARD
 Player: "I need to get into the city treasury. It's important."
 
 *The guard narrows his eyes and shifts his weight to block the doorway more effectively* "Important, eh? I've heard that one before. No one enters the treasury without written permission from the Magistrate himself." *He glances at your weapons* "I suggest you take your 'important' business elsewhere before I decide you're worth the paperwork."
 
-<donotshow>
+<donotshow/>
 {
   "npcUpdates": [
     {
@@ -39,14 +39,14 @@ Player: "I need to get into the city treasury. It's important."
     }
   ]
 }
-</donotshow>
+
 
 EXAMPLE 3: QUEST GIVER
 Player: "I heard you're looking for help with something?"
 
 *The elderly woman looks up from her knitting, relief washing over her weathered face* "Oh bless you for coming! My grandson hasn't returned from his hunting trip in the western forest. It's been three days now." *Her hands tremble slightly* "He knows those woods well, something must be wrong. I haven't the coin to hire the guild, but I can offer my late husband's sword—finely crafted elven steel. Please, find my Tomas."
 
-<donotshow>
+<donotshow/>
 {
   "npcUpdates": [
     {
@@ -66,4 +66,4 @@ Player: "I heard you're looking for help with something?"
     }
   ]
 }
-</donotshow>
+

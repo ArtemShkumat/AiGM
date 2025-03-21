@@ -10,7 +10,7 @@ Mariel's husband died in a bandit attack ten years ago while on a supply run, le
 
 For players, Mariel serves as both a reliable source of basic supplies and a font of local information. She's friendly to newcomers who are respectful, but truly opens up once she considers someone a regular. She can direct players to other services in town, share local rumors, and occasionally has special items available for those she trusts.
 
-<donotshow>
+<donotshow/>
 {
   "npc": {
     "id": "mariel-thornbrook-merchant",
@@ -73,7 +73,7 @@ For players, Mariel serves as both a reliable source of basic supplies and a fon
     "notes": "Can become a valuable ally for players who build reputation in Oakvale. Has a hidden room in her shop with higher-quality merchandise reserved for trusted customers. Keeps a detailed ledger that contains information about regional trade that could be valuable if players need to track commercial activities."
   }
 }
-</donotshow>
+
 
 EXAMPLE 2: QUEST-GIVING WARRIOR
 
@@ -87,7 +87,7 @@ Now Korrigan seeks skilled individuals to help investigate what truly happened a
 
 Players who approach Korrigan will find him initially suspicious but fair in his dealings. He offers modest payment but the potential for greater rewards if his suspicions about Vane prove correct. For those who prove their worth, Korrigan can become a valuable ally, offering combat training and connections to legitimate mercenary contracts throughout the region.
 
-<donotshow>
+<donotshow/>
 {
   "npc": {
     "id": "korrigan-ironfist-veteran",
@@ -150,7 +150,7 @@ Players who approach Korrigan will find him initially suspicious but fair in his
     "notes": "Can become a combat trainer for martial characters if his quest is completed successfully. Has nightmares that may contain clues about supernatural elements involved in the ambush. The battle standard has minor magical properties that will be revealed if recovered."
   }
 }
-</donotshow>
+
 
 EXAMPLE 3: MYSTERIOUS ANTAGONIST
 
@@ -164,7 +164,7 @@ Her current objective is acquiring a set of dispersed artifacts called the Moons
 
 For players, Lady Nightshade initially appears as an intriguing noble who might offer patronage or rewards for acquiring unusual items. Only gradually would her true nature be revealed, as players notice her unaging appearance in old portraits, discover her connection to missing artifacts, or cross paths with her agents. She prefers manipulation to direct confrontation, but those who threaten her plans soon discover she commands formidable eldritch powers.
 
-<donotshow>
+<donotshow/>
 {
   "npc": {
     "id": "sylvia-nightshade-void-servant",
@@ -227,4 +227,4 @@ For players, Lady Nightshade initially appears as an intriguing noble who might 
     "notes": "A long-term antagonist who initially appears as a potential ally. Uses charm and manipulation before resorting to magical means. Surrounded by subtle magical wards and enchantments that alert her to scrying or magical investigation. Her manor contains a hidden chamber for communicating with the Void Weaver."
   }
 }
-</donotshow>
+

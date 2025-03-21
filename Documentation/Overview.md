@@ -70,7 +70,7 @@ Backend Services (in C#):
 PresenterService for user input.
 PromptService for building prompts.
 AiService for calling the LLM.
-ResponseProcessingService for reading <donotshow> JSON.
+ResponseProcessingService for reading <donotshow/> JSON.
 StorageService for reading/writing JSON entity files.
 LoggingService for tracking events or errors.
 Data Folder per user session or “campaign.”

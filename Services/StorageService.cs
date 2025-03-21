@@ -55,7 +55,7 @@ namespace AiGMBackEnd.Services
         // Location accessors
         public async Task<Location> GetLocationAsync(string userId, string locationId)
         {
-            return await LoadAsync<Location>(userId, $"locations\\{locationId}");
+            return await LoadAsync<Location>(userId, $"locations/{locationId}");
         }
 
         // NPC accessors
@@ -231,11 +231,11 @@ namespace AiGMBackEnd.Services
         private string GetFilePath(string userId, string fileId)
         {
             // Ensure everything goes to Data/userData/{userId}
-            if (fileId.Contains('/'))
-            {
-                // Handle paths like "npcs/npc_001.json"
-                return Path.Combine(_dataPath, "userData", userId, fileId);
-            }
+            //if (fileId.Contains('/'))
+            //{
+            //    // Handle paths like "npcs/npc_001.json"
+            //    return Path.Combine(_dataPath, "userData", userId, fileId);
+            //}
             
             // Handle simple file names like "world.json"
             return Path.Combine(_dataPath, "userData", userId, $"{fileId}.json");

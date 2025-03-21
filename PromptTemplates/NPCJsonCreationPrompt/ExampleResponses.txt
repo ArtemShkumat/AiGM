@@ -1,6 +1,6 @@
 EXAMPLE 1: FRIENDLY MERCHANT
 
-<donotshow>
+<donotshow/>
 {
   "id": "mariel-thornbrook-merchant",
   "name": "Mariel Thornbrook",
@@ -56,11 +56,11 @@ EXAMPLE 1: FRIENDLY MERCHANT
   "notes": "Uses her merchant connections to maintain influence in town affairs. Has a hidden room with higher-quality merchandise for trusted customers. Keeps detailed ledger with valuable regional trade information.",
   "conversationLog": []
 }
-</donotshow>
+
 
 EXAMPLE 2: QUEST-GIVING WARRIOR
 
-<donotshow>
+<donotshow/>
 {
   "id": "korrigan-ironfist-veteran",
   "name": "Korrigan Ironfist",
@@ -120,11 +120,11 @@ EXAMPLE 2: QUEST-GIVING WARRIOR
   "notes": "Has nightmares that may contain clues about supernatural elements involved in the ambush. Can become a combat trainer for martial characters if his quest is completed successfully.",
   "conversationLog": []
 }
-</donotshow>
+
 
 EXAMPLE 3: MYSTERIOUS ANTAGONIST
 
-<donotshow>
+<donotshow/>
 {
   "id": "sylvia-nightshade-aristocrat",
   "name": "Lady Sylvia Nightshade",
@@ -184,4 +184,4 @@ EXAMPLE 3: MYSTERIOUS ANTAGONIST
   "notes": "Uses charm and manipulation before resorting to magical means. Her manor contains a hidden chamber for communicating with the Void Weaver. A long-term antagonist who initially appears as a potential ally.",
   "conversationLog": []
 }
-</donotshow>
+

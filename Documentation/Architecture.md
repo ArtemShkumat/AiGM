@@ -40,7 +40,7 @@ Method:
 GetCompletionAsync(promptString, promptType) → Task<string>
 2.5. ResponseProcessingService
 Role: Interprets the LLM’s response.
-Splits out user-facing text from hidden JSON updates (<donotshow> or dmUpdates).
+Splits out user-facing text from hidden JSON updates (<donotshow/> or dmUpdates).
 If the JSON indicates new NPCs, quest states, or partial updates, it calls StorageService to apply them.
 Methods:
 HandleResponse(llmResponse, promptType) → ProcessedResult
@@ -95,7 +95,7 @@ PresenterService → calls BackgroundJobService.EnqueuePromptAsync(...) or direc
 PromptService loads the partial world.json, player.json, relevant location & NPC summaries, merges them with the DM system text.
 AiService sends that final prompt to the LLM.
 ResponseProcessingService:
-Splits the response at <donotshow>.
+Splits the response at <donotshow/>.
 Takes the user-facing text → returns to PresenterService.
 Takes any JSON block → updates npcs, quests, or historyLog.
 PresenterService returns user-facing text to front-end.
@@ -150,7 +150,7 @@ AiService
 Create a wrapper to call the local LLM or an external API.
 ResponseProcessingService
 
-Parse <donotshow> blocks, handle new entity creation or partial updates.
+Parse <donotshow/> blocks, handle new entity creation or partial updates.
 PresenterService & BackgroundJobService
 
 Tie it all together so that user input → queued job → prompt building → LLM → response processing → user-facing text.

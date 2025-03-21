@@ -14,10 +14,10 @@ Your response should be a properly formatted JSON object that follows the exact 
 3. RESPONSE FORMAT
    - Your response should ONLY contain the JSON object
    - Do not include explanations, introductions, or comments
-   - Place the JSON object within <donotshow> tags
+   - Place the JSON object within <donotshow/> tags
 
 Example format:
-<donotshow>
+<donotshow/>
 {
   "id": "ardith-sapphire-pendant",
   "title": "The Lost Heirloom of House Ardith",
@@ -45,6 +45,6 @@ Example format:
   "questLog": [],
   "notes": "The quest can be resolved in multiple ways: combat with Silas, persuading him to return the pendant, or finding a compromise that addresses historical grievances."
 }
-</donotshow>
+
 
 Only include fields that exist in the Quest model and for which you have information or can make reasonable inferences. Don't invent complex details that aren't suggested by the narrative description. The goal is to accurately represent the quest in the game's data structure. 

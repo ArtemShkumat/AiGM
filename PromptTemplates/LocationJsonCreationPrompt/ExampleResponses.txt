@@ -1,6 +1,6 @@
 EXAMPLE 1: SETTLEMENT LOCATION
 
-<donotshow>
+<donotshow/>
 {
   "id": "silver-leaf-inn",
   "name": "The Silver Leaf Inn and Tavern",
@@ -63,11 +63,11 @@ EXAMPLE 1: SETTLEMENT LOCATION
   "historyLog": [],
   "notes": "Built after the Winter of Sorrows when the original village hall burned down. Has been operated by the Thorncrest family for four generations. Excellent source of rumors and quest hooks."
 }
-</donotshow>
+
 
 EXAMPLE 2: DUNGEON LOCATION
 
-<donotshow>
+<donotshow/>
 {
   "id": "forgotten-whisper-temple",
   "name": "The Forgotten Temple of Whispers",
@@ -138,11 +138,11 @@ EXAMPLE 2: DUNGEON LOCATION
   "historyLog": [],
   "notes": "Constructed during the Cerulean Dynasty by the Order of the Listening Ear, abandoned after the Verdant Plague. Unusual acoustic properties create gameplay opportunities with stealth and communication mechanics."
 }
-</donotshow>
+
 
 EXAMPLE 3: WILDERNESS LOCATION
 
-<donotshow>
+<donotshow/>
 {
   "id": "whispering-gorge",
   "name": "The Whispering Gorge",
@@ -216,4 +216,4 @@ EXAMPLE 3: WILDERNESS LOCATION
   "historyLog": [],
   "notes": "The gorge's acoustics can be used strategically by players for distraction or communication. The wind patterns are predictable—strongest at dawn and dusk, calmest at midday and midnight. Formed during the Cataclysm Era by a massive earthquake."
 }
-</donotshow> 
+ 

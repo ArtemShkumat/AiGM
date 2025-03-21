@@ -2,9 +2,9 @@ Your response must follow this specific format:
 
 1. First, provide a narrative description for the player. This is what the player will see directly.
 
-2. Then include a <donotshow> JSON block with any updates or new entities as follows:
+2. Then include a <donotshow/> JSON block with any updates or new entities as follows:
 
-<donotshow>
+<donotshow/>
 {
   "dmUpdates": {
     "newEntities": [
@@ -52,13 +52,13 @@ Your response must follow this specific format:
     }
   }
 }
-</donotshow>
+
 
 IMPORTANT RULES FOR JSON:
-1. Only include the <donotshow> JSON block if you have updates or new entities.
+1. Only include the <donotshow/> JSON block if you have updates or new entities.
 2. For new entities, always generate unique IDs with appropriate prefixes (npc_, loc_, quest_).
 3. For partial updates, only include fields that have actually changed.
-4. Always place the <donotshow> block AFTER your narrative response.
+4. Always place the <donotshow/> block AFTER your narrative response.
 5. The JSON must be valid and properly formatted.
 6. Be conservative in creating new entities - only create what makes sense in context.
 7. Do not remove or overwrite existing data - only add new data or update specific fields.

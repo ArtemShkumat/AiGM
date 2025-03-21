@@ -14,10 +14,10 @@ Your response should be a properly formatted JSON object that follows the exact 
 3. RESPONSE FORMAT
    - Your response should ONLY contain the JSON object
    - Do not include explanations, introductions, or comments
-   - Place the JSON object within <donotshow> tags
+   - Place the JSON object within <donotshow/> tags
 
 Example format:
-<donotshow>
+<donotshow/>
 {
   "id": "elias-innkeeper",
   "name": "Elias Thornbrook",
@@ -61,6 +61,6 @@ Example format:
   "notes": "Knows the perfect balance between respecting patrons' privacy and facilitating connections. Inn is known for having the best mutton stew in the eastern provinces.",
   "conversationLog": []
 }
-</donotshow>
+
 
 Only include fields that exist in the NPC model and for which you have information or can make reasonable inferences. Don't invent complex details that aren't suggested by the narrative description. The goal is to accurately represent the character in the game's data structure. 

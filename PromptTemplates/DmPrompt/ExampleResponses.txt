@@ -7,7 +7,7 @@ The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma
 
 Behind the bar, a burly man with an impressive red beard polishes a mug with a rag that's seen better days. He notices your entrance and offers a curt nod of acknowledgment.
 
-<donotshow>
+<donotshow/>
 {
   "dmUpdates": {
     "newEntities": [
@@ -33,7 +33,7 @@ Behind the bar, a burly man with an impressive red beard polishes a mug with a r
     }
   }
 }
-</donotshow>
+
 
 EXAMPLE 2: Player interacts with a character
 
@@ -44,7 +44,7 @@ You make your way to the bar counter, navigating between the crowded tables. The
 
 "Rumors, eh?" He strokes his beard thoughtfully. "Well, there's talk of strange lights in the marshlands east of town. Old Willem's sheep have been going missing too—three this week alone. And if you're looking for work..." He lowers his voice, glancing toward the hooded figure in the corner. "That one's been asking about hired swords for some venture. Wouldn't say what exactly, but the coin purse looked heavy."
 
-<donotshow>
+<donotshow/>
 {
   "dmUpdates": {
     "partialUpdates": {
@@ -54,7 +54,7 @@ You make your way to the bar counter, navigating between the crowded tables. The
     }
   }
 }
-</donotshow>
+
 
 EXAMPLE 3: Player discovers a quest
 
@@ -67,7 +67,7 @@ You weave through the tavern crowd toward the corner table. The hooded figure wa
 
 She gestures for you to sit. "Perceptive barkeep," she mutters. "Yes, I need someone capable. I'm tracking a shipment of stolen artifacts bound for the Shadow Market in Ravenport. I need to recover one specific item—a silver amulet with a blue stone. Help me get it, and a quarter of my commission is yours." She leans forward. "Interested?"
 
-<donotshow>
+<donotshow/>
 {
   "dmUpdates": {
     "newEntities": [
@@ -94,4 +94,4 @@ She gestures for you to sit. "Perceptive barkeep," she mutters. "Yes, I need som
     }
   }
 }
-</donotshow>
+

@@ -88,7 +88,10 @@ namespace AiGMBackEnd.Services
                 try
                 {
                     var npc = await _storageService.GetNpcAsync(userId, npcId);
-                    npcSummaries.Add($"NPC ID: {npc.Id}, Name: {npc.Name}, Summary: {npc.Backstory}");
+                    if (npc!=null)
+                    {
+                        npcSummaries.Add($"NPC ID: {npc.Id}, Name: {npc.Name}, Summary: {npc.Backstory}");
+                    }                    
                 }
                 catch (Exception ex)
                 {
@@ -103,7 +106,7 @@ namespace AiGMBackEnd.Services
                 try
                 {
                     var quest = await _storageService.GetQuestAsync(userId, questId);
-                    activeQuestSummaries.Add($"Quest ID: {quest.Id}, Title: {quest.Title}, Current Step: {quest.CurrentProgress}, Summary: {quest.QuestDescription}");
+                    if (quest != null) { activeQuestSummaries.Add($"Quest ID: {quest.Id}, Title: {quest.Title}, Current Step: {quest.CurrentProgress}, Summary: {quest.QuestDescription}"); }                    
                 }
                 catch (Exception ex)
                 {

@@ -965,8 +965,8 @@ namespace AiGMBackEnd.Services
 
         private (string userFacingText, string hiddenJson) ExtractHiddenJson(string llmResponse)
         {
-            // Pattern to extract content between <donotshow> tags
-            var regex = new Regex(@"^(.*?)<donotshow>(.*)$", RegexOptions.Singleline);
+            // Pattern to extract content between <donotshow/> tags
+            var regex = new Regex(@"^(.*?)<donotshow/>(.*)$", RegexOptions.Singleline);
             var match = regex.Match(llmResponse);
 
             if (match.Success)

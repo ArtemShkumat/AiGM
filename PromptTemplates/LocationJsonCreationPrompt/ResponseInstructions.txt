@@ -14,10 +14,10 @@ Your response should be a properly formatted JSON object that follows the exact 
 3. RESPONSE FORMAT
    - Your response should ONLY contain the JSON object
    - Do not include explanations, introductions, or comments
-   - Place the JSON object within <donotshow> tags
+   - Place the JSON object within <donotshow/> tags
 
 Example format:
-<donotshow>
+<donotshow/>
 {
   "id": "silver-leaf-inn",
   "name": "The Silver Leaf Inn and Tavern",
@@ -80,6 +80,6 @@ Example format:
   "historyLog": [],
   "notes": "Built after the Winter of Sorrows when the original village hall burned down. Has been operated by the Thorncrest family for four generations. Excellent source of rumors and quest hooks."
 }
-</donotshow>
+
 
 Only include fields that exist in the Location model and for which you have information or can make reasonable inferences. Don't invent complex details that aren't suggested by the narrative description. The goal is to accurately represent the location in the game's data structure. 
