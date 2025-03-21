@@ -371,6 +371,83 @@ namespace AiGMBackEnd.Services
             }
         }
         
+        // Method to get all NPCs in a location with full details
+        public async Task<List<Npc>> GetNpcsInLocationAsync(string userId, string locationId)
+        {
+            try
+            {
+                var npcsInLocation = new List<Npc>();
+                var npcsPath = Path.Combine(_dataPath, "userData", userId, "npcs");
+                
+                if (!Directory.Exists(npcsPath))
+                {
+                    return npcsInLocation;
+                }
+                
+                foreach (var npcFile in Directory.GetFiles(npcsPath, "*.json"))
+                {
+                    try
+                    {
+                        var npcJson = await File.ReadAllTextAsync(npcFile);
+                        var npc = System.Text.Json.JsonSerializer.Deserialize<Npc>(npcJson);
+                        
+                        if (npc.CurrentLocationId == locationId)
+                        {
+                            npcsInLocation.Add(npc);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _loggingService.LogWarning($"Error reading NPC file {npcFile}: {ex.Message}");
+                    }
+                }
+                
+                return npcsInLocation;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting NPCs in location: {ex.Message}");
+                throw;
+            }
+        }
+        
+        // Method to get all active quests for a player
+        public async Task<List<Quest>> GetActiveQuestsAsync(string userId, List<string> activeQuestIds)
+        {
+            try
+            {
+                var activeQuests = new List<Quest>();
+                
+                if (activeQuestIds == null || activeQuestIds.Count == 0)
+                {
+                    return activeQuests;
+                }
+                
+                foreach (var questId in activeQuestIds)
+                {
+                    try
+                    {
+                        var quest = await GetQuestAsync(userId, questId);
+                        if (quest != null)
+                        {
+                            activeQuests.Add(quest);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _loggingService.LogWarning($"Error fetching quest {questId}: {ex.Message}");
+                    }
+                }
+                
+                return activeQuests;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting active quests: {ex.Message}");
+                throw;
+            }
+        }
+        
         // Helper method to copy directory and its contents
         private void CopyDirectory(string sourceDir, string destinationDir)
         {

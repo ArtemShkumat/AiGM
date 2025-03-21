@@ -1,41 +1,33 @@
-{
-  "id": "loc_mainStreet",
+{ "type": "LOCATION", "id": "loc_mainStreet",
   "name": "Main Street",
-  "type": "urban",
+  "locationType": "urban",
   "description": "The central thoroughfare of Blackwater Bay, lined with Victorian-era buildings painted in faded pastels. Decorative banners announcing the upcoming Founder's Day Festival hang between ornate lampposts. Most businesses are locally owned, with no chain stores in sight. Despite the quaint appearance, there's a palpable tension beneath the friendly small-town facade.",
   "discoveredByPlayer": true,
 
   "connectedLocations": [
-    {
-      "id": "loc_harbourPointHotel",
+    { "type": "LOCATION", "id": "loc_harbourPointHotel",
       "description": "The grand old hotel sits at the north end of Main Street, overlooking the bay from its clifftop perch."
     },
-    {
-      "id": "loc_sheriffStation",
+    { "type": "LOCATION", "id": "loc_sheriffStation",
       "description": "The brick building housing the town's law enforcement is prominently situated in the middle of Main Street."
     },
-    {
-      "id": "loc_townHall",
+    { "type": "LOCATION", "id": "loc_townHall",
       "description": "The administrative center of Blackwater Bay, an imposing Greek Revival building with columns."
     },
-    {
-      "id": "loc_library",
+    { "type": "LOCATION", "id": "loc_library",
       "description": "A charming historic building with stained glass windows, housing the town's archives and book collection."
     }
   ],
 
-  "parentLocation": {
-    "id": "loc_blackwaterBay",
+  "parentLocation": { "type": "LOCATION", "id": "loc_blackwaterBay",
     "description": "The commercial and social heart of Blackwater Bay."
   },
 
   "subLocations": [
-    {
-      "id": "loc_mainStreet_cafe",
+    { "type": "LOCATION", "id": "loc_mainStreet_cafe",
       "description": "The Lighthouse Cafe, a cozy establishment where locals gather to share gossip over coffee and homemade pie."
     },
-    {
-      "id": "loc_mainStreet_gazette",
+    { "type": "LOCATION", "id": "loc_mainStreet_gazette",
       "description": "The offices of the Blackwater Bay Gazette, the local newspaper that has operated continuously since 1892."
     }
   ],
@@ -74,3 +66,4 @@
 
   "notes": "Main Street serves as the public face of Blackwater Bay, carefully maintained to project an image of small-town charm and prosperity. Businesses are primarily owned by descendants of the founding families, particularly the Fletchers since the Thomases disappeared. Conversations often go quiet when strangers approach, and there's a noticeable defensiveness when the town's history is discussed. The missing journalist is a topic that townspeople actively avoid."
 } 
+

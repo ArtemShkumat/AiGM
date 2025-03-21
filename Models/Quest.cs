@@ -5,6 +5,9 @@ namespace AiGMBackEnd.Models
 {
     public class Quest
     {
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = "QUEST";
+        
         [JsonPropertyName("id")]
         public string Id { get; set; }
         

@@ -1,4 +1,5 @@
 {
+  "type": "QUEST",
   "id": "quest_medicalSupplies",
   "title": "Critical Medicine",
   "currentProgress": "not_started",

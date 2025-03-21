@@ -1,5 +1,4 @@
-{
-  "id": "npc_hotelManager",
+{ "type": "NPC", "id": "npc_hotelManager",
   "name": "Roland Wells",
   "age": 63,
   "currentLocationId": "loc_harbourPointHotel",

@@ -5,6 +5,9 @@ namespace AiGMBackEnd.Models
 {
     public class Npc
     {
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = "NPC";
+
         [JsonPropertyName("id")]
         public string Id { get; set; }
         

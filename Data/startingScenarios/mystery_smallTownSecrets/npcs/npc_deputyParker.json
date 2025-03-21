@@ -1,5 +1,4 @@
-{
-  "id": "npc_deputyParker",
+{ "type": "NPC", "id": "npc_deputyParker",
   "name": "Deputy Marcus Parker",
   "age": 32,
   "currentLocationId": "loc_sheriffStation",

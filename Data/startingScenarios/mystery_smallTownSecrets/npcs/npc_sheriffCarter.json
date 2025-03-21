@@ -1,5 +1,4 @@
-{
-  "id": "npc_sheriffCarter",
+{ "type": "NPC", "id": "npc_sheriffCarter",
   "name": "Sheriff Evelyn Carter",
   "age": 54,
   "currentLocationId": "loc_sheriffStation",

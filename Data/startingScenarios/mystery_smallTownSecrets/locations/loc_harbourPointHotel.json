@@ -1,33 +1,27 @@
-{
-  "id": "loc_harbourPointHotel",
+{ "type": "LOCATION", "id": "loc_harbourPointHotel",
   "name": "Harbour Point Hotel",
-  "type": "building",
+  "locationType": "building",
   "description": "A Victorian-era hotel perched on the cliffs overlooking Blackwater Bay. Once the crown jewel of the town, the hotel retains its elegance despite signs of age. The lobby features dark wood paneling, brass fixtures, and a magnificent view of the bay through tall windows. Room 312, your current accommodation, was also rented by Maya Chen before her disappearance.",
   "discoveredByPlayer": true,
 
   "connectedLocations": [
-    {
-      "id": "loc_mainStreet",
+    { "type": "LOCATION", "id": "loc_mainStreet",
       "description": "The town's primary thoroughfare lined with shops, restaurants, and municipal buildings."
     },
-    {
-      "id": "loc_cliffPath",
+    { "type": "LOCATION", "id": "loc_cliffPath",
       "description": "A winding trail along the cliffs that connects the hotel to Siren's Cove Beach below."
     }
   ],
 
-  "parentLocation": {
-    "id": "loc_blackwaterBay",
+  "parentLocation": { "type": "LOCATION", "id": "loc_blackwaterBay",
     "description": "Harbour Point Hotel is one of the most prominent landmarks in the coastal town of Blackwater Bay."
   },
 
   "subLocations": [
-    {
-      "id": "loc_harbourPointHotel_lobby",
+    { "type": "LOCATION", "id": "loc_harbourPointHotel_lobby",
       "description": "The elegant main lobby with a mahogany reception desk, antique furniture, and a crackling fireplace."
     },
-    {
-      "id": "loc_harbourPointHotel_room312",
+    { "type": "LOCATION", "id": "loc_harbourPointHotel_room312",
       "description": "Your room, which features a comfortable queen bed, a writing desk by the window, and a connecting bathroom. Maya Chen stayed here before disappearing."
     }
   ],
@@ -71,3 +65,4 @@
 
   "notes": "The hotel seems to be a hub of gossip and information about town happenings. Staff and long-term residents appear somewhat guarded when discussing recent events or the town's history. Some rooms on the third floor, including 312, have been renovated more recently than others."
 } 
+

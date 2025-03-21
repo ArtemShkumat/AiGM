@@ -1,33 +1,27 @@
-{
-  "id": "loc_sheriffStation",
-  "name": "Blackwater Bay Sheriff's Station",
-  "type": "building",
+{ "type": "LOCATION", "id": "loc_sheriffStation",
+  "name": "Sheriff's Station",
+  "locationType": "building",
   "description": "A modest brick building on Main Street housing the town's law enforcement. The interior is functional and orderly with a reception area, three desks for deputies, Sheriff Carter's private office, and a small holding cell. Maps of the area cover one wall, with pins marking various incidents. A locked evidence room is visible behind a reinforced door.",
   "discoveredByPlayer": true,
 
   "connectedLocations": [
-    {
-      "id": "loc_mainStreet",
+    { "type": "LOCATION", "id": "loc_mainStreet",
       "description": "The town's central thoroughfare, where most municipal buildings are located."
     },
-    {
-      "id": "loc_townHall",
+    { "type": "LOCATION", "id": "loc_townHall",
       "description": "The seat of local government, located just across the street from the Sheriff's Station."
     }
   ],
 
-  "parentLocation": {
-    "id": "loc_blackwaterBay",
+  "parentLocation": { "type": "LOCATION", "id": "loc_blackwaterBay",
     "description": "The Sheriff's Station serves as the primary law enforcement center for the entire town of Blackwater Bay."
   },
 
   "subLocations": [
-    {
-      "id": "loc_sheriffStation_office",
+    { "type": "LOCATION", "id": "loc_sheriffStation_office",
       "description": "Sheriff Carter's private office, furnished with a heavy oak desk, filing cabinets, and a wall of commendations. A map of the area from 20 years ago hangs on one wall with multiple notes and markings."
     },
-    {
-      "id": "loc_sheriffStation_evidenceRoom",
+    { "type": "LOCATION", "id": "loc_sheriffStation_evidenceRoom",
       "description": "A secure room containing evidence from active and cold cases, including items collected from Maya Chen's hotel room."
     }
   ],
@@ -71,3 +65,4 @@
 
   "notes": "The station has a tense atmosphere. Deputies seem to follow Sheriff Carter's orders without question, but quiet conversations stop when visitors enter. The Thomas Family case files are kept under unusually tight security, and staff appear uncomfortable when asked about them. Recent radio communications suggest search parties have been organized along the coastal paths, but strangely little public information has been released about the search efforts."
 } 
+

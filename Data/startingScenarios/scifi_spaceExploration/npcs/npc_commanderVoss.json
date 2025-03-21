@@ -1,5 +1,4 @@
-{
-  "id": "npc_commanderVoss",
+{ "type": "NPC", "id": "npc_commanderVoss",
   "name": "Commander Elara Voss",
   "age": 47,
   "currentLocationId": "loc_axiomStation_commandCenter",

@@ -1,33 +1,27 @@
-{
-  "id": "loc_sirensCove",
+{ "type": "LOCATION", "id": "loc_sirensCove",
   "name": "Siren's Cove",
-  "type": "natural",
+  "locationType": "coastal",
   "description": "A secluded beach accessible only by a steep path down the cliffs. Black volcanic sand glitters under the moonlight, and jagged rock formations create eerie shadows. The constant crash of waves against the cliffs drowns out other sounds. Several sea caves are visible along the base of the cliff, partially submerged at high tide. Local legends claim the cove was once used for secret meetings and rituals by the town's founding families.",
   "discoveredByPlayer": false,
 
   "connectedLocations": [
-    {
-      "id": "loc_cliffPath",
+    { "type": "LOCATION", "id": "loc_cliffPath",
       "description": "A winding, treacherous path that leads up the cliffs to the main road and Harbour Point Hotel."
     },
-    {
-      "id": "loc_abandonedCannery",
+    { "type": "LOCATION", "id": "loc_abandonedCannery",
       "description": "A decrepit industrial building at the north end of the cove, once owned by the Thomas family."
     }
   ],
 
-  "parentLocation": {
-    "id": "loc_blackwaterBay",
+  "parentLocation": { "type": "LOCATION", "id": "loc_blackwaterBay",
     "description": "One of the most mysterious and dangerous coastal areas in Blackwater Bay."
   },
 
   "subLocations": [
-    {
-      "id": "loc_sirensCove_mainBeach",
+    { "type": "LOCATION", "id": "loc_sirensCove_mainBeach",
       "description": "The crescent-shaped stretch of dark sand where unusual items often wash ashore after storms."
     },
-    {
-      "id": "loc_sirensCove_northCaves",
+    { "type": "LOCATION", "id": "loc_sirensCove_northCaves",
       "description": "A network of sea caves accessible only at low tide, with strange symbols carved into the walls."
     }
   ],
@@ -73,3 +67,4 @@
 
   "notes": "The cove seems to be deliberately avoided by most locals, especially after dark. The tides here are unpredictable and dangerous, potentially trapping unwary visitors in the caves. There are persistent rumors of strange lights and chanting heard from the caves on certain nights of the year. Both the Thomas family disappearance and Maya Chen's investigation seem connected to this location."
 } 
+

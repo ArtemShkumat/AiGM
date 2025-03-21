@@ -77,47 +77,27 @@ namespace AiGMBackEnd.Services
             var world = await _storageService.GetWorldAsync(userId);
             var gameSetting = await _storageService.GetGameSettingAsync(userId);
             var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
-
-            // Load current location
             var location = await _storageService.GetLocationAsync(userId, player.CurrentLocationId);
-
-            // Get NPCs in current location
-            var npcSummaries = new List<string>();
-            foreach (var npcId in location.Npcs)
-            {
-                try
-                {
-                    var npc = await _storageService.GetNpcAsync(userId, npcId);
-                    if (npc!=null)
-                    {
-                        npcSummaries.Add($"NPC ID: {npc.Id}, Name: {npc.Name}, Summary: {npc.Backstory}");
-                    }                    
-                }
-                catch (Exception ex)
-                {
-                    _loggingService.LogWarning($"Failed to load NPC {npcId}: {ex.Message}");
-                }
-            }
-
-            // Get active quests
-            var activeQuestSummaries = new List<string>();
-            foreach (var questId in player.ActiveQuests)
-            {
-                try
-                {
-                    var quest = await _storageService.GetQuestAsync(userId, questId);
-                    if (quest != null) { activeQuestSummaries.Add($"Quest ID: {quest.Id}, Title: {quest.Title}, Current Step: {quest.CurrentProgress}, Summary: {quest.QuestDescription}"); }                    
-                }
-                catch (Exception ex)
-                {
-                    _loggingService.LogWarning($"Failed to load quest {questId}: {ex.Message}");
-                }
-            }
+            var npcsInCurrentLocation = await _storageService.GetNpcsInLocationAsync(userId, player.CurrentLocationId);
+            var activeQuests = await _storageService.GetActiveQuestsAsync(userId, player.ActiveQuests);
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
             promptBuilder.AppendLine(systemPrompt);
             promptBuilder.AppendLine();
+
+            // Add response instructions
+            promptBuilder.AppendLine("# Response Instructions");
+            promptBuilder.AppendLine(responseInstructions);
+            promptBuilder.AppendLine();
+
+            // Add example responses
+            promptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");
+            promptBuilder.AppendLine("# Example Responses");
+            promptBuilder.AppendLine(exampleResponses);
+            promptBuilder.AppendLine();
+
+            promptBuilder.AppendLine("# Below is the information about the current game");
 
             // Add game setting and preferences
             promptBuilder.AppendLine("# Game Setting");
@@ -139,16 +119,106 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine($"Setting: {world.Setting}");
             promptBuilder.AppendLine($"Current Time: {world.GameTime}");
             promptBuilder.AppendLine($"Current Weather: {world.WorldStateEffects.Weather}");
-            if (world.Lore.Count > 0 && world.Lore[0] != null)
+            promptBuilder.AppendLine($"Days Since Start: {world.DaysSinceStart}");
+            
+            // Add global world flags
+            if (world.GlobalFlags != null && world.GlobalFlags.Count > 0)
             {
-                promptBuilder.AppendLine($"World Summary: {world.Lore[0].Summary}");
+                promptBuilder.AppendLine($"Global Flags: {string.Join(", ", world.GlobalFlags)}");
             }
+            
+            // Add world lore summaries
+            if (world.Lore != null && world.Lore.Count > 0)
+            {
+                promptBuilder.AppendLine("World Lore:");
+                foreach (var lore in world.Lore)
+                {
+                    promptBuilder.AppendLine($"- {lore.Title}: {lore.Summary}");
+                }
+            }
+            
+            // Add all NPC names and IDs
+            if (world.Npcs != null && world.Npcs.Count > 0)
+            {
+                promptBuilder.AppendLine("Existing NPCs:");
+                foreach (var npc in world.Npcs)
+                {
+                    promptBuilder.AppendLine($"- {npc.Name} (ID: {npc.Id})");
+                }
+            }
+            
+            // Add all Location names and IDs
+            if (world.Locations != null && world.Locations.Count > 0)
+            {
+                promptBuilder.AppendLine("Existing Locations:");
+                foreach (var loc in world.Locations)
+                {
+                    promptBuilder.AppendLine($"- {loc.Name} (ID: {loc.Id})");
+                }
+            }
+
+            //Add all existing quest names and IDs
+            if (world.Quests != null && world.Quests.Count > 0)
+            {
+                promptBuilder.AppendLine("Existing Quests:");
+                foreach (var q in world.Quests)
+                {
+                    promptBuilder.AppendLine($"- {q.Title} (ID: {q.Id})");
+                }
+            }
+
             promptBuilder.AppendLine();
 
             // Add player context
             promptBuilder.AppendLine("# Player Context");
             promptBuilder.AppendLine($"Player Name: {player.Name}");
             promptBuilder.AppendLine($"Background: {player.Backstory}");
+            
+            // Add player visual description
+            if (player.VisualDescription != null)
+            {
+                promptBuilder.AppendLine($"Gender: {player.VisualDescription.Gender}");
+                promptBuilder.AppendLine($"Body Type: {player.VisualDescription.BodyType}");
+                promptBuilder.AppendLine($"Clothing: {player.VisualDescription.VisibleClothing}");
+                promptBuilder.AppendLine($"Physical Condition: {player.VisualDescription.Condition}");
+            }
+            
+            // Add player rpg elements
+            if (player.RpgElements != null && player.RpgElements.Count > 0)
+            {
+                promptBuilder.AppendLine("RPG Elements:");
+                foreach (var element in player.RpgElements)
+                {
+                    promptBuilder.AppendLine($"- {element.Key}: {element.Value}");
+                }
+            }
+            
+            // Add player relationships
+            if (player.Relationships != null && player.Relationships.Count > 0)
+            {
+                promptBuilder.AppendLine("Relationships:");
+                foreach (var relationship in player.Relationships)
+                {
+                    promptBuilder.AppendLine($"- {relationship.NpcId}: {relationship.RelationshipType}");
+                }
+            }
+            
+            // Add player inventory
+            if (player.Inventory != null && player.Inventory.Count > 0)
+            {
+                promptBuilder.AppendLine("Inventory:");
+                foreach (var item in player.Inventory)
+                {
+                    promptBuilder.AppendLine($"- {item.Name} (x{item.Quantity}): {item.Description}");
+                }
+            }
+            
+            // Add player status effects
+            if (player.StatusEffects != null && player.StatusEffects.Count > 0)
+            {
+                promptBuilder.AppendLine($"Status Effects: {string.Join(", ", player.StatusEffects)}");
+            }
+            
             promptBuilder.AppendLine();
 
             // Add location context
@@ -157,39 +227,168 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine($"Location Type: {location.Type}");
             promptBuilder.AppendLine($"Description: {location.Description}");
             promptBuilder.AppendLine($"Time of Day: {world.GameTime}");
+            
+            // Add connected locations
+            if (location.ConnectedLocations != null && location.ConnectedLocations.Count > 0)
+            {
+                promptBuilder.AppendLine("Connected Locations:");
+                foreach (var connectedLocation in location.ConnectedLocations)
+                {
+                    promptBuilder.AppendLine($"- {connectedLocation.Id}: {connectedLocation.Description}");
+                }
+            }
+            
+            // Add sublocations
+            if (location.SubLocations != null && location.SubLocations.Count > 0)
+            {
+                promptBuilder.AppendLine("Sub-Locations:");
+                foreach (var subLocation in location.SubLocations)
+                {
+                    promptBuilder.AppendLine($"- {subLocation.Id}: {subLocation.Description}");
+                }
+            }
+            
+            // Add points of interest
+            if (location.PointsOfInterest != null && location.PointsOfInterest.Count > 0)
+            {
+                promptBuilder.AppendLine("Points of Interest:");
+                foreach (var poi in location.PointsOfInterest)
+                {
+                    promptBuilder.AppendLine($"- {poi.Name}: {poi.Description}");
+                }
+            }
+            
+            // Add location items
+            if (location.Items != null && location.Items.Count > 0)
+            {
+                promptBuilder.AppendLine($"Items Present: {string.Join(", ", location.Items)}");
+            }
+            
             promptBuilder.AppendLine();
 
-            // Add NPCs
-            if (npcSummaries.Count > 0)
+            // Add NPCs present at this location and all the information about them
+            if (npcsInCurrentLocation != null && npcsInCurrentLocation.Count > 0)
             {
-                promptBuilder.AppendLine("# NPCs in current location");
-                foreach (var npcSummary in npcSummaries)
+                promptBuilder.AppendLine("# NPCs Present");
+                foreach (var npc in npcsInCurrentLocation)
                 {
-                    promptBuilder.AppendLine(npcSummary);
+                    promptBuilder.AppendLine($"## NPC: {npc.Name} (ID: {npc.Id})");
+                    
+                    // Add NPC visual description
+                    if (npc.VisualDescription != null)
+                    {
+                        promptBuilder.AppendLine($"Appearance: {npc.VisualDescription.Gender} {npc.VisualDescription.BodyType} wearing {npc.VisualDescription.VisibleClothing}, {npc.VisualDescription.Condition}");
+                    }
+                    
+                    // Add NPC personality
+                    if (npc.Personality != null)
+                    {
+                        promptBuilder.AppendLine($"Personality: {npc.Personality.Temperament}, {npc.Personality.Traits}");
+                    }
+                    
+                    // Add backstory
+                    if (!string.IsNullOrEmpty(npc.Backstory))
+                    {
+                        promptBuilder.AppendLine($"Backstory: {npc.Backstory}");
+                    }
+                    
+                    // Add disposition towards player
+                    if (!string.IsNullOrEmpty(npc.DispositionTowardsPlayer))
+                    {
+                        promptBuilder.AppendLine($"Disposition: {npc.DispositionTowardsPlayer}");
+                    }
+                    
+                    // Add relevant quest involvement
+                    if (npc.QuestInvolvement != null && npc.QuestInvolvement.Count > 0)
+                    {
+                        promptBuilder.AppendLine($"Quest Involvement: {string.Join(", ", npc.QuestInvolvement)}");
+                    }
+                    
+                    // Add NPC status
+                    if (npc.StatusFlags != null)
+                    {
+                        var statusParts = new List<string>();
+                        if (!npc.StatusFlags.IsAlive) statusParts.Add("Not Alive");
+                        if (npc.StatusFlags.IsBusy) statusParts.Add("Busy");
+                        if (!string.IsNullOrEmpty(npc.StatusFlags.CustomState)) statusParts.Add(npc.StatusFlags.CustomState);
+                        
+                        if (statusParts.Count > 0)
+                        {
+                            promptBuilder.AppendLine($"Current Status: {string.Join(", ", statusParts)}");
+                        }
+                    }
+                    
+                    promptBuilder.AppendLine();
                 }
+            }
+            else
+            {
+                promptBuilder.AppendLine("# NPCs Present");
+                promptBuilder.AppendLine("There are no NPCs currently present at this location.");
                 promptBuilder.AppendLine();
             }
 
-            // Add active quests
-            if (activeQuestSummaries.Count > 0)
+            // Add all active quests and all their information
+            if (activeQuests != null && activeQuests.Count > 0)
             {
                 promptBuilder.AppendLine("# Active Quests");
-                foreach (var questSummary in activeQuestSummaries)
+                foreach (var quest in activeQuests)
                 {
-                    promptBuilder.AppendLine(questSummary);
+                    promptBuilder.AppendLine($"## Quest: {quest.Title} (ID: {quest.Id})");
+                    promptBuilder.AppendLine($"Description: {quest.QuestDescription}");
+                    promptBuilder.AppendLine($"Current Progress: {quest.CurrentProgress}");
+                    
+                    // Add achievement conditions
+                    if (quest.AchievementConditions != null && quest.AchievementConditions.Count > 0)
+                    {
+                        promptBuilder.AppendLine("Achievement Conditions:");
+                        foreach (var condition in quest.AchievementConditions)
+                        {
+                            promptBuilder.AppendLine($"- {condition}");
+                        }
+                    }
+                    
+                    // Add fail conditions
+                    if (quest.FailConditions != null && quest.FailConditions.Count > 0)
+                    {
+                        promptBuilder.AppendLine("Fail Conditions:");
+                        foreach (var condition in quest.FailConditions)
+                        {
+                            promptBuilder.AppendLine($"- {condition}");
+                        }
+                    }
+                    
+                    // Add involved locations
+                    if (quest.InvolvedLocations != null && quest.InvolvedLocations.Count > 0)
+                    {
+                        promptBuilder.AppendLine($"Involved Locations: {string.Join(", ", quest.InvolvedLocations)}");
+                    }
+                    
+                    // Add involved NPCs
+                    if (quest.InvolvedNpcs != null && quest.InvolvedNpcs.Count > 0)
+                    {
+                        promptBuilder.AppendLine($"Involved NPCs: {string.Join(", ", quest.InvolvedNpcs)}");
+                    }
+                    
+                    // Add quest log if available
+                    if (quest.QuestLog != null && quest.QuestLog.Count > 0)
+                    {
+                        promptBuilder.AppendLine("Quest Log:");
+                        foreach (var entry in quest.QuestLog)
+                        {
+                            promptBuilder.AppendLine($"- [{entry.Timestamp}] {entry.Event}: {entry.Description}");
+                        }
+                    }
+                    
+                    promptBuilder.AppendLine();
                 }
+            }
+            else
+            {
+                promptBuilder.AppendLine("# Active Quests");
+                promptBuilder.AppendLine("The player currently has no active quests.");
                 promptBuilder.AppendLine();
             }
-
-            // Add response instructions
-            promptBuilder.AppendLine("# Response Instructions");
-            promptBuilder.AppendLine(responseInstructions);
-            promptBuilder.AppendLine();
-
-            // Add example responses
-            promptBuilder.AppendLine("# Example Responses");
-            promptBuilder.AppendLine(exampleResponses);
-            promptBuilder.AppendLine();
 
             // Add the user's input
             promptBuilder.AppendLine("# User Input");

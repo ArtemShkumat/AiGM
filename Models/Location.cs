@@ -5,14 +5,17 @@ namespace AiGMBackEnd.Models
 {
     public class Location
     {
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = "LOCATION";
+        
         [JsonPropertyName("id")]
         public string Id { get; set; }
         
         [JsonPropertyName("name")]
         public string Name { get; set; }
         
-        [JsonPropertyName("type")]
-        public string Type { get; set; }
+        [JsonPropertyName("locationType")]
+        public string LocationType { get; set; }
         
         [JsonPropertyName("description")]
         public string Description { get; set; }

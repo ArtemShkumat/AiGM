@@ -1,4 +1,5 @@
 {
+  "type": "QUEST",
   "id": "quest_missingData",
   "title": "The Missing Data Core",
   "currentProgress": "not_started",
