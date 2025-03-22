@@ -29,6 +29,7 @@ namespace AiGMBackEnd.Services.AIProviders
             return providerName.ToLower() switch
             {
                 "openai" => new OpenAIProvider(_configuration, _loggingService),
+                "openrouter" => new OpenRouterProvider(_configuration, _loggingService),
                 // Add more providers here as they are implemented
                 _ => throw new ArgumentException($"Unsupported AI provider: {providerName}")
             };

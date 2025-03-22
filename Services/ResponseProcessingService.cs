@@ -1014,13 +1014,25 @@ namespace AiGMBackEnd.Services
         private (string userFacingText, string hiddenJson) ExtractHiddenJson(string llmResponse)
         {
             // Pattern to extract content between <donotshow/> tags
+            llmResponse = Regex.Replace(llmResponse, @"^```json\s*|\s*```$", string.Empty, RegexOptions.Multiline).Trim();
             var regex = new Regex(@"^(.*?)<donotshow/>(.*)$", RegexOptions.Singleline);
             var match = regex.Match(llmResponse);
 
             if (match.Success)
             {
                 var userFacingText = match.Groups[1].Value.Trim();
-                var jsonContent = match.Groups[2].Value.Trim();                
+                var jsonContent = match.Groups[2].Value.Trim();
+
+                int jsonStartIndex = jsonContent.IndexOf('{');
+                if (jsonStartIndex == -1)
+                    jsonStartIndex = jsonContent.IndexOf('[');
+
+                if (jsonStartIndex >= 0)
+                {
+                    var jsonCandidate = jsonContent.Substring(jsonStartIndex).Trim();
+
+                }
+
                 return (userFacingText, jsonContent);
             }
 
