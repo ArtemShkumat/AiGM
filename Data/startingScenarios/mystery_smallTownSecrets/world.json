@@ -12,6 +12,11 @@
       "id": "lore_thomasDisappearance",
       "title": "The Thomas Family Disappearance",
       "summary": "The mysterious vanishing of the prominent Thomas family twenty years ago, which remains unsolved and continues to haunt the town."
+    },
+    {
+      "id": "lore_thomasFamily",
+      "title": "The Thomas Family History",
+      "summary": "One of the three founding families of Blackwater Bay with deep connections to the town's fishing industry and mysterious traditions."
     }
   ],
 
@@ -83,6 +88,42 @@
     {
       "id": "loc_sirensCove_northCaves",
       "name": "North Caves"
+    },
+    {
+      "id": "loc_townHall_mayorOffice",
+      "name": "Mayor's Office"
+    },
+    {
+      "id": "loc_townHall_archives",
+      "name": "Town Archives"
+    },
+    {
+      "id": "loc_library_readingRoom",
+      "name": "Library Reading Room"
+    },
+    {
+      "id": "loc_library_archives",
+      "name": "Library Archives"
+    },
+    {
+      "id": "loc_cliffPath_lookoutPoint",
+      "name": "Lookout Point"
+    },
+    {
+      "id": "loc_cliffPath_landslideArea",
+      "name": "Landslide Area"
+    },
+    {
+      "id": "loc_abandonedCannery_mainFloor",
+      "name": "Cannery Main Floor"
+    },
+    {
+      "id": "loc_abandonedCannery_office",
+      "name": "Cannery Office"
+    },
+    {
+      "id": "loc_abandonedCannery_basement",
+      "name": "Cannery Basement"
     }
   ],
 
@@ -90,6 +131,34 @@
     {
       "id": "npc_sheriffCarter",
       "name": "Sheriff Evelyn Carter"
+    },
+    {
+      "id": "npc_deputyParker",
+      "name": "Deputy Parker"
+    },
+    {
+      "id": "npc_hotelManager",
+      "name": "Roland Wells"
+    },
+    {
+      "id": "npc_cafeOwner",
+      "name": "Martha Fletcher"
+    },
+    {
+      "id": "npc_newspaperEditor",
+      "name": "James Fletcher"
+    },
+    {
+      "id": "npc_mayor",
+      "name": "Mayor Fletcher"
+    },
+    {
+      "id": "npc_townClerk",
+      "name": "Town Clerk"
+    },
+    {
+      "id": "npc_librarian",
+      "name": "Head Librarian"
     }
   ],
 
