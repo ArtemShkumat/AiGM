@@ -13,9 +13,17 @@ namespace AiGMBackEnd.Services.PromptBuilders
 
         public override async Task<string> BuildPromptAsync(string userId, string userInput)
         {
+            return await BuildPromptAsync(userId, userInput, null);
+        }
+
+        public async Task<string> BuildPromptAsync(string userId, string userInput, string providedNpcId)
+        {
             try
             {
-                string npcId = ParseNpcId(userInput);
+                // Use provided NpcId if available, otherwise parse from userInput
+                string npcId = !string.IsNullOrEmpty(providedNpcId) 
+                    ? providedNpcId 
+                    : ParseNpcId(userInput);
                 
                 // Load NPC template files
                 var systemPrompt = await _storageService.GetNpcTemplateAsync("SystemNPC");

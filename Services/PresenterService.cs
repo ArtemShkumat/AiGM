@@ -25,17 +25,12 @@ namespace AiGMBackEnd.Services
             _storageService = storageService;
         }
 
-        public async Task<string> HandleUserInputAsync(string userId, string userInput, PromptType promptType = PromptType.DM)
+        public async Task<string> HandleUserInputAsync(string userId, string userInput, PromptType promptType = PromptType.DM, string npcId = null)
         {
             try
             {
                 _loggingService.LogInfo($"Handling input for user {userId} with promptType {promptType}: {userInput}");
                 
-                // Add user message to conversation log when the prompt is from the user
-                if (promptType == PromptType.DM || promptType == PromptType.NPC)
-                {
-                    await _storageService.AddUserMessageAsync(userId, userInput);
-                }
                 
                 // For now, we'll use the background job service for all requests
                 // In the future, we might want to bypass it for simple requests
@@ -43,7 +38,8 @@ namespace AiGMBackEnd.Services
                 {
                     UserId = userId,
                     UserInput = userInput,
-                    PromptType = promptType
+                    PromptType = promptType,
+                    NpcId = npcId
                 };
                 
                 var response = await _backgroundJobService.EnqueuePromptAsync(job);

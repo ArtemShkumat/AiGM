@@ -96,7 +96,7 @@ namespace AiGMBackEnd.Services
                             _loggingService.LogInfo($"Processing job for user {job.UserId} with prompt type {job.PromptType}");
                         
                             // 1. Build prompt
-                            var prompt = await _promptService.BuildPromptAsync(job.PromptType, job.UserId, job.UserInput);
+                            var prompt = await _promptService.BuildPromptAsync(job.PromptType, job.UserId, job.UserInput, job.NpcId);
                         
                             // 2. Call LLM
                             var llmResponse = await _aiService.GetCompletionAsync(prompt, job.PromptType);
@@ -158,6 +158,7 @@ namespace AiGMBackEnd.Services
         public string UserId { get; set; } = string.Empty;
         public string UserInput { get; set; } = string.Empty;
         public PromptType PromptType { get; set; } = PromptType.DM;
+        public string NpcId { get; set; } = string.Empty;
         public TaskCompletionSource<string> CompletionSource { get; set; } = null!;
     }
 }

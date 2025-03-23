@@ -47,13 +47,19 @@ namespace AiGMBackEnd.Services
             };
         }
 
-        public async Task<string> BuildPromptAsync(PromptType promptType, string userId, string userInput)
+        public async Task<string> BuildPromptAsync(PromptType promptType, string userId, string userInput, string npcId = null)
         {
             try
             {
                 // Check if we have a builder for this prompt type
                 if (_promptBuilders.TryGetValue(promptType, out var builder))
                 {
+                    // For NPC prompt types, use the dedicated NPC prompt builder with NpcId
+                    if (promptType == PromptType.NPC && builder is NPCPromptBuilder npcBuilder)
+                    {
+                        return await npcBuilder.BuildPromptAsync(userId, userInput, npcId);
+                    }
+                    
                     return await builder.BuildPromptAsync(userId, userInput);
                 }
                 

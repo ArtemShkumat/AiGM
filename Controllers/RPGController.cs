@@ -38,7 +38,7 @@ namespace AiGMBackEnd.Controllers
 
             try
             {
-                var response = await _presenterService.HandleUserInputAsync(request.GameId, request.UserInput, request.PromptType);
+                var response = await _presenterService.HandleUserInputAsync(request.GameId, request.UserInput, request.PromptType, request.NpcId);
                 
                 return Ok(new UserInputResponse
                 {
@@ -357,6 +357,7 @@ namespace AiGMBackEnd.Controllers
         public string GameId { get; set; }
         public string UserInput { get; set; }
         public PromptType PromptType { get; set; } = PromptType.DM; // Default to DM prompt
+        public string? NpcId { get; set; } // Optional field for NPC interactions
     }
 
     public class UserInputResponse

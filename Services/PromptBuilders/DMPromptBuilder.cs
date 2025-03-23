@@ -15,6 +15,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
             try
             {
+                await _storageService.AddUserMessageAsync(userId, userInput);                
+
                 // Load DM template files
                 var systemPrompt = await _storageService.GetDmTemplateAsync("SystemDM");
                 var responseInstructions = await _storageService.GetDmTemplateAsync("ResponseInstructions");
