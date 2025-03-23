@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 
 namespace AiGMBackEnd.Controllers
 {
@@ -250,6 +251,96 @@ namespace AiGMBackEnd.Controllers
             {
                 _loggingService.LogError($"Error getting scene for game {gameId}: {ex.Message}");
                 return StatusCode(500, $"Error retrieving scene: {ex.Message}");
+            }
+        }
+
+        [HttpGet("visibleNpcs")]
+        public async Task<IActionResult> GetVisibleNpcs(string gameId)
+        {
+            if (string.IsNullOrEmpty(gameId))
+            {
+                return BadRequest("GameId is required");
+            }
+            
+            try
+            {
+                var visibleNpcs = await _storageService.GetAllVisibleNpcsAsync(gameId);
+                return Ok(visibleNpcs);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting visible NPCs for game {gameId}: {ex.Message}");
+                return StatusCode(500, $"Error retrieving visible NPCs: {ex.Message}");
+            }
+        }
+
+        [HttpGet("player")]
+        public async Task<IActionResult> GetPlayerInfo(string gameId)
+        {
+            if (string.IsNullOrEmpty(gameId))
+            {
+                return BadRequest("GameId is required");
+            }
+            
+            try
+            {
+                var player = await _storageService.GetPlayerAsync(gameId);
+                
+                if (player == null)
+                {
+                    return BadRequest("Player data not found. Character may not have been created yet.");
+                }
+                
+                // Create a new anonymous object without the inventory
+                var playerInfo = new
+                {
+                    player.Id,
+                    player.Name,
+                    player.VisualDescription,
+                    player.Age,
+                    player.Backstory,
+                    player.CurrentLocationId,
+                    player.Relationships,
+                    player.Money,
+                    player.StatusEffects,
+                    player.RpgElements,
+                    player.ActiveQuests,
+                    player.PlayerLog,
+                    player.Notes
+                };
+                
+                return Ok(playerInfo);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting player info for game {gameId}: {ex.Message}");
+                return StatusCode(500, $"Error retrieving player info: {ex.Message}");
+            }
+        }
+
+        [HttpGet("inventory")]
+        public async Task<IActionResult> GetPlayerInventory(string gameId)
+        {
+            if (string.IsNullOrEmpty(gameId))
+            {
+                return BadRequest("GameId is required");
+            }
+            
+            try
+            {
+                var player = await _storageService.GetPlayerAsync(gameId);
+                
+                if (player == null)
+                {
+                    return BadRequest("Player data not found. Character may not have been created yet.");
+                }
+                
+                return Ok(player.Inventory);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting inventory for game {gameId}: {ex.Message}");
+                return StatusCode(500, $"Error retrieving inventory: {ex.Message}");
             }
         }
     }

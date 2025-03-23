@@ -426,6 +426,57 @@ namespace AiGMBackEnd.Services
             }
         }
         
+        // Method to get all NPCs in a game
+        public async Task<List<Npc>> GetAllNpcsAsync(string gameId)
+        {
+            try
+            {
+                var allNpcs = new List<Npc>();
+                var npcsPath = Path.Combine(_dataPath, "userData", gameId, "npcs");
+                
+                if (!Directory.Exists(npcsPath))
+                {
+                    return allNpcs;
+                }
+                
+                foreach (var npcFile in Directory.GetFiles(npcsPath, "*.json"))
+                {
+                    try
+                    {
+                        var npcJson = await File.ReadAllTextAsync(npcFile);
+                        var npc = System.Text.Json.JsonSerializer.Deserialize<Npc>(npcJson);
+                        allNpcs.Add(npc);
+                    }
+                    catch (Exception ex)
+                    {
+                        _loggingService.LogWarning($"Error reading NPC file {npcFile}: {ex.Message}");
+                    }
+                }
+                
+                return allNpcs;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting all NPCs: {ex.Message}");
+                throw;
+            }
+        }
+        
+        // Method to get all visible NPCs in a game
+        public async Task<List<Npc>> GetAllVisibleNpcsAsync(string gameId)
+        {
+            try
+            {
+                var allNpcs = await GetAllNpcsAsync(gameId);
+                return allNpcs.Where(npc => npc.VisibleToPlayer).ToList();
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting visible NPCs: {ex.Message}");
+                throw;
+            }
+        }
+        
         // Method to get all active quests for a player
         public async Task<List<Quest>> GetActiveQuestsAsync(string userId, List<string> activeQuestIds)
         {
