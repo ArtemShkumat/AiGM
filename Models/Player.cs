@@ -25,10 +25,7 @@ namespace AiGMBackEnd.Models
 
         [JsonPropertyName("backstory")]
         public string Backstory { get; set; }
-        
-        [JsonPropertyName("relationships")]
-        public List<Relationship> Relationships { get; set; } = new List<Relationship>();
-        
+
         [JsonPropertyName("inventory")]
         public List<InventoryItem> Inventory { get; set; } = new List<InventoryItem>();
         
@@ -42,60 +39,6 @@ namespace AiGMBackEnd.Models
         public Dictionary<string, object> RpgElements { get; set; } = new Dictionary<string, object>();
         
         [JsonPropertyName("activeQuests")]
-        public List<string> ActiveQuests { get; set; } = new List<string>();
-        
-        [JsonPropertyName("playerLog")]
-        public List<LogEntry> PlayerLog { get; set; } = new List<LogEntry>();
-        
-        [JsonPropertyName("notes")]
-        public string Notes { get; set; }
-    }
-
-    public class VisualDescription
-    {
-        [JsonPropertyName("gender")]
-        public string Gender { get; set; }
-        
-        [JsonPropertyName("bodyType")]
-        public string BodyType { get; set; }
-        
-        [JsonPropertyName("visibleClothing")]
-        public string VisibleClothing { get; set; }
-        
-        [JsonPropertyName("condition")]
-        public string Condition { get; set; }
-    }
-
-    public class Relationship
-    {
-        [JsonPropertyName("npcId")]
-        public string NpcId { get; set; }
-        
-        [JsonPropertyName("relationship")]
-        public string RelationshipType { get; set; }
-    }
-
-    public class InventoryItem
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
-
-        [JsonPropertyName("quantity")]
-        public int Quantity { get; set; }
-    }
-
-    public class LogEntry
-    {
-        [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
-        
-        [JsonPropertyName("event")]
-        public string Event { get; set; }
-        
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public List<string> ActiveQuests { get; set; } = new List<string>();        
     }
 }

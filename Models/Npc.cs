@@ -16,10 +16,13 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("currentLocationId")]
         public string CurrentLocationId { get; set; }
-        
-        [JsonPropertyName("discoveredByPlayer")]
-        public bool DiscoveredByPlayer { get; set; }
-        
+
+        [JsonPropertyName("knownToPlayer")]
+        public bool KnownToPlayer { get; set; }
+
+        [JsonPropertyName("knowsPlayer")]
+        public bool KnowsPlayer { get; set; }
+
         [JsonPropertyName("visibleToPlayer")]
         public bool VisibleToPlayer { get; set; }
         
@@ -32,6 +35,9 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("backstory")]
         public string Backstory { get; set; }
 
+        [JsonPropertyName("currentGoal")]
+        public string CurrentGoal { get; set; }
+
         [JsonPropertyName("age")]
         public int Age { get; set; }
 
@@ -39,22 +45,13 @@ namespace AiGMBackEnd.Models
         public string DispositionTowardsPlayer { get; set; }
         
         [JsonPropertyName("knownEntities")]
-        public KnownEntities KnownEntities { get; set; } = new KnownEntities();
-        
-        [JsonPropertyName("relationships")]
-        public List<Relationship> Relationships { get; set; } = new List<Relationship>();
+        public KnownEntities KnownEntities { get; set; } = new KnownEntities();        
         
         [JsonPropertyName("questInvolvement")]
         public List<string> QuestInvolvement { get; set; } = new List<string>();
         
         [JsonPropertyName("inventory")]
         public List<InventoryItem> Inventory { get; set; } = new List<InventoryItem>();
-        
-        [JsonPropertyName("statusFlags")]
-        public StatusFlags StatusFlags { get; set; } = new StatusFlags();
-        
-        [JsonPropertyName("notes")]
-        public string Notes { get; set; }
         
         [JsonPropertyName("conversationLog")]
         public List<Dictionary<string, string>> ConversationLog { get; set; } = new List<Dictionary<string, string>>();
@@ -66,27 +63,38 @@ namespace AiGMBackEnd.Models
         public string Temperament { get; set; }
         
         [JsonPropertyName("traits")]
-        public string Traits { get; set; }
+        public string Quirks { get; set; }
+
+        [JsonPropertyName("motivations")]
+        public string Motivations { get; set; }
+
+        [JsonPropertyName("fears")]
+        public string Fears { get; set; }
+
+        [JsonPropertyName("secrets")]
+        public List<string> Secrets { get; set; } = new List<string>();
+
     }
 
     public class KnownEntities
     {
         [JsonPropertyName("npcsKnown")]
-        public List<string> NpcsKnown { get; set; } = new List<string>();
+        public List<NpcsKnownDetails> NpcsKnown { get; set; } = new List<NpcsKnownDetails>();
         
         [JsonPropertyName("locationsKnown")]
         public List<string> LocationsKnown { get; set; } = new List<string>();
     }
 
-    public class StatusFlags
+    public class NpcsKnownDetails
     {
-        [JsonPropertyName("isAlive")]
-        public bool IsAlive { get; set; } = true;
-        
-        [JsonPropertyName("isBusy")]
-        public bool IsBusy { get; set; }
-        
-        [JsonPropertyName("customState")]
-        public string CustomState { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("levelOfFamiliarity")]
+        public string LevelOfFamiliarity { get; set; }// Aware/Met/Known/Familiar/Deep
+
+        [JsonPropertyName("disposition")]
+        public string Disposition { get; set; }//Hostile/Unfriendly/Neutral/Fond/Loyal
+
     }
 }

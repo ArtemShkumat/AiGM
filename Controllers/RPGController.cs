@@ -294,19 +294,15 @@ namespace AiGMBackEnd.Controllers
                 // Create a new anonymous object without the inventory
                 var playerInfo = new
                 {
-                    player.Id,
                     player.Name,
                     player.VisualDescription,
                     player.Age,
                     player.Backstory,
                     player.CurrentLocationId,
-                    player.Relationships,
                     player.Money,
                     player.StatusEffects,
                     player.RpgElements,
-                    player.ActiveQuests,
-                    player.PlayerLog,
-                    player.Notes
+                    player.ActiveQuests
                 };
                 
                 return Ok(playerInfo);

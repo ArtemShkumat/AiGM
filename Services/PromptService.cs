@@ -182,7 +182,7 @@ namespace AiGMBackEnd.Services
             if (player.VisualDescription != null)
             {
                 promptBuilder.AppendLine($"Gender: {player.VisualDescription.Gender}");
-                promptBuilder.AppendLine($"Body Type: {player.VisualDescription.BodyType}");
+                promptBuilder.AppendLine($"Body: {player.VisualDescription.Body}");
                 promptBuilder.AppendLine($"Clothing: {player.VisualDescription.VisibleClothing}");
                 promptBuilder.AppendLine($"Physical Condition: {player.VisualDescription.Condition}");
             }
@@ -194,16 +194,6 @@ namespace AiGMBackEnd.Services
                 foreach (var element in player.RpgElements)
                 {
                     promptBuilder.AppendLine($"- {element.Key}: {element.Value}");
-                }
-            }
-            
-            // Add player relationships
-            if (player.Relationships != null && player.Relationships.Count > 0)
-            {
-                promptBuilder.AppendLine("Relationships:");
-                foreach (var relationship in player.Relationships)
-                {
-                    promptBuilder.AppendLine($"- {relationship.NpcId}: {relationship.RelationshipType}");
                 }
             }
             
@@ -281,13 +271,29 @@ namespace AiGMBackEnd.Services
                     // Add NPC visual description
                     if (npc.VisualDescription != null)
                     {
-                        promptBuilder.AppendLine($"Appearance: {npc.VisualDescription.Gender} {npc.VisualDescription.BodyType} wearing {npc.VisualDescription.VisibleClothing}, {npc.VisualDescription.Condition}");
+                        promptBuilder.AppendLine($"Appearance: {npc.VisualDescription.Gender} {npc.VisualDescription.Body} wearing {npc.VisualDescription.VisibleClothing}, {npc.VisualDescription.Condition}");
                     }
                     
                     // Add NPC personality
                     if (npc.Personality != null)
                     {
-                        promptBuilder.AppendLine($"Personality: {npc.Personality.Temperament}, {npc.Personality.Traits}");
+                        promptBuilder.AppendLine($"Personality: {npc.Personality.Temperament}, {npc.Personality.Quirks}");
+                        if (!string.IsNullOrEmpty(npc.Personality.Quirks))
+                        {
+                            promptBuilder.AppendLine($"Quirks: {npc.Personality.Quirks}");
+                        }
+                        if (!string.IsNullOrEmpty(npc.Personality.Motivations)) 
+                        {
+                            promptBuilder.AppendLine($"Motivations: {npc.Personality.Motivations}");
+                        }
+                        if (!string.IsNullOrEmpty(npc.Personality.Fears))
+                        {
+                            promptBuilder.AppendLine($"Fears: {npc.Personality.Fears}");
+                        }
+                        if (npc.Personality.Secrets != null && npc.Personality.Secrets.Count > 0)
+                        {
+                            promptBuilder.AppendLine($"Secrets: {string.Join(", ", npc.Personality.Secrets)}");
+                        }
                     }
                     
                     // Add backstory
@@ -306,20 +312,6 @@ namespace AiGMBackEnd.Services
                     if (npc.QuestInvolvement != null && npc.QuestInvolvement.Count > 0)
                     {
                         promptBuilder.AppendLine($"Quest Involvement: {string.Join(", ", npc.QuestInvolvement)}");
-                    }
-                    
-                    // Add NPC status
-                    if (npc.StatusFlags != null)
-                    {
-                        var statusParts = new List<string>();
-                        if (!npc.StatusFlags.IsAlive) statusParts.Add("Not Alive");
-                        if (npc.StatusFlags.IsBusy) statusParts.Add("Busy");
-                        if (!string.IsNullOrEmpty(npc.StatusFlags.CustomState)) statusParts.Add(npc.StatusFlags.CustomState);
-                        
-                        if (statusParts.Count > 0)
-                        {
-                            promptBuilder.AppendLine($"Current Status: {string.Join(", ", statusParts)}");
-                        }
                     }
                     
                     promptBuilder.AppendLine();
@@ -474,11 +466,11 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine($"NPC Name: {npc.Name}");
             if (npc.VisualDescription != null)
             {
-                promptBuilder.AppendLine($"Age: {npc.VisualDescription.BodyType}");
+                promptBuilder.AppendLine($"Age: {npc.VisualDescription.Body}");
             }
             if (npc.KnownEntities != null)
             {
-                promptBuilder.AppendLine($"Role: {npc.Personality.Traits}");
+                promptBuilder.AppendLine($"Role: {npc.Personality.Quirks}");
             }
             promptBuilder.AppendLine($"Description: {npc.Backstory}");
             promptBuilder.AppendLine($"Personality: {npc.Personality.Temperament}");
@@ -497,13 +489,12 @@ namespace AiGMBackEnd.Services
             // Add player context
             promptBuilder.AppendLine("# Player Context");
             promptBuilder.AppendLine($"Player Name: {player.Name}");
-            promptBuilder.AppendLine($"Appearance: {(player.VisualDescription != null ? player.VisualDescription.BodyType : "Unknown")}");
+            promptBuilder.AppendLine($"Appearance: {(player.VisualDescription != null ? player.VisualDescription.Body : "Unknown")}");
             
             // Add NPC's relationship with player if it exists
-            var playerRelationship = npc.Relationships.Find(r => r.NpcId == player.Id);
-            if (playerRelationship != null)
+            if (npc.KnowsPlayer)
             {
-                promptBuilder.AppendLine($"Relationship with player: {playerRelationship.RelationshipType}");
+                promptBuilder.AppendLine($"Disposition towards player: {npc.DispositionTowardsPlayer}");
             }
             promptBuilder.AppendLine();
 

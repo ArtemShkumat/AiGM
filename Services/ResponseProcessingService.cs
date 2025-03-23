@@ -373,8 +373,7 @@ namespace AiGMBackEnd.Services
                     Name = locationData["name"]?.ToString() ?? "Unknown Location",
                     Type = locationData["type"]?.ToString(),
                     Description = locationData["description"]?.ToString(),
-                    DiscoveredByPlayer = locationData["discoveredByPlayer"]?.Value<bool>() ?? false,
-                    Notes = locationData["notes"]?.ToString()
+                    DiscoveredByPlayer = locationData["discoveredByPlayer"]?.Value<bool>() ?? false
                 };
                 
                 // Handle Connected Locations
@@ -643,11 +642,11 @@ namespace AiGMBackEnd.Services
                     Id = npcId,
                     Name = npcData["name"]?.ToString() ?? "Unknown NPC",
                     CurrentLocationId = npcData["currentLocationId"]?.ToString(),
-                    DiscoveredByPlayer = npcData["discoveredByPlayer"]?.Value<bool>() ?? false,
+                    KnownToPlayer = npcData["discoveredByPlayer"]?.Value<bool>() ?? false,
+                    KnowsPlayer = npcData["knowsPlayer"]?.Value<bool>() ?? false,
                     VisibleToPlayer = npcData["visibleToPlayer"]?.Value<bool>() ?? true,
                     Backstory = npcData["backstory"]?.ToString(),
-                    DispositionTowardsPlayer = npcData["dispositionTowardsPlayer"]?.ToString(),
-                    Notes = npcData["notes"]?.ToString()
+                    DispositionTowardsPlayer = npcData["dispositionTowardsPlayer"]?.ToString()
                 };
                 
                 // Handle Visual Description
@@ -656,7 +655,7 @@ namespace AiGMBackEnd.Services
                     npc.VisualDescription = new Models.VisualDescription
                     {
                         Gender = visualDesc["gender"]?.ToString(),
-                        BodyType = visualDesc["bodyType"]?.ToString(),
+                        Body = visualDesc["bodyType"]?.ToString(),
                         VisibleClothing = visualDesc["visibleClothing"]?.ToString(),
                         Condition = visualDesc["condition"]?.ToString()
                     };
@@ -668,7 +667,7 @@ namespace AiGMBackEnd.Services
                     npc.Personality = new Models.Personality
                     {
                         Temperament = personality["temperament"]?.ToString(),
-                        Traits = personality["traits"]?.ToString()
+                        Quirks = personality["traits"]?.ToString()
                     };
                 }
                 
@@ -679,10 +678,14 @@ namespace AiGMBackEnd.Services
                     {
                         foreach (var knownNpc in npcsKnown)
                         {
-                            var knownNpcStr = knownNpc.ToString();
-                            if (!string.IsNullOrEmpty(knownNpcStr))
+                            if (knownNpc is JObject knownNpcObj)
                             {
-                                npc.KnownEntities.NpcsKnown.Add(knownNpcStr);
+                                npc.KnownEntities.NpcsKnown.Add(new Models.NpcsKnownDetails
+                                {
+                                    Name = knownNpcObj["name"]?.ToString(),
+                                    LevelOfFamiliarity = knownNpcObj["levelOfFamiliarity"]?.ToString(),
+                                    Disposition = knownNpcObj["disposition"]?.ToString()
+                                });
                             }
                         }
                     }
@@ -696,22 +699,6 @@ namespace AiGMBackEnd.Services
                             {
                                 npc.KnownEntities.LocationsKnown.Add(knownLocStr);
                             }
-                        }
-                    }
-                }
-                
-                // Handle Relationships
-                if (npcData["relationships"] is JArray relationships)
-                {
-                    foreach (var rel in relationships)
-                    {
-                        if (rel is JObject relObj)
-                        {
-                            npc.Relationships.Add(new Models.Relationship
-                            {
-                                NpcId = relObj["npcId"]?.ToString(),
-                                RelationshipType = relObj["relationship"]?.ToString()
-                            });
                         }
                     }
                 }
@@ -744,17 +731,6 @@ namespace AiGMBackEnd.Services
                             });
                         }
                     }
-                }
-                
-                // Handle Status Flags
-                if (npcData["statusFlags"] is JObject statusFlags)
-                {
-                    npc.StatusFlags = new Models.StatusFlags
-                    {
-                        IsAlive = statusFlags["isAlive"]?.Value<bool>() ?? true,
-                        IsBusy = statusFlags["isBusy"]?.Value<bool>() ?? false,
-                        CustomState = statusFlags["customState"]?.ToString()
-                    };
                 }
                 
                 // Handle Conversation Log
@@ -814,26 +790,11 @@ namespace AiGMBackEnd.Services
                     player.VisualDescription = new Models.VisualDescription
                     {
                         Gender = visualDesc["gender"]?.ToString(),
-                        BodyType = visualDesc["bodyType"]?.ToString(),
+                        Body = visualDesc["bodyType"]?.ToString(),
                         VisibleClothing = visualDesc["visibleClothing"]?.ToString(),
-                        Condition = visualDesc["condition"]?.ToString()
+                        Condition = visualDesc["condition"]?.ToString(),
+                        ResemblingCelebrity = visualDesc["resemblingCelebrity"]?.ToString()
                     };
-                }
-                
-                // Handle relationships
-                if (playerData["relationships"] is JArray relationships)
-                {
-                    foreach (var rel in relationships)
-                    {
-                        if (rel is JObject relObj)
-                        {
-                            player.Relationships.Add(new Models.Relationship
-                            {
-                                NpcId = relObj["npcId"]?.ToString(),
-                                RelationshipType = relObj["relationship"]?.ToString()
-                            });
-                        }
-                    }
                 }
                 
                 // Handle inventory
@@ -935,27 +896,8 @@ namespace AiGMBackEnd.Services
                         // Create new
                         player.RpgElements["completedQuests"] = completedQuests.ToObject<List<object>>();
                     }
-                }
+                }               
                 
-                // Handle player log
-                if (playerData["playerLog"] is JArray playerLog)
-                {
-                    foreach (var log in playerLog)
-                    {
-                        if (log is JObject logObj)
-                        {
-                            player.PlayerLog.Add(new Models.LogEntry
-                            {
-                                Timestamp = logObj["timestamp"]?.ToString(),
-                                Event = logObj["event"]?.ToString(),
-                                Description = logObj["description"]?.ToString()
-                            });
-                        }
-                    }
-                }
-                
-                // Handle notes
-                player.Notes = playerData["notes"]?.ToString() ?? "";
                 
                 // Save the player data
                 await _storageService.SaveAsync(userId, "player", player);
