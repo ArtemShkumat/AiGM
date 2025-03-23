@@ -128,19 +128,8 @@ namespace AiGMBackEnd.Controllers
                     
                     var gameName = gameId;
                     var gameDescription = "No description available";
-                    
-                    if (world != null)
-                    {
-                        if (!string.IsNullOrEmpty(world.GameName))
-                        {
-                            gameName = world.GameName;
-                        }
-                        if (!string.IsNullOrEmpty(world.Setting))
-                        {
-                            gameDescription = world.Setting;
-                        }
-                    }
-                    else if (gameSetting != null)
+                                        
+                    if (gameSetting != null)
                     {
                         if (!string.IsNullOrEmpty(gameSetting.Genre))
                         {
@@ -149,6 +138,14 @@ namespace AiGMBackEnd.Controllers
                         if (!string.IsNullOrEmpty(gameSetting.Description))
                         {
                             gameDescription = gameSetting.Description;
+                        }
+                        if (!string.IsNullOrEmpty(gameSetting.GameName))
+                        {
+                            gameName = gameSetting.GameName;
+                        }
+                        if (!string.IsNullOrEmpty(gameSetting.Setting))
+                        {
+                            gameDescription = gameSetting.Setting;
                         }
                     }
                     

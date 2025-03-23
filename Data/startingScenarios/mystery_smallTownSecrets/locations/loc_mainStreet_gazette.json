@@ -1,0 +1,47 @@
+{ "type": "LOCATION", "id": "loc_mainStreet_gazette",
+  "name": "Blackwater Bay Gazette",
+  "locationType": "building",
+  "description": "The modest offices of the local newspaper that has operated continuously since 1892. The front area contains a small reception desk and public archives, while the back houses the editorial office and printing equipment. The walls are lined with framed front pages documenting significant moments in the town's history. The air smells of ink and paper, and the rhythmic sound of the printing press can often be heard from the back room.",
+  "discoveredByPlayer": true,
+
+  "connectedLocations": [],
+
+  "parentLocation": { "type": "LOCATION", "id": "loc_mainStreet",
+    "description": "The newspaper office is located near the southern end of Main Street."
+  },
+
+  "subLocations": [],
+
+  "npcs": [
+    "npc_newspaperEditor"
+  ],
+
+  "pointsOfInterest": [
+    {
+      "name": "Missing Archives",
+      "description": "The newspaper's archive shelves have a noticeable gap where issues from June-August 1998 should be - the period immediately following the Thomas family disappearance."
+    },
+    {
+      "name": "Editor's Wall",
+      "description": "A collection of framed photographs showing the newspaper's editors throughout its history. The current editor, James Fletcher, is pictured alongside his father and grandfather, all previous editors."
+    },
+    {
+      "name": "Recent Articles",
+      "description": "A board displaying recent major stories, including coverage of the upcoming Founder's Day Festival but notably lacking any mention of Maya Chen's disappearance."
+    }
+  ],
+
+  "questIds": ["quest_missingJournalist"],
+
+  "items": [],
+
+  "historyLog": [
+    {
+      "timestamp": "2023-10-20T11:45:00Z",
+      "event": "journalistMeeting",
+      "description": "Maya Chen was seen having a heated discussion with the newspaper editor, James Fletcher, that ended abruptly when they noticed they were being observed."
+    }
+  ],
+
+  "notes": "The Gazette has been owned and operated by the Fletcher family for generations, giving them considerable control over the town's narrative. The current editor, James Fletcher, seems particularly protective of the town's image and history. Despite being a journalist himself, he appears reluctant to cover Maya Chen's disappearance in the paper. Several staff members mentioned that Maya had visited to research old articles about the Thomas family disappearance, but was told that those particular archives were 'damaged in a flood' years ago."
+}

@@ -2,5 +2,7 @@
   "genre": "noir mystery thriller",
   "theme": "Uncovering buried secrets in a town where nothing is as it seems",
   "description": "A psychological investigation into dark secrets and corruption in a seemingly idyllic coastal town, where powerful forces will stop at nothing to keep the truth hidden.",
-  "startingLocation": "loc_sheriffStation"
+  "startingLocation": "loc_sheriffStation",  
+  "gameName": "Blackwater Bay: Beneath the Surface",
+  "setting": "A picturesque coastal town with dark secrets hidden beneath its charming facade."
 } 

@@ -1,0 +1,50 @@
+{ "type": "LOCATION", "id": "loc_sirensCove_northCaves",
+  "name": "North Caves",
+  "locationType": "cave",
+  "description": "A network of sea caves accessible only at low tide, carved into the northern cliff face of Siren's Cove. The cave entrances appear as dark, gaping mouths in the rock wall, partially submerged during high tide. Inside, the passages twist and branch, some leading deeper into the cliff while others end in tidal pools or collapsed sections. The walls bear ancient carvings and more recent graffiti, including repeated instances of the three wavy lines symbol. The constant drip of water and distant echo of waves create an eerie soundscape.",
+  "discoveredByPlayer": false,
+
+  "connectedLocations": [],
+
+  "parentLocation": { "type": "LOCATION", "id": "loc_sirensCove",
+    "description": "A mysterious and dangerous network of sea caves at the north end of Siren's Cove."
+  },
+
+  "subLocations": [],
+
+  "npcs": [],
+
+  "pointsOfInterest": [
+    {
+      "name": "Hidden Entrance",
+      "description": "A narrow passage behind a rock formation that leads deeper into the cliff, marked with a small carved symbol of three wavy lines. This tunnel appears to have been recently used, with fresh scrapes on the rock walls."
+    },
+    {
+      "name": "Ritual Chamber",
+      "description": "A larger cavern further inside with a flat central area surrounded by stone seating. Candle wax, both old and recent, has dripped onto the floor, and a shallow basin carved into the stone floor contains traces of salt water and organic material."
+    },
+    {
+      "name": "Secret Passage",
+      "description": "A partially flooded tunnel in the deepest section of the caves that appears to connect to the basement of the abandoned cannery. Boot prints lead in both directions, suggesting recent travel between the locations."
+    }
+  ],
+
+  "questIds": ["quest_missingJournalist"],
+
+  "items": [
+    {
+      "itemId": "item_mayaFlashlight",
+      "hidden": true
+    }
+  ],
+
+  "historyLog": [
+    {
+      "timestamp": "2023-10-22T04:30:00Z",
+      "event": "searchAvoidance",
+      "description": "Sheriff's department search party claimed the caves were 'too dangerous to enter due to incoming tide,' despite conditions being at low tide during their search window."
+    }
+  ],
+
+  "notes": "The caves have played a significant role in local folklore for generations, with stories of strange rituals, disappearances, and inexplicable phenomena. Despite being a potential crime scene in Maya Chen's disappearance, law enforcement has made suspiciously little effort to search these caves thoroughly. Local fishing families warn their children to stay away, and older residents become visibly uncomfortable when the caves are mentioned. There are rumors that the three founding families once used these caves for secret meetings, and that the Thomas family's disappearance is somehow connected to whatever happens in the deepest chambers."
+}

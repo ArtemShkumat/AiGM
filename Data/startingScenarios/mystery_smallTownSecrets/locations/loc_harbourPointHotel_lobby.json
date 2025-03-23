@@ -1,0 +1,47 @@
+{ "type": "LOCATION", "id": "loc_harbourPointHotel_lobby",
+  "name": "Hotel Lobby",
+  "locationType": "room",
+  "description": "The elegant main lobby of the Harbour Point Hotel, featuring a mahogany reception desk, antique furniture, and a crackling fireplace. Large windows offer a spectacular view of the bay and the rocky coastline. Crystal chandeliers hang from the high ceiling, casting a warm glow over the polished wooden floors. Despite the grandeur, there's a feeling of faded glory, with slight wear visible on the furniture and carpets.",
+  "discoveredByPlayer": true,
+
+  "connectedLocations": [],
+
+  "parentLocation": { "type": "LOCATION", "id": "loc_harbourPointHotel",
+    "description": "The central gathering area on the ground floor of the Harbour Point Hotel."
+  },
+
+  "subLocations": [],
+
+  "npcs": [
+    "npc_hotelManager"
+  ],
+
+  "pointsOfInterest": [
+    {
+      "name": "Guest Register",
+      "description": "An old-fashioned paper register kept at the reception desk, where guests sign in upon arrival. Maya Chen's signature is still visible from her check-in a week ago."
+    },
+    {
+      "name": "Historical Display",
+      "description": "A glass case containing artifacts from the hotel's heyday, including photographs of notable guests and events. One photo shows a gala from 1997 with the Thomas family prominently featured."
+    },
+    {
+      "name": "Bulletin Board",
+      "description": "A board near the entrance advertising local attractions and events, including a prominently displayed flyer for the upcoming Founder's Day Festival."
+    }
+  ],
+
+  "questIds": ["quest_missingJournalist"],
+
+  "items": [],
+
+  "historyLog": [
+    {
+      "timestamp": "2023-10-22T08:15:00Z",
+      "event": "missingReport",
+      "description": "The hotel manager officially reported Maya Chen missing after she failed to return to her room for two nights and left her belongings behind."
+    }
+  ],
+
+  "notes": "The lobby serves as the main thoroughfare of the hotel, with staff and guests constantly passing through. The hotel manager, Roland Wells, seems nervous and evasive when asked about Maya Chen or the hotel's history. Several older staff members have worked here for decades and might have knowledge about the Thomas family, who were known to regularly host events at the hotel before their disappearance. There's a subtle tension whenever the upcoming Founder's Day Festival is mentioned, particularly in relation to how the Thomas family will be represented."
+}

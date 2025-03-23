@@ -100,13 +100,14 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine(exampleResponses);
             promptBuilder.AppendLine();
 
-            promptBuilder.AppendLine("# Below is the information about the current game");
+            promptBuilder.AppendLine("# Below is the current game state data");
 
             // Add game setting and preferences
             promptBuilder.AppendLine("# Game Setting");
             promptBuilder.AppendLine($"Genre: {gameSetting.Genre}");
             promptBuilder.AppendLine($"Theme: {gameSetting.Theme}");
             promptBuilder.AppendLine($"Description: {gameSetting.Description}");
+            promptBuilder.AppendLine($"Setting: {gameSetting.Setting}");
             promptBuilder.AppendLine();
 
             // Add game preferences
@@ -119,18 +120,10 @@ namespace AiGMBackEnd.Services
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
-            promptBuilder.AppendLine($"World Name: {world.GameName}");
-            promptBuilder.AppendLine($"Setting: {world.Setting}");
             promptBuilder.AppendLine($"Current Time: {world.GameTime}");
             promptBuilder.AppendLine($"Current Weather: {world.WorldStateEffects.Weather}");
             promptBuilder.AppendLine($"Days Since Start: {world.DaysSinceStart}");
-            
-            // Add global world flags
-            if (world.GlobalFlags != null && world.GlobalFlags.Count > 0)
-            {
-                promptBuilder.AppendLine($"Global Flags: {string.Join(", ", world.GlobalFlags)}");
-            }
-            
+                        
             // Add world lore summaries
             if (world.Lore != null && world.Lore.Count > 0)
             {
@@ -220,7 +213,6 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine($"Location Name: {location.Name}");
             promptBuilder.AppendLine($"Location Type: {location.Type}");
             promptBuilder.AppendLine($"Description: {location.Description}");
-            promptBuilder.AppendLine($"Time of Day: {world.GameTime}");
             
             // Add connected locations
             if (location.ConnectedLocations != null && location.ConnectedLocations.Count > 0)
@@ -563,9 +555,6 @@ namespace AiGMBackEnd.Services
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
-            promptBuilder.AppendLine($"World Name: {world.GameName}");
-            promptBuilder.AppendLine($"Setting: {world.Setting}");
-            promptBuilder.AppendLine($"Summary: {world.Lore[0].Summary}");
             promptBuilder.AppendLine();
 
             // Add player context
@@ -660,9 +649,6 @@ namespace AiGMBackEnd.Services
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
-            promptBuilder.AppendLine($"World Name: {world.GameName}");
-            promptBuilder.AppendLine($"Setting: {world.Setting}");
-            promptBuilder.AppendLine($"Summary: {world.Lore[0].Summary}");
             promptBuilder.AppendLine();
 
             // Add trigger instructions
@@ -749,8 +735,6 @@ namespace AiGMBackEnd.Services
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
-            promptBuilder.AppendLine($"World Name: {world.GameName}");
-            promptBuilder.AppendLine($"Setting: {world.Setting}");
             promptBuilder.AppendLine($"Summary: {world.Lore[0].Summary}");
             promptBuilder.AppendLine();
 
@@ -809,8 +793,6 @@ namespace AiGMBackEnd.Services
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
-            promptBuilder.AppendLine($"World Name: {world.GameName}");
-            promptBuilder.AppendLine($"Setting: {world.Setting}");
             promptBuilder.AppendLine($"Summary: {world.Lore[0].Summary}");
             promptBuilder.AppendLine();
 
@@ -874,8 +856,6 @@ namespace AiGMBackEnd.Services
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
-            promptBuilder.AppendLine($"World Name: {world.GameName}");
-            promptBuilder.AppendLine($"Setting: {world.Setting}");
             promptBuilder.AppendLine($"Player ID: {userId}");
             promptBuilder.AppendLine();
 

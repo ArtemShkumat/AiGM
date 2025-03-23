@@ -1,52 +1,48 @@
-{ "type": "NPC", "id": "npc_hotelManager",
+{ 
+  "type": "NPC", 
+  "id": "npc_hotelManager",
   "name": "Roland Wells",
   "age": 63,
   "currentLocationId": "loc_harbourPointHotel",
-  "discoveredByPlayer": true,
+  "knownToPlayer": true,
+  "knowsPlayer": true,
   "visibleToPlayer": true,
   "visualDescription": {
     "gender": "male",
-    "bodyType": "slight and wiry",
+    "body": "slight and wiry",
     "visibleClothing": "Well-worn but impeccably clean dark suit with a burgundy tie",
     "condition": "Early 60s, balding, with thin wire-rimmed glasses and nervous hands"
   },
   "personality": {
     "temperament": "Anxious but outwardly polite",
-    "traits": "Detail-oriented, gossip collector, conflict-avoidant, people-pleaser"
+    "quirks": "Detail-oriented, gossip collector, conflict-avoidant, people-pleaser",
+    "motivations": "Preserving the hotel's reputation, maintaining order, avoiding trouble",
+    "fears": "Authority figures, being blamed for disasters, losing his position",
+    "secrets": [
+      "He witnessed something unusual the night the Thomas family disappeared",
+      "He keeps a secret logbook of unusual guest activities"
+    ]
   },
   "backstory": "Roland has managed the Harbour Point Hotel for over thirty years. His family has worked at the hotel for three generations, and he knows every creaking floorboard and secret passage. Roland was working the night the Thomas family disappeared and was one of the last people to see them. This experience left him permanently anxious, especially around authority figures. He's deeply protective of the hotel's reputation.",
+  "currentGoal": "Assist guests while monitoring for unusual activities",
   "dispositionTowardsPlayer": "cautiously helpful",
   "knownEntities": {
-    "npcsKnown": ["npc_sheriffCarter", "npc_mayorFletcher", "npc_doctorReeves"],
+    "npcsKnown": [],
     "locationsKnown": ["loc_harbourPointHotel", "loc_mainStreet", "loc_sirensCove", "loc_blackwaterBay"]
   },
-  "relationships": [
-    {
-      "npcId": "npc_sheriffCarter",
-      "relationshipType": "fearful"
-    },
-    {
-      "npcId": "npc_mayorFletcher",
-      "relationshipType": "subservient"
-    }
-  ],
   "questInvolvement": ["quest_missingJournalist"],
   "inventory": [
     {
-      "itemId": "item_masterKeyring",
+      "name": "Master Keyring",
+      "description": "A heavy ring with keys to every room in the hotel",
       "quantity": 1
     },
     {
-      "itemId": "item_hotelGuestBook",
+      "name": "Hotel Guest Book",
+      "description": "Leather-bound register containing all recent hotel guests",
       "quantity": 1
     }
   ],
-  "statusFlags": {
-    "isAlive": true,
-    "isBusy": false,
-    "customState": "nervous"
-  },
-  "notes": "Roland keeps meticulous records of all hotel guests. He noticed Maya Chen's unusual behavior during her stay, including late-night departures and her interest in the hotel's history. He has access to all rooms but tends to respect guest privacy unless directed otherwise by authorities.",
   "conversationLog": [
     {
       "Player": "I understand the missing journalist stayed in my room?",

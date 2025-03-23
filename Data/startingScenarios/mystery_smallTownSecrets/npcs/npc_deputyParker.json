@@ -1,56 +1,53 @@
-{ "type": "NPC", "id": "npc_deputyParker",
+{ 
+  "type": "NPC", 
+  "id": "npc_deputyParker",
   "name": "Deputy Marcus Parker",
   "age": 32,
   "currentLocationId": "loc_sheriffStation",
-  "discoveredByPlayer": false,
+  "knownToPlayer": false,
+  "knowsPlayer": false,
   "visibleToPlayer": true,
   "visualDescription": {
     "gender": "male",
-    "bodyType": "athletic, broad-shouldered",
+    "body": "athletic, broad-shouldered",
     "visibleClothing": "Crisp deputy uniform, always perfectly maintained",
     "condition": "Early 30s, with a military-style haircut and alert posture"
   },
   "personality": {
     "temperament": "By-the-book and efficient",
-    "traits": "Loyal, ambitious, detail-oriented, uncomfortable with deception"
+    "quirks": "Loyal, ambitious, detail-oriented, uncomfortable with deception",
+    "motivations": "Serving justice, discovering the truth, protecting the town",
+    "fears": "Betraying his principles, failing those who depend on him",
+    "secrets": [
+      "He's conducting his own unofficial investigation into Maya Chen's disappearance",
+      "He suspects Sheriff Carter is hiding information about past disappearances"
+    ]
   },
   "backstory": "Marcus Parker grew up in Blackwater Bay, left for military service, and returned four years ago to join the sheriff's department. He respects Sheriff Carter immensely but is beginning to question some of the department's handling of certain cases. His father was a deputy during the Thomas family disappearance, and Marcus has grown up hearing conflicting stories about that night. He's engaged to the town librarian, who has been helping Maya Chen research local history.",
+  "currentGoal": "Discover what really happened to Maya Chen",
   "dispositionTowardsPlayer": "professionally cordial",
   "knownEntities": {
-    "npcsKnown": ["npc_sheriffCarter", "npc_mayorFletcher", "npc_librarian"],
+    "npcsKnown": [],
     "locationsKnown": ["loc_harbourPointHotel", "loc_mainStreet", "loc_sheriffStation", "loc_sirensCove", "loc_library"]
   },
-  "relationships": [
-    {
-      "npcId": "npc_sheriffCarter",
-      "relationshipType": "respectful but increasingly doubtful"
-    },
-    {
-      "npcId": "npc_librarian",
-      "relationshipType": "engaged"
-    }
-  ],
   "questInvolvement": ["quest_missingJournalist"],
   "inventory": [
     {
-      "itemId": "item_deputyBadge",
+      "name": "Deputy Badge",
+      "description": "Standard issue Blackwater Bay deputy badge",
       "quantity": 1
     },
     {
-      "itemId": "item_serviceWeapon",
+      "name": "Service Weapon",
+      "description": "Department-issued sidearm in a holster",
       "quantity": 1
     },
     {
-      "itemId": "item_personalNotepad",
+      "name": "Personal Notepad",
+      "description": "Small notepad with observations about Maya Chen's case",
       "quantity": 1
     }
   ],
-  "statusFlags": {
-    "isAlive": true,
-    "isBusy": false,
-    "customState": "conflicted"
-  },
-  "notes": "Deputy Parker keeps his own notes on the Maya Chen case, separate from the official files. He's noticed inconsistencies in the search patterns ordered by Sheriff Carter but hasn't voiced his concerns openly. When alone, he can be found reviewing old police reports from the Thomas family case. His loyalty to the department and his growing suspicions create significant inner conflict.",
   "conversationLog": [
     {
       "Player": "What can you tell me about the missing journalist?",

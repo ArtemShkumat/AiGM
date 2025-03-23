@@ -1,11 +1,8 @@
 {
   "type": "world",
-  "gameName": "Blackwater Bay: Beneath the Surface",
-  "setting": "A picturesque coastal town with dark secrets hidden beneath its charming facade.",
   "gameTime": "2023-10-24T19:45:00Z",
   "daysSinceStart": 1,
   "currentPlayer": "player_001",
-
   "worldStateEffects": {
     "weather": "foggy"
   },
@@ -20,8 +17,72 @@
 
   "locations": [
     {
+      "id": "loc_blackwaterBay",
+      "name": "Blackwater Bay"
+    },
+    {
       "id": "loc_harbourPointHotel",
       "name": "Harbour Point Hotel"
+    },
+    {
+      "id": "loc_mainStreet",
+      "name": "Main Street"
+    },
+    {
+      "id": "loc_sheriffStation",
+      "name": "Sheriff's Station"
+    },
+    {
+      "id": "loc_sirensCove",
+      "name": "Siren's Cove"
+    },
+    {
+      "id": "loc_townHall",
+      "name": "Town Hall"
+    },
+    {
+      "id": "loc_library",
+      "name": "Library"
+    },
+    {
+      "id": "loc_cliffPath",
+      "name": "Cliff Path"
+    },
+    {
+      "id": "loc_abandonedCannery",
+      "name": "Abandoned Cannery"
+    },
+    {
+      "id": "loc_mainStreet_cafe",
+      "name": "Lighthouse Cafe"
+    },
+    {
+      "id": "loc_mainStreet_gazette",
+      "name": "Blackwater Bay Gazette"
+    },
+    {
+      "id": "loc_harbourPointHotel_lobby",
+      "name": "Hotel Lobby"
+    },
+    {
+      "id": "loc_harbourPointHotel_room312",
+      "name": "Room 312"
+    },
+    {
+      "id": "loc_sheriffStation_office",
+      "name": "Sheriff's Office"
+    },
+    {
+      "id": "loc_sheriffStation_evidenceRoom",
+      "name": "Evidence Room"
+    },
+    {
+      "id": "loc_sirensCove_mainBeach",
+      "name": "Main Beach"
+    },
+    {
+      "id": "loc_sirensCove_northCaves",
+      "name": "North Caves"
     }
   ],
 
@@ -37,20 +98,5 @@
       "id": "quest_missingJournalist",
       "title": "The Missing Journalist"
     }
-  ],
-
-  "globalFlags": [ "anniversaryFestivalPreparations", "increasedPolicePresence", "strangeTides" ],
-  "historyLog": [
-    {
-      "timestamp": "2023-10-23T16:30:00Z",
-      "event": "playerArrived",
-      "description": "The player checked into Harbour Point Hotel, claiming to be a tourist but actually investigating the disappearance of journalist Maya Chen."
-    },
-    {
-      "timestamp": "2023-10-24T10:15:00Z",
-      "event": "bodyDiscovered",
-      "description": "A local fisherman discovered an unidentified body washed up on Siren's Cove Beach."
-    }
-  ],
-  "notes": "Blackwater Bay is preparing for its annual Founder's Day Festival, but tensions run high beneath the surface. The recent disappearance of journalist Maya Chen has stirred up old memories and fears related to similar cases over the decades."
+  ]
 } 

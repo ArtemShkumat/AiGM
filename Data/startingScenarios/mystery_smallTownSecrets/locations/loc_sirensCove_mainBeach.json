@@ -1,0 +1,50 @@
+{ "type": "LOCATION", "id": "loc_sirensCove_mainBeach",
+  "name": "Main Beach",
+  "locationType": "coastal",
+  "description": "The crescent-shaped stretch of dark sand that forms the primary area of Siren's Cove. Black volcanic sand glitters under the moonlight, and unusual items often wash ashore after storms. Jagged rock formations create eerie shadows, and the constant crash of waves against the cliffs drowns out other sounds. The beach is littered with driftwood, shells, and occasionally more mysterious objects.",
+  "discoveredByPlayer": false,
+
+  "connectedLocations": [],
+
+  "parentLocation": { "type": "LOCATION", "id": "loc_sirensCove",
+    "description": "The primary accessible area of Siren's Cove, stretching between the cliff base and the waterline."
+  },
+
+  "subLocations": [],
+
+  "npcs": [],
+
+  "pointsOfInterest": [
+    {
+      "name": "Stone Circle",
+      "description": "Weathered stones arranged in a deliberate circle near the north end of the beach. Some stones bear faint carvings resembling three wavy lines within a circle."
+    },
+    {
+      "name": "Tidal Pools",
+      "description": "Shallow pools of seawater trapped among the rocks, containing unusual marine life with vibrant bioluminescent properties not common to this coastal region."
+    },
+    {
+      "name": "Recent Footprints",
+      "description": "Several sets of footprints in the sand heading toward the caves, partially washed away by the tide but still visible enough to suggest recent activity."
+    }
+  ],
+
+  "questIds": ["quest_missingJournalist"],
+
+  "items": [
+    {
+      "itemId": "item_tornPage",
+      "hidden": true
+    }
+  ],
+
+  "historyLog": [
+    {
+      "timestamp": "2023-10-21T22:15:00Z",
+      "event": "lastSightingLocation",
+      "description": "This is the last location where Maya Chen was definitively seen by a local fisherman, who reported watching her examine the stone circle before heading toward the north caves with a flashlight."
+    }
+  ],
+
+  "notes": "The main beach has an unsettling atmosphere, with the black sand absorbing what little light there is and the cliffs casting deep shadows. Though officially searched by the sheriff's department, the search party spent minimal time here and didn't thoroughly investigate the stone circle or areas closer to the cave entrances. Local legends claim items from shipwrecks or even other times and places occasionally wash up on this beach, and some residents secretly collect these 'gifts from the sea' for their supposed mystical properties."
+}

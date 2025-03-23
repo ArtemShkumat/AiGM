@@ -1,0 +1,58 @@
+{ "type": "LOCATION", "id": "loc_library",
+  "name": "Blackwater Bay Library",
+  "locationType": "building",
+  "description": "A charming historic building with stained glass windows and oak shelving. The library houses the town's book collection as well as archives of local newspapers and historical documents. The reading room features comfortable leather chairs arranged around a stone fireplace, and a special collections area contains rare books and materials related to the town's history.",
+  "discoveredByPlayer": true,
+
+  "connectedLocations": [
+    { "type": "LOCATION", "id": "loc_mainStreet",
+      "description": "The central thoroughfare of Blackwater Bay, where most public buildings are located."
+    }
+  ],
+
+  "parentLocation": { "type": "LOCATION", "id": "loc_blackwaterBay",
+    "description": "The Library is one of the oldest public buildings in Blackwater Bay."
+  },
+
+  "subLocations": [
+    { "type": "LOCATION", "id": "loc_library_readingRoom",
+      "description": "A cozy space with comfortable seating, good lighting, and a stone fireplace that's kept burning during colder months."
+    },
+    { "type": "LOCATION", "id": "loc_library_archives",
+      "description": "A climate-controlled room in the basement containing historical documents, including bound volumes of the Blackwater Bay Gazette dating back to 1878."
+    }
+  ],
+
+  "npcs": [
+    "npc_librarian"
+  ],
+
+  "pointsOfInterest": [
+    {
+      "name": "Local History Section",
+      "description": "A specially curated collection of books, photographs, and documents relating to Blackwater Bay's history. Several books about the town's founding families are prominently displayed."
+    },
+    {
+      "name": "Newspaper Archives",
+      "description": "Bound volumes and microfilm reels containing past issues of the Blackwater Bay Gazette. Issues from around the time of the Thomas family disappearance appear to have been handled frequently."
+    },
+    {
+      "name": "Restricted Collections Cabinet",
+      "description": "A locked cabinet behind the librarian's desk containing sensitive or rare materials that require special permission to access."
+    }
+  ],
+
+  "questIds": ["quest_missingJournalist"],
+
+  "items": [],
+
+  "historyLog": [
+    {
+      "timestamp": "2023-10-21T14:15:00Z",
+      "event": "journalistResearch",
+      "description": "Maya Chen spent several hours researching in the archives, particularly focused on materials related to the Thomas family and local folklore about Siren's Cove."
+    }
+  ],
+
+  "notes": "The library serves as both a community gathering space and the keeper of the town's written history. The head librarian has worked here for over thirty years and knows most townspeople and their families. While generally helpful, the staff become noticeably guarded when asked about certain topics, including the Thomas family disappearance and old legends about Siren's Cove. Maya Chen was a regular visitor during her stay in town, and her research seemed to make some staff members uncomfortable."
+}

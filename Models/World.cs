@@ -6,13 +6,7 @@ namespace AiGMBackEnd.Models
     public class World
     {
         [JsonPropertyName("type")]
-        public string Type { get; set; } = "WORLD";
-
-        [JsonPropertyName("gameName")]
-        public string GameName { get; set; }
-        
-        [JsonPropertyName("setting")]
-        public string Setting { get; set; }
+        public string Type { get; set; } = "WORLD";       
         
         [JsonPropertyName("gameTime")]
         public string GameTime { get; set; }
@@ -37,15 +31,6 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("quests")]
         public List<QuestSummary> Quests { get; set; } = new List<QuestSummary>();
-        
-        [JsonPropertyName("globalFlags")]
-        public List<string> GlobalFlags { get; set; } = new List<string>();
-        
-        [JsonPropertyName("historyLog")]
-        public List<WorldHistoryLogEntry> HistoryLog { get; set; } = new List<WorldHistoryLogEntry>();
-        
-        [JsonPropertyName("notes")]
-        public string Notes { get; set; }
     }
 
     public class WorldStateEffects

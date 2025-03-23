@@ -471,25 +471,7 @@ namespace AiGMBackEnd.Services
                             location.Items.Add(itemStr);
                         }
                     }
-                }
-                
-                // Handle History Log
-                if (locationData["historyLog"] is JArray historyLog)
-                {
-                    foreach (var log in historyLog)
-                    {
-                        if (log is JObject logObj)
-                        {
-                            location.HistoryLog.Add(new Models.HistoryLogEntry
-                            {
-                                Timestamp = logObj["timestamp"]?.ToString(),
-                                Event = logObj["event"]?.ToString(),
-                                NpcId = logObj["npcId"]?.ToString(),
-                                Description = logObj["description"]?.ToString()
-                            });
-                        }
-                    }
-                }
+                }                
                 
                 // Save the location data
                 await _storageService.SaveAsync(userId, $"locations/{locationId}", location);

@@ -1,0 +1,52 @@
+{ "type": "LOCATION", "id": "loc_blackwaterBay",
+  "name": "Blackwater Bay",
+  "locationType": "town",
+  "description": "A picturesque coastal town with a dark history, nestled between towering cliffs and the moody Pacific Ocean. Victorian and Craftsman-style buildings line the streets, and a perpetual mist often shrouds the town. Known for its fishing industry, historic lighthouse, and the mysterious disappearance of the Thomas family twenty years ago.",
+  "discoveredByPlayer": true,
+
+  "connectedLocations": [],
+
+  "parentLocation": null,
+
+  "subLocations": [
+    { "type": "LOCATION", "id": "loc_mainStreet",
+      "description": "The central thoroughfare of Blackwater Bay, lined with Victorian-era buildings and local businesses."
+    },
+    { "type": "LOCATION", "id": "loc_harbourPointHotel",
+      "description": "A grand Victorian-era hotel perched on the cliffs overlooking the bay."
+    },
+    { "type": "LOCATION", "id": "loc_sheriffStation",
+      "description": "The brick building housing the town's law enforcement, prominently situated on Main Street."
+    },
+    { "type": "LOCATION", "id": "loc_sirensCove",
+      "description": "A secluded beach with black volcanic sand, accessible only by a steep path down the cliffs."
+    }
+  ],
+
+  "npcs": [],
+
+  "pointsOfInterest": [
+    {
+      "name": "Welcome Sign",
+      "description": "A weather-beaten wooden sign at the town limits reading 'Welcome to Blackwater Bay - Est. 1878'. The town motto 'Where Secrets Rest with the Tide' is carved beneath."
+    },
+    {
+      "name": "Blackwater Bay Lighthouse",
+      "description": "A historic lighthouse standing sentinel at the northern tip of the bay, still operational but automated decades ago."
+    }
+  ],
+
+  "questIds": ["quest_missingJournalist"],
+
+  "items": [],
+
+  "historyLog": [
+    {
+      "timestamp": "2023-10-23T15:00:00Z",
+      "event": "playerArrival",
+      "description": "The player arrived in Blackwater Bay to investigate the disappearance of journalist Maya Chen."
+    }
+  ],
+
+  "notes": "Blackwater Bay presents itself as a charming tourist destination, but there's a palpable unease beneath the surface. The upcoming Founder's Day Festival has the town buzzing with activity, but also seems to be causing tension among certain influential residents. The Thomas family disappearance twenty years ago and Maya Chen's recent vanishing appear to be connected in ways that many locals are reluctant to discuss."
+}

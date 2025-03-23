@@ -43,12 +43,6 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("items")]
         public List<string> Items { get; set; } = new List<string>();
-        
-        [JsonPropertyName("historyLog")]
-        public List<HistoryLogEntry> HistoryLog { get; set; } = new List<HistoryLogEntry>();
-        
-        [JsonPropertyName("notes")]
-        public string Notes { get; set; }
     }
 
     public class ConnectedLocation

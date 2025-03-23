@@ -16,5 +16,11 @@ namespace AiGMBackEnd.Models
 
         [JsonPropertyName("startingLocation")]
         public string StartingLocation { get; set; }
+
+        [JsonPropertyName("gameName")]
+        public string GameName { get; set; }
+
+        [JsonPropertyName("setting")]
+        public string Setting { get; set; }
     }
 } 

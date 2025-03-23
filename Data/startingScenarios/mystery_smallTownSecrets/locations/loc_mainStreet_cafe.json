@@ -1,0 +1,43 @@
+{ "type": "LOCATION", "id": "loc_mainStreet_cafe",
+  "name": "Lighthouse Cafe",
+  "locationType": "building",
+  "description": "A cozy establishment where locals gather to share gossip over coffee and homemade pie. The cafe features nautical decor, with model ships and vintage photos of the lighthouse adorning the walls. Large windows look out onto Main Street, making it an excellent spot for people-watching. The aroma of fresh coffee and baked goods fills the air.",
+  "discoveredByPlayer": true,
+
+  "connectedLocations": [],
+
+  "parentLocation": { "type": "LOCATION", "id": "loc_mainStreet",
+    "description": "The cafe is situated in the middle of Main Street, making it a central gathering spot for locals."
+  },
+
+  "subLocations": [],
+
+  "npcs": [
+    "npc_cafeOwner"
+  ],
+
+  "pointsOfInterest": [
+    {
+      "name": "Community Board",
+      "description": "A cork board near the entrance covered with local announcements, advertisements, and a flyer about the upcoming Founder's Day Festival."
+    },
+    {
+      "name": "Regular's Corner",
+      "description": "A group of tables in the back reserved for the town's older residents who meet daily to discuss local affairs. They fall silent when outsiders approach."
+    }
+  ],
+
+  "questIds": ["quest_missingJournalist"],
+
+  "items": [],
+
+  "historyLog": [
+    {
+      "timestamp": "2023-10-21T09:30:00Z",
+      "event": "journalistVisit",
+      "description": "Maya Chen was seen interviewing several locals here, including some of the older residents who normally avoid speaking with outsiders."
+    }
+  ],
+
+  "notes": "The cafe serves as the town's informal information hub. The owner, Martha Fletcher (a descendant of one of the founding families), knows virtually everyone in town and their business. She's generally friendly but becomes guarded when asked about certain topics. Maya Chen spent considerable time here during her stay, and according to some patrons, she seemed particularly interested in stories about the town's founding families and local legends about Siren's Cove."
+}

@@ -1,0 +1,47 @@
+{ "type": "LOCATION", "id": "loc_sheriffStation_office",
+  "name": "Sheriff's Office",
+  "locationType": "room",
+  "description": "Sheriff Evelyn Carter's private office, furnished with a heavy oak desk, filing cabinets, and a wall of commendations. A map of the area from 20 years ago hangs on one wall with multiple notes and markings, particularly around Siren's Cove and the abandoned cannery. Family photos show the sheriff alongside members of the Fletcher family at various town events.",
+  "discoveredByPlayer": true,
+
+  "connectedLocations": [],
+
+  "parentLocation": { "type": "LOCATION", "id": "loc_sheriffStation",
+    "description": "Located at the back of the Sheriff's Station, behind a frosted glass door marked 'Sheriff Carter'."
+  },
+
+  "subLocations": [],
+
+  "npcs": [
+    "npc_sheriffCarter"
+  ],
+
+  "pointsOfInterest": [
+    {
+      "name": "Thomas Family File",
+      "description": "A thick folder labeled 'Thomas Family - Restricted' is visible in the sheriff's desk drawer. It appears to contain more documents than would be expected for a 20-year-old cold case."
+    },
+    {
+      "name": "Maya Chen Investigation Board",
+      "description": "A small corkboard on the wall with photos of Maya Chen, her hotel room, and Siren's Cove, connected by red string. Notes in the sheriff's handwriting pose questions about 'what she found'."
+    },
+    {
+      "name": "Family Tree",
+      "description": "A framed genealogical chart showing the interrelationships between the three founding families: Thomas, Fletcher, and Carter. Sheriff Carter's name appears in both the Carter and Fletcher lineages."
+    }
+  ],
+
+  "questIds": ["quest_missingJournalist"],
+
+  "items": [],
+
+  "historyLog": [
+    {
+      "timestamp": "2023-10-22T15:30:00Z",
+      "event": "privateCall",
+      "description": "Sheriff Carter was overheard having a tense phone conversation about 'containing the situation' and 'keeping the festival on schedule.'"
+    }
+  ],
+
+  "notes": "Sheriff Carter maintains a professional demeanor, but there's an underlying intensity to her interest in both the Thomas family case and Maya Chen's disappearance. Her office is meticulously organized, except for the materials relating to these two cases, which show signs of frequent handling. She's protective of her privacy, and deputies know to knock before entering. The sheriff has canceled her usual attendance at several community events to focus on the 'Chen situation,' but has publicly minimized the disappearance as 'a tourist who probably left town without checking out.'"
+}

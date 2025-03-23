@@ -1,0 +1,64 @@
+{ "type": "LOCATION", "id": "loc_cliffPath",
+  "name": "Cliff Path",
+  "locationType": "trail",
+  "description": "A narrow, winding path that hugs the steep cliffs between Harbour Point Hotel and Siren's Cove Beach. The trail is treacherous in places, with worn wooden railings offering minimal protection from the sheer drop to the rocks and churning waves below. Dense coastal vegetation lines parts of the path, providing occasional shelter from the constant wind but also creating blind corners and secluded spots.",
+  "discoveredByPlayer": true,
+
+  "connectedLocations": [
+    { "type": "LOCATION", "id": "loc_harbourPointHotel",
+      "description": "The grand old hotel sits at the top of the cliff, its lights visible from most points along the path."
+    },
+    { "type": "LOCATION", "id": "loc_sirensCove",
+      "description": "The secluded beach with black volcanic sand lies at the bottom of the cliff, accessible only via this path."
+    }
+  ],
+
+  "parentLocation": { "type": "LOCATION", "id": "loc_blackwaterBay",
+    "description": "The Cliff Path provides the only access route between the town's clifftop areas and Siren's Cove below."
+  },
+
+  "subLocations": [
+    { "type": "LOCATION", "id": "loc_cliffPath_lookoutPoint",
+      "description": "A small wooden platform jutting out from the cliff face, offering panoramic views of the bay and the coastline."
+    },
+    { "type": "LOCATION", "id": "loc_cliffPath_landslideArea",
+      "description": "A section of the path that was damaged by a recent landslide, making passage more difficult and potentially dangerous."
+    }
+  ],
+
+  "npcs": [],
+
+  "pointsOfInterest": [
+    {
+      "name": "Warning Sign",
+      "description": "A weathered sign warning of dangerous conditions and advising caution, especially after rainfall or during high tides."
+    },
+    {
+      "name": "Old Shrine",
+      "description": "A small, partially collapsed stone structure tucked into a cliff alcove. Inside are faded carvings similar to those found in the sea caves, including the three wavy lines in a circle."
+    },
+    {
+      "name": "Lost Item",
+      "description": "A high-quality journalist's notebook trapped between rocks just off the path. The cover has the initials 'M.C.' embossed on it."
+    }
+  ],
+
+  "questIds": ["quest_missingJournalist"],
+
+  "items": [
+    {
+      "itemId": "item_journalistNotebook",
+      "hidden": true
+    }
+  ],
+
+  "historyLog": [
+    {
+      "timestamp": "2023-10-21T21:45:00Z",
+      "event": "pathUsage",
+      "description": "A local fisherman reported seeing someone matching Maya Chen's description hurrying down the path toward Siren's Cove, despite the foggy conditions and approaching darkness."
+    }
+  ],
+
+  "notes": "The Cliff Path is known to be treacherous and is generally avoided by locals after dark or during bad weather. There are persistent rumors of people hearing voices or seeing shadowy figures along the path on foggy nights. Though it's the only route to reach Siren's Cove, the path doesn't appear well-maintained, suggesting the town doesn't encourage visitors to the beach. Fresh footprints in the muddier sections indicate recent traffic, despite official search parties claiming to have found nothing of interest."
+}

@@ -1,0 +1,54 @@
+{ "type": "LOCATION", "id": "loc_sheriffStation_evidenceRoom",
+  "name": "Evidence Room",
+  "locationType": "room",
+  "description": "A secure room containing evidence from active and cold cases, accessible only to authorized law enforcement personnel. Metal shelves and lockable cabinets line the walls, organized by case number and date. A large section is dedicated to cold cases, with the Thomas family disappearance occupying several boxes. Maya Chen's personal effects have been recently added to a shelf near the entrance.",
+  "discoveredByPlayer": false,
+
+  "connectedLocations": [],
+
+  "parentLocation": { "type": "LOCATION", "id": "loc_sheriffStation",
+    "description": "Located in a restricted area of the Sheriff's Station, behind a heavy door with electronic keypad access."
+  },
+
+  "subLocations": [],
+
+  "npcs": [],
+
+  "pointsOfInterest": [
+    {
+      "name": "Chen's Personal Effects",
+      "description": "A cardboard box labeled 'Chen, M. - Personal Effects' containing her laptop, camera, notebooks, and other items collected from her hotel room. The evidence log shows Sheriff Carter as the collecting officer rather than the evidence clerk."
+    },
+    {
+      "name": "Thomas Family Evidence",
+      "description": "Several dusty boxes marked 'Thomas Family - 1998' contain photos, reports, and collected evidence from the original investigation. One box has been recently opened, with its contents partially removed."
+    },
+    {
+      "name": "Restricted Cabinet",
+      "description": "A locked metal cabinet labeled 'Restricted Access - Sheriff Only' with a separate key system different from the standard evidence lockers. The log shows it was last accessed the day Maya Chen disappeared."
+    }
+  ],
+
+  "questIds": ["quest_missingJournalist"],
+
+  "items": [
+    {
+      "itemId": "item_chenNotebook",
+      "hidden": true
+    },
+    {
+      "itemId": "item_thomasPhoto",
+      "hidden": true
+    }
+  ],
+
+  "historyLog": [
+    {
+      "timestamp": "2023-10-22T16:00:00Z",
+      "event": "evidenceProcessing",
+      "description": "Sheriff Carter personally processed Maya Chen's belongings without the evidence clerk present, which violates standard department protocol."
+    }
+  ],
+
+  "notes": "Access to the evidence room is tightly controlled, with only the sheriff, deputy Parker, and the evidence clerk having the keypad code. Camera footage shows Sheriff Carter made an unusual late-night visit to the evidence room the day Maya Chen disappeared, staying for nearly two hours. Certain items from both the Thomas family case and Maya Chen's belongings appear to have been removed or relocated, as indicated by gaps in the storage areas and discrepancies in the evidence logs."
+}

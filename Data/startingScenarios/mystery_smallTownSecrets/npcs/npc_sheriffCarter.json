@@ -1,52 +1,53 @@
-{ "type": "NPC", "id": "npc_sheriffCarter",
+{ 
+  "type": "NPC", 
+  "id": "npc_sheriffCarter",
   "name": "Sheriff Evelyn Carter",
   "age": 54,
   "currentLocationId": "loc_sheriffStation",
-  "discoveredByPlayer": false,
+  "knownToPlayer": false,
+  "knowsPlayer": false,
   "visibleToPlayer": true,
   "visualDescription": {
     "gender": "female",
-    "bodyType": "tall and lean",
+    "body": "tall and lean",
     "visibleClothing": "Neatly pressed sheriff's uniform with a weathered leather jacket",
     "condition": "Mid-50s, with sharp eyes and premature gray hair"
   },
   "personality": {
     "temperament": "Reserved and analytical",
-    "traits": "Observant, protective of the town, tightly controlled emotions, skeptical of outsiders"
+    "quirks": "Observant, protective of the town, tightly controlled emotions, skeptical of outsiders",
+    "motivations": "Maintaining order, protecting town secrets, finding personal redemption",
+    "fears": "Failing the town, history repeating itself",
+    "secrets": [
+      "She knows more about the Thomas family disappearance than she has revealed",
+      "She keeps a private journal about the case"
+    ]
   },
   "backstory": "Born and raised in Blackwater Bay, Evelyn left to join the FBI for fifteen years before returning after the Thomas family disappearance to become sheriff. She was childhood friends with Elizabeth Thomas and took her disappearance personally. Has maintained law and order with an iron grip for two decades.",
+  "currentGoal": "Keep the town's secrets hidden from outsiders",
   "dispositionTowardsPlayer": "never met",
   "knownEntities": {
-    "npcsKnown": ["npc_mayorFletcher", "npc_hotelManager", "npc_doctorReeves"],
+    "npcsKnown": [],
     "locationsKnown": ["loc_harbourPointHotel", "loc_mainStreet", "loc_sheriffStation", "loc_sirensCove", "loc_blackwaterBay"]
   },
-  "relationships": [
-    {
-      "npcId": "npc_mayorFletcher",
-      "relationshipType": "complicated"
-    }
-  ],
   "questInvolvement": ["quest_missingJournalist"],
   "inventory": [
     {
-      "itemId": "item_sheriffBadge",
+      "name": "Sheriff Badge",
+      "description": "A polished metal badge denoting authority in Blackwater Bay",
       "quantity": 1
     },
     {
-      "itemId": "item_serviceRevolver",
+      "name": "Service Revolver",
+      "description": "Standard issue firearm, worn but well-maintained",
       "quantity": 1
     },
     {
-      "itemId": "item_oldCaseFiles",
+      "name": "Old Case Files",
+      "description": "Yellowed folder containing notes on past town incidents",
       "quantity": 1
     }
   ],
-  "statusFlags": {
-    "isAlive": true,
-    "isBusy": true,
-    "customState": "investigating"
-  },
-  "notes": "Sheriff Carter knows more about the town's history than she lets on. She keeps a private journal about the Thomas case that she reviews regularly. She's torn between protecting the town's reputation and uncovering the truth about the recent disappearances.",
   "conversationLog": [
     {
       "Player": "I'm curious about the journalist who went missing.",
