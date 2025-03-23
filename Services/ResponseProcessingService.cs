@@ -43,6 +43,12 @@ namespace AiGMBackEnd.Services
                     _loggingService.LogInfo($"No hiddenJson in response for user {userId}");
                 }
 
+                // Add DM's message to conversation log for DM and NPC responses
+                if (promptType == PromptType.DM || promptType == PromptType.NPC)
+                {
+                    await _storageService.AddDmMessageAsync(userId, userFacingText);
+                }
+
                 return new ProcessedResult
                 {
                     UserFacingText = userFacingText,

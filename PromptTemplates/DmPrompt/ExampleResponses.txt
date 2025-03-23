@@ -16,12 +16,16 @@ Behind the bar, a burly man with an impressive red beard polishes a mug with a r
         "id": "npc_barkeepGormund",
         "name": "Gormund the Barkeep",
         "currentLocationId": "loc_rustyAnchorTavern",
+		"discoveredByPlayer": true,
+		"dispositionTowardsPlayer": neutral,
         "notes": "Burly man with red beard. Runs the Rusty Anchor tavern."
       },
       {
         "type": "npc",
         "id": "npc_mysteriousStranger",
         "name": "Hooded Stranger",
+		"discoveredByPlayer": true,
+		"dispositionTowardsPlayer": neutral,
         "currentLocationId": "loc_rustyAnchorTavern",
         "notes": "Mysterious figure watching the tavern entrance carefully."
       }

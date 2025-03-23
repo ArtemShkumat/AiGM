@@ -70,6 +70,21 @@ namespace AiGMBackEnd.Services
             return await LoadAsync<Quest>(userId, $"quests/{questId}");
         }
 
+        // Conversation Log accessors
+        public async Task<ConversationLog> GetConversationLogAsync(string userId)
+        {
+            var log = await LoadAsync<ConversationLog>(userId, "conversationLog");
+            
+            // If the log doesn't exist yet, create a new one
+            if (log == null)
+            {
+                log = new ConversationLog();
+                await SaveAsync(userId, "conversationLog", log);
+            }
+            
+            return log;
+        }
+
         #endregion
 
         #region Template access methods
@@ -469,6 +484,32 @@ namespace AiGMBackEnd.Services
                 var destDir = Path.Combine(destinationDir, dirName);
                 CopyDirectory(directory, destDir);
             }
+        }
+
+        public async Task AddUserMessageAsync(string userId, string content)
+        {
+            var log = await GetConversationLogAsync(userId);
+            
+            log.Messages.Add(new Message
+            {
+                Sender = "user",
+                Content = content
+            });
+            
+            await SaveAsync(userId, "conversationLog", log);
+        }
+
+        public async Task AddDmMessageAsync(string userId, string content)
+        {
+            var log = await GetConversationLogAsync(userId);
+            
+            log.Messages.Add(new Message
+            {
+                Sender = "dm",
+                Content = content
+            });
+            
+            await SaveAsync(userId, "conversationLog", log);
         }
     }
     

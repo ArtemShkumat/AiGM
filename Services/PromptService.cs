@@ -1,5 +1,7 @@
 using AiGMBackEnd.Models;
 using System.Text;
+using System;
+using System.Linq;
 
 namespace AiGMBackEnd.Services
 {
@@ -80,6 +82,7 @@ namespace AiGMBackEnd.Services
             var location = await _storageService.GetLocationAsync(userId, player.CurrentLocationId);
             var npcsInCurrentLocation = await _storageService.GetNpcsInLocationAsync(userId, player.CurrentLocationId);
             var activeQuests = await _storageService.GetActiveQuestsAsync(userId, player.ActiveQuests);
+            var conversationLog = await _storageService.GetConversationLogAsync(userId);
 
             // Create the final prompt
             var promptBuilder = new StringBuilder();
@@ -112,6 +115,7 @@ namespace AiGMBackEnd.Services
             promptBuilder.AppendLine($"Complexity: {gamePreferences.Complexity}");
             promptBuilder.AppendLine($"Age Appropriateness: {gamePreferences.AgeAppropriateness}");
             promptBuilder.AppendLine();
+                       
 
             // Add world context
             promptBuilder.AppendLine("# World Context");
@@ -390,8 +394,29 @@ namespace AiGMBackEnd.Services
                 promptBuilder.AppendLine();
             }
 
+            // Add conversation history
+            promptBuilder.AppendLine("# Conversation History");
+
+            // Just include the last 10 messages to keep the prompt size reasonable
+            var recentMessages = conversationLog.Messages
+                .Skip(Math.Max(0, conversationLog.Messages.Count - 10))
+                .ToList();
+
+            if (recentMessages.Count > 0)
+            {
+                foreach (var message in recentMessages)
+                {
+                    string sender = message.Sender == "user" ? "Player" : "DM";
+                    promptBuilder.AppendLine($"{sender}: {message.Content}");
+                }
+            }
+            else
+            {
+                promptBuilder.AppendLine("No previous conversation.");
+            }
+            promptBuilder.AppendLine();
             // Add the user's input
-            promptBuilder.AppendLine("# User Input");
+            promptBuilder.AppendLine("# Curren player prompt:");
             promptBuilder.AppendLine(userInput);
 
             return promptBuilder.ToString();

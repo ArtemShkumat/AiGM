@@ -15,7 +15,7 @@
     "traits": "Observant, protective of the town, tightly controlled emotions, skeptical of outsiders"
   },
   "backstory": "Born and raised in Blackwater Bay, Evelyn left to join the FBI for fifteen years before returning after the Thomas family disappearance to become sheriff. She was childhood friends with Elizabeth Thomas and took her disappearance personally. Has maintained law and order with an iron grip for two decades.",
-  "dispositionTowardsPlayer": "suspicious",
+  "dispositionTowardsPlayer": "never met",
   "knownEntities": {
     "npcsKnown": ["npc_mayorFletcher", "npc_hotelManager", "npc_doctorReeves"],
     "locationsKnown": ["loc_harbourPointHotel", "loc_mainStreet", "loc_sheriffStation", "loc_sirensCove", "loc_blackwaterBay"]
