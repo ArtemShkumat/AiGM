@@ -68,21 +68,21 @@ namespace AiGMBackEnd.Services
             }
         }
 
-        private async Task ProcessHiddenJsonAsync(string hiddenJson, PromptType promptType, string userId)
+        private async Task ProcessHiddenJsonAsync(string jsonContent, PromptType promptType, string userId)
         {
             try
             {
-                // Parse JSON
+                // Deserialize JSON content
                 JObject jsonObject;
                 try
                 {
-                    jsonObject = JObject.Parse(hiddenJson);
+                    jsonObject = JObject.Parse(jsonContent);
                 }
                 catch (JsonException)
                 {
                     // Try to fix common JSON issues like extra newlines
-                    hiddenJson = hiddenJson.Trim();
-                    jsonObject = JObject.Parse(hiddenJson);
+                    jsonContent = jsonContent.Trim();
+                    jsonObject = JObject.Parse(jsonContent);
                 }
 
                 switch (promptType)
@@ -136,34 +136,40 @@ namespace AiGMBackEnd.Services
                         {
                             foreach (var entity in newEntities)
                             {
-                                var entityType = entity["type"]?.ToString()?.ToLower();
-                                var entityId = entity["id"]?.ToString();
+                                string entityType = entity["type"]?.ToString()?.ToLower() ?? "";
+                                string entityId = entity["id"]?.ToString() ?? "";
                                 
-                                if (string.IsNullOrEmpty(entityType) || string.IsNullOrEmpty(entityId))
+                                if (string.IsNullOrEmpty(entityId))
                                 {
-                                    _loggingService.LogWarning($"Skipping entity with missing type or id: {entity}");
+                                    _loggingService.LogWarning("Skipping entity with missing ID");
                                     continue;
                                 }
                                 
+                                _loggingService.LogInfo($"Processing creation of {entityType} entity: {entityId}");
+                                
+                                // First, save the basic entity data immediately
                                 switch (entityType)
                                 {
                                     case "npc":
                                         await CreateNewEntityAsync(entity, userId, "npcs", entityId);
-                                        // Trigger a background job to fully create the location
+                                        // Fire and forget - do not wait for job completion
                                         var npcName = entity["name"]?.ToString() ?? "New NPC";
-                                        await TriggerEntityCreationJob(PromptType.CreateNPC, userId, $"Create {npcName}");
+                                        _loggingService.LogInfo($"Will trigger separate job to create NPC: {npcName}");
+                                        FireAndForgetEntityCreation(PromptType.CreateNPC, userId, $"Create {npcName}");
                                         break;
                                     case "location":
                                         await CreateNewEntityAsync(entity, userId, "locations", entityId);
-                                        // Trigger a background job to fully create the location
+                                        // Fire and forget - do not wait for job completion
                                         var locationName = entity["name"]?.ToString() ?? "New Location";
-                                        await TriggerEntityCreationJob(PromptType.CreateLocation, userId, $"Create {locationName}");
+                                        _loggingService.LogInfo($"Will trigger separate job to create location: {locationName}");
+                                        FireAndForgetEntityCreation(PromptType.CreateLocation, userId, $"Create {locationName}");
                                         break;
                                     case "quest":
                                         await CreateNewEntityAsync(entity, userId, "quests", entityId);
-                                        // Trigger a background job to fully create the quest
+                                        // Fire and forget - do not wait for job completion
                                         var questTitle = entity["title"]?.ToString() ?? "New Quest";
-                                        await TriggerEntityCreationJob(PromptType.CreateQuest, userId, $"Create {questTitle}");
+                                        _loggingService.LogInfo($"Will trigger separate job to create quest: {questTitle}");
+                                        FireAndForgetEntityCreation(PromptType.CreateQuest, userId, $"Create {questTitle}");
                                         break;
                                     default:
                                         _loggingService.LogWarning($"Unknown entity type: {entityType}");
@@ -187,6 +193,15 @@ namespace AiGMBackEnd.Services
                                 if (updateData == null)
                                 {
                                     _loggingService.LogWarning($"Invalid update data for entity {entityId}");
+                                    continue;
+                                }
+                                
+                                // Handle special case for player
+                                if (entityId.ToLower() == "player")
+                                {
+                                    _loggingService.LogInfo("Processing player update");
+                                    await UpdateEntityAsync(userId, "", "player", updateData.ToString());
+                                    _loggingService.LogInfo("Applied partial update to player");
                                     continue;
                                 }
                                 
@@ -232,10 +247,13 @@ namespace AiGMBackEnd.Services
                         }
                     }
                 }
+                
+                // Do not wait for background tasks to complete
+                _loggingService.LogInfo("DM updates processing complete");
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error in ProcessDMUpdatesAsync: {ex.Message}");
+                _loggingService.LogError($"Error processing DM updates: {ex.Message}");
                 throw;
             }
         }
@@ -998,22 +1016,45 @@ namespace AiGMBackEnd.Services
         
         private async Task TriggerEntityCreationJob(PromptType promptType, string userId, string userInput)
         {
-            try
+            const int maxRetries = 3;
+            int currentRetry = 0;
+            
+            while (currentRetry < maxRetries)
             {
-                var job = new PromptJob
+                try
                 {
-                    UserId = userId,
-                    UserInput = userInput,
-                    PromptType = promptType
-                };
-                
-                await _backgroundJobService.EnqueuePromptAsync(job);
-                _loggingService.LogInfo($"Triggered {promptType} job for user {userId}");
-            }
-            catch (Exception ex)
-            {
-                _loggingService.LogError($"Error triggering entity creation job: {ex.Message}");
-                // We don't rethrow here to avoid cascading failures
+                    var job = new PromptJob
+                    {
+                        UserId = userId,
+                        UserInput = userInput,
+                        PromptType = promptType
+                    };
+                    
+                    _loggingService.LogInfo($"Triggering {promptType} job for user {userId} with input: {userInput} (attempt {currentRetry + 1})");
+                    string result = await _backgroundJobService.EnqueuePromptAsync(job);
+                    _loggingService.LogInfo($"Completed {promptType} job for user {userId}. Result length: {result?.Length ?? 0}");
+                    
+                    // If we get here, the job was successful, so we can return
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    currentRetry++;
+                    _loggingService.LogError($"Error triggering entity creation job (attempt {currentRetry}): {ex.Message}");
+                    
+                    if (currentRetry >= maxRetries)
+                    {
+                        _loggingService.LogError($"Max retries ({maxRetries}) reached for {promptType} job. Giving up.");
+                        // We don't rethrow here to avoid cascading failures
+                    }
+                    else
+                    {
+                        // Wait before retrying, with exponential backoff
+                        int delayMs = 1000 * (int)Math.Pow(2, currentRetry - 1); // 1s, 2s, 4s...
+                        _loggingService.LogInfo($"Retrying in {delayMs}ms...");
+                        await Task.Delay(delayMs);
+                    }
+                }
             }
         }
 
@@ -1036,7 +1077,19 @@ namespace AiGMBackEnd.Services
                 if (jsonStartIndex >= 0)
                 {
                     var jsonCandidate = jsonContent.Substring(jsonStartIndex).Trim();
-
+                    // Try to find the end of the JSON
+                    try
+                    {
+                        // Validate that this is valid JSON
+                        JToken.Parse(jsonCandidate);
+                        return (userFacingText, jsonCandidate);
+                    }
+                    catch (JsonException ex)
+                    {
+                        _loggingService.LogWarning($"Invalid JSON found in hidden content: {ex.Message}");
+                        // Return what we have anyway and let the processor handle it
+                        return (userFacingText, jsonCandidate);
+                    }
                 }
 
                 return (userFacingText, jsonContent);
@@ -1044,6 +1097,22 @@ namespace AiGMBackEnd.Services
 
             // No hidden content found
             return (llmResponse, string.Empty);
+        }
+
+        // New helper method to fire and forget entity creation jobs
+        private void FireAndForgetEntityCreation(PromptType promptType, string userId, string userInput)
+        {
+            Task.Run(async () => 
+            {
+                try 
+                {
+                    await TriggerEntityCreationJob(promptType, userId, userInput);
+                }
+                catch (Exception ex) 
+                {
+                    _loggingService.LogError($"Error in fire-and-forget job for {promptType} creation: {ex.Message}");
+                }
+            });
         }
     }
 }
