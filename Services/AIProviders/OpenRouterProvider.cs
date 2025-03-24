@@ -26,7 +26,7 @@ namespace AiGMBackEnd.Services.AIProviders
             _httpClient.BaseAddress = new Uri("https://openrouter.ai/api/v1/");
 
             _apiKey = configuration["AIProviders:OpenRouter:ApiKey"];
-            _modelName = configuration["AIProviders:OpenRouter:ModelName"] ?? "google/gemini-2.0-flash";
+            _modelName = configuration["AIProviders:OpenRouter:ModelName"] ?? "google/gemini-2.0-flash-001";
             
             if (!int.TryParse(configuration["AIProviders:OpenRouter:MaxTokens"], out _maxTokens))
             {

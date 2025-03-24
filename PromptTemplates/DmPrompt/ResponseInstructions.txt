@@ -20,26 +20,26 @@ This is the prompt data that you can expect to receive, what each of the field m
       "daysSinceStart": "number - Days elapsed since the start of the game", //Increment after the player goes to sleep or in any other way signifies that the day is over.
       "currentPlayer": "string - The current active player",  //never update
       "worldStateEffects": {object }, //various things affecting the entire world - current weather, pollution, etc, whatever is relevant. Feel free to add/update the effects, but only when they change or if they're significant.
-      "lore": [//Add a new piece of lore when it's really something interesting or important
+      "lore": [//Never update - add new ones through newEntities, this will get updated programmatically
         {
           "id": "string - Unique identifier for this lore element",
           "title": "string - Title of the lore piece",
           "summary": "string - Brief summary of the lore"
         }
       ],
-      "locations": [//Add a new location when the story demands it.
+      "locations": [//Never update - add new ones through newEntities, this will get updated programmatically
         {
           "id": "string - Unique identifier for this location",
           "name": "string - Name of the location"
         }
       ],
-      "npcs": [//Add a new npc when the story demands it.
+      "npcs": [//Never update - add new ones through newEntities, this will get updated programmatically
         {
           "id": "string - Unique identifier for this NPC",
           "name": "string - Name of the NPC"
         }
       ],
-      "quests": [//Add a new quest when the story demands it. Quests are large and complex entities, so don't rush to add new ones if the player already has a few active ones, unless the player specifically asks for it by either offering to help an NPC with a problem or looking for work or just saying something like "I want to go looking for..."
+      "quests": [//Never update - add new ones through newEntities, this will get updated programmatically
         {
           "id": "string - Unique identifier for this quest",
           "title": "string - Title of the quest"
