@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AiGMBackEnd.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace AiGMBackEnd.Services.AIProviders
@@ -51,18 +52,19 @@ namespace AiGMBackEnd.Services.AIProviders
             _httpClient.DefaultRequestHeaders.Add("X-Title", "AIGM Backend");
         }
 
-        public async Task<string> GetCompletionAsync(string prompt, string promptType)
+        public async Task<string> GetCompletionAsync(Prompt prompt)
         {
             try
             {
-                _loggingService.LogInfo($"Sending {promptType} prompt to OpenRouter");
+                _loggingService.LogInfo($"Sending {prompt.PromptType} prompt to OpenRouter using new Prompt class");
 
                 var requestData = new
                 {
                     model = _modelName,
                     messages = new[]
                     {
-                        new { role = "user", content = prompt }
+                        new { role = "system", content = prompt.SystemPrompt },
+                        new { role = "user", content = prompt.PromptContent }
                     },
                     max_tokens = _maxTokens,
                     temperature = _temperature

@@ -11,7 +11,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<string> BuildPromptAsync(string userId, string userInput)
+        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
         {
             try
             {
@@ -26,32 +26,39 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
                 var player = await _storageService.GetPlayerAsync(userId);
 
-                // Create the final prompt
-                var promptBuilder = new StringBuilder();
-                promptBuilder.AppendLine(systemPrompt);
-                promptBuilder.AppendLine();
+                // Create the system prompt builder
+                var systemPromptBuilder = new StringBuilder();
+                systemPromptBuilder.AppendLine(systemPrompt);
+                systemPromptBuilder.AppendLine();
+                
+                // Add response instructions and examples to system prompt
+                new TemplatePromptSection("Response Instructions", responseInstructions).AppendTo(systemPromptBuilder);
+                new TemplatePromptSection("Example Responses", exampleResponses).AppendTo(systemPromptBuilder);
+
+                // Create the prompt content builder
+                var promptContentBuilder = new StringBuilder();
 
                 // Add game setting and preferences using section helpers
-                new GameSettingSection(gameSetting).AppendTo(promptBuilder);
-                new GamePreferencesSection(gamePreferences).AppendTo(promptBuilder);
+                new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
+                new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
 
                 // Add world context
-                new WorldLoreSummarySection(world).AppendTo(promptBuilder);
+                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
                 
                 // Add player context
-                new PlayerContextSection(player).AppendTo(promptBuilder);
+                new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add trigger instructions
-                new TriggerInstructionsSection("This NPC is being created based on a specific need in the game world.").AppendTo(promptBuilder);
-
-                // Add response instructions and examples using section helpers
-                new TemplatePromptSection("Response Instructions", responseInstructions).AppendTo(promptBuilder);
-                new TemplatePromptSection("Example Responses", exampleResponses).AppendTo(promptBuilder);
+                new TriggerInstructionsSection("This NPC is being created based on a specific need in the game world.").AppendTo(promptContentBuilder);
 
                 // Add the user's input
-                new UserInputSection(userInput, "NPC Creation Request").AppendTo(promptBuilder);
+                new UserInputSection(userInput, "NPC Creation Request").AppendTo(promptContentBuilder);
 
-                return promptBuilder.ToString();
+                return new Prompt(
+                    systemPrompt: systemPromptBuilder.ToString(),
+                    promptContent: promptContentBuilder.ToString(),
+                    promptType: PromptType.CreateNPC
+                );
             }
             catch (Exception ex)
             {

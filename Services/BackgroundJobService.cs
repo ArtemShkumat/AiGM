@@ -99,7 +99,7 @@ namespace AiGMBackEnd.Services
                             var prompt = await _promptService.BuildPromptAsync(job.PromptType, job.UserId, job.UserInput, job.NpcId);
                         
                             // 2. Call LLM
-                            var llmResponse = await _aiService.GetCompletionAsync(prompt, job.PromptType);
+                            var llmResponse = await _aiService.GetCompletionAsync(prompt);
                             _loggingService.LogInfo($"LLM response received for {job.PromptType}, length: {llmResponse?.Length ?? 0}");
                         
                             // 3. Process response

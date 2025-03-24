@@ -1,7 +1,9 @@
+using AiGMBackEnd.Models;
+
 namespace AiGMBackEnd.Services.PromptBuilders
 {
     public interface IPromptBuilder
     {
-        Task<string> BuildPromptAsync(string userId, string userInput);
+        Task<Prompt> BuildPromptAsync(string userId, string userInput);
     }
 } 

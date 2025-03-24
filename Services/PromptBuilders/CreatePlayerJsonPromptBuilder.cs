@@ -11,7 +11,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<string> BuildPromptAsync(string userId, string userInput)
+        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
         {
             try
             {
@@ -24,30 +24,37 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var gameSetting = await _storageService.GetGameSettingAsync(userId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
 
-                // Create the final prompt
-                var promptBuilder = new StringBuilder();
-                promptBuilder.AppendLine(systemPrompt);
-                promptBuilder.AppendLine();
+                // Create the system prompt builder
+                var systemPromptBuilder = new StringBuilder();
+                systemPromptBuilder.AppendLine(systemPrompt);
+                systemPromptBuilder.AppendLine();
+                
+                // Add example responses to system prompt
+                new TemplatePromptSection("Example Prompts and Responses", exampleResponses).AppendTo(systemPromptBuilder);
 
-                // Add example responses
-                new TemplatePromptSection("Example Prompts and Responses", exampleResponses).AppendTo(promptBuilder);
+                // Create the prompt content builder
+                var promptContentBuilder = new StringBuilder();
 
                 // Add game setting and preferences using section helpers
-                new GameSettingSection(gameSetting).AppendTo(promptBuilder);
-                new GamePreferencesSection(gamePreferences).AppendTo(promptBuilder);
+                new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
+                new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
 
                 // Add world context
-                new WorldLoreSummarySection(world).AppendTo(promptBuilder);
+                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
 
                 // Add player ID info
-                promptBuilder.AppendLine("# Player Info");
-                promptBuilder.AppendLine($"Player ID: {userId}");
-                promptBuilder.AppendLine();
+                promptContentBuilder.AppendLine("# Player Info");
+                promptContentBuilder.AppendLine($"Player ID: {userId}");
+                promptContentBuilder.AppendLine();
 
                 // Add the user's input containing the player description
-                new UserInputSection(userInput, "Player Description to Convert to JSON").AppendTo(promptBuilder);
+                new UserInputSection(userInput, "Player Description to Convert to JSON").AppendTo(promptContentBuilder);
 
-                return promptBuilder.ToString();
+                return new Prompt(
+                    systemPrompt: systemPromptBuilder.ToString(),
+                    promptContent: promptContentBuilder.ToString(),
+                    promptType: PromptType.CreatePlayerJson
+                );
             }
             catch (Exception ex)
             {

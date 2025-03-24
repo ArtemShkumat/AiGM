@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AiGMBackEnd.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace AiGMBackEnd.Services.AIProviders
@@ -47,19 +48,19 @@ namespace AiGMBackEnd.Services.AIProviders
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<string> GetCompletionAsync(string prompt, string promptType)
+        public async Task<string> GetCompletionAsync(Prompt prompt)
         {
             try
             {
-                _loggingService.LogInfo($"Sending {promptType} prompt to OpenAI");
+                _loggingService.LogInfo($"Sending {prompt.PromptType} prompt to OpenAI using new Prompt class");
 
                 var requestData = new
                 {
                     model = _modelName,
                     messages = new[]
                     {
-                        new { role = "system", content = "You are an AI game master helping with a text-based RPG game." },
-                        new { role = "user", content = prompt }
+                        new { role = "system", content = prompt.SystemPrompt },
+                        new { role = "user", content = prompt.PromptContent }
                     },
                     max_tokens = _maxTokens,
                     temperature = _temperature

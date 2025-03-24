@@ -11,12 +11,12 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<string> BuildPromptAsync(string userId, string userInput)
+        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
         {
             return await BuildPromptAsync(userId, userInput, null);
         }
 
-        public async Task<string> BuildPromptAsync(string userId, string userInput, string providedNpcId)
+        public async Task<Prompt> BuildPromptAsync(string userId, string userInput, string providedNpcId)
         {
             try
             {
@@ -51,73 +51,80 @@ namespace AiGMBackEnd.Services.PromptBuilders
                     }
                 };
 
-                // Create the final prompt
-                var promptBuilder = new StringBuilder();
-                promptBuilder.AppendLine(systemPrompt);
-                promptBuilder.AppendLine();
+                // Create system prompt builder
+                var systemPromptBuilder = new StringBuilder();
+                systemPromptBuilder.AppendLine(systemPrompt);
+                systemPromptBuilder.AppendLine();
+                
+                // Add response instructions to system prompt
+                PromptSection.AppendSection(systemPromptBuilder, "Response Instructions", responseInstructions);
+
+                // Add example responses to system prompt
+                PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);
+
+                // Create prompt content builder
+                var promptContentBuilder = new StringBuilder();
 
                 // Add game setting and preferences using our helper classes
-                new GameSettingSection(gameSetting).AppendTo(promptBuilder);
-                new GamePreferencesSection(gamePreferences).AppendTo(promptBuilder);
+                new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
+                new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
 
                 // Add NPC context
-                promptBuilder.AppendLine("# NPC Context");
-                promptBuilder.AppendLine($"NPC Name: {npc.Name}");
+                promptContentBuilder.AppendLine("# NPC Context");
+                promptContentBuilder.AppendLine($"NPC Name: {npc.Name}");
                 if (npc.VisualDescription != null)
                 {
-                    promptBuilder.AppendLine($"Age: {npc.VisualDescription.Body}");
+                    promptContentBuilder.AppendLine($"Age: {npc.VisualDescription.Body}");
                 }
                 if (npc.KnownEntities != null)
                 {
-                    promptBuilder.AppendLine($"Role: {npc.Personality.Quirks}");
+                    promptContentBuilder.AppendLine($"Role: {npc.Personality.Quirks}");
                 }
-                promptBuilder.AppendLine($"Description: {npc.Backstory}");
-                promptBuilder.AppendLine($"Personality: {npc.Personality.Temperament}");
-                promptBuilder.AppendLine($"Knowledge: {(npc.KnownEntities != null ? "Has knowledge of various entities" : "Limited knowledge")}");
-                promptBuilder.AppendLine($"Goals: {npc.DispositionTowardsPlayer}");
-                promptBuilder.AppendLine();
+                promptContentBuilder.AppendLine($"Description: {npc.Backstory}");
+                promptContentBuilder.AppendLine($"Personality: {npc.Personality.Temperament}");
+                promptContentBuilder.AppendLine($"Knowledge: {(npc.KnownEntities != null ? "Has knowledge of various entities" : "Limited knowledge")}");
+                promptContentBuilder.AppendLine($"Goals: {npc.DispositionTowardsPlayer}");
+                promptContentBuilder.AppendLine();
 
                 // Add scene context
-                promptBuilder.AppendLine("# Scene Context");
-                promptBuilder.AppendLine($"Location: {location.Name}");
-                promptBuilder.AppendLine($"Location Description: {location.Description}");
-                promptBuilder.AppendLine($"Time: {world.GameTime}");                
-                promptBuilder.AppendLine();
+                promptContentBuilder.AppendLine("# Scene Context");
+                promptContentBuilder.AppendLine($"Location: {location.Name}");
+                promptContentBuilder.AppendLine($"Location Description: {location.Description}");
+                promptContentBuilder.AppendLine($"Time: {world.GameTime}");                
+                promptContentBuilder.AppendLine();
 
                 // Add player context using simplified player context section
-                new PlayerContextSection(player).AppendTo(promptBuilder);
+                new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add NPC's relationship with player if it exists
                 if (npc.KnowsPlayer)
                 {
-                    promptBuilder.AppendLine($"Disposition towards player: {npc.DispositionTowardsPlayer}");
+                    promptContentBuilder.AppendLine($"Disposition towards player: {npc.DispositionTowardsPlayer}");
                 }
-                promptBuilder.AppendLine();
+                promptContentBuilder.AppendLine();
 
                 // Add conversation history if available
                 if (npc.ConversationLog != null && npc.ConversationLog.Count > 0)
                 {
-                    promptBuilder.AppendLine("# Previous Conversation");
+                    promptContentBuilder.AppendLine("# Previous Conversation");
                     foreach (var entry in npc.ConversationLog)
                     {
                         foreach (var item in entry)
                         {
-                            promptBuilder.AppendLine($"{item.Key}: {item.Value}");
+                            promptContentBuilder.AppendLine($"{item.Key}: {item.Value}");
                         }
                     }
-                    promptBuilder.AppendLine();
+                    promptContentBuilder.AppendLine();
                 }
 
-                // Add response instructions
-                PromptSection.AppendSection(promptBuilder, "Response Instructions", responseInstructions);
-
-                // Add example responses
-                PromptSection.AppendSection(promptBuilder, "Example Responses", exampleResponses);
-
                 // Add the user's input
-                new UserInputSection(userInput, "User Input").AppendTo(promptBuilder);
+                new UserInputSection(userInput, "User Input").AppendTo(promptContentBuilder);
 
-                return promptBuilder.ToString();
+                return new Prompt(
+                    systemPrompt: systemPromptBuilder.ToString(),
+                    promptContent: promptContentBuilder.ToString(),
+                    promptType: PromptType.NPC
+                );
             }
             catch (Exception ex)
             {
@@ -125,7 +132,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 throw;
             }
         }
-        
+
         private string ParseNpcId(string userInput)
         {
             // Basic parsing to extract NPC ID from user input

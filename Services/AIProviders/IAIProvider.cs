@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using AiGMBackEnd.Models;
 
 namespace AiGMBackEnd.Services.AIProviders
 {
@@ -13,8 +14,7 @@ namespace AiGMBackEnd.Services.AIProviders
         /// Generates a completion from the AI model
         /// </summary>
         /// <param name="prompt">The prompt to send to the AI model</param>
-        /// <param name="promptType">The type of prompt (DM, NPC, etc.)</param>
         /// <returns>The generated completion text</returns>
-        Task<string> GetCompletionAsync(string prompt, string promptType);
+        Task<string> GetCompletionAsync(Prompt prompt);
     }
 }

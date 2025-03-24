@@ -11,7 +11,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<string> BuildPromptAsync(string userId, string userInput)
+        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
         {
             try
             {
@@ -32,75 +32,81 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var activeQuests = await _storageService.GetActiveQuestsAsync(userId, player.ActiveQuests);
                 var conversationLog = await _storageService.GetConversationLogAsync(userId);
 
-                // Create the final prompt
-                var promptBuilder = new StringBuilder();
-                promptBuilder.AppendLine(systemPrompt);
-                promptBuilder.AppendLine();
-
-                // Add response instructions
-                PromptSection.AppendSection(promptBuilder, "Response Instructions", responseInstructions);
-
-                // Add example responses
-                promptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");
-                PromptSection.AppendSection(promptBuilder, "Example Responses", exampleResponses);
-
-                promptBuilder.AppendLine("# Below is the current game state data");
+                // Create the prompt content builder
+                var promptContentBuilder = new StringBuilder();
 
                 // Add sections using our helper classes
-                new GameSettingSection(gameSetting).AppendTo(promptBuilder);
-                new GamePreferencesSection(gamePreferences).AppendTo(promptBuilder);
+                new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
+                new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
                 
                 // Add world context section
-                new WorldContextSection(world, includeEntityLists: true).AppendTo(promptBuilder);
+                new WorldContextSection(world, includeEntityLists: true).AppendTo(promptContentBuilder);
 
                 // Add additional world lore summary if needed
-                new WorldLoreSummarySection(world).AppendTo(promptBuilder);
+                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
                 
                 // Add player characters context
-                new PlayerContextSection(player).AppendTo(promptBuilder);
+                new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add location context using the location section
-                new LocationContextSection(location).AppendTo(promptBuilder);
+                new LocationContextSection(location).AppendTo(promptContentBuilder);
 
                 // Add NPCs present at this location and all the information about them
                 if (npcsInCurrentLocation != null && npcsInCurrentLocation.Count > 0)
                 {
-                    promptBuilder.AppendLine("# NPCs Present");
+                    promptContentBuilder.AppendLine("# NPCs Present");
                     foreach (var npc in npcsInCurrentLocation)
                     {
-                        new NPCSection(npc).AppendTo(promptBuilder);
+                        new NPCSection(npc).AppendTo(promptContentBuilder);
                     }
                 }
                 else
                 {
-                    promptBuilder.AppendLine("# NPCs Present");
-                    promptBuilder.AppendLine("There are no NPCs currently present at this location.");
-                    promptBuilder.AppendLine();
+                    promptContentBuilder.AppendLine("# NPCs Present");
+                    promptContentBuilder.AppendLine("There are no NPCs currently present at this location.");
+                    promptContentBuilder.AppendLine();
                 }
 
                 // Add all active quests and all their information
                 if (activeQuests != null && activeQuests.Count > 0)
                 {
-                    promptBuilder.AppendLine("# Active Quests");
+                    promptContentBuilder.AppendLine("# Active Quests");
                     foreach (var quest in activeQuests)
                     {
-                        new QuestSection(quest).AppendTo(promptBuilder);
+                        new QuestSection(quest).AppendTo(promptContentBuilder);
                     }
                 }
                 else
                 {
-                    promptBuilder.AppendLine("# Active Quests");
-                    promptBuilder.AppendLine("The player currently has no active quests.");
-                    promptBuilder.AppendLine();
+                    promptContentBuilder.AppendLine("# Active Quests");
+                    promptContentBuilder.AppendLine("The player currently has no active quests.");
+                    promptContentBuilder.AppendLine();
                 }
 
                 // Add conversation history
-                new ConversationLogSection(conversationLog).AppendTo(promptBuilder);
+                new ConversationLogSection(conversationLog).AppendTo(promptContentBuilder);
                 
                 // Add the user's input
-                new UserInputSection(userInput, "Current player prompt").AppendTo(promptBuilder);
+                new UserInputSection(userInput, "Current player prompt").AppendTo(promptContentBuilder);
 
-                return promptBuilder.ToString();
+                // Build the system prompt with response instructions and examples
+                var systemPromptBuilder = new StringBuilder();
+                systemPromptBuilder.AppendLine(systemPrompt);
+                systemPromptBuilder.AppendLine();
+                
+                // Add response instructions
+                PromptSection.AppendSection(systemPromptBuilder, "Response Instructions", responseInstructions);
+
+                // Add example responses
+                systemPromptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");
+                PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);
+                
+                // Create the prompt object
+                return new Prompt(
+                    systemPrompt: systemPromptBuilder.ToString(),
+                    promptContent: promptContentBuilder.ToString(),
+                    promptType: PromptType.DM
+                );
             }
             catch (Exception ex)
             {

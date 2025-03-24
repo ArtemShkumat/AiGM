@@ -47,7 +47,7 @@ namespace AiGMBackEnd.Services
             };
         }
 
-        public async Task<string> BuildPromptAsync(PromptType promptType, string userId, string userInput, string npcId = null)
+        public async Task<Prompt> BuildPromptAsync(PromptType promptType, string userId, string userInput, string npcId = null)
         {
             try
             {

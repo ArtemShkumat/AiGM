@@ -11,7 +11,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<string> BuildPromptAsync(string userId, string userInput)
+        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
         {
             try
             {
@@ -26,51 +26,56 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var gameSetting = await _storageService.GetGameSettingAsync(userId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
 
-                // Create the final prompt
-                var promptBuilder = new StringBuilder();
-                promptBuilder.AppendLine(systemPrompt);
-                promptBuilder.AppendLine();
+                // Create the system prompt builder
+                var systemPromptBuilder = new StringBuilder();
+                systemPromptBuilder.AppendLine(systemPrompt);
+                systemPromptBuilder.AppendLine();
+                
+                // Add response instructions and examples to system prompt
+                PromptSection.AppendSection(systemPromptBuilder, "Response Instructions", responseInstructions);
+                PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);
+
+                // Create the prompt content builder
+                var promptContentBuilder = new StringBuilder();
 
                 // Add game setting and preferences using section helpers
-                new GameSettingSection(gameSetting).AppendTo(promptBuilder);
-                new GamePreferencesSection(gamePreferences).AppendTo(promptBuilder);
+                new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
+                new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
 
                 // Add world context
-                new WorldLoreSummarySection(world).AppendTo(promptBuilder);
+                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
 
                 // Add player context
-                new PlayerContextSection(player).AppendTo(promptBuilder);
+                new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add player RPG elements if available
                 if (player.RpgElements != null && player.RpgElements.ContainsKey("class"))
                 {
-                    promptBuilder.AppendLine($"Class: {player.RpgElements["class"]}");
+                    promptContentBuilder.AppendLine($"Class: {player.RpgElements["class"]}");
                 }
                 
                 if (player.RpgElements != null && player.RpgElements.ContainsKey("level"))
                 {
-                    promptBuilder.AppendLine($"Level: {player.RpgElements["level"]}");
+                    promptContentBuilder.AppendLine($"Level: {player.RpgElements["level"]}");
                 }
                 
                 if (!string.IsNullOrEmpty(player.Backstory))
                 {
-                    promptBuilder.AppendLine($"Background: {player.Backstory}");
+                    promptContentBuilder.AppendLine($"Background: {player.Backstory}");
                 }
-                promptBuilder.AppendLine();
+                promptContentBuilder.AppendLine();
 
                 // Add trigger instructions
-                new TriggerInstructionsSection("This quest is being created based on a specific trigger in the game world.").AppendTo(promptBuilder);
-
-                // Add response instructions
-                PromptSection.AppendSection(promptBuilder, "Response Instructions", responseInstructions);
-
-                // Add example responses
-                PromptSection.AppendSection(promptBuilder, "Example Responses", exampleResponses);
+                new TriggerInstructionsSection("This quest is being created based on a specific trigger in the game world.").AppendTo(promptContentBuilder);
 
                 // Add the user's input
-                new UserInputSection(userInput, "Quest Request").AppendTo(promptBuilder);
+                new UserInputSection(userInput, "Quest Request").AppendTo(promptContentBuilder);
 
-                return promptBuilder.ToString();
+                return new Prompt(
+                    systemPrompt: systemPromptBuilder.ToString(),
+                    promptContent: promptContentBuilder.ToString(),
+                    promptType: PromptType.CreateQuest
+                );
             }
             catch (Exception ex)
             {

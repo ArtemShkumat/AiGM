@@ -1,3 +1,4 @@
+using AiGMBackEnd.Models;
 using AiGMBackEnd.Services;
 using System.Text;
 
@@ -14,7 +15,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
             _loggingService = loggingService;
         }
         
-        public abstract Task<string> BuildPromptAsync(string userId, string userInput);
+        public abstract Task<Prompt> BuildPromptAsync(string userId, string userInput);
         
         protected async Task<string> GetTemplateAsync(string templateName)
         {

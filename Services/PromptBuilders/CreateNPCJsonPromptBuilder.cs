@@ -11,7 +11,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<string> BuildPromptAsync(string userId, string userInput)
+        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
         {
             try
             {
@@ -24,25 +24,32 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var responseInstructions = await _storageService.GetCreateNpcJsonTemplateAsync("ResponseInstructions");
                 var exampleResponses = await _storageService.GetCreateNpcJsonTemplateAsync("ExampleResponses");
 
-                // Create the final prompt
-                var promptBuilder = new StringBuilder();
-                promptBuilder.AppendLine(systemPrompt);
-                promptBuilder.AppendLine();
+                // Create the system prompt builder
+                var systemPromptBuilder = new StringBuilder();
+                systemPromptBuilder.AppendLine(systemPrompt);
+                systemPromptBuilder.AppendLine();
+                
+                // Add response instructions and examples to system prompt
+                new TemplatePromptSection("Response Instructions", responseInstructions).AppendTo(systemPromptBuilder);
+                new TemplatePromptSection("Example Responses", exampleResponses).AppendTo(systemPromptBuilder);
+
+                // Create the prompt content builder
+                var promptContentBuilder = new StringBuilder();
 
                 // Add world context
-                new WorldLoreSummarySection(world).AppendTo(promptBuilder);
+                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
 
                 // Add player context
-                new PlayerContextSection(player).AppendTo(promptBuilder);
-
-                // Add response instructions and examples using section helpers
-                new TemplatePromptSection("Response Instructions", responseInstructions).AppendTo(promptBuilder);
-                new TemplatePromptSection("Example Responses", exampleResponses).AppendTo(promptBuilder);
+                new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add the user's input containing the NPC description
-                new UserInputSection(userInput, "NPC Description to Convert to JSON").AppendTo(promptBuilder);
+                new UserInputSection(userInput, "NPC Description to Convert to JSON").AppendTo(promptContentBuilder);
 
-                return promptBuilder.ToString();
+                return new Prompt(
+                    systemPrompt: systemPromptBuilder.ToString(),
+                    promptContent: promptContentBuilder.ToString(),
+                    promptType: PromptType.CreateNPCJson
+                );
             }
             catch (Exception ex)
             {

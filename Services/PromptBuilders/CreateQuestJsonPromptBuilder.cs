@@ -12,7 +12,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<string> BuildPromptAsync(string userId, string userInput)
+        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
         {
             try
             {
@@ -20,29 +20,38 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var world = await _storageService.GetWorldAsync(userId);
                 var player = await _storageService.GetPlayerAsync(userId);
                 
-                var promptBuilder = new StringBuilder();
-
                 // System prompt
                 var systemPrompt = await _storageService.GetCreateQuestJsonTemplateAsync("SystemCreateQuestJson");
-                promptBuilder.AppendLine(systemPrompt);
-
-                // Add world context
-                new WorldLoreSummarySection(world).AppendTo(promptBuilder);
-
-                // Add player context
-                new PlayerContextSection(player).AppendTo(promptBuilder);
-
-                // Add response instructions and example responses using section helpers
+                
+                // Response instructions and example responses
                 var responseInstructions = await _storageService.GetCreateQuestJsonTemplateAsync("ResponseInstructions");
                 var exampleResponses = await _storageService.GetCreateQuestJsonTemplateAsync("ExampleResponses");
+
+                // Create the system prompt builder
+                var systemPromptBuilder = new StringBuilder();
+                systemPromptBuilder.AppendLine(systemPrompt);
                 
-                new TemplatePromptSection("Response Instructions", responseInstructions).AppendTo(promptBuilder);
-                new TemplatePromptSection("Example Responses", exampleResponses).AppendTo(promptBuilder);
+                // Add response instructions and examples to system prompt
+                new TemplatePromptSection("Response Instructions", responseInstructions).AppendTo(systemPromptBuilder);
+                new TemplatePromptSection("Example Responses", exampleResponses).AppendTo(systemPromptBuilder);
+
+                // Create the prompt content builder
+                var promptContentBuilder = new StringBuilder();
+
+                // Add world context
+                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
+
+                // Add player context
+                new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add the user's input containing the quest description
-                new UserInputSection(userInput, "Quest Description to Convert to JSON").AppendTo(promptBuilder);
+                new UserInputSection(userInput, "Quest Description to Convert to JSON").AppendTo(promptContentBuilder);
 
-                return promptBuilder.ToString();
+                return new Prompt(
+                    systemPrompt: systemPromptBuilder.ToString(),
+                    promptContent: promptContentBuilder.ToString(),
+                    promptType: PromptType.CreateQuestJson
+                );
             }
             catch (Exception ex)
             {
