@@ -1,0 +1,40 @@
+{
+  "type": "LOCATION",
+  "id": "loc_crystalCaverns",
+  "name": "Crystal Caverns",
+  "locationType": "natural",
+  "description": "A network of caves in the mountainside east of Emberhold, illuminated by naturally phosphorescent crystals that give off a cool blue glow. The caverns are known for the rare elemental crystals that form here, including the legendary Ember Crystal. The air is cool and still, with the distant sound of water dripping deeper in the cavern system.",
+  "knownToPlayer": true,
+  
+  "connectedLocations": [
+    {
+      "id": "loc_emberhold",
+      "description": "A winding path leads down the mountainside to Emberhold village."
+    }
+  ],
+  
+  "parentLocation": null,
+  
+  "subLocations": [],
+  
+  "npcs": [],
+  
+  "pointsOfInterest": [
+    {
+      "name": "Crystal Growth Chamber",
+      "description": "A large cavern where most of the crystals form naturally. Veins of various minerals run through the walls, and crystal formations of different colors and sizes grow from the ceiling and floor."
+    },
+    {
+      "name": "Ancient Altar",
+      "description": "A stone platform at the deepest part of the accessible caverns, seemingly crafted for ritual purposes. Runes similar to those at the forge are carved into its surface."
+    },
+    {
+      "name": "Ember Geode",
+      "description": "A cracked formation where the Ember Crystal was originally discovered generations ago. Faint traces of heat still emanate from the opening."
+    }
+  ],
+  
+  "questIds": ["quest_emberCrystal"],
+  
+  "items": []
+} 

@@ -1,0 +1,76 @@
+{
+  "type": "NPC",
+  "id": "npc_merchantThorin",
+  "name": "Merchant Thorin",
+  "currentLocationId": "loc_emberhold",
+  "knownToPlayer": true,
+  "knowsPlayer": false,
+  "visibleToPlayer": true,
+  
+  "visualDescription": {
+    "gender": "male",
+    "body": "Short and stout, with quick movements",
+    "visibleClothing": "Fine clothes of various fabrics, with a heavy coin purse at his belt",
+    "condition": "Middle-aged, with a neatly trimmed beard and calculating eyes",
+    "resemblingCelebrity": "Peter Dinklage with a full beard"
+  },
+  
+  "personality": {
+    "temperament": "Cheerful and talkative, especially when discussing trade",
+    "quirks": "Shrewd, observant, gossip-loving, generous to those he likes",
+    "motivations": "To profit from trade while maintaining good relationships with Emberhold",
+    "fears": "Economic downturn if the Ember Crystal isn't recovered",
+    "secrets": [
+      "He has heard rumors about who might have the crystal from his trade contacts",
+      "He occasionally deals in black market goods when profitable"
+    ]
+  },
+  
+  "backstory": "Thorin is not a native of Emberhold, but has been the primary merchant serving the village for fifteen years. He travels between several mountain settlements, but has a permanent shop in Emberhold due to the high value of the crafted goods. He has extensive connections across the region and often serves as the village's source of outside news.",
+  
+  "currentGoal": "To secure valuable goods from the forge before their quality declines without the crystal",
+  
+  "age": 52,
+  
+  "dispositionTowardsPlayer": "friendly and curious",
+  
+  "knownEntities": {
+    "npcsKnown": [
+      {
+        "name": "Elder Varric",
+        "levelOfFamiliarity": "Known",
+        "disposition": "Respectful"
+      },
+      {
+        "name": "Smith Runa",
+        "levelOfFamiliarity": "Known",
+        "disposition": "Neutral"
+      }
+    ],
+    "locationsKnown": [
+      "loc_emberhold"
+    ]
+  },
+  
+  "questInvolvement": ["quest_emberCrystal"],
+  
+  "inventory": [
+    {
+      "name": "Merchant's Ledger",
+      "description": "A worn leather book with meticulous records of trades and transactions",
+      "quantity": 1
+    },
+    {
+      "name": "Foreign Coins",
+      "description": "A variety of currencies from different regions",
+      "quantity": 1
+    },
+    {
+      "name": "Trade Goods",
+      "description": "Various items for sale, including food, tools, and luxury items",
+      "quantity": 1
+    }
+  ],
+  
+  "conversationLog": []
+} 

@@ -1,0 +1,33 @@
+{
+  "type": "QUEST",
+  "id": "quest_emberCrystal",
+  "title": "The Missing Ember Crystal",
+  "currentProgress": "discovering",
+  "questDescription": "The sacred Ember Crystal, which has protected Emberhold from harsh winters for generations, has been stolen. Without it, the village faces a deadly winter and the Ancient Forge cannot produce the masterwork items that are the village's livelihood. You must uncover who took the crystal and return it to Emberhold before the first snowfall.",
+  
+  "achievementConditions": [
+    "Gather information about the crystal's disappearance from village residents",
+    "Discover clues about who might have taken the crystal",
+    "Track down the thief",
+    "Recover the Ember Crystal",
+    "Return the crystal to its rightful place in Emberhold"
+  ],
+  
+  "failConditions": [
+    "The crystal is destroyed",
+    "Winter arrives before the crystal is returned",
+    "The village is abandoned due to the coming cold"
+  ],
+  
+  "involvedLocations": [
+    "loc_emberhold",
+    "loc_ancientForge",
+    "loc_crystalCaverns"
+  ],
+  
+  "involvedNpcs": [
+    "npc_elderVarric",
+    "npc_smithRuna",
+    "npc_merchantThorin"
+  ]
+} 

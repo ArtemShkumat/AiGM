@@ -1,0 +1,73 @@
+{
+  "type": "NPC",
+  "id": "npc_elderVarric",
+  "name": "Elder Varric",
+  "currentLocationId": "loc_emberhold",
+  "knownToPlayer": true,
+  "knowsPlayer": false,
+  "visibleToPlayer": true,
+  
+  "visualDescription": {
+    "gender": "male",
+    "body": "Stooped with age but still sturdy",
+    "visibleClothing": "Heavy woolen robes with embedded crystals that glow faintly",
+    "condition": "Elderly, with a long white beard and weathered hands",
+    "resemblingCelebrity": "Ian McKellen as Gandalf"
+  },
+  
+  "personality": {
+    "temperament": "Wise and contemplative, but now worried and urgent",
+    "quirks": "Patient, knowledgeable about local lore, protective of the village",
+    "motivations": "To protect Emberhold and recover the Ember Crystal before winter",
+    "fears": "That the village will not survive without the crystal's warmth",
+    "secrets": [
+      "He knows more about who might have taken the crystal than he initially reveals",
+      "He was once a powerful elemental binder in his youth"
+    ]
+  },
+  
+  "backstory": "Varric has been the elder of Emberhold for over three decades. In his youth, he was a talented elemental binder who helped maintain the connection between the Ember Crystal and the village's heating systems. He has deep knowledge of the crystal's origins and powers, passed down through generations of village elders.",
+  
+  "currentGoal": "To organize the search for the missing Ember Crystal",
+  
+  "age": 78,
+  
+  "dispositionTowardsPlayer": "cautiously hopeful",
+  
+  "knownEntities": {
+    "npcsKnown": [
+      {
+        "name": "Smith Runa",
+        "levelOfFamiliarity": "Deep",
+        "disposition": "Fond"
+      },
+      {
+        "name": "Merchant Thorin",
+        "levelOfFamiliarity": "Known",
+        "disposition": "Neutral"
+      }
+    ],
+    "locationsKnown": [
+      "loc_emberhold",
+      "loc_ancientForge",
+      "loc_crystalCaverns"
+    ]
+  },
+  
+  "questInvolvement": ["quest_emberCrystal"],
+  
+  "inventory": [
+    {
+      "name": "Village Elder's Staff",
+      "description": "A gnarled wooden staff with a small blue crystal embedded at the top",
+      "quantity": 1
+    },
+    {
+      "name": "Ancient Key",
+      "description": "A heavy iron key that unlocks the ceremonial chamber in the Crystal Caverns",
+      "quantity": 1
+    }
+  ],
+  
+  "conversationLog": []
+} 

@@ -1,0 +1,37 @@
+{
+  "type": "Player",
+  "id": "player_001",
+  "name": "Adventurer",
+  "currentLocationId": "loc_emberhold",
+  "visualDescription": {
+    "gender": "unknown",
+    "body": "Average build",
+    "visibleClothing": "Sturdy traveling clothes and a worn cloak",
+    "condition": "Young adult, with an alert posture and watchful eyes",
+    "resemblingCelebrity": "Choose your own appearance"
+  },
+  "age": 28,
+  "backstory": "You are a wandering adventurer who has arrived in Emberhold seeking to make a name for yourself. You've heard tales of the village and its legendary forge, but now find yourself in the middle of a crisis as the sacred Ember Crystal has been stolen.",
+  "inventory": [
+    {
+      "name": "Steel Dagger",
+      "description": "A simple but well-crafted dagger",
+      "quantity": 1
+    },
+    {
+      "name": "Traveler's Map",
+      "description": "A worn map showing the major landmarks around Emberhold",
+      "quantity": 1
+    }
+  ],
+  "money": 10,
+  "statusEffects": [],
+  "rpgElements": {
+    "skills": {
+      "Combat": "Basic",
+      "Survival": "Intermediate",
+      "LocalKnowledge": "Basic"
+    }
+  },
+  "activeQuests": ["quest_emberCrystal"]
+} 

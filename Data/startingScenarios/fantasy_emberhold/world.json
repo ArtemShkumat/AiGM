@@ -1,0 +1,55 @@
+{
+  "type": "WORLD",
+  "gameTime": "1247-05-15T14:30:00Z",
+  "daysSinceStart": 1,
+  "currentPlayer": "player_001",
+  "worldStateEffects": {
+    "weather": "clear",
+    "season": "spring"
+  },
+
+  "lore": [
+    {
+      "id": "lore_emberCrystal",
+      "title": "The Ember Crystal",
+      "summary": "An ancient artifact said to contain the essence of a primordial fire spirit. It once protected Emberhold from the harsh winters, but has been stolen."
+    }
+  ],
+
+  "locations": [
+    {
+      "id": "loc_emberhold",
+      "name": "Emberhold"
+    },
+    {
+      "id": "loc_ancientForge",
+      "name": "Ancient Forge"
+    },
+    {
+      "id": "loc_crystalCaverns",
+      "name": "Crystal Caverns"
+    }
+  ],
+
+  "npcs": [
+    {
+      "id": "npc_elderVarric",
+      "name": "Elder Varric"
+    },
+    {
+      "id": "npc_smithRuna",
+      "name": "Smith Runa"
+    },
+    {
+      "id": "npc_merchantThorin",
+      "name": "Merchant Thorin"
+    }
+  ],
+
+  "quests": [
+    {
+      "id": "quest_emberCrystal",
+      "title": "The Missing Ember Crystal"
+    }
+  ]
+} 

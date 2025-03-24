@@ -1,0 +1,72 @@
+{
+  "type": "NPC",
+  "id": "npc_smithRuna",
+  "name": "Smith Runa",
+  "currentLocationId": "loc_ancientForge",
+  "knownToPlayer": true,
+  "knowsPlayer": false,
+  "visibleToPlayer": false,
+  
+  "visualDescription": {
+    "gender": "female",
+    "body": "Muscular and powerful, with burn scars on her forearms",
+    "visibleClothing": "Heavy leather apron over simple linen clothes, with numerous tools hanging from a belt",
+    "condition": "Middle-aged, with streaks of gray in her dark hair tied back in a tight braid",
+    "resemblingCelebrity": "Gwendoline Christie as Brienne of Tarth"
+  },
+  
+  "personality": {
+    "temperament": "Stern and focused, with little patience for small talk",
+    "quirks": "Perfectionist, direct, values quality craftsmanship above all",
+    "motivations": "To maintain the legacy of Emberhold's smithing traditions and recover the crystal to restore the forge's full power",
+    "fears": "That her apprentices will never experience the full power of the Ancient Forge",
+    "secrets": [
+      "She has been experimenting with binding smaller fire spirits to weapons",
+      "She suspects the crystal was taken by a rival smith from another village"
+    ]
+  },
+  
+  "backstory": "Runa is the master smith of Emberhold, trained from childhood in the Ancient Forge's traditions. She is the ninth generation of her family to hold this position and takes great pride in maintaining the forge's reputation. The theft of the Ember Crystal has affected her work deeply, as the legendary weapons and armor of Emberhold require the crystal's heat to properly forge.",
+  
+  "currentGoal": "To complete an order of weapons despite the reduced capabilities of the forge",
+  
+  "age": 45,
+  
+  "dispositionTowardsPlayer": "professionally evaluative",
+  
+  "knownEntities": {
+    "npcsKnown": [
+      {
+        "name": "Elder Varric",
+        "levelOfFamiliarity": "Deep",
+        "disposition": "Respectful"
+      },
+      {
+        "name": "Merchant Thorin",
+        "levelOfFamiliarity": "Known",
+        "disposition": "Neutral"
+      }
+    ],
+    "locationsKnown": [
+      "loc_emberhold",
+      "loc_ancientForge"
+    ]
+  },
+  
+  "questInvolvement": ["quest_emberCrystal"],
+  
+  "inventory": [
+    {
+      "name": "Master's Hammer",
+      "description": "A heavy smith's hammer with runes etched into the head",
+      "quantity": 1
+    },
+    {
+      "name": "Fire-Resistant Gloves",
+      "description": "Special gloves treated with fire-resistant materials and minor binding enchantments",
+      "quantity": 1
+    }
+  ],
+  
+  "conversationLog": []
+} 

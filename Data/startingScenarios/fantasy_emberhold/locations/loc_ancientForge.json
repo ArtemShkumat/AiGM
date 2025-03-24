@@ -1,0 +1,42 @@
+{
+  "type": "LOCATION",
+  "id": "loc_ancientForge",
+  "name": "The Ancient Forge",
+  "locationType": "structure",
+  "description": "A massive forge built into the mountainside, with great bellows and anvils of ancient design. The central forge pit normally glows with supernatural heat, powered by a connection to the Ember Crystal, but now burns only with mundane fire. The walls are lined with weapons and armor of exceptional quality, and runes of elemental binding are carved into every surface.",
+  "knownToPlayer": true,
+  
+  "connectedLocations": [
+    {
+      "id": "loc_emberhold",
+      "description": "The path leads south back to Emberhold village."
+    }
+  ],
+  
+  "parentLocation": null,
+  
+  "subLocations": [],
+  
+  "npcs": [
+    "npc_smithRuna"
+  ],
+  
+  "pointsOfInterest": [
+    {
+      "name": "The Master Anvil",
+      "description": "An enormous anvil of strange, dark metal at the center of the forge. Runes glow faintly along its sides when the hammer strikes it."
+    },
+    {
+      "name": "Element Binding Circle",
+      "description": "A circular area marked with complex runes where items are infused with elemental properties."
+    },
+    {
+      "name": "Crystal Mounting",
+      "description": "A specially designed holder where the Ember Crystal would normally be placed to power the forge. It's now empty, with only a few glowing embers remaining."
+    }
+  ],
+  
+  "questIds": ["quest_emberCrystal"],
+  
+  "items": []
+} 
