@@ -9,7 +9,6 @@ Behind the bar, a burly man with an impressive red beard polishes a mug with a r
 
 <donotshow/>
 {
-  "dmUpdates": {
     "newEntities": [
       {
         "type": "npc",
@@ -34,8 +33,7 @@ Behind the bar, a burly man with an impressive red beard polishes a mug with a r
         "type": "PLAYER",
         "currentLocationId": "loc_rustyAnchorTavern"
       }
-    }
-  }
+    }  
 }
 
 
@@ -50,14 +48,13 @@ You make your way to the bar counter, navigating between the crowded tables. The
 
 <donotshow/>
 {
-  "dmUpdates": {
     "partialUpdates": {
       "npc_barkeepGormund": {
         "type": "NPC",
         "dispositionTowardsPlayer": "neutral"
       }
     }
-  }
+  
 }
 
 
@@ -74,7 +71,6 @@ She gestures for you to sit. "Perceptive barkeep," she mutters. "Yes, I need som
 
 <donotshow/>
 {
-  "dmUpdates": {
     "newEntities": [
       {
         "type": "quest",
@@ -98,6 +94,6 @@ She gestures for you to sit. "Perceptive barkeep," she mutters. "Yes, I need som
         "dispositionTowardsPlayer": "cautious"
       }
     }
-  }
+  
 }
 

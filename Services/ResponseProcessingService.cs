@@ -87,10 +87,10 @@ namespace AiGMBackEnd.Services
                 switch (promptType)
                 {
                     case PromptType.DM:
-                        await ProcessDMUpdatesAsync(jsonObject, userId);
+                        await ProcessUpdatesAsync(jsonObject, userId);
                         break;
                     case PromptType.NPC:
-                        await ProcessNPCUpdatesAsync(jsonObject, userId);
+                        await ProcessUpdatesAsync(jsonObject, userId);
                         break;
                     case PromptType.CreateQuest:
                     case PromptType.CreateQuestJson:
@@ -116,136 +116,132 @@ namespace AiGMBackEnd.Services
             }
         }
 
-        private async Task ProcessDMUpdatesAsync(JObject updates, string userId)
+        private async Task ProcessUpdatesAsync(JObject updates, string userId)
         {
             try
             {
                 _loggingService.LogInfo("Processing DM updates");
                 
-                // Check if there are dmUpdates
-                if (updates["dmUpdates"] != null)
+                    
+            // Process new entities
+            if (updates["newEntities"] != null)
+            {
+                var newEntities = updates["newEntities"] as JArray;
+                if (newEntities != null)
                 {
-                    var dmUpdates = updates["dmUpdates"];
-                    
-                    // Process new entities
-                    if (dmUpdates["newEntities"] != null)
+                    foreach (var entity in newEntities)
                     {
-                        var newEntities = dmUpdates["newEntities"] as JArray;
-                        if (newEntities != null)
+                        string entityType = entity["type"]?.ToString()?.ToLower() ?? "";
+                        string entityId = entity["id"]?.ToString() ?? "";
+                                
+                        if (string.IsNullOrEmpty(entityId))
                         {
-                            foreach (var entity in newEntities)
-                            {
-                                string entityType = entity["type"]?.ToString()?.ToLower() ?? "";
-                                string entityId = entity["id"]?.ToString() ?? "";
-                                
-                                if (string.IsNullOrEmpty(entityId))
-                                {
-                                    _loggingService.LogWarning("Skipping entity with missing ID");
-                                    continue;
-                                }
-                                
-                                _loggingService.LogInfo($"Processing creation of {entityType} entity: {entityId}");
-                                
-                                // First, save the basic entity data immediately
-                                switch (entityType)
-                                {
-                                    case "npc":
-                                        await CreateNewEntityAsync(entity, userId, "npcs", entityId);
-                                        // Fire and forget - do not wait for job completion
-                                        var npcName = entity["name"]?.ToString() ?? "New NPC";
-                                        _loggingService.LogInfo($"Will trigger separate job to create NPC: {npcName}");
-                                        FireAndForgetEntityCreation(PromptType.CreateNPC, userId, $"Create {npcName}");
-                                        break;
-                                    case "location":
-                                        await CreateNewEntityAsync(entity, userId, "locations", entityId);
-                                        // Fire and forget - do not wait for job completion
-                                        var locationName = entity["name"]?.ToString() ?? "New Location";
-                                        _loggingService.LogInfo($"Will trigger separate job to create location: {locationName}");
-                                        FireAndForgetEntityCreation(PromptType.CreateLocation, userId, $"Create {locationName}");
-                                        break;
-                                    case "quest":
-                                        await CreateNewEntityAsync(entity, userId, "quests", entityId);
-                                        // Fire and forget - do not wait for job completion
-                                        var questTitle = entity["title"]?.ToString() ?? "New Quest";
-                                        _loggingService.LogInfo($"Will trigger separate job to create quest: {questTitle}");
-                                        FireAndForgetEntityCreation(PromptType.CreateQuest, userId, $"Create {questTitle}");
-                                        break;
-                                    default:
-                                        _loggingService.LogWarning($"Unknown entity type: {entityType}");
-                                        break;
-                                }
-                            }
+                            _loggingService.LogWarning("Skipping entity with missing ID");
+                            continue;
                         }
-                    }
-                    
-                    // Process partial updates
-                    if (dmUpdates["partialUpdates"] != null)
-                    {
-                        var partialUpdates = dmUpdates["partialUpdates"] as JObject;
-                        if (partialUpdates != null)
+                                
+                        _loggingService.LogInfo($"Processing creation of {entityType} entity: {entityId}");
+                                
+                        // First, save the basic entity data immediately
+                        switch (entityType)
                         {
-                            foreach (var property in partialUpdates.Properties())
-                            {
-                                var entityId = property.Name;
-                                var updateData = property.Value as JObject;
-                                
-                                if (updateData == null)
-                                {
-                                    _loggingService.LogWarning($"Invalid update data for entity {entityId}");
-                                    continue;
-                                }
-                                
-                                // Handle special case for player
-                                if (entityId.ToLower() == "player")
-                                {
-                                    _loggingService.LogInfo("Processing player update");
-                                    await UpdateEntityAsync(userId, "", "player", updateData.ToString());
-                                    _loggingService.LogInfo("Applied partial update to player");
-                                    continue;
-                                }
-                                
-                                // Get the entity type from the update data
-                                var entityType = updateData["type"]?.ToString();
-                                if (string.IsNullOrEmpty(entityType))
-                                {
-                                    _loggingService.LogWarning($"Entity type missing for {entityId}");
-                                    continue;
-                                }
-                                
-                                // Remove ID and Type from update data to preserve them
-                                updateData.Remove("id");
-                                updateData.Remove("type");
-                                
-                                // Determine collection based on the entity type
-                                string collection = "";
-                                switch (entityType.ToLower())
-                                {
-                                    case "npc":
-                                        collection = "npcs";
-                                        break;
-                                    case "location":
-                                        collection = "locations";
-                                        break;
-                                    case "quest":
-                                        collection = "quests";
-                                        break;
-                                    case "world":
-                                        // Special case, no collection
-                                        break;
-                                    case "player":
-                                        // Special case, no collection
-                                        break;
-                                    default:
-                                        _loggingService.LogWarning($"Unknown entity type: {entityType} for entity {entityId}");
-                                        continue;
-                                }
-                                
-                                // Only apply the update for the fields that were provided
-                                await UpdateEntityAsync(userId, collection, entityId, updateData.ToString());
-                            }
+                            case "npc":
+                                await CreateNewEntityAsync(entity, userId, "npcs", entityId);
+                                // Fire and forget - do not wait for job completion
+                                var npcName = entity["name"]?.ToString() ?? "New NPC";
+                                _loggingService.LogInfo($"Will trigger separate job to create NPC: {npcName}");
+                                FireAndForgetEntityCreation(PromptType.CreateNPC, userId, $"Create {npcName}");
+                                break;
+                            case "location":
+                                await CreateNewEntityAsync(entity, userId, "locations", entityId);
+                                // Fire and forget - do not wait for job completion
+                                var locationName = entity["name"]?.ToString() ?? "New Location";
+                                _loggingService.LogInfo($"Will trigger separate job to create location: {locationName}");
+                                FireAndForgetEntityCreation(PromptType.CreateLocation, userId, $"Create {locationName}");
+                                break;
+                            case "quest":
+                                await CreateNewEntityAsync(entity, userId, "quests", entityId);
+                                // Fire and forget - do not wait for job completion
+                                var questTitle = entity["title"]?.ToString() ?? "New Quest";
+                                _loggingService.LogInfo($"Will trigger separate job to create quest: {questTitle}");
+                                FireAndForgetEntityCreation(PromptType.CreateQuest, userId, $"Create {questTitle}");
+                                break;
+                            default:
+                                _loggingService.LogWarning($"Unknown entity type: {entityType}");
+                                break;
                         }
                     }
                 }
+            }
+                    
+            // Process partial updates
+            if (updates["partialUpdates"] != null)
+            {
+                var partialUpdates = updates["partialUpdates"] as JObject;
+                if (partialUpdates != null)
+                {
+                    foreach (var property in partialUpdates.Properties())
+                    {
+                        var entityId = property.Name;
+                        var updateData = property.Value as JObject;
+                                
+                        if (updateData == null)
+                        {
+                            _loggingService.LogWarning($"Invalid update data for entity {entityId}");
+                            continue;
+                        }
+                                
+                        // Handle special case for player
+                        if (entityId.ToLower() == "player")
+                        {
+                            _loggingService.LogInfo("Processing player update");
+                            await UpdateEntityAsync(userId, "", "player", updateData.ToString());
+                            _loggingService.LogInfo("Applied partial update to player");
+                            continue;
+                        }
+                                
+                        // Get the entity type from the update data
+                        var entityType = updateData["type"]?.ToString();
+                        if (string.IsNullOrEmpty(entityType))
+                        {
+                            _loggingService.LogWarning($"Entity type missing for {entityId}");
+                            continue;
+                        }
+                                
+                        // Remove ID and Type from update data to preserve them
+                        updateData.Remove("id");
+                        updateData.Remove("type");
+                                
+                        // Determine collection based on the entity type
+                        string collection = "";
+                        switch (entityType.ToLower())
+                        {
+                            case "npc":
+                                collection = "npcs";
+                                break;
+                            case "location":
+                                collection = "locations";
+                                break;
+                            case "quest":
+                                collection = "quests";
+                                break;
+                            case "world":
+                                // Special case, no collection
+                                break;
+                            case "player":
+                                // Special case, no collection
+                                break;
+                            default:
+                                _loggingService.LogWarning($"Unknown entity type: {entityType} for entity {entityId}");
+                                continue;
+                        }
+                                
+                        // Only apply the update for the fields that were provided
+                        await UpdateEntityAsync(userId, collection, entityId, updateData.ToString());
+                    }
+                }
+            }
+                
                 
                 // Do not wait for background tasks to complete
                 _loggingService.LogInfo("DM updates processing complete");
@@ -253,99 +249,6 @@ namespace AiGMBackEnd.Services
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error processing DM updates: {ex.Message}");
-                throw;
-            }
-        }
-
-        private async Task ProcessNPCUpdatesAsync(JObject updates, string userId)
-        {
-            try
-            {
-                _loggingService.LogInfo("Processing NPC updates");
-                
-                // Check if there are npcUpdates
-                if (updates["npcUpdates"] != null)
-                {
-                    var npcUpdates = updates["npcUpdates"];
-                    
-                    // Process new entities
-                    if (npcUpdates["newEntities"] != null)
-                    {
-                        var newEntities = npcUpdates["newEntities"] as JArray;
-                        if (newEntities != null)
-                        {
-                            foreach (var entity in newEntities)
-                            {
-                                var entityType = entity["type"]?.ToString()?.ToLower();
-                                var entityId = entity["id"]?.ToString();
-                                
-                                if (string.IsNullOrEmpty(entityType) || string.IsNullOrEmpty(entityId))
-                                {
-                                    _loggingService.LogWarning($"Skipping entity with missing type or id: {entity}");
-                                    continue;
-                                }
-                                
-                                switch (entityType)
-                                {
-                                    case "npc":
-                                        await CreateNewEntityAsync(entity, userId, "npcs", entityId);
-                                        break;
-                                    case "quest":
-                                        await CreateNewEntityAsync(entity, userId, "quests", entityId);
-                                        var questTitle = entity["title"]?.ToString() ?? "New Quest";
-                                        await TriggerEntityCreationJob(PromptType.CreateQuest, userId, $"Create {questTitle}");
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                    
-                    // Process partial updates
-                    if (npcUpdates["partialUpdates"] != null)
-                    {
-                        var partialUpdates = npcUpdates["partialUpdates"] as JObject;
-                        if (partialUpdates != null)
-                        {
-                            foreach (var property in partialUpdates.Properties())
-                            {
-                                var entityId = property.Name;
-                                var updateData = property.Value as JObject;
-                                
-                                if (updateData == null)
-                                {
-                                    _loggingService.LogWarning($"Invalid update data for entity {entityId}");
-                                    continue;
-                                }
-                                
-                                // Get the entity type from the update data
-                                var entityType = updateData["type"]?.ToString();
-                                if (string.IsNullOrEmpty(entityType))
-                                {
-                                    _loggingService.LogWarning($"Entity type missing for {entityId}");
-                                    continue;
-                                }
-                                
-                                // Remove ID and Type from update data to preserve them
-                                updateData.Remove("id");
-                                updateData.Remove("type");
-                                
-                                // For NPC updates, we only handle NPCs in this method
-                                if (entityType.ToLower() == "npc")
-                                {
-                                    await UpdateEntityAsync(userId, "npcs", entityId, updateData.ToString());
-                                }
-                                else
-                                {
-                                    _loggingService.LogWarning($"Unexpected entity type {entityType} in NPC updates for entity {entityId}");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _loggingService.LogError($"Error in ProcessNPCUpdatesAsync: {ex.Message}");
                 throw;
             }
         }

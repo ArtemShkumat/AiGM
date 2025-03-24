@@ -15,13 +15,23 @@ Example format:
 
 <donotshow/>
 {
-  "npcUpdates": [
-    {
-      "id": "merchant-johan",
-      "dispositionTowardsPlayer": "neutral",
-      "notes": "Player inquired about wares"
-    }
-  ]
+    "newEntities": [
+      {
+        "type": "NPC",
+        ...otherfields
+      }
+      // Possibly more new entities...
+    ],
+    "partialUpdates": {
+      "npc_elenaBlacksmith": {
+        "type": "NPC",
+        ...other fields
+      },
+      "loc_townSquare": {
+        "type": "LOCATION",
+        ...other fields
+      }
+    }  
 }
 
 ```

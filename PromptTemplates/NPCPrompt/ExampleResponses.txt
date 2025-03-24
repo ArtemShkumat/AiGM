@@ -5,21 +5,18 @@ Player: "Hello there! I'm looking for some potions. Do you sell any healing item
 
 <donotshow/>
 {
-  "npcUpdates": [
-    {
-      "id": "eliza-herbalist",
-      "dispositionTowardsPlayer": "friendly",
+  "newEntities": [],
+  "partialUpdates": {
+    "npc_elizaHerbalist": {
+      "type": "NPC",
+      "disposition": "friendly",
       "notes": "Offered healing potions at 3 silver each with a deal on purchases of 3+"
+    },
+    "lore_winterWolvesNorthRoad": {
+      "type": "LORE",
+      "title": "Winter Wolf Danger",
+      "content": "Winter wolves have been making the north road dangerous for travelers."
     }
-  ],
-  "worldUpdates": {
-    "lore": [
-      {
-        "id": "winter-wolves-north-road",
-        "title": "Winter Wolf Danger",
-        "content": "Winter wolves have been making the north road dangerous for travelers."
-      }
-    ]
   }
 }
 
@@ -31,13 +28,14 @@ Player: "I need to get into the city treasury. It's important."
 
 <donotshow/>
 {
-  "npcUpdates": [
-    {
-      "id": "treasury-guard",
-      "dispositionTowardsPlayer": "unfriendly",
+  "newEntities": [],
+  "partialUpdates": {
+    "npc_treasuryGuard": {
+      "type": "NPC",
+      "disposition": "unfriendly",
       "notes": "Player attempted to access treasury without authorization. Guard became suspicious."
     }
-  ]
+  }
 }
 
 
@@ -48,22 +46,23 @@ Player: "I heard you're looking for help with something?"
 
 <donotshow/>
 {
-  "npcUpdates": [
+  "newEntities": [
     {
-      "id": "edith-weaver",
-      "dispositionTowardsPlayer": "friendly",
-      "notes": "Worried about grandson Tomas. Offered husband's elven sword as reward."
+      "type": "QUEST",
+      "id": "quest_missingHunterTomas",
+      "title": "The Missing Hunter",
+      "description": "Edith's grandson Tomas hasn't returned from a hunting trip in the western forest after three days. Find him and discover what happened.",
+      "progress": "Quest accepted. Tomas was last seen entering the western forest three days ago.",
+      "involvedNPCs": ["npc_edithWeaver", "npc_tomasHunter"],
+      "involvedLocations": ["loc_westernForest"]
     }
   ],
-  "quests": [
-    {
-      "id": "missing-hunter-tomas",
-      "title": "The Missing Hunter",
-      "questDescription": "Edith's grandson Tomas hasn't returned from a hunting trip in the western forest after three days. Find him and discover what happened.",
-      "currentProgress": "Quest accepted. Tomas was last seen entering the western forest three days ago.",
-      "involvedNpcs": ["edith-weaver", "tomas-hunter"],
-      "involvedLocations": ["western-forest"]
+  "partialUpdates": {
+    "npc_edithWeaver": {
+      "type": "NPC",
+      "disposition": "friendly",
+      "notes": "Worried about grandson Tomas. Offered husband's elven sword as reward."
     }
-  ]
+  }
 }
 
