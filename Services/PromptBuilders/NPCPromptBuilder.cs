@@ -81,8 +81,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 promptBuilder.AppendLine("# Scene Context");
                 promptBuilder.AppendLine($"Location: {location.Name}");
                 promptBuilder.AppendLine($"Location Description: {location.Description}");
-                promptBuilder.AppendLine($"Time: {world.GameTime}");
-                promptBuilder.AppendLine($"Weather: {world.WorldStateEffects.Weather}");
+                promptBuilder.AppendLine($"Time: {world.GameTime}");                
                 promptBuilder.AppendLine();
 
                 // Add player context using simplified player context section

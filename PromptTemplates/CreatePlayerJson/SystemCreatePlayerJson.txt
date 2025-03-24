@@ -56,7 +56,7 @@ THE CORE PLAYER MODEL STRUCTURE:
   
   "visualDescription": {
     "gender": "string",
-    "bodyType": "string",
+    "body": "string",
     "visibleClothing": "string",
     "condition": "string"
   },

@@ -17,7 +17,14 @@ namespace AiGMBackEnd.Models.Prompts.Sections
         {
             builder.AppendLine("# World Context");
             builder.AppendLine($"Current Time: {_world.GameTime}");
-            builder.AppendLine($"Current Weather: {_world.WorldStateEffects.Weather}");
+            if (_world.WorldStateEffects != null && _world.WorldStateEffects.Count > 0)
+            {
+                builder.AppendLine("Current World State Effects:");
+                foreach (var effect in _world.WorldStateEffects)
+                {
+                    builder.AppendLine($"- {effect.Key}: {effect.Value}");
+                }
+            }
             builder.AppendLine($"Days Since Start: {_world.DaysSinceStart}");
                         
             // Add world lore summaries

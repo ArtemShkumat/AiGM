@@ -1,3 +1,187 @@
-Instructions for Handling Entities & Updates
-
-
+This is the prompt data that you can expect to receive, what each of the field means and under which circumstances you should update it.
+{
+  "gameState": {
+    "gameSetting": {// nothing here ever gets updated, this is just for your information
+      "genre": "string - The genre of the game (e.g., fantasy, sci-fi)",
+      "theme": "string - The overall theme or tone of the game",
+      "description": "string - A general description of the game setting",
+      "startingLocation": "string - The location where gameplay begins",
+      "gameName": "string - The name of the game campaign",
+      "setting": "string - Detailed setting information"
+    },
+    "gamePreferences": {// nothing here ever gets updated, this is just for your information
+      "tone": "string - The tone of the game (e.g., neutral, dark, light)",
+      "complexity": "string - The complexity level of the game (e.g., simple, medium, complex)",
+      "ageAppropriateness": "string - The age rating for content (e.g., all ages, teen, mature)"
+    },
+    "world": {
+      "type": "string - Always 'WORLD'", //never update
+      "gameTime": "string - Current time in the game world", //update upon leaving location, give a rough estimate.
+      "daysSinceStart": "number - Days elapsed since the start of the game", //Increment after the player goes to sleep or in any other way signifies that the day is over.
+      "currentPlayer": "string - The current active player",  //never update
+      "worldStateEffects": {object }, //various things affecting the entire world - current weather, pollution, etc, whatever is relevant. Feel free to add/update the effects, but only when they change or if they're significant.
+      "lore": [//Add a new piece of lore when it's really something interesting or important
+        {
+          "id": "string - Unique identifier for this lore element",
+          "title": "string - Title of the lore piece",
+          "summary": "string - Brief summary of the lore"
+        }
+      ],
+      "locations": [//Add a new location when the story demands it.
+        {
+          "id": "string - Unique identifier for this location",
+          "name": "string - Name of the location"
+        }
+      ],
+      "npcs": [//Add a new npc when the story demands it.
+        {
+          "id": "string - Unique identifier for this NPC",
+          "name": "string - Name of the NPC"
+        }
+      ],
+      "quests": [//Add a new quest when the story demands it. Quests are large and complex entities, so don't rush to add new ones if the player already has a few active ones, unless the player specifically asks for it by either offering to help an NPC with a problem or looking for work or just saying something like "I want to go looking for..."
+        {
+          "id": "string - Unique identifier for this quest",
+          "title": "string - Title of the quest"
+        }
+      ]
+    },
+    "worldLore": {//neither of the things like id/title/summary changes here, just new entries get added.
+      "id": "string - Unique identifier for this lore element",
+      "title": "string - Title of the lore",
+      "summary": "string - Brief overview of the lore element",
+    },
+    "player": {
+      "type": "string - Always 'Player'",
+      "id": "string - Unique identifier for the player",//never update
+      "name": "string - Character name",//never update
+      "currentLocationId": "string - ID of the location where the player is currently", //Highly important - update when the player leaves one location and enters another.
+      "visualDescription": {
+        "body": "string - Physical build and appearance", //rarely update
+        "condition": "string - Current physical state", //update when something happens to visual condition of the player. Say, if they get caught in the rain, or burned.
+        "gender": "string - Character's gender", //never update. In our game there are only 2 genders - male and female.
+        "resemblingCelebrity": "string - Famous person the character resembles", //Never update. This is more for flavor, to get a better idea of what someone looks like. Use any celebrity you wish or know.
+        "visibleClothing": "string - Outfit and visible attire" //This is clothing that people around the player can see. So if the player wears layers, only describe the clothes that are actually visible. NPCs will use it for reference when interacting with player. Update when player dresses/undresses/changes clothes.
+      },
+      "age": "number - Character's age", //Update after about 365 of daysSinceStart.
+      "backstory": "string - Character's background history", //Never update, just for reference.
+      "inventory": [// What is currently is in player's inventory. Update when items are added/removed
+        {
+          "name": "string - Item name",
+          "description": "string - Item description",
+          "quantity": "number - How many of this item"
+        }
+      ],
+      "money": "number - Amount of currency the player has", //Obviously update as necessary
+      "statusEffects": ["string - Current effects on the player (buffs, debuffs, etc.)"], //This are status effects that would affect the player temporarily - being cursed, exhausted, buffed, etc. Update only when a significant change to player status happens.
+      "rpgElements": { //This is specific to the game setting and may have different things inside it. Exercise your judgement, but at the end of the day it's up to you. If a player acquires new skills, abilities, xp, or loses health, etc - it all goes here.		
+        "object - Contains RPG-specific attributes like class, level, abilities, etc."
+      },
+      "activeQuests": ["string - IDs of quests the player is currently undertaking"]//important - update when the player explicitly agrees to undertake a quest.
+    },
+    "currentLocation": {
+      "type": "string - Always 'LOCATION'",
+      "id": "string - Unique identifier for this location",
+      "name": "string - Location name",
+      "locationType": "string - Category of location (town, dungeon, wilderness, etc.)",
+      "description": "string - Detailed description of the location",
+      "knownToPlayer": "boolean - Whether the player knows this location", //since it's the current location, must always be true. 
+      "connectedLocations": [ //Never update - for reference
+        {
+          "id": "string - ID of a connected location",
+          "description": "string - Description of the connection (path, door, etc.)"
+        }
+      ],
+      "parentLocation": {//Never update - for reference
+        "id": "string - ID of the location that contains this one",
+        "description": "string - Description of the relationship to parent"
+      },
+      "subLocations": [//Never update - for reference
+        {
+          "id": "string - ID of a location contained within this one",
+          "description": "string - Description of the sub-location relationship"
+        }
+      ],
+      "npcs": ["string - IDs of NPCs present at this location"], //Just a collection of all present NPCs. Update if an NPC leaves or a new one arrives. It's further expanded below.
+      "pointsOfInterest": [ //Never update - for reference
+        {
+          "name": "string - Name of the interesting feature",
+          "description": "string - Description of the point of interest"
+        }
+      ],
+      "questIds": ["string - IDs of quests associated with this location"], //Update if the player completes a quest
+      "items": ["string - Items that can be found at this location"] //Update if the player takes something from here into their inventory or if the player stores something from their inventory here.
+    },
+    "npcsPresent": [
+      {
+        "type": "string - Always 'NPC'", //Never update - for reference
+        "id": "string - Unique identifier for this NPC", //Never update - for reference
+        "name": "string - NPC name", //Never update - for reference
+        "currentLocationId": "string - ID of the location where this NPC is",  //Update if an NPC leaves the location, but always assign a new one from the list of EXISTING locations in world.locations
+        "knownToPlayer": "boolean - Whether the player has met this NPC", //Update once to true - when meeting player
+        "knowsPlayer": "boolean - Whether the NPC has met the player", //Update once to true - when learns player's name
+        "visibleToPlayer": "boolean - Whether the NPC is currently visible to the player", //Important! Judge from context, but if the NPC in scene either leaves or hides or if the player leaves location update this to false. This must only ever be true if the NPC is in direct line of sight of the player.
+        "visualDescription": {
+          "body": "string - Physical build and appearance", //Never update - for reference
+          "condition": "string - Current physical state", //update when something happens to visual condition of the NPC. Say, if they get visibly damaged or frozen in ice.
+          "gender": "string - Character's gender", //Never update - for reference
+          "resemblingCelebrity": "string - Famous person the NPC resembles",  //Never update. This is more for flavor, to get a better idea of what someone looks like. Use any celebrity you wish or know.
+          "visibleClothing": "string - Outfit and visible attire" //Just like in player - This is clothing that people around the NPC can see. Update when NPC dresses/undresses/changes clothes.
+        },
+        "personality": {
+          "temperament": "string - General disposition and mood", //Almost never update. Update only when something truly earth shattering happens to this NPC.
+          "traits": "string - Notable character traits and quirks", //Almost never update. Update only when something truly earth shattering happens to this NPC.
+          "motivations": "string - What drives this NPC", //Almost never update. Update only when something truly earth shattering happens to this NPC.
+          "fears": "string - What this NPC is afraid of", //Almost never update. Update only when something truly earth shattering happens to this NPC.
+          "secrets": ["string - Things this NPC doesn't want others to know"] //Feel free to remove a secret once the player learns about it. NPCs will go to great lengths to hide and protect their secrets - under no circumstances must you reveal this player, unless they find a way to learn it. Player may learn a secret from someone else, through earning trust, coersion, bribery, etc. This is NPCs most treasured posession.
+        },
+        "backstory": "string - NPC's background history", //Never update - for reference
+        "currentGoal": "string - What the NPC is currently trying to achieve", //Only update when the current goal is achieved or once this NPC decides to no longer pursue it.
+        "age": "number - NPC's age", //Almost Never update - for reference
+        "dispositionTowardsPlayer": "string - How the NPC feels about the player", //can be one of these things - Hostile/Unfriendly/Neutral/Fond/Loyal. Update only when the relationship meaningfully progresses. Hostile means enemy - will generally attack player on sight or actively seek to harm the player in other ways. Loyal means will take personal risks to help the player. 
+        "knownEntities": { //This is a subset of entities from world.npcs and world.locations. There must never be an entity here that doesn't exist in world section.
+          "npcsKnown": [
+            {
+              "name": "string - Name of an NPC this one knows", //Never update - for reference
+              "levelOfFamiliarity": "string - How well they know each other (Aware/Met/Known/Familiar/Deep)", //Update as story demands
+              "disposition": "string - How they feel about each other (Hostile/Unfriendly/Neutral/Fond/Loyal)" //Update as story demands
+            }
+          ],
+          "locationsKnown": ["string - IDs of locations this NPC knows about"] //Update once player mentions a location that exists in world.locations.
+        },
+        "questInvolvement": ["string - IDs of quests this NPC is involved in"], //Never update - for reference
+        "inventory": [ Update when items are added/removed
+          {
+            "name": "string - Item name",
+            "description": "string - Item description",
+            "quantity": "number - How many of this item"
+          }
+        ],
+        "conversationLog": ["object - Record of conversations with this NPC"] //Never update - updating this is handled programmatically elsewhere, this is just for reference.
+      }
+    ],
+    "activeQuests": [ //These are quests the player has accepted and pursues
+      {
+        "type": "string - Always 'QUEST'", //Never update - for reference
+        "id": "string - Unique identifier for this quest", //Never update - for reference
+        "title": "string - Quest title", //Never update - for reference
+        "currentProgress": "string - Current state of the quest", //Update once player makes some significant progress.
+        "questDescription": "string - Detailed description of the quest",  //Never update - for reference
+        "achievementConditions": ["string - What must be done to complete the quest"], //Never update - for reference
+        "failConditions": ["string - What would cause the quest to fail"], //Never update - for reference
+        "involvedLocations": ["string - IDs of locations relevant to this quest"], //Never update - for reference
+        "involvedNpcs": ["string - IDs of NPCs involved in this quest"], //Never update - for reference        
+      }
+    ],
+    "conversationLog": { //Never update - updating this is handled programmatically elsewhere, this is just for reference. conversationLog generally flows into currentPlayerPrompt, so make it sound like the conversation continues.
+      "messages": [
+        {
+          "timestamp": "string - When the message was sent",
+          "sender": "string - Who sent the message (player, NPC, or GM)",
+          "content": "string - The actual message content"
+        }
+      ]
+    },
+    "currentPlayerPrompt": "string - The player's most recent input/question"
+  }
+}

@@ -20,8 +20,8 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("description")]
         public string Description { get; set; }
         
-        [JsonPropertyName("discoveredByPlayer")]
-        public bool DiscoveredByPlayer { get; set; }
+        [JsonPropertyName("knownToPlayer")]
+        public bool KnownToPlayer { get; set; }
         
         [JsonPropertyName("connectedLocations")]
         public List<ConnectedLocation> ConnectedLocations { get; set; } = new List<ConnectedLocation>();

@@ -26,7 +26,7 @@ Example format:
   "visibleToPlayer": true,
   "visualDescription": {
     "gender": "Male",
-    "bodyType": "Burly, strong build",
+    "body": "Burly, strong build",
     "visibleClothing": "Clean apron over simple linen clothing",
     "condition": "Healthy, middle-aged"
   },

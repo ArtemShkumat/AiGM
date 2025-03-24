@@ -6,7 +6,7 @@
     "visibleToPlayer": true,
     "visualDescription": {
       "gender": "female",
-      "bodyType": "stocky",
+      "body": "stocky",
       "visibleClothing": "Leather apron, sturdy boots",
       "condition": "Soot-stained hands, slight limp"
     },

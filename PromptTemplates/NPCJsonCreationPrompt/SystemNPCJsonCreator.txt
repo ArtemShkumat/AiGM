@@ -37,7 +37,7 @@ THE EXACT NPC MODEL STRUCTURE:
   "visibleToPlayer": boolean,
   "visualDescription": {
     "gender": "string",
-    "bodyType": "string",
+    "body": "string",
     "visibleClothing": "string",
     "condition": "string"
   },

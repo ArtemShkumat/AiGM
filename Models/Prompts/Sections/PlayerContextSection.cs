@@ -17,7 +17,8 @@ namespace AiGMBackEnd.Models.Prompts.Sections
         {
             builder.AppendLine("# Player Context");
             builder.AppendLine($"Player Name: {_player.Name}");
-            
+            builder.AppendLine($"Player Name: {_player.CurrentLocationId}");
+
             if (!string.IsNullOrEmpty(_player.Backstory))
             {
                 builder.AppendLine($"Background: {_player.Backstory}");

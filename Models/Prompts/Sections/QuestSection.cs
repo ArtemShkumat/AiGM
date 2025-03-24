@@ -58,19 +58,6 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                 builder.AppendLine($"Involved NPCs: {string.Join(", ", _quest.InvolvedNpcs)}");
             }
             
-            if (_detailed)
-            {
-                // Add quest log if available
-                if (_quest.QuestLog != null && _quest.QuestLog.Count > 0)
-                {
-                    builder.AppendLine("Quest Log:");
-                    foreach (var entry in _quest.QuestLog)
-                    {
-                        builder.AppendLine($"- [{entry.Timestamp}] {entry.Event}: {entry.Description}");
-                    }
-                }
-            }
-            
             builder.AppendLine();
         }
     }

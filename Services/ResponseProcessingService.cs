@@ -372,7 +372,7 @@ namespace AiGMBackEnd.Services
                     Name = locationData["name"]?.ToString() ?? "Unknown Location",
                     Type = locationData["type"]?.ToString(),
                     Description = locationData["description"]?.ToString(),
-                    DiscoveredByPlayer = locationData["discoveredByPlayer"]?.Value<bool>() ?? false
+                    KnownToPlayer = locationData["knownToPlayer"]?.Value<bool>() ?? false
                 };
                 
                 // Handle Connected Locations
@@ -513,8 +513,7 @@ namespace AiGMBackEnd.Services
                     Id = questId,
                     Title = questData["title"]?.ToString() ?? "Unknown Quest",
                     CurrentProgress = questData["currentProgress"]?.ToString(),
-                    QuestDescription = questData["questDescription"]?.ToString(),
-                    Notes = questData["notes"]?.ToString()
+                    QuestDescription = questData["questDescription"]?.ToString()
                 };
                 
                 // Handle Achievement Conditions
@@ -567,24 +566,8 @@ namespace AiGMBackEnd.Services
                             quest.InvolvedNpcs.Add(npcStr);
                         }
                     }
-                }
-                
-                // Handle Quest Log
-                if (questData["questLog"] is JArray questLog)
-                {
-                    foreach (var log in questLog)
-                    {
-                        if (log is JObject logObj)
-                        {
-                            quest.QuestLog.Add(new Models.QuestLogEntry
-                            {
-                                Timestamp = logObj["timestamp"]?.ToString(),
-                                Event = logObj["event"]?.ToString(),
-                                Description = logObj["description"]?.ToString()
-                            });
-                        }
-                    }
-                }
+                }                
+              
                 
                 // Save the quest data
                 await _storageService.SaveAsync(userId, $"quests/{questId}", quest);
@@ -636,7 +619,7 @@ namespace AiGMBackEnd.Services
                     npc.VisualDescription = new Models.VisualDescription
                     {
                         Gender = visualDesc["gender"]?.ToString(),
-                        Body = visualDesc["bodyType"]?.ToString(),
+                        Body = visualDesc["body"]?.ToString(),
                         VisibleClothing = visualDesc["visibleClothing"]?.ToString(),
                         Condition = visualDesc["condition"]?.ToString()
                     };
@@ -771,7 +754,7 @@ namespace AiGMBackEnd.Services
                     player.VisualDescription = new Models.VisualDescription
                     {
                         Gender = visualDesc["gender"]?.ToString(),
-                        Body = visualDesc["bodyType"]?.ToString(),
+                        Body = visualDesc["body"]?.ToString(),
                         VisibleClothing = visualDesc["visibleClothing"]?.ToString(),
                         Condition = visualDesc["condition"]?.ToString(),
                         ResemblingCelebrity = visualDesc["resemblingCelebrity"]?.ToString()

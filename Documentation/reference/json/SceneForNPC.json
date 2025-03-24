@@ -4,7 +4,7 @@
       "name": "Avery",
       "visualDescription": {
         "gender": "male",
-        "bodyType": "lean",
+        "body": "lean",
         "visibleClothing": "Dusty traveler’s cloak",
         "condition": "Slightly injured"
       },

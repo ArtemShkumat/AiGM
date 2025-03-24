@@ -6,7 +6,7 @@
   "visibleToPlayer": true,
   "visualDescription": {
     "gender": "male",
-    "bodyType": "muscular",
+    "body": "muscular",
     "visibleClothing": "Leather apron, singed work clothes",
     "condition": "Strong but aging, calloused hands"
   },

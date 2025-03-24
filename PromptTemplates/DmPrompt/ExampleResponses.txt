@@ -24,8 +24,8 @@ Behind the bar, a burly man with an impressive red beard polishes a mug with a r
         "type": "npc",
         "id": "npc_mysteriousStranger",
         "name": "Hooded Stranger",
-		"discoveredByPlayer": true,
-		"dispositionTowardsPlayer": "neutral",
+        "discoveredByPlayer": true,
+        "dispositionTowardsPlayer": "neutral",
         "currentLocationId": "loc_rustyAnchorTavern",
         "notes": "Mysterious figure watching the tavern entrance carefully."
       }

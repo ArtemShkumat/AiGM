@@ -18,7 +18,7 @@ namespace AiGMBackEnd.Models
         public string CurrentPlayer { get; set; }
         
         [JsonPropertyName("worldStateEffects")]
-        public WorldStateEffects WorldStateEffects { get; set; } = new WorldStateEffects();
+        public Dictionary<string, string> WorldStateEffects { get; set; } = new Dictionary<string, string>();
         
         [JsonPropertyName("lore")]
         public List<LoreSummary> Lore { get; set; } = new List<LoreSummary>();
@@ -31,12 +31,6 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("quests")]
         public List<QuestSummary> Quests { get; set; } = new List<QuestSummary>();
-    }
-
-    public class WorldStateEffects
-    {
-        [JsonPropertyName("weather")]
-        public string Weather { get; set; }
     }
 
     public class LoreSummary

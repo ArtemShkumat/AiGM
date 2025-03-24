@@ -5,7 +5,7 @@ namespace AiGMBackEnd.Models
     public class VisualDescription
     {
 
-        [JsonPropertyName("bodyType")]
+        [JsonPropertyName("body")]
         public string Body { get; set; }
 
         [JsonPropertyName("condition")]

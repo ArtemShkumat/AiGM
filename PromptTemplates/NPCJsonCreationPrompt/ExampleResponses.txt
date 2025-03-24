@@ -9,7 +9,7 @@ EXAMPLE 1: FRIENDLY MERCHANT
   "visibleToPlayer": true,
   "visualDescription": {
     "gender": "Female",
-    "bodyType": "Middle-aged with practical build",
+    "body": "Middle-aged with practical build",
     "visibleClothing": "Simple earth-toned clothing with immaculate shopkeeper's apron",
     "condition": "Healthy, with calloused hands from daily work"
   },
@@ -69,7 +69,7 @@ EXAMPLE 2: QUEST-GIVING WARRIOR
   "visibleToPlayer": true,
   "visualDescription": {
     "gender": "Male",
-    "bodyType": "Muscular dwarf with battle scars",
+    "body": "Muscular dwarf with battle scars",
     "visibleClothing": "Well-maintained but battle-worn armor",
     "condition": "Middle-aged with a slight limp and missing two fingers on left hand"
   },
@@ -133,7 +133,7 @@ EXAMPLE 3: MYSTERIOUS ANTAGONIST
   "visibleToPlayer": true,
   "visualDescription": {
     "gender": "Female",
-    "bodyType": "Slender high elf with unnaturally youthful appearance",
+    "body": "Slender high elf with unnaturally youthful appearance",
     "visibleClothing": "Elegant dark clothing with subtle arcane symbols",
     "condition": "Appears in perfect health despite advanced age"
   },

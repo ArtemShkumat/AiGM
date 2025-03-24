@@ -31,23 +31,5 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("involvedNpcs")]
         public List<string> InvolvedNpcs { get; set; } = new List<string>();
-        
-        [JsonPropertyName("questLog")]
-        public List<QuestLogEntry> QuestLog { get; set; } = new List<QuestLogEntry>();
-        
-        [JsonPropertyName("notes")]
-        public string Notes { get; set; }
-    }
-    
-    public class QuestLogEntry
-    {
-        [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
-        
-        [JsonPropertyName("event")]
-        public string Event { get; set; }
-        
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
-    }
+    }    
 }
