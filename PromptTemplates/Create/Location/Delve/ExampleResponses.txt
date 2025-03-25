@@ -1,0 +1,73 @@
+EXAMPLE
+
+User Prompt: Create an NPC using this info:
+
+{
+	"id": "npc_green_pines_stop",
+    "name": "Green Pines Rest Stop",
+    "parentLocationId": "loc_outskirts",
+    "connectedLocationIds": []
+    "context":
+}
+
+Your Response:
+
+{
+  "core_identity": {
+    "name": "Green Pines Rest Stop",
+    "type": "Delve",
+    "description": "An old highway rest stop half-buried in overgrowth. Signs of hasty evacuation and rot linger in the air.",
+    "purpose": "Originally a traveler's respite with bathrooms, a convenience store, and a maintenance bunker. Now partially collapsed and infested by infected."
+  },
+  "navigation": {
+    "parentLocationId": "loc_outskirts",
+    "connectedLocationIds": []
+  },
+  "rooms": [
+    {
+      "room_number": 1,
+      "role": "Entrance",
+      "name": "Front Lobby",
+      "description": "A shattered glass door opens onto a tiled lobby, with dried blood trails leading behind the front counter.",
+      "hazard_or_guardian": "A barricaded door rattles from the other side, suggesting infected trapped within."
+    },
+    {
+      "room_number": 2,
+      "role": "Puzzle or Roleplay Challenge",
+      "name": "Staff Lounge",
+      "description": "Overturned chairs, a locked safe bolted under a table, and a keypad locker scrawled with partially scratched digits.",
+      "puzzle_or_roleplay_challenge": "One digit on the locker keypad is illegible. Clues in the lounge hint at the missing number."
+    },
+    {
+      "room_number": 3,
+      "role": "Trick or Setback",
+      "name": "Collapsed Corridor",
+      "description": "A hallway partially caved in. A dangling corpse with a backpack sways from exposed rebar above a heap of debris.",
+      "trick_or_setback": "Unstable rubble—attempting to retrieve the backpack risks a partial collapse or attracting nearby infected."
+    },
+    {
+      "room_number": 4,
+      "role": "Climax Conflict",
+      "name": "Stockroom Nest",
+      "description": "The stockroom reeks of ammonia and rot. Several infected hunker in the shadows between toppled shelves.",
+      "climax_conflict": "Any disturbance provokes a swarm of infected. This is the most dangerous encounter in the rest stop."
+    },
+    {
+      "room_number": 5,
+      "role": "Reward or Revelation",
+      "name": "Maintenance Bunker",
+      "description": "A cramped subterranean shelter lit by flickering emergency lights. Supplies lie scattered among tool racks and an old generator hums faintly.",
+      "reward_or_revelation": "A functioning shortwave radio and handwritten notes detail local survivor outposts and scavenging routes.",
+      "valuables": [
+        {
+          "name": "Shortwave Radio",
+          "why_its_here": "The bunker’s last occupant used it to monitor survivor broadcasts.",
+          "description": "Operational but crackling with static.",
+          "quantity": 1,
+          "value": 75,
+          "where_exactly": "Placed on a metal table next to a hand-crank lamp."
+        }
+      ]
+    }
+  ]
+}

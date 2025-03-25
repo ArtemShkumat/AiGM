@@ -1,0 +1,61 @@
+{
+  "core_identity": {
+    "name": "NAME_OF_DELVE",
+    "type": "Delve",
+    "description": "ONE_OR_TWO_SENTENCES_SUMMARIZING_THE_DELVE",
+    "purpose": "WHAT_WAS_THIS_PLACE_ORIGINALLY_USED_FOR_OR_WHY_IT_EXISTS"
+  },
+  "navigation": {
+    "parent_location": "BROADER_REGION_OR_WORLD_CONTEXT",
+    "connected_locations": [
+      "ENTRY_POINT_OR_ADJACENT_AREA"
+    ]
+  },
+  "rooms": [
+    {
+      "room_number": 1,
+      "role": "Entrance",
+      "name": "ROOM_TITLE",
+      "description": "BRIEF_SCENE_DESCRIPTION",
+      "hazard_or_guardian": "EXPLAIN_THE_MAIN_OBSTACLE_OR_GUARD"
+    },
+    {
+      "room_number": 2,
+      "role": "Puzzle or Roleplay Challenge",
+      "name": "ROOM_TITLE",
+      "description": "BRIEF_SCENE_DESCRIPTION",
+      "puzzle_or_roleplay_challenge": "DETAIL_THE_NON-COMBAT_OBSTACLE_OR_INTERACTIVE_SOCIAL_ENCOUNTER"
+    },
+    {
+      "room_number": 3,
+      "role": "Trick or Setback",
+      "name": "ROOM_TITLE",
+      "description": "BRIEF_SCENE_DESCRIPTION",
+      "trick_or_setback": "DESCRIBE_THE_TWIST,_TRAP,_OR_UNEXPECTED_COMPLICATION"
+    },
+    {
+      "room_number": 4,
+      "role": "Climax Conflict",
+      "name": "ROOM_TITLE",
+      "description": "BRIEF_SCENE_DESCRIPTION",
+      "climax_conflict": "DETAIL_THE_MAJOR_ENCOUNTER_OR_FINALE_COMBAT_HERE"
+    },
+    {
+      "room_number": 5,
+      "role": "Reward or Revelation",
+      "name": "ROOM_TITLE",
+      "description": "BRIEF_SCENE_DESCRIPTION",
+      "reward_or_revelation": "DESCRIBE_THE_PAYOFF,_LORE_UNCOVERED,_OR_ESCAPE_ROUTE",
+      "valuables": [
+        {
+          "name": "ITEM_NAME",
+          "why_its_here": "IN-WORLD_REASON_FOR_ITS_PRESENCE",
+          "description": "SHORT_ITEM_DESCRIPTION",
+          "quantity": 1,
+          "value": 0,
+          "where_exactly": "LOCATION_IN_THE_ROOM"
+        }
+      ]
+    }
+  ]
+}
