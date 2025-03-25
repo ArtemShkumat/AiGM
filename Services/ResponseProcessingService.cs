@@ -104,15 +104,12 @@ namespace AiGMBackEnd.Services
                         await _updateProcessor.ProcessUpdatesAsync(jsonObject, userId);
                         break;
                     case PromptType.CreateQuest:
-                    case PromptType.CreateQuestJson:
                         await _questProcessor.ProcessAsync(jsonObject, userId);
                         break;
                     case PromptType.CreateNPC:
-                    case PromptType.CreateNPCJson:
                         await _npcProcessor.ProcessAsync(jsonObject, userId);
                         break;
                     case PromptType.CreateLocation:
-                    case PromptType.CreateLocationJson:
                         await _locationProcessor.ProcessAsync(jsonObject, userId);
                         break;
                     case PromptType.CreatePlayerJson:

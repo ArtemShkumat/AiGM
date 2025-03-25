@@ -1,0 +1,223 @@
+---Example 1---
+// Prompt: "I'm a wandering swordsman named Thorne who lost his home in a war and is now in Haven Village."
+
+//response:
+<donotshow/>
+{
+  "type": "PLAYER",
+  "id": "a7e5f120-8c4d-42e3-9f23-c8b258e5b85a",
+  "name": "Thorne",
+  "age": 28,
+  "currentLocationId": "loc_havenVillage",
+  
+  "visualDescription": {
+    "gender": "male",
+    "body": "lean",
+    "visibleClothing": "Simple tunic and leather boots",
+    "condition": "Rested but dusty from travel"
+  },
+  
+  "backstory": "A wanderer who lost his home during the Dragon War and now seeks purpose.",
+  
+  "relationships": [
+    {
+      "npcId": "npc_masterSmith",
+      "relationship": "acquaintance"
+    }
+  ],
+  
+  "inventory": [
+    {
+      "name": "Rusty Sword",
+      "description": "An old blade with signs of wear but still sharp enough to be effective",
+      "quantity": 1
+    },
+    {
+      "name": "Bread",
+      "description": "Simple loaf baked yesterday, still reasonably fresh",
+      "quantity": 3
+    }
+  ],
+  
+  "money": 15,
+  
+  "statusEffects": [],
+
+  "rpgElements": {
+    "skills": {
+      "swordplay": 3,
+      "persuasion": 2
+    }
+  },
+  
+  "activeQuests": [],
+  
+  "playerLog": [],
+  
+  "notes": "Has recurring dreams about dragons that may hint at a deeper connection."
+}
+
+---Example 2---
+// Prompt: "I'd like to play as Morgan, a tough 34-year-old former paramedic who survived a zombie outbreak by hiding in a hospital pharmacy. She's good at scavenging and first aid, and has just arrived at a safety zone after being rescued while searching for medical supplies. She's exhausted and has a cut above her eyebrow. She carries a medical kit, antibiotics, a hunting knife, and some canned food. She's worried about her family and constantly plans escape routes just in case. Morgan has no money in this post-apocalyptic world, and she's just helped someone named Rodriguez with an infected wound in exchange for shelter."
+
+//response:
+<donotshow/>
+{
+  "type": "PLAYER",
+  "id": "e7a2c649-b1fd-4e82-9c5f-d8b736a4e0f8",
+  "name": "Morgan",
+  "age": 34,
+  "currentLocationId": "loc_safetyZone",
+  
+  "visualDescription": {
+    "gender": "female",
+    "body": "wiry and tough",
+    "visibleClothing": "Practical cargo pants, reinforced jacket, and weathered boots",
+    "condition": "Exhausted with a healing cut above right eyebrow"
+  },
+  
+  "backstory": "Former paramedic who survived the initial outbreak by barricading in a hospital pharmacy. Has been on the move ever since, using medical knowledge to barter for safety and supplies.",
+  
+  "relationships": [
+    {
+      "npcId": "npc_captainRivera",
+      "relationship": "new arrival"
+    },
+    {
+      "npcId": "npc_mechanicRodriguez",
+      "relationship": "indebted"
+    }
+  ],
+  
+  "inventory": [
+    {
+      "name": "Medical Kit",
+      "description": "Compact but comprehensive emergency medical supplies in a worn canvas bag",
+      "quantity": 1
+    },
+    {
+      "name": "Antibiotics",
+      "description": "Half-empty bottle of broad-spectrum antibiotics, extremely valuable",
+      "quantity": 1
+    },
+    {
+      "name": "Hunting Knife",
+      "description": "Carbon steel blade with a reliable grip, shows signs of frequent use",
+      "quantity": 1
+    },
+    {
+      "name": "Canned Food",
+      "description": "Assorted preserved foods, mostly beans and vegetables",
+      "quantity": 4
+    }
+  ],
+  
+  "money": 0,
+  
+  "statusEffects": [
+    {
+      "name": "Fatigue",
+      "effect": "Reduced stamina and reflexes",
+      "duration": "Until properly rested"
+    }
+  ],
+
+  "rpgElements": {
+    "abilities": {
+      "scavenging": 4,
+      "first aid": 5,
+      "stealth": 3,
+      "bartering": 3,
+      "infected knowledge": 4
+    }
+  },
+  
+  "activeQuests": [],
+  
+  "playerLog": [],
+  
+  "notes": "Keeps a tattered photo of family members whose fate remains unknown. Secretly mapping potential escape routes from every location out of paranoia."
+}
+
+---Example 3---
+// Prompt: "merchant space station sci-fi"
+
+//response:
+<donotshow/>
+{
+  "type": "PLAYER",
+  "id": "9c4d7b12-306e-4ea9-8563-f2e4b0a19d8e",
+  "name": "Commander Eliza Chen",
+  "age": 41,
+  "currentLocationId": "loc_axiomStation",
+  
+  "visualDescription": {
+    "gender": "female",
+    "body": "short and athletic",
+    "visibleClothing": "Formal Alliance uniform with tactical modifications",
+    "condition": "Composed despite visible cybernetic implant scarring on right temple"
+  },
+  
+  "backstory": "Decorated tactical officer whose career was sidelined after voicing concerns about classified Xenovek research. Officially on administrative leave, secretly investigating corporate ties to prohibited xenotechnology.",
+  
+  "relationships": [
+    {
+      "npcId": "npc_commanderVoss",
+      "relationship": "former colleague"
+    },
+    {
+      "npcId": "npc_drChen",
+      "relationship": "distant relative"
+    }
+  ],
+  
+  "inventory": [
+    {
+      "name": "Neural Interface Device",
+      "description": "Advanced hacking tool disguised as standard military neural augmentation",
+      "quantity": 1
+    },
+    {
+      "name": "Plasma Pistol",
+      "description": "Standard issue Alliance sidearm with custom targeting system",
+      "quantity": 1
+    },
+    {
+      "name": "Data Crystals",
+      "description": "High-capacity storage devices containing encrypted files",
+      "quantity": 3
+    },
+    {
+      "name": "Stim Packs",
+      "description": "Military-grade stimulants that enhance focus and reaction time",
+      "quantity": 2
+    }
+  ],
+  
+  "money": 6500,
+  
+  "statusEffects": [
+    {
+      "name": "Neural Enhancement",
+      "effect": "Improved data processing and reaction time",
+      "duration": "Permanent"
+    }
+  ],
+
+  "rpgElements": {
+    "level": 5,
+    "skills": {
+      "tactical systems": 5,
+      "xeno-linguistics": 3,
+      "hacking": 4,
+      "zero-g combat": 4,
+      "intelligence analysis": 5
+    }
+  },
+  
+  "activeQuests": [],
+  
+  "playerLog": [],
+  
+  "notes": "Suspects the security breach is a cover for something larger. Has unauthorized backdoor access to Alliance security network that will be discovered if used too frequently."
+}
