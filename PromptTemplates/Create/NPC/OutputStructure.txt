@@ -1,0 +1,135 @@
+OUTPUT GUIDELINES
+Format: Output the quest as a single JSON object containing the fields below.
+Completeness: Even if given minimal info, fill in creative details that align with game lore or logic. If given extensive info, incorporate and expand on it meaningfully.
+Format adherence: Use only the field names provided below. An array means you may include as many or as few items as you wish to create a deep NPC.
+
+{
+  "type": "",
+  "id": "",
+  "name": "",
+  "currentLocationId": "",
+  "knownToPlayer": false,
+  "knowsPlayer": false,
+  "visibleToPlayer": false,
+  
+  "visualDescription": {
+    "gender": "",
+    "body": "",
+    "visibleClothing": "",
+    "condition": "",
+    "resemblingCelebrity": ""
+  },
+  
+  "personality": {
+    "temperament": "",
+    "quirks": "",
+    "motivations": "",
+    "fears": "",
+    "secrets": [
+      ""
+    ]
+  },
+  
+  "backstory": "",
+  
+  "currentGoal": "",
+  
+  "age": 0,
+  
+  "dispositionTowardsPlayer": "",
+  
+  "knownEntities": {
+    "npcsKnown": [
+      {
+        "name": "",
+        "levelOfFamiliarity": "",
+        "disposition": ""
+      }
+    ],
+    "locationsKnown": [
+      ""
+    ]
+  },
+  
+  "questInvolvement": [],
+  
+  "inventory": [
+    {
+      "name": "",
+      "description": "",
+      "quantity": 0
+    }
+  ],
+  
+  "conversationLog": []
+}
+
+type: Always set this to "NPC". This identifies the object as an NPC.
+
+id: This is a unique text identifier for this NPC. Choose something descriptive and unlikely to clash with other IDs.
+
+name: The name of the NPC.
+
+currentLocationId: The ID of the location where the NPC starts the game. This should match an existing location in your game world.
+
+knownToPlayer: Set this to false when creating the NPC. This will be changed to true later when the player meets the NPC.
+
+knowsPlayer: Start with false. This will be set to true when the NPC learns the player's name.
+
+visibleToPlayer: Set to true if the NPC is in the player's initial line of sight at the starting location; otherwise, set to false.
+
+visualDescription:
+
+gender: The NPC's gender.
+
+body: Describe the NPC's physical build and appearance (e.g., tall, thin, muscular).
+
+visibleClothing: Describe what the NPC is wearing, specifically what's visible to others.
+
+condition: Describe the NPC's current physical state (e.g., healthy, wounded, tired).
+
+resemblingCelebrity: A celebrity the NPC resembles. Use this for flavour, to help imagine them.
+
+personality:
+
+temperament: The NPC's general disposition (e.g., friendly, grumpy, anxious).
+
+traits: The NPC's notable character traits and quirks (e.g., honest, greedy, nervous).
+
+motivations: What drives the NPC and what they want to achieve.
+
+fears: What the NPC is afraid of.
+
+secrets: A list of things the NPC wants to keep hidden. These should be strings.
+
+backstory: The NPC's background history.
+
+currentGoal: What the NPC is currently trying to achieve.
+
+age: The NPC's age (as a number).
+
+dispositionTowardsPlayer: How the NPC initially feels about the player. Use one of these values: Hostile/Unfriendly/Neutral/Fond/Loyal.
+
+knownEntities:
+
+npcsKnown: A list of NPCs this NPC knows:
+
+name: The name of the known NPC.
+
+levelOfFamiliarity: How well the NPC knows the other NPC (Aware/Met/Known/Familiar/Deep).
+
+disposition: How the NPC feels about the other NPC (Hostile/Unfriendly/Neutral/Fond/Loyal).
+
+locationsKnown: A list of IDs of locations the NPC knows about.
+
+questInvolvement: A list of IDs of quests the NPC is involved in.
+
+inventory: A list of items the NPC possesses.
+
+name: The name of the item.
+
+description: A description of the item.
+
+quantity: How many of the item the NPC has.
+
+conversationLog: Start with an empty list ([]). Conversations are handled elsewhere.

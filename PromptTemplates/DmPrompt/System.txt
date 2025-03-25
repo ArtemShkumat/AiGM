@@ -47,7 +47,7 @@ Your hidden JSON (after <donotshow/>) will typically have two key arrays/objects
     "newEntities": [
       {
         "type": "NPC",
-        ...otherfields
+        ...other fields
       }
       // Possibly more new entities...
     ],

@@ -14,22 +14,94 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("title")]
         public string Title { get; set; }
         
-        [JsonPropertyName("currentProgress")]
-        public string CurrentProgress { get; set; }
+        [JsonPropertyName("coreObjective")]
+        public string CoreObjective { get; set; }
         
-        [JsonPropertyName("questDescription")]
-        public string QuestDescription { get; set; }
+        [JsonPropertyName("overview")]
+        public string Overview { get; set; }
         
-        [JsonPropertyName("achievementConditions")]
-        public List<string> AchievementConditions { get; set; } = new List<string>();
+        [JsonPropertyName("npcs")]
+        public List<QuestNpc> Npcs { get; set; } = new List<QuestNpc>();
         
-        [JsonPropertyName("failConditions")]
-        public List<string> FailConditions { get; set; } = new List<string>();
+        [JsonPropertyName("rumorsAndLeads")]
+        public List<RumorAndLead> RumorsAndLeads { get; set; } = new List<RumorAndLead>();
         
-        [JsonPropertyName("involvedLocations")]
-        public List<string> InvolvedLocations { get; set; } = new List<string>();
+        [JsonPropertyName("locationsInvolved")]
+        public List<string> LocationsInvolved { get; set; } = new List<string>();
         
-        [JsonPropertyName("involvedNpcs")]
-        public List<string> InvolvedNpcs { get; set; } = new List<string>();
-    }    
+        [JsonPropertyName("opposingForces")]
+        public List<OpposingForce> OpposingForces { get; set; } = new List<OpposingForce>();
+        
+        [JsonPropertyName("challenges")]
+        public List<string> Challenges { get; set; } = new List<string>();
+        
+        [JsonPropertyName("emotionalBeats")]
+        public List<string> EmotionalBeats { get; set; } = new List<string>();
+        
+        [JsonPropertyName("rewards")]
+        public QuestRewards Rewards { get; set; } = new QuestRewards();
+        
+        [JsonPropertyName("followupHooks")]
+        public List<string> FollowupHooks { get; set; } = new List<string>();
+    }
+
+    public class QuestNpc
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
+        
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        
+        [JsonPropertyName("role")]
+        public string Role { get; set; }
+        
+        [JsonPropertyName("motivation")]
+        public string Motivation { get; set; }
+        
+        [JsonPropertyName("fears")]
+        public string Fears { get; set; }
+        
+        [JsonPropertyName("secrets")]
+        public string Secrets { get; set; }
+    }
+
+    public class RumorAndLead
+    {
+        [JsonPropertyName("rumor")]
+        public string Rumor { get; set; }
+        
+        [JsonPropertyName("sourceNPC")]
+        public string SourceNPC { get; set; }
+        
+        [JsonPropertyName("sourceLocation")]
+        public string SourceLocation { get; set; }
+    }
+
+    public class OpposingForce
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        
+        [JsonPropertyName("role")]
+        public string Role { get; set; }
+        
+        [JsonPropertyName("motivation")]
+        public string Motivation { get; set; }
+        
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
+    }
+
+    public class QuestRewards
+    {
+        [JsonPropertyName("experience")]
+        public string Experience { get; set; }
+        
+        [JsonPropertyName("material")]
+        public List<string> Material { get; set; } = new List<string>();
+        
+        [JsonPropertyName("narrative")]
+        public List<string> Narrative { get; set; } = new List<string>();
+    }
 }
