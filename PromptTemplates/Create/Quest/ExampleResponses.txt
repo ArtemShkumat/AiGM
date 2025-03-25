@@ -1,205 +1,110 @@
-EXAMPLE 1: MYSTERY QUEST
+EXAMPLE 1: Lost in Gavelwood
 
-The Lost Heirloom of House Ardith
+PROMPT: Create a quest using this data:
 
-This quest centers around a missing family heirloom - the Sapphire Pendant of House Ardith. Lady Ellaria Ardith, a respected noblewoman in Westport, has discovered that her family's pendant has been stolen. The pendant isn't just valuable; it contains a fragment of an ancient spell that has protected the Ardith family for generations.
-
-The investigation begins in Westport Manor, where Lady Ellaria provides details about the theft and potential suspects. Players must navigate the social complexities of noble society, interviewing servants, family members, and recent visitors to the manor. Clues will lead to the Masked Crow tavern in the lower district, where the thief may have connections to a local fence.
-
-As the investigation deepens, players discover the theft wasn't motivated by greed but by revenge - orchestrated by Silas Morrow, a merchant whose family was ruined by the Ardiths generations ago. The final confrontation can be resolved through combat, persuasion, or a compromise that addresses the historical injustice while returning the pendant.
-
-The quest explores themes of family legacy, historical wrongs, and whether justice and revenge are truly different. It connects to the broader world by revealing tensions between Westport's merchant class and nobility, while also hinting at the magical protections that keep certain families in power.
-
-<donotshow/>
 {
-  "quest": {
-    "id": "ardith-sapphire-pendant",
-    "title": "The Lost Heirloom of House Ardith",
-    "questDescription": "Lady Ellaria Ardith's family pendant has been stolen. This sapphire heirloom contains ancient magic that has protected her family for generations. Find the thief and recover this precious item before its power is misused or destroyed.",
-    "currentProgress": "Lady Ellaria Ardith has requested your help in recovering her family's stolen sapphire pendant. She suspects the theft occurred during her recent gathering at Westport Manor.",
-    "achievementConditions": [
-      "Recover the Sapphire Pendant",
-      "Return the pendant to Lady Ellaria",
-      "Determine who was behind the theft"
-    ],
-    "failConditions": [
-      "The pendant is destroyed",
-      "Lady Ellaria is harmed"
-    ],
-    "involvedLocations": ["westport-manor", "masked-crow-tavern", "eastside-marketplace"],
-    "involvedNpcs": ["lady-ellaria-ardith", "silas-morrow", "tavern-keeper-dorian"],
-    "questLog": [],
-    "notes": "The quest can be resolved in multiple ways: combat with Silas, persuading him to return the pendant, or finding a compromise that addresses historical grievances."
-  },
-  "newEntities": {
-    "npcs": [
-      {
-        "id": "lady-ellaria-ardith",
-        "name": "Lady Ellaria Ardith",
-        "race": "Human",
-        "gender": "Female",
-        "occupation": "Noblewoman",
-        "backstory": "The last of the once-great House Ardith, Ellaria maintains her family's standing in Westport through careful political maneuvering and the protection of ancient family magic.",
-        "disposition": "Neutral",
-        "location": "westport-manor"
-      },
-      {
-        "id": "silas-morrow",
-        "name": "Silas Morrow",
-        "race": "Human",
-        "gender": "Male",
-        "occupation": "Merchant",
-        "backstory": "Descendant of a merchant family ruined by the Ardiths three generations ago. Has spent years planning his revenge against House Ardith, which he sees as justice for his family's suffering.",
-        "disposition": "Hostile",
-        "location": "eastside-marketplace"
-      },
-      {
-        "id": "tavern-keeper-dorian",
-        "name": "Dorian Blackwell",
-        "race": "Human",
-        "gender": "Male",
-        "occupation": "Tavern Keeper",
-        "backstory": "Former thief who went legitimate. Runs the Masked Crow tavern, but still maintains connections to Westport's criminal underground. Values information above all else.",
-        "disposition": "Neutral",
-        "location": "masked-crow-tavern"
-      }
-    ],
-    "locations": [
-      {
-        "id": "westport-manor",
-        "name": "Westport Manor",
-        "description": "An elegant noble estate on the cliffs overlooking Westport harbor. The ancestral home of House Ardith features fine marble statuary, ancient tapestries, and subtle magical wards throughout.",
-        "area": "Westport Noble Quarter",
-        "points_of_interest": ["Lady Ellaria's study", "Grand ballroom", "Family vault"]
-      },
-      {
-        "id": "masked-crow-tavern",
-        "name": "The Masked Crow",
-        "description": "A dim tavern in Westport's lower district. While appearing unremarkable to casual visitors, the tavern serves as a neutral ground for the city's criminal elements and those seeking discreet information.",
-        "area": "Westport Lower District",
-        "points_of_interest": ["Hidden back room", "Secret basement entrance", "Dorian's private booth"]
-      },
-      {
-        "id": "eastside-marketplace",
-        "name": "Eastside Marketplace",
-        "description": "Westport's bustling merchant district, filled with stalls, shops, and trading companies. Silas Morrow operates a modestly successful spice trading business from his small office here.",
-        "area": "Westport Merchant District",
-        "points_of_interest": ["Morrow Spice Trading", "Harbormaster's office", "Public square"]
-      }
-    ],
-    "items": [
-      {
-        "id": "sapphire-pendant-ardith",
-        "name": "Sapphire Pendant of House Ardith",
-        "description": "A sapphire pendant set in silver, bearing the Ardith family crest. The gem pulses with a faint blue light when magical energies are nearby. Contains an ancient protective spell tied to the Ardith bloodline.",
-        "type": "Quest Item",
-        "value": 2000,
-        "properties": ["Magical", "Ancient", "Family Heirloom"]
-      }
-    ]
-  }
+  "id": "quest_0012",
+  "context": 
 }
 
-
-EXAMPLE 2: RESCUE MISSION
-
-The Miner's Salvation
-
-This urgent quest involves rescuing trapped miners in the Blackrock Mine after a catastrophic cave-in. The mine foreman, Durgan Ironhammer, desperately seeks aid as his workers are trapped deep within the mine, with oxygen running low and reports of strange creatures stirring in the newly exposed caverns.
-
-Time is critical as players navigate the partially collapsed mine tunnels, facing both structural hazards and the mysterious creatures revealed by the cave-in - ancient underground dwellers called Deeplings who are disturbed by the mining operation. Players must find creative ways to stabilize dangerous passages, manage dwindling air supplies, and potentially negotiate with or combat the territorial Deeplings.
-
-The quest culminates in a moral choice: the miners discovered a rich vein of rare shadow ore just before the collapse, which is sacred to the Deeplings. Players can secure both the miners and the ore (angering the Deeplings), leave the ore (appeasing the Deeplings and potentially gaining underground allies), or find a compromise through diplomacy.
-
-This quest introduces the Deepling race to the game world, establishes the economic importance of Blackrock Mine to the region, and can set up future conflicts or alliances with the underground dwellers depending on player choices.
-
-<donotshow/>
 {
-  "quest": {
-    "id": "trapped-blackrock-miners",
-    "title": "The Miner's Salvation",
-    "questDescription": "A catastrophic cave-in has trapped miners deep within Blackrock Mine. Oxygen is running low, and strange creatures have been awakened in the depths. Rescue the miners before it's too late.",
-    "currentProgress": "Durgan Ironhammer has requested immediate assistance at Blackrock Mine. Twelve miners are trapped after a cave-in, with limited air and unknown dangers threatening their lives.",
-    "achievementConditions": [
-      "Find a safe path to the trapped miners",
-      "Rescue at least 8 of the 12 miners",
-      "Secure a way out of the mine"
+  "id": "quest_0012",
+  "title": "Lost in Gavelwood",
+  "coreObjective": "Locate and rescue Ema, the missing daughter of a local farmer.",
+  "overview": "A straightforward rescue mission that plunges adventurers into the dark heart of Gavelwood Forest. In searching for the missing daughter, they face a ruthless bandit gang and a deadly creature that even the brigands fear. Survival will hinge on cunning, cooperation, and courage.",
+  "npcs": [
+    {
+      "id": 
+      "name": "Harrick",
+      "role": "Farmer (Quest Giver)",
+      "motivation": "Desperate to find his daughter; terrified of local threats.",
+      "fears": "Losing Ema forever, being helpless against criminals",
+      "secrets": "He has hidden gambling debts that might have drawn the brigands' attention."
+    },
+    {
+      "name": "Ema",
+      "role": "Missing Daughter",
+      "motivation": "Disappeared under uncertain circumstances—possibly abducted.",
+      "fears": "Being trapped in the forest or used as leverage by criminals",
+      "secrets": "She secretly longed for escape from a mundane life; there’s a chance she left willingly."
+    },
+    {
+      "name": "Mara",
+      "role": "Mother",
+      "motivation": "Fears her husband’s decisions led to their daughter’s disappearance.",
+      "fears": "That Harrick’s recklessness will destroy their family",
+      "secrets": "She’s been contemplating leaving Harrick if Ema isn’t found safely."
+    },
+    {
+      "name": "Elim",
+      "role": "Nervous Neighbor",
+      "motivation": "Witnessed suspicious activity but is afraid to speak up.",
+      "fears": "Retaliation from the brigands if he shares too much information",
+      "secrets": "He once aided the bandits to protect his own property, and feels guilty."
+    }
+  ],
+  "rumorsAndLeads": [
+    {
+      "rumor": "Torchlights spotted heading into Gavelwood at night—possible kidnappers.",
+      "sourceNPC": "Elim",
+      "sourceLocation": ""
+    },
+    {
+      "rumor": "Ominous roars echo near the old watchtower ruin.",
+      "sourceNPC": "",
+      "sourceLocation": "Abandoned Watchtower"
+    },
+    {
+      "rumor": "A traveling merchant saw a large, reptilian beast lurking among the trees.",
+      "sourceNPC": "Passing Trader",
+      "sourceLocation": ""
+    }
+  ],
+  "locationsInvolved": [
+    "Gavelwood Forest",
+    "Old Watchtower Ruin",
+    "Harrick’s Farm",
+    "Village Tavern"
+  ],
+  "opposingForces": [
+    {
+      "name": "Ironfang Brigands",
+      "role": "Primary",
+      "motivation": "Profit through extortion, kidnapping, and territorial dominance",
+      "description": "A violent gang that raids local farms, kidnaps villagers, and patrols the forest. They are armed, organized, and unafraid to confront would-be rescuers."
+    },
+    {
+      "name": "Thornback Basilisk",
+      "role": "Secondary",
+      "motivation": "Defends its territory and hunts intruders venturing too deep into Gavelwood",
+      "description": "A vicious reptilian creature that prowls the forest at night. Its thorny hide and paralyzing glare make it a peril that both villagers and bandits avoid whenever possible."
+    }
+  ],
+  "challenges": [
+    "Navigating dense thickets and hidden traps in Gavelwood",
+    "Bandit patrols on forest trails and near the watchtower",
+    "Sudden storms or hazardous weather obscuring tracks",
+    "Potential confrontation with the Thornback Basilisk"
+  ],
+  "emotionalBeats": [
+    "Mara confronts Harrick about endangering their family",
+    "Villagers refusing to help due to fear of the Basilisk and brigands",
+    "Ema’s shock or trauma upon rescue if she’s been exposed to the forest’s horrors"
+  ],
+  "rewards": {
+    "experience": "Enough to approach the next level upon completion",
+    "material": [
+      "A modest pouch of coins",
+      "Heirloom farming tool or keepsake from the family"
     ],
-    "failConditions": [
-      "All miners perish",
-      "The mine completely collapses"
-    ],
-    "involvedLocations": ["blackrock-mine-entrance", "collapsed-tunnels", "deepling-cavern"],
-    "involvedNpcs": ["durgan-ironhammer", "chief-deepling", "trapped-miner-leader"],
-    "questLog": [],
-    "notes": "Quest has a time pressure element. Each significant delay reduces the number of miners who can be saved. The Deepling conflict can be resolved multiple ways, affecting future relations."
-  },
-  "newEntities": {
-    "npcs": [
-      {
-        "id": "durgan-ironhammer",
-        "name": "Durgan Ironhammer",
-        "race": "Dwarf",
-        "gender": "Male",
-        "occupation": "Mine Foreman",
-        "backstory": "A veteran miner who has operated Blackrock Mine for thirty years. Cares deeply for his workers but is also driven by profit and the discovery of valuable ore veins.",
-        "disposition": "Friendly",
-        "location": "blackrock-mine-entrance"
-      },
-      {
-        "id": "chief-deepling",
-        "name": "Murk'thal",
-        "race": "Deepling",
-        "gender": "Unknown",
-        "occupation": "Tribal Chief",
-        "backstory": "Leader of a small Deepling tribe that has lived beneath Blackrock Mountain for centuries. Views the miners as invasive desecrators of sacred stone, but is pragmatic enough to negotiate rather than fight if possible.",
-        "disposition": "Hostile",
-        "location": "deepling-cavern"
-      },
-      {
-        "id": "trapped-miner-leader",
-        "name": "Brenna Coalhand",
-        "race": "Human",
-        "gender": "Female",
-        "occupation": "Senior Miner",
-        "backstory": "A respected veteran of the mines who has taken charge of the survivors after the cave-in. Keeping morale up while rationing the remaining air and supplies.",
-        "disposition": "Friendly",
-        "location": "collapsed-tunnels"
-      }
-    ],
-    "locations": [
-      {
-        "id": "blackrock-mine-entrance",
-        "name": "Blackrock Mine Entrance",
-        "description": "The main entrance to the region's largest mining operation. Wooden support beams frame the wide tunnel mouth, with cart tracks leading into the darkness. Currently buzzing with frantic rescue preparations.",
-        "area": "Blackrock Mountain",
-        "points_of_interest": ["Foreman's office", "Equipment storage", "Ore processing area"]
-      },
-      {
-        "id": "collapsed-tunnels",
-        "name": "Collapsed Mine Tunnels",
-        "description": "A hazardous maze of partially collapsed tunnels. Dust fills the air, visibility is poor, and ominous creaking sounds come from the weakened support beams. The trapped miners are somewhere beyond these dangerous passages.",
-        "area": "Blackrock Mine",
-        "points_of_interest": ["Unstable shaft", "Flooded section", "Fresh air pocket"]
-      },
-      {
-        "id": "deepling-cavern",
-        "name": "Deepling Cavern",
-        "description": "A vast natural cavern accidentally breached by the miners. Bioluminescent fungi provide eerie blue-green light, revealing strange stone structures and pools of dark water. Home to the previously unknown Deepling tribe.",
-        "area": "Blackrock Underground",
-        "points_of_interest": ["Shadow ore vein", "Deepling shrine", "Underground lake"]
-      }
-    ],
-    "items": [
-      {
-        "id": "shadow-ore-chunk",
-        "name": "Shadow Ore",
-        "description": "A rare, dark mineral that absorbs light rather than reflecting it. Highly valuable for crafting magical items and specialized weapons. Sacred to the Deeplings, who believe it contains the essence of their ancestors.",
-        "type": "Quest Item",
-        "value": 1500,
-        "properties": ["Rare", "Magical", "Sacred"]
-      }
+    "narrative": [
+      "Respect from local villagers",
+      "Growing renown as fearless adventurers"
     ]
-  }
+  },
+  "followupHooks": [
+    "Evidence the Ironfang Brigands are part of a regional criminal network",
+    "A rumor that the Basilisk is but one of many monstrous threats in deeper Gavelwood",
+    "Mara asks the party to help uproot the brigands entirely, before others are taken"
+  ]
 }
-

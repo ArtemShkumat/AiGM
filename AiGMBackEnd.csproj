@@ -12,4 +12,11 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="PromptTemplates\Create\Location\Building\" />
+    <Folder Include="PromptTemplates\Create\Location\Delve\" />
+    <Folder Include="PromptTemplates\Create\Location\Wilds\" />
+    <Folder Include="PromptTemplates\Create\Location\Settlement\" />
+  </ItemGroup>
+
 </Project>
