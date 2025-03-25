@@ -1,7 +1,10 @@
 using System.Threading.Tasks;
 using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Locations;
 using AiGMBackEnd.Services;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace AiGMBackEnd.Services.Processors
 {
@@ -26,6 +29,7 @@ namespace AiGMBackEnd.Services.Processors
                 
                 // Extract location details
                 var locationId = locationData["id"]?.ToString();
+                var locationType = locationData["type"]?.ToString();
                 
                 if (string.IsNullOrEmpty(locationId))
                 {
@@ -33,59 +37,51 @@ namespace AiGMBackEnd.Services.Processors
                     return;
                 }
                 
-                // Create a new Location object based on our model class
-                var location = new Models.Location
-                {
-                    Id = locationId,
-                    Name = locationData["name"]?.ToString() ?? "Unknown Location",
-                    Type = locationData["type"]?.ToString(),
-                    Description = locationData["description"]?.ToString(),
-                    KnownToPlayer = locationData["knownToPlayer"]?.Value<bool>() ?? false
-                };
+                // Create a location based on the type
+                Location location;
                 
-                // Handle Connected Locations
+                switch (locationType?.ToLower())
+                {
+                    case "delve":
+                        location = ProcessDelve(locationData);
+                        break;
+                    case "building":
+                        location = ProcessBuilding(locationData);
+                        break;
+                    case "settlement":
+                        location = ProcessSettlement(locationData);
+                        break;
+                    default:
+                        _loggingService.LogError($"Unknown location type: {locationType}");
+                        return;
+                }
+                
+                // Set common properties
+                location.Id = locationId;
+                location.Name = locationData["name"]?.ToString() ?? "Unknown Location";
+                location.Description = locationData["description"]?.ToString();
+                location.KnownToPlayer = locationData["knownToPlayer"]?.Value<bool>() ?? false;
+                
+                // Process connected locations
                 if (locationData["connectedLocations"] is JArray connectedLocations)
                 {
                     foreach (var conn in connectedLocations)
                     {
-                        if (conn is JObject connObj)
+                        var connStr = conn.ToString();
+                        if (!string.IsNullOrEmpty(connStr))
                         {
-                            location.ConnectedLocations.Add(new Models.ConnectedLocation
-                            {
-                                Id = connObj["id"]?.ToString(),
-                                Description = connObj["description"]?.ToString()
-                            });
+                            location.ConnectedLocations.Add(connStr);
                         }
                     }
                 }
                 
-                // Handle Parent Location
-                if (locationData["parentLocation"] is JObject parentLoc)
+                // Process parent location
+                if (locationData["parentLocation"] != null)
                 {
-                    location.ParentLocation = new Models.ParentLocation
-                    {
-                        Id = parentLoc["id"]?.ToString(),
-                        Description = parentLoc["description"]?.ToString()
-                    };
+                    location.ParentLocation = locationData["parentLocation"]?.ToString();
                 }
                 
-                // Handle Sub Locations
-                if (locationData["subLocations"] is JArray subLocations)
-                {
-                    foreach (var sub in subLocations)
-                    {
-                        if (sub is JObject subObj)
-                        {
-                            location.SubLocations.Add(new Models.SubLocation
-                            {
-                                Id = subObj["id"]?.ToString(),
-                                Description = subObj["description"]?.ToString()
-                            });
-                        }
-                    }
-                }
-                
-                // Handle NPCs
+                // Process NPCs
                 if (locationData["npcs"] is JArray npcs)
                 {
                     foreach (var npc in npcs)
@@ -98,66 +94,275 @@ namespace AiGMBackEnd.Services.Processors
                     }
                 }
                 
-                // Handle Points of Interest
-                if (locationData["pointsOfInterest"] is JArray pois)
-                {
-                    foreach (var poi in pois)
-                    {
-                        if (poi is JObject poiObj)
-                        {
-                            location.PointsOfInterest.Add(new Models.PointOfInterest
-                            {
-                                Name = poiObj["name"]?.ToString(),
-                                Description = poiObj["description"]?.ToString()
-                            });
-                        }
-                    }
-                }
-                
-                // Handle Quest IDs
-                if (locationData["questIds"] is JArray questIds)
-                {
-                    foreach (var quest in questIds)
-                    {
-                        var questStr = quest.ToString();
-                        if (!string.IsNullOrEmpty(questStr))
-                        {
-                            location.QuestIds.Add(questStr);
-                        }
-                    }
-                }
-                
-                // Handle Items
-                if (locationData["items"] is JArray items)
-                {
-                    foreach (var item in items)
-                    {
-                        var itemStr = item.ToString();
-                        if (!string.IsNullOrEmpty(itemStr))
-                        {
-                            location.Items.Add(itemStr);
-                        }
-                    }
-                }                
-                
                 // Save the location data
                 await _storageService.SaveAsync(userId, $"locations/{locationId}", location);
                 
-                // Check if there are associated NPCs to create
-                if (locationData["npcs"] != null)
-                {
-                    var npcsArray = locationData["npcs"] as JArray;
-                    if (npcsArray != null && npcsArray.Count > 0)
-                    {
-                        // TODO: Trigger jobs to create missing NPCs if needed
-                    }
-                }
+                _loggingService.LogInfo($"Location {locationId} processed and saved successfully");
             }
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error processing location creation: {ex.Message}");
                 throw;
             }
+        }
+        
+        private Delve ProcessDelve(JObject locationData)
+        {
+            var delve = new Delve
+            {
+                Purpose = locationData["purpose"]?.ToString()
+            };
+            
+            // Process rooms
+            if (locationData["rooms"] is JArray roomsArray)
+            {
+                foreach (var roomData in roomsArray)
+                {
+                    if (roomData is JObject roomObj)
+                    {
+                        var room = new DelveRoom
+                        {
+                            RoomNumber = roomObj["room_number"]?.Value<int>() ?? 0,
+                            Role = roomObj["role"]?.ToString(),
+                            Name = roomObj["name"]?.ToString(),
+                            Description = roomObj["description"]?.ToString(),
+                            HazardOrGuardian = roomObj["hazard_or_guardian"]?.ToString(),
+                            PuzzleOrRoleplayChallenge = roomObj["puzzle_or_roleplay_challenge"]?.ToString(),
+                            TrickOrSetback = roomObj["trick_or_setback"]?.ToString(),
+                            ClimaxConflict = roomObj["climax_conflict"]?.ToString(),
+                            RewardOrRevelation = roomObj["reward_or_revelation"]?.ToString()
+                        };
+                        
+                        // Process valuables
+                        if (roomObj["valuables"] is JArray valuablesArray)
+                        {
+                            foreach (var valuableData in valuablesArray)
+                            {
+                                if (valuableData is JObject valuableObj)
+                                {
+                                    var valuable = new DelveValuable
+                                    {
+                                        Name = valuableObj["name"]?.ToString(),
+                                        WhyItsHere = valuableObj["why_its_here"]?.ToString(),
+                                        Description = valuableObj["description"]?.ToString(),
+                                        Quantity = valuableObj["quantity"]?.Value<int>() ?? 1,
+                                        Value = valuableObj["value"]?.Value<int>() ?? 0,
+                                        WhereExactly = valuableObj["where_exactly"]?.ToString()
+                                    };
+                                    
+                                    room.Valuables.Add(valuable);
+                                }
+                            }
+                        }
+                        
+                        delve.Rooms.Add(room);
+                    }
+                }
+            }
+            
+            return delve;
+        }
+        
+        private Building ProcessBuilding(JObject locationData)
+        {
+            var building = new Building
+            {
+                Purpose = locationData["purpose"]?.ToString(),
+                History = locationData["history"]?.ToString(),
+                ExteriorDescription = locationData["exterior_description"]?.ToString()
+            };
+            
+            // Process floors
+            if (locationData["floors"] is JArray floorsArray)
+            {
+                foreach (var floorData in floorsArray)
+                {
+                    if (floorData is JObject floorObj)
+                    {
+                        var floor = new Floor
+                        {
+                            FloorName = floorObj["floor_name"]?.ToString(),
+                            Description = floorObj["description"]?.ToString()
+                        };
+                        
+                        // Process rooms
+                        if (floorObj["rooms"] is JArray roomsArray)
+                        {
+                            foreach (var roomData in roomsArray)
+                            {
+                                if (roomData is JObject roomObj)
+                                {
+                                    var room = new Room
+                                    {
+                                        Name = roomObj["name"]?.ToString(),
+                                        Type = roomObj["type"]?.ToString(),
+                                        Description = roomObj["description"]?.ToString(),
+                                        Navigation = new RoomNavigation()
+                                    };
+                                    
+                                    // Process points of interest
+                                    if (roomObj["points_of_interest"] is JArray poisArray)
+                                    {
+                                        foreach (var poiData in poisArray)
+                                        {
+                                            if (poiData is JObject poiObj)
+                                            {
+                                                var poi = new PointOfInterest
+                                                {
+                                                    Name = poiObj["name"]?.ToString(),
+                                                    Description = poiObj["description"]?.ToString(),
+                                                    HintingAt = poiObj["hinting_at"]?.ToString()
+                                                };
+                                                
+                                                room.PointsOfInterest.Add(poi);
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Process valuables
+                                    if (roomObj["valuables"] is JArray valuablesArray)
+                                    {
+                                        foreach (var valuableData in valuablesArray)
+                                        {
+                                            if (valuableData is JObject valuableObj)
+                                            {
+                                                var valuable = new Valuable
+                                                {
+                                                    Name = valuableObj["name"]?.ToString(),
+                                                    Description = valuableObj["description"]?.ToString()
+                                                };
+                                                
+                                                room.Valuables.Add(valuable);
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Process NPCs
+                                    if (roomObj["npcs"] is JArray npcsArray)
+                                    {
+                                        foreach (var npc in npcsArray)
+                                        {
+                                            var npcStr = npc.ToString();
+                                            if (!string.IsNullOrEmpty(npcStr))
+                                            {
+                                                room.Npcs.Add(npcStr);
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Process connected rooms
+                                    if (roomObj["navigation"]?["connected_rooms"] is JArray connectedRoomsArray)
+                                    {
+                                        foreach (var connectedRoom in connectedRoomsArray)
+                                        {
+                                            var roomStr = connectedRoom.ToString();
+                                            if (!string.IsNullOrEmpty(roomStr))
+                                            {
+                                                room.Navigation.ConnectedRooms.Add(roomStr);
+                                            }
+                                        }
+                                    }
+                                    
+                                    floor.Rooms.Add(room);
+                                }
+                            }
+                        }
+                        
+                        building.Floors.Add(floor);
+                    }
+                }
+            }
+            
+            return building;
+        }
+        
+        private Settlement ProcessSettlement(JObject locationData)
+        {
+            var settlement = new Settlement
+            {
+                Purpose = locationData["purpose"]?.ToString(),
+                History = locationData["history"]?.ToString(),
+                Size = locationData["size"]?.ToString(),
+                Population = locationData["population"]?.Value<int>() ?? 0
+            };
+            
+            // Process districts
+            if (locationData["districts"] is JArray districtsArray)
+            {
+                foreach (var districtData in districtsArray)
+                {
+                    if (districtData is JObject districtObj)
+                    {
+                        var district = new District
+                        {
+                            Name = districtObj["name"]?.ToString(),
+                            Description = districtObj["description"]?.ToString()
+                        };
+                        
+                        // Process connected districts
+                        if (districtObj["connected_districts"] is JArray connectedDistrictsArray)
+                        {
+                            foreach (var connectedDistrict in connectedDistrictsArray)
+                            {
+                                var districtStr = connectedDistrict.ToString();
+                                if (!string.IsNullOrEmpty(districtStr))
+                                {
+                                    district.ConnectedDistricts.Add(districtStr);
+                                }
+                            }
+                        }
+                        
+                        // Process points of interest
+                        if (districtObj["points_of_interest"] is JArray poisArray)
+                        {
+                            foreach (var poiData in poisArray)
+                            {
+                                if (poiData is JObject poiObj)
+                                {
+                                    var poi = new PointOfInterest
+                                    {
+                                        Name = poiObj["name"]?.ToString(),
+                                        Description = poiObj["description"]?.ToString(),
+                                        HintingAt = poiObj["hinting_at"]?.ToString()
+                                    };
+                                    
+                                    district.PointsOfInterest.Add(poi);
+                                }
+                            }
+                        }
+                        
+                        // Process NPCs
+                        if (districtObj["npcs"] is JArray npcsArray)
+                        {
+                            foreach (var npc in npcsArray)
+                            {
+                                var npcStr = npc.ToString();
+                                if (!string.IsNullOrEmpty(npcStr))
+                                {
+                                    district.Npcs.Add(npcStr);
+                                }
+                            }
+                        }
+                        
+                        // Process buildings
+                        if (districtObj["buildings"] is JArray buildingsArray)
+                        {
+                            foreach (var building in buildingsArray)
+                            {
+                                var buildingStr = building.ToString();
+                                if (!string.IsNullOrEmpty(buildingStr))
+                                {
+                                    district.Buildings.Add(buildingStr);
+                                }
+                            }
+                        }
+                        
+                        settlement.Districts.Add(district);
+                    }
+                }
+            }
+            
+            return settlement;
         }
     }
 } 

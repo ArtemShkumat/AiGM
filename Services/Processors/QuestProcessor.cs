@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Services;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace AiGMBackEnd.Services.Processors
 {
@@ -38,67 +40,156 @@ namespace AiGMBackEnd.Services.Processors
                 {
                     Id = questId,
                     Title = questData["title"]?.ToString() ?? "Unknown Quest",
-                    CurrentProgress = questData["currentProgress"]?.ToString(),
-                    QuestDescription = questData["questDescription"]?.ToString()
+                    CoreObjective = questData["coreObjective"]?.ToString(),
+                    Overview = questData["overview"]?.ToString(),
+                    Rewards = new QuestRewards()
                 };
                 
-                // Handle Achievement Conditions
-                if (questData["achievementConditions"] is JArray achievementConditions)
+                // Handle NPCs involved
+                if (questData["npcs"] is JArray npcsArray)
                 {
-                    foreach (var condition in achievementConditions)
+                    foreach (var npcData in npcsArray)
                     {
-                        var conditionStr = condition.ToString();
-                        if (!string.IsNullOrEmpty(conditionStr))
+                        if (npcData is JObject npcObj)
                         {
-                            quest.AchievementConditions.Add(conditionStr);
+                            var questNpc = new QuestNpc
+                            {
+                                Id = npcObj["id"]?.ToString(),
+                                Name = npcObj["name"]?.ToString(),
+                                Role = npcObj["role"]?.ToString(),
+                                Motivation = npcObj["motivation"]?.ToString(),
+                                Fears = npcObj["fears"]?.ToString(),
+                                Secrets = npcObj["secrets"]?.ToString()
+                            };
+                            quest.Npcs.Add(questNpc);
                         }
                     }
                 }
                 
-                // Handle Fail Conditions
-                if (questData["failConditions"] is JArray failConditions)
+                // Handle Rumors and Leads
+                if (questData["rumorsAndLeads"] is JArray rumorsArray)
                 {
-                    foreach (var condition in failConditions)
+                    foreach (var rumorData in rumorsArray)
                     {
-                        var conditionStr = condition.ToString();
-                        if (!string.IsNullOrEmpty(conditionStr))
+                        if (rumorData is JObject rumorObj)
                         {
-                            quest.FailConditions.Add(conditionStr);
+                            var rumor = new RumorAndLead
+                            {
+                                Rumor = rumorObj["rumor"]?.ToString(),
+                                SourceNPC = rumorObj["sourceNPC"]?.ToString(),
+                                SourceLocation = rumorObj["sourceLocation"]?.ToString()
+                            };
+                            quest.RumorsAndLeads.Add(rumor);
                         }
                     }
                 }
                 
-                // Handle Involved Locations
-                if (questData["involvedLocations"] is JArray involvedLocations)
+                // Handle Locations Involved
+                if (questData["locationsInvolved"] is JArray locationsArray)
                 {
-                    foreach (var location in involvedLocations)
+                    foreach (var location in locationsArray)
                     {
                         var locationStr = location.ToString();
                         if (!string.IsNullOrEmpty(locationStr))
                         {
-                            quest.InvolvedLocations.Add(locationStr);
+                            quest.LocationsInvolved.Add(locationStr);
                         }
                     }
                 }
                 
-                // Handle Involved NPCs
-                if (questData["involvedNpcs"] is JArray involvedNpcs)
+                // Handle Opposing Forces
+                if (questData["opposingForces"] is JArray forcesArray)
                 {
-                    foreach (var npc in involvedNpcs)
+                    foreach (var forceData in forcesArray)
                     {
-                        var npcStr = npc.ToString();
-                        if (!string.IsNullOrEmpty(npcStr))
+                        if (forceData is JObject forceObj)
                         {
-                            quest.InvolvedNpcs.Add(npcStr);
+                            var force = new OpposingForce
+                            {
+                                Name = forceObj["name"]?.ToString(),
+                                Role = forceObj["role"]?.ToString(),
+                                Motivation = forceObj["motivation"]?.ToString(),
+                                Description = forceObj["description"]?.ToString()
+                            };
+                            quest.OpposingForces.Add(force);
                         }
                     }
-                }                
+                }
+                
+                // Handle Challenges
+                if (questData["challenges"] is JArray challengesArray)
+                {
+                    foreach (var challenge in challengesArray)
+                    {
+                        var challengeStr = challenge.ToString();
+                        if (!string.IsNullOrEmpty(challengeStr))
+                        {
+                            quest.Challenges.Add(challengeStr);
+                        }
+                    }
+                }
+                
+                // Handle Emotional Beats
+                if (questData["emotionalBeats"] is JArray beatsArray)
+                {
+                    foreach (var beat in beatsArray)
+                    {
+                        var beatStr = beat.ToString();
+                        if (!string.IsNullOrEmpty(beatStr))
+                        {
+                            quest.EmotionalBeats.Add(beatStr);
+                        }
+                    }
+                }
+                
+                // Handle Rewards
+                if (questData["rewards"] is JObject rewardsObj)
+                {
+                    quest.Rewards.Experience = rewardsObj["experience"]?.ToString();
+                    
+                    if (rewardsObj["material"] is JArray materialRewards)
+                    {
+                        foreach (var reward in materialRewards)
+                        {
+                            var rewardStr = reward.ToString();
+                            if (!string.IsNullOrEmpty(rewardStr))
+                            {
+                                quest.Rewards.Material.Add(rewardStr);
+                            }
+                        }
+                    }
+                    
+                    if (rewardsObj["narrative"] is JArray narrativeRewards)
+                    {
+                        foreach (var reward in narrativeRewards)
+                        {
+                            var rewardStr = reward.ToString();
+                            if (!string.IsNullOrEmpty(rewardStr))
+                            {
+                                quest.Rewards.Narrative.Add(rewardStr);
+                            }
+                        }
+                    }
+                }
+                
+                // Handle Follow-up Hooks
+                if (questData["followupHooks"] is JArray hooksArray)
+                {
+                    foreach (var hook in hooksArray)
+                    {
+                        var hookStr = hook.ToString();
+                        if (!string.IsNullOrEmpty(hookStr))
+                        {
+                            quest.FollowupHooks.Add(hookStr);
+                        }
+                    }
+                }
               
                 // Save the quest data
                 await _storageService.SaveAsync(userId, $"quests/{questId}", quest);
                 
                 // Check if there are associated entities to create
-                if (questData["involvedLocations"] != null || questData["involvedNpcs"] != null)
+                if (questData["locationsInvolved"] != null || questData["npcs"] != null)
                 {
                     // TODO: Trigger jobs to create missing locations and NPCs if needed
                 }

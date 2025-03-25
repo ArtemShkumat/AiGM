@@ -38,12 +38,8 @@ namespace AiGMBackEnd.Services
                 { PromptType.DM, new DMPromptBuilder(storageService, loggingService) },
                 { PromptType.NPC, new NPCPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateQuest, new CreateQuestPromptBuilder(storageService, loggingService) },
-                { PromptType.CreateQuestJson, new CreateQuestJsonPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateNPC, new CreateNPCPromptBuilder(storageService, loggingService) },
-                { PromptType.CreateNPCJson, new CreateNPCJsonPromptBuilder(storageService, loggingService) },
-                { PromptType.CreateLocation, new CreateLocationPromptBuilder(storageService, loggingService) },
-                { PromptType.CreateLocationJson, new CreateLocationJsonPromptBuilder(storageService, loggingService) },
-                { PromptType.CreatePlayerJson, new CreatePlayerJsonPromptBuilder(storageService, loggingService) }
+                { PromptType.CreateLocation, new CreateLocationPromptBuilder(storageService, loggingService) }
             };
         }
 

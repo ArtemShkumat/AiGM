@@ -4,6 +4,9 @@ namespace AiGMBackEnd.Models
 {
     public class PointOfInterest
     {
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        
         [JsonPropertyName("description")]
         public string Description { get; set; }
 
