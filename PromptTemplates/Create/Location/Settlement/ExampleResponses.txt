@@ -1,0 +1,132 @@
+EXAMPLE
+
+User Prompt: Create a location using this info:
+
+{
+	"id": "settlement_willowbrook",
+    "type": "Settlement",
+    "name": "Willowbrook Village",
+    "parentLocationId": "loc_greenfields",
+     "connectedLocationIds": [
+      "loc_oldmill",
+      "loc_whispering"
+    ],
+    "context":
+}
+
+Your Response:
+
+{
+  "core_identity": {
+    "id": "settlement_willowbrook",
+    "name": "Willowbrook Village",
+    "type": "Settlement",
+    "description": "A quaint rural village nestled along a gentle, meandering brook, renowned for its warm community and simple charm.",
+    "purpose": "A farming and trading community sustained by agriculture and local crafts.",
+    "history": "Founded centuries ago by settlers seeking fertile lands, Willowbrook has endured storms and conflicts while retaining its close-knit spirit.",
+    "size": "Village"
+  },
+  "navigation": {
+    "parentLocationId": "loc_greenfields",
+    "connectedLocationIds": [
+      "road_oldmill",
+      "forest_whispering"
+    ]
+  },
+  "demographics": {
+    "population": 350,
+    "factions": [
+      {
+        "name": "Village Elders",
+        "description": "A council of respected villagers managing local affairs and resolving disputes.",
+        "npcs": [
+          { "npcId": "npc_elder_marion" },
+          { "npcId": "npc_elder_thomas" }
+        ]
+      },
+      {
+        "name": "Local Farmers",
+        "description": "A loose association of farming families sharing news and trading goods at the market.",
+        "npcs": []
+      }
+    ]
+  },
+  "districts": [
+    {
+      "name": "Village Center",
+      "description": "The heart of Willowbrook, where the marketplace, town hall, and communal well reside. Cobblestone streets and modest wooden buildings define this district.",
+      "navigation": {
+        "connected_districts": [
+          "Residential Quarter",
+          "Outskirts"
+        ]
+      },
+      "notable_features": [
+        {
+          "name": "Town Well",
+          "description": "A centuries-old stone well providing fresh water and serving as a communal gathering spot."
+        },
+        {
+          "name": "Market Square",
+          "description": "A bustling open-air market where villagers gather weekly to trade goods and exchange news."
+        }
+      ],
+      "npcs": [
+        { "npcId": "npc_market_vendor_annie" }
+      ],
+      "buildings": [
+        {
+          "buildingId": "building_townhall",
+          "description": "The administrative center where the village council meets."
+        },
+        {
+          "buildingId": "building_old_sparrows_shop",
+          "description": "A modest general store providing essentials and odd trinkets, run by the affable shopkeeper Old Sparrow."
+        }
+      ]
+    },
+    {
+      "name": "Residential Quarter",
+      "description": "A cluster of modest homes and cottages where most villagers reside. Quiet lanes and small gardens define this area.",
+      "navigation": {
+        "connected_districts": [
+          "Village Center",
+          "Outskirts"
+        ]
+      },
+      "notable_features": [
+        {
+          "name": "Community Garden",
+          "description": "A shared plot where villagers cultivate vegetables and herbs."
+        }
+      ],
+      "npcs": [
+        { "npcId": "npc_old_granny_susie" }
+      ],
+      "buildings": [
+        {
+          "buildingId": "building_cottage_1",
+          "description": "A well-kept cottage with a vibrant garden, home to a local family."
+        }
+      ]
+    },
+    {
+      "name": "Outskirts",
+      "description": "The peripheral area featuring scattered farms, fields, and the occasional abandoned structure that hints at earlier times.",
+      "navigation": {
+        "connected_districts": [
+          "Village Center",
+          "Residential Quarter"
+        ]
+      },
+      "notable_features": [
+        {
+          "name": "Old Mill Ruins",
+          "description": "Remnants of a once-thriving watermill that powered the village’s early industry."
+        }
+      ],
+      "npcs": [],
+      "buildings": []
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "core_identity": {
+    "id": "ID",
+    "name": "NAME_OF_SETTLEMENT",
+    "type": "Settlement",
+    "description": "A BRIEF_OVERVIEW_OF_THE_TONE_OR_FLAVOR",
+    "purpose": "WHY_THIS_SETTLEMENT_EXISTS (TRADE HUB, FORTRESS, ETC.)",
+    "history": "SHORT_HISTORY_HIGHLIGHTS (FOUNDERS, MAJOR_EVENTS)",
+    "size": "APPROXIMATE_SCALE (VILLAGE, TOWN, CITY)"
+  },
+  "navigation": {
+    "parentLocationId": "ID_OF_THE_REGION_OR_WORLD",
+    "connectedLocationIds": [
+      "ID_OF_AN_ADJACENT_TERRITORY",
+      "ID_OF_ANOTHER_LINKED_LOCATION"
+    ]
+  },
+  "demographics": {
+    "population": 0,
+    "factions": [
+      {
+        "name": "FACTION_NAME",
+        "description": "BRIEF_OVERVIEW_OF_FACTION_GOALS_AND_CULTURE",
+        "npcs": [
+          {
+            "npcId": "ID_OF_AN_NPC_IN_THIS_FACTION"
+          }
+        ]
+      }
+    ]
+  },
+  "districts": [
+    {
+      "name": "DISTRICT_NAME",
+      "description": "WHAT_THIS_DISTRICT_LOOKS_LIKE_AND_ITS_ROLE_IN_THE_SETTLEMENT (MARKET, RESIDENTIAL, ETC.)",
+      "navigation": {
+        "connected_districts": [
+          "NAMES_OF_OTHER_DISTRICTS_THAT_LINK_TO_THIS_ONE"
+        ]
+      },
+      "notable_features": [
+        {
+          "name": "FEATURE_NAME",
+          "description": "WHAT_MAKES_THIS_FEATURE_INTERESTING_OR_RELEVANT"
+        }
+      ],
+      "npcs": [
+        {
+          "npcId": "ID_OF_NPC_RESIDING_OR_ROAMING_HERE"
+        }
+      ],
+      "buildings": [
+        {
+          "buildingId": "ID_OF_AN_EXISTING_BUILDING",
+          "description": "OPTIONAL_SUMMARY_OF_HOW_THIS_BUILDING_RELATES_TO_THE_DISTRICT"
+        }
+      ]
+    }
+  ]
+}

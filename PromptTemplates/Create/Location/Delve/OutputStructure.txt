@@ -1,14 +1,15 @@
 {
   "core_identity": {
+    "id": "ID",
     "name": "NAME_OF_DELVE",
     "type": "Delve",
     "description": "ONE_OR_TWO_SENTENCES_SUMMARIZING_THE_DELVE",
     "purpose": "WHAT_WAS_THIS_PLACE_ORIGINALLY_USED_FOR_OR_WHY_IT_EXISTS"
   },
   "navigation": {
-    "parent_location": "BROADER_REGION_OR_WORLD_CONTEXT",
-    "connected_locations": [
-      "ENTRY_POINT_OR_ADJACENT_AREA"
+    "parentLocationId": "BROADER_REGION_OR_WORLD_CONTEXT",
+    "connectedLocationIds": [
+      "ADJACENT_AREAS"
     ]
   },
   "rooms": [

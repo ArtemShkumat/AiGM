@@ -3,7 +3,7 @@ EXAMPLE
 User Prompt: Create an NPC using this info:
 
 {
-	"id": "npc_green_pines_stop",
+	"id": "loc_green_pines_stop",
     "name": "Green Pines Rest Stop",
     "parentLocationId": "loc_outskirts",
     "connectedLocationIds": []
@@ -14,6 +14,7 @@ Your Response:
 
 {
   "core_identity": {
+    "id": "loc_green_pines_stop",
     "name": "Green Pines Rest Stop",
     "type": "Delve",
     "description": "An old highway rest stop half-buried in overgrowth. Signs of hasty evacuation and rot linger in the air.",

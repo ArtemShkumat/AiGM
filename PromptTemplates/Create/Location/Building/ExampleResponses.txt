@@ -1,0 +1,89 @@
+EXAMPLE
+
+User Prompt: Create a location using this info:
+
+{
+	"id": "loc_old_sparrows_shop",
+    "type": "Building",
+    "name": "Old Sparrow's Shop",
+    "parentLocationId": "loc_village_square",
+    "connectedLocationIds": [
+      "loc_inn_backyard"
+    ],
+    "context":
+}
+
+Your Response:
+
+{
+  "core_identity": {
+    "id": "loc_old_sparrows_shop",
+    "name": "Old Sparrow's Shop",
+    "type": "Building",
+    "exterior_description": "A weathered timber storefront with a creaky wooden sign bearing a faded sparrow emblem.",
+    "purpose": "A general store providing staples and odd trinkets to local villagers.",
+    "history": "Run by Old Sparrow for three decades, rumored to have once been a small tavern."
+  },
+  "navigation": {
+    "parentLocationId": "loc_village_square",
+    "connectedLocationIds": [
+      "loc_inn_backyard"
+    ]
+  },
+  "floors": [
+    {
+      "floor_name": "Ground Floor",
+      "description": "Polished wooden flooring, shelves lined with basic supplies, a counter near the entrance.",
+      "rooms": [
+        {
+          "name": "Main Shop Area",
+          "type": "Retail Room",
+          "description": "A cozy space cluttered with barrels of grain, jars of pickles, and various travel necessities. The smell of herbal tea mingles with old wood.",
+          "points_of_interest": [
+            {
+              "description": "A faded poster showing local harvesting seasons, pinned behind the counter.",
+              "hinting_at": "Indicates Old Sparrow’s focus on homegrown produce and local trade."
+            }
+          ],
+          "valuables": [],
+          "npcs": [
+            {
+              "npcId": "npc_OldSparrow"
+            }
+          ],
+          "navigation": {
+            "connected_rooms": [
+              "Storage Room"
+            ]
+          }
+        },
+        {
+          "name": "Storage Room",
+          "type": "Supply Closet",
+          "description": "Dimly lit, stacked with crates and sacks of flour, a single lantern rattling on an overhead hook.",
+          "points_of_interest": [
+            {
+              "description": "A dusty ledger listing small debts from local farmers.",
+              "hinting_at": "Old Sparrow extends credit for those struggling between harvests."
+            }
+          ],
+          "valuables": [
+            {
+              "name": "Artisan Honey Jars",
+              "why_its_here": "Local beekeepers sell honey on consignment through the shop.",
+              "description": "Three jars of high-quality honey, sealed with wax.",
+              "quantity": 3,
+              "value": 2
+            }
+          ],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Main Shop Area"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

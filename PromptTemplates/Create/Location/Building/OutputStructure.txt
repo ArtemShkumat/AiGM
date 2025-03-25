@@ -1,0 +1,53 @@
+{
+  "core_identity": {
+    "name": "NAME_OF_BUILDING",
+    "type": "Building",
+    "exterior_description": "DESCRIBE_THE_OUTSIDE_APPEARANCE",
+    "purpose": "ORIGINAL_OR_CURRENT_FUNCTION_OF_THE_BUILDING",
+    "history": "OPTIONAL_SHORT_HISTORY_OR_BACKSTORY"
+  },
+  "navigation": {
+    "parentLocationId": "ID_OF_THE_LOCATION_CONTAINING_THIS_BUILDING",
+    "connectedLocationIds": [
+      "LIST_OF_OTHER_LOCATION_IDS_DIRECTLY_CONNECTED"
+    ]
+  },
+  "floors": [
+    {
+      "floor_name": "FLOOR_NAME_OR_NUMBER",
+      "description": "SHORT_SUMMARY_OF_THE_FLOOR",
+      "rooms": [
+        {
+          "name": "ROOM_NAME",
+          "type": "ROOM_TYPE",
+          "description": "DESCRIBE_WHAT_THIS_ROOM_LOOKS_OR_FEELS_LIKE",
+          "points_of_interest": [
+            {
+              "description": "DETAIL_DESCRIBING_INTERESTING_FEATURE",
+              "hinting_at": "WHAT_THIS_SUGGESTS_OR_IMPLIES_ABOUT_THE_ROOM"
+            }
+          ],
+          "valuables": [
+            {
+              "name": "ITEM_NAME",
+              "why_its_here": "REASONABLE_EXPLANATION_FOR_ITS_PRESENCE",
+              "description": "BRIEF_ITEM_DESCRIPTION",
+              "quantity": 1,
+              "value": 0
+            }
+          ],
+          "npcs": [
+            {
+              "npcId": "ID_OF_AN_NPC_PRESENT_IN_THIS_ROOM"
+            }
+          ],
+          "navigation": {
+            "connected_rooms": [
+              "NAMES_OF_OTHER_ROOMS_ON_THIS_FLOOR"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
