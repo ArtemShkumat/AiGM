@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Collections.Generic;
 using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Locations;
 
 namespace AiGMBackEnd.Services
 {

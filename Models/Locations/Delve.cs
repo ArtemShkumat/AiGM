@@ -1,42 +1,21 @@
-﻿namespace AiGMBackEnd.Models.Locations
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using AiGMBackEnd.Models.Locations;
+
+namespace AiGMBackEnd.Models
 {
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
-
-    public class Delve
+    public class Delve : Location
     {
-        [JsonPropertyName("core_identity")]
-        public CoreIdentity CoreIdentity { get; set; }
-
-        [JsonPropertyName("navigation")]
-        public Navigation Navigation { get; set; }
-
-        [JsonPropertyName("rooms")]
-        public List<DelveRoom> Rooms { get; set; }
-    }
-
-    public class CoreIdentity
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-
-        [JsonPropertyName("type")]
-        public string Type { get; set; }
-
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public Delve()
+        {
+            Type = "Delve";
+        }
 
         [JsonPropertyName("purpose")]
         public string Purpose { get; set; }
-    }
 
-    public class Navigation
-    {
-        [JsonPropertyName("parent_location")]
-        public string ParentLocation { get; set; }
-
-        [JsonPropertyName("connected_locations")]
-        public List<string> ConnectedLocations { get; set; }
+        [JsonPropertyName("rooms")]
+        public List<DelveRoom> Rooms { get; set; } = new List<DelveRoom>();
     }
 
     public class DelveRoom
@@ -69,10 +48,10 @@
         public string RewardOrRevelation { get; set; }
 
         [JsonPropertyName("valuables")]
-        public List<Valuable> Valuables { get; set; }
+        public List<DelveValuable> Valuables { get; set; } = new List<DelveValuable>();
     }
 
-    public class Valuable
+    public class DelveValuable
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
@@ -92,5 +71,4 @@
         [JsonPropertyName("where_exactly")]
         public string WhereExactly { get; set; }
     }
-
 }
