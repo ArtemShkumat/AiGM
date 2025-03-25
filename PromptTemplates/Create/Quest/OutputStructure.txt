@@ -1,0 +1,93 @@
+OUTPUT GUIDELINES
+Format: Output the quest as a single JSON object containing the fields below.
+Completeness: Even if given minimal info, fill in creative details that align with game lore or logic. If given extensive info, incorporate and expand on it meaningfully.
+Format adherence: Use only the field names provided below. An array means you may include as many or as few items as you wish to create a fulfilling quest.
+
+{
+  "id": "",
+  "title": "",
+  "coreObjective": "",
+  "overview": "",
+  "npcs": [
+    {
+      "name": "",
+      "role": "",
+      "motivation": "",
+      "fears": "",
+      "secrets": ""
+    }
+  ],
+  "rumorsAndLeads": [
+    {
+      "rumor": "",
+      "sourceNPC": "",
+      "sourceLocation": ""
+    }
+  ],
+  "locationsInvolved": [],
+  "opposingForces": [
+    {
+      "name": "",
+      "role": "",
+      "motivation": "",
+      "description": ""
+    }
+  ],
+  "challenges": [],
+  "emotionalBeats": [],
+  "rewards": {
+    "experience": "",
+    "material": [],
+    "narrative": []
+  },
+  "followupHooks": []
+}
+
+id: A unique identifier for the quest. This will be provided to you every time. Use the id provided.
+
+title: A short, memorable quest name.
+
+coreObjective: The primary, succinct statement of what must be accomplished.
+
+overview: A brief synopsis or “back-of-the-book” summary describing the nature, tone, and stakes of the quest.
+
+npcs: An array of important non-player characters. Each NPC has:
+
+name
+
+role (e.g., “Quest Giver,” “Missing Person,” “Villager,” etc.)
+
+motivation (why they do what they do)
+
+fears (what they dread could happen)
+
+secrets (hidden truths that can be revealed during the quest)
+
+rumorsAndLeads: Hints or partial information that guide players. Each lead includes the rumor, plus an optional sourceNPC and sourceLocation.
+
+locationsInvolved: A list of key places the players may visit or investigate.
+
+opposingForces: An array of hostile factions, creatures, or individuals. Each has:
+
+name
+
+role (e.g., “Primary” or “Secondary”)
+
+motivation
+
+description (outlines behavior, threat level, or notable traits)
+
+challenges: Specific obstacles or complications the party will encounter (environmental hazards, puzzles, ambushes, moral dilemmas, etc.).
+
+emotionalBeats: Potential moments of tension, conflict, or roleplay—like arguments between NPCs, personal revelations, or heartbreak.
+
+rewards: Divided into:
+
+experience (progress in the game system)
+
+material (money, items)
+
+narrative (reputation boost, favors, new story opportunities)
+
+followupHooks: Teasers for future story arcs or related quests that can branch off from this one.
+
