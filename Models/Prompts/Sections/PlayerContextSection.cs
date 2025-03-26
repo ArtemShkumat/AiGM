@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 
 namespace AiGMBackEnd.Models.Prompts.Sections
 {
@@ -15,69 +16,28 @@ namespace AiGMBackEnd.Models.Prompts.Sections
 
         public override void AppendTo(StringBuilder builder)
         {
-            builder.AppendLine("# Player Context");
-            builder.AppendLine($"Player Name: {_player.Name}");
-            builder.AppendLine($"Player Name: {_player.CurrentLocationId}");
-
-            if (!string.IsNullOrEmpty(_player.Backstory))
+            var options = new JsonSerializerOptions
             {
-                builder.AppendLine($"Background: {_player.Backstory}");
+                WriteIndented = true
+            };
+            
+            // If not detailed, we might want to simplify the player object
+            object playerToSerialize = _player;
+            
+            if (!_detailed)
+            {
+                // Create a simplified player object without detailed RPG elements, inventory, etc.
+                playerToSerialize = new
+                {
+                    name = _player.Name,
+                    currentLocationId = _player.CurrentLocationId,
+                    backstory = _player.Backstory,
+                    visualDescription = _player.VisualDescription
+                };
             }
             
-            // Add player visual description
-            if (_player.VisualDescription != null)
-            {
-                if (!string.IsNullOrEmpty(_player.VisualDescription.Gender))
-                {
-                    builder.AppendLine($"Gender: {_player.VisualDescription.Gender}");
-                }
-                
-                if (!string.IsNullOrEmpty(_player.VisualDescription.Body))
-                {
-                    builder.AppendLine($"Body: {_player.VisualDescription.Body}");
-                }
-                
-                if (!string.IsNullOrEmpty(_player.VisualDescription.VisibleClothing))
-                {
-                    builder.AppendLine($"Clothing: {_player.VisualDescription.VisibleClothing}");
-                }
-                
-                if (!string.IsNullOrEmpty(_player.VisualDescription.Condition))
-                {
-                    builder.AppendLine($"Physical Condition: {_player.VisualDescription.Condition}");
-                }
-            }
-            
-            // If this is a detailed player context, include RPG elements, inventory, and status effects
-            if (_detailed)
-            {
-                // Add player rpg elements
-                if (_player.RpgElements != null && _player.RpgElements.Count > 0)
-                {
-                    builder.AppendLine("RPG Elements:");
-                    foreach (var element in _player.RpgElements)
-                    {
-                        builder.AppendLine($"- {element.Key}: {element.Value}");
-                    }
-                }
-                
-                // Add player inventory
-                if (_player.Inventory != null && _player.Inventory.Count > 0)
-                {
-                    builder.AppendLine("Inventory:");
-                    foreach (var item in _player.Inventory)
-                    {
-                        builder.AppendLine($"- {item.Name} (x{item.Quantity}): {item.Description}");
-                    }
-                }
-                
-                // Add player status effects
-                if (_player.StatusEffects != null && _player.StatusEffects.Count > 0)
-                {
-                    builder.AppendLine($"Status Effects: {string.Join(", ", _player.StatusEffects)}");
-                }
-            }
-            
+            builder.AppendLine("playerContext: ");
+            builder.AppendLine(JsonSerializer.Serialize(playerToSerialize, options));
             builder.AppendLine();
         }
     }

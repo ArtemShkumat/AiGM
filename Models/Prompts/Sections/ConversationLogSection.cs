@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 
 namespace AiGMBackEnd.Models.Prompts.Sections
 {
@@ -15,25 +16,23 @@ namespace AiGMBackEnd.Models.Prompts.Sections
 
         public override void AppendTo(StringBuilder builder)
         {
-            builder.AppendLine("# Conversation History");
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
 
             // Just include the last N messages to keep the prompt size reasonable
             var recentMessages = _conversationLog.Messages
                 .Skip(Math.Max(0, _conversationLog.Messages.Count - _maxMessages))
                 .ToList();
 
-            if (recentMessages.Count > 0)
+            var conversationLogToSerialize = new ConversationLog
             {
-                foreach (var message in recentMessages)
-                {
-                    string sender = message.Sender == "user" ? "Player" : "DM";
-                    builder.AppendLine($"{sender}: {message.Content}");
-                }
-            }
-            else
-            {
-                builder.AppendLine("No previous conversation.");
-            }
+                Messages = recentMessages
+            };
+
+            builder.AppendLine("conversationLog: ");
+            builder.AppendLine(JsonSerializer.Serialize(conversationLogToSerialize, options));
             builder.AppendLine();
         }
     }

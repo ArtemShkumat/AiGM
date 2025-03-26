@@ -1,4 +1,6 @@
 using System.Text;
+using System.Text.Json;
+using System.Linq;
 
 namespace AiGMBackEnd.Models.Prompts.Sections
 {
@@ -15,61 +17,34 @@ namespace AiGMBackEnd.Models.Prompts.Sections
 
         public override void AppendTo(StringBuilder builder)
         {
-            builder.AppendLine("# World Context");
-            builder.AppendLine($"Current Time: {_world.GameTime}");
-            if (_world.WorldStateEffects != null && _world.WorldStateEffects.Count > 0)
+            var options = new JsonSerializerOptions
             {
-                builder.AppendLine("Current World State Effects:");
-                foreach (var effect in _world.WorldStateEffects)
-                {
-                    builder.AppendLine($"- {effect.Key}: {effect.Value}");
-                }
-            }
-            builder.AppendLine($"Days Since Start: {_world.DaysSinceStart}");
-                        
-            // Add world lore summaries
-            if (_world.Lore != null && _world.Lore.Count > 0)
-            {
-                builder.AppendLine("World Lore:");
-                foreach (var lore in _world.Lore)
-                {
-                    builder.AppendLine($"- {lore.Title}: {lore.Summary}");
-                }
-            }
+                WriteIndented = true
+            };
             
+            // Create a world context object for serialization
+            var worldContext = new
+            {
+                currentTime = _world.GameTime,
+                daysSinceStart = _world.DaysSinceStart,
+                worldStateEffects = _world.WorldStateEffects,
+                lore = _world.Lore
+            };
+            
+            // If entity lists should be included
             if (_includeEntityLists)
             {
-                // Add all NPC names and IDs
-                if (_world.Npcs != null && _world.Npcs.Count > 0)
-                {
-                    builder.AppendLine("Existing NPCs:");
-                    foreach (var npc in _world.Npcs)
-                    {
-                        builder.AppendLine($"- {npc.Name} (ID: {npc.Id})");
-                    }
-                }
-                
-                // Add all Location names and IDs
-                if (_world.Locations != null && _world.Locations.Count > 0)
-                {
-                    builder.AppendLine("Existing Locations:");
-                    foreach (var loc in _world.Locations)
-                    {
-                        builder.AppendLine($"- {loc.Name} (ID: {loc.Id})");
-                    }
-                }
-
-                // Add all existing quest names and IDs
-                if (_world.Quests != null && _world.Quests.Count > 0)
-                {
-                    builder.AppendLine("Existing Quests:");
-                    foreach (var q in _world.Quests)
-                    {
-                        builder.AppendLine($"- {q.Title} (ID: {q.Id})");
-                    }
-                }
+                // We'll serialize the full world object
+                builder.AppendLine("worldContext: ");
+                builder.AppendLine(JsonSerializer.Serialize(_world, options));
             }
-
+            else
+            {
+                // We'll serialize just the simplified context object
+                builder.AppendLine("worldContext: ");
+                builder.AppendLine(JsonSerializer.Serialize(worldContext, options));
+            }
+            
             builder.AppendLine();
         }
     }

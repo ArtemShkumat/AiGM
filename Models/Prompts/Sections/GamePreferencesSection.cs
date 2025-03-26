@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 
 namespace AiGMBackEnd.Models.Prompts.Sections
 {
@@ -13,10 +14,13 @@ namespace AiGMBackEnd.Models.Prompts.Sections
 
         public override void AppendTo(StringBuilder builder)
         {
-            builder.AppendLine("# Game Preferences");
-            builder.AppendLine($"Tone: {_gamePreferences.Tone}");
-            builder.AppendLine($"Complexity: {_gamePreferences.Complexity}");
-            builder.AppendLine($"Age Appropriateness: {_gamePreferences.AgeAppropriateness}");
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            
+            builder.AppendLine("gamePreferences: ");
+            builder.AppendLine(JsonSerializer.Serialize(_gamePreferences, options));
             builder.AppendLine();
         }
     }

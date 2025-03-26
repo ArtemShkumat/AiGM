@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 
 namespace AiGMBackEnd.Models.Prompts.Sections
 {
@@ -15,60 +16,36 @@ namespace AiGMBackEnd.Models.Prompts.Sections
 
         public override void AppendTo(StringBuilder builder)
         {
-            builder.AppendLine($"## NPC: {_npc.Name} (ID: {_npc.Id})");
-            
-            // Add NPC visual description
-            if (_npc.VisualDescription != null)
+            var options = new JsonSerializerOptions
             {
-                builder.AppendLine($"Appearance: {_npc.VisualDescription.Gender} {_npc.VisualDescription.Body} wearing {_npc.VisualDescription.VisibleClothing}, {_npc.VisualDescription.Condition}");
-            }
+                WriteIndented = true
+            };
             
-            // Add NPC personality
-            if (_npc.Personality != null)
+            // If not detailed, we might want to simplify the NPC object
+            object npcToSerialize = _npc;
+            
+            if (!_detailed)
             {
-                builder.AppendLine($"Personality: {_npc.Personality.Temperament}, {_npc.Personality.Quirks}");
-                if (!string.IsNullOrEmpty(_npc.Personality.Quirks))
+                // Create a simplified NPC with only basic information
+                var simplifiedPersonality = new
                 {
-                    builder.AppendLine($"Quirks: {_npc.Personality.Quirks}");
-                }
+                    temperament = _npc.Personality?.Temperament,
+                    quirks = _npc.Personality?.Quirks
+                };
                 
-                if (_detailed)
+                npcToSerialize = new
                 {
-                    if (!string.IsNullOrEmpty(_npc.Personality.Motivations))
-                    {
-                        builder.AppendLine($"Motivations: {_npc.Personality.Motivations}");
-                    }
-                    
-                    if (!string.IsNullOrEmpty(_npc.Personality.Fears))
-                    {
-                        builder.AppendLine($"Fears: {_npc.Personality.Fears}");
-                    }
-                    
-                    if (_npc.Personality.Secrets != null && _npc.Personality.Secrets.Count > 0)
-                    {
-                        builder.AppendLine($"Secrets: {string.Join(", ", _npc.Personality.Secrets)}");
-                    }
-                }
+                    id = _npc.Id,
+                    name = _npc.Name,
+                    visualDescription = _npc.VisualDescription,
+                    personality = simplifiedPersonality,
+                    backstory = _npc.Backstory,
+                    dispositionTowardsPlayer = _npc.DispositionTowardsPlayer
+                };
             }
             
-            // Add backstory
-            if (!string.IsNullOrEmpty(_npc.Backstory))
-            {
-                builder.AppendLine($"Backstory: {_npc.Backstory}");
-            }
-            
-            // Add disposition towards player
-            if (!string.IsNullOrEmpty(_npc.DispositionTowardsPlayer))
-            {
-                builder.AppendLine($"Disposition: {_npc.DispositionTowardsPlayer}");
-            }
-            
-            // Add relevant quest involvement
-            if (_npc.QuestInvolvement != null && _npc.QuestInvolvement.Count > 0)
-            {
-                builder.AppendLine($"Quest Involvement: {string.Join(", ", _npc.QuestInvolvement)}");
-            }
-            
+            builder.AppendLine("npc: ");
+            builder.AppendLine(JsonSerializer.Serialize(npcToSerialize, options));
             builder.AppendLine();
         }
     }

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 
 namespace AiGMBackEnd.Models.Prompts.Sections
 {
@@ -15,8 +16,19 @@ namespace AiGMBackEnd.Models.Prompts.Sections
 
         public override void AppendTo(StringBuilder builder)
         {
-            builder.AppendLine($"# {_title}");
-            builder.AppendLine(_userInput);
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            
+            var userInputObj = new
+            {
+                title = _title,
+                content = _userInput
+            };
+            
+            builder.AppendLine("userInput: ");
+            builder.AppendLine(JsonSerializer.Serialize(userInputObj, options));
             builder.AppendLine();
         }
     }
