@@ -9,6 +9,9 @@ namespace AiGMBackEnd.Models
         public Settlement()
         {
             Type = "Settlement";
+            Purpose = string.Empty;
+            History = string.Empty;
+            Size = string.Empty;
         }
 
         [JsonPropertyName("purpose")]
@@ -29,6 +32,16 @@ namespace AiGMBackEnd.Models
 
     public class District
     {
+        public District()
+        {
+            Name = string.Empty;
+            Description = string.Empty;
+            ConnectedDistricts = new List<string>();
+            PointsOfInterest = new List<PointOfInterest>();
+            Npcs = new List<string>();
+            Buildings = new List<string>();
+        }
+        
         [JsonPropertyName("name")]
         public string Name { get; set; }
 

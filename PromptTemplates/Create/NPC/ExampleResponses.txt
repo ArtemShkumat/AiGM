@@ -3,9 +3,6 @@ EXAMPLE
 User Prompt: Create an NPC using this info:
 
 {
-	"id": "npc_smithRuna",
-    "name": "Smith Runa",
-    "currentLocationId": "loc_ancientForge",
     "context":
 }
 

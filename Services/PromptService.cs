@@ -37,11 +37,11 @@ namespace AiGMBackEnd.Services
                 { PromptType.CreateQuest, new CreateQuestPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateNPC, new CreateNPCPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateLocation, new CreateLocationPromptBuilder(storageService, loggingService) },
-                { PromptType.CreatePlayerJson, new CreatePlayerJsonPromptBuilder(storageService, loggingService) },
+                { PromptType.CreatePlayerJson, new CreatePlayerJsonPromptBuilder(storageService, loggingService) }
             };
         }
 
-        public async Task<Prompt> BuildPromptAsync(PromptType promptType, string userId, string userInput, string npcId = null)
+        public async Task<Prompt> BuildPromptAsync(PromptType promptType, string userId, string userInput, string npcId = null, string locationType = null)
         {
             try
             {
@@ -52,6 +52,12 @@ namespace AiGMBackEnd.Services
                     if (promptType == PromptType.NPC && builder is NPCPromptBuilder npcBuilder)
                     {
                         return await npcBuilder.BuildPromptAsync(userId, userInput, npcId);
+                    }
+                    
+                    // For CreateLocation prompt types, use locationType parameter
+                    if (promptType == PromptType.CreateLocation && builder is CreateLocationPromptBuilder locationBuilder)
+                    {
+                        return await locationBuilder.BuildPromptAsync(userId, userInput, locationType);
                     }
                     
                     return await builder.BuildPromptAsync(userId, userInput);

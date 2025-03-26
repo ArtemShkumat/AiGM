@@ -32,14 +32,14 @@
   
   "age": 52,
   
-  "dispositionTowardsPlayer": "friendly and curious",
+  "dispositionTowardsPlayer": "Neutral",
   
   "knownEntities": {
     "npcsKnown": [
       {
         "name": "Elder Varric",
         "levelOfFamiliarity": "Known",
-        "disposition": "Respectful"
+        "disposition": "Neutral"
       },
       {
         "name": "Smith Runa",

@@ -1,6 +1,18 @@
-EXAMPLE 1: Player explores a location
+EXAMPLE 1: Player enters a location
 
-USER: I walk into the tavern and look around.
+USER: 
+ ...
+ "player": {
+        "type": "PLAYER",
+        "currentLocationId": "loc_mainStreet"
+      }
+  "connectedLocations":
+  [ ...
+    "loc_rustyAnchorTavern"
+    ...]
+  
+
+I walk into the tavern and look around.
 
 ASSISTANT:
 The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma of spiced mead. A crackling hearth dominates the far wall, casting dancing shadows across the weathered wooden tables. Several patrons huddle in small groups - sailors sharing tall tales, a pair of merchants haggling over a contract, and a hooded figure sitting alone in the corner, occasionally glancing toward the door.
@@ -9,25 +21,7 @@ Behind the bar, a burly man with an impressive red beard polishes a mug with a r
 
 <donotshow/>
 {
-    "newEntities": [
-      {
-        "type": "npc",
-        "id": "npc_barkeepGormund",
-        "name": "Gormund the Barkeep",
-        "currentLocationId": "loc_rustyAnchorTavern",
-        "knownToPlayer": false,
-        "knowsPlayer: false,
-        "dispositionTowardsPlayer": "neutral"
-      },
-      {
-        "type": "npc",
-        "id": "npc_mysteriousStranger",
-        "name": "Hooded Stranger",
-        "discoveredByPlayer": true,
-        "dispositionTowardsPlayer": "neutral",
-        "currentLocationId": "loc_rustyAnchorTavern"
-      }
-    ],
+    "newEntities": [],
     "partialUpdates": {
       "player": {
         "type": "PLAYER",

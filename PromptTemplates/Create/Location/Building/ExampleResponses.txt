@@ -3,13 +3,6 @@ EXAMPLE
 User Prompt: Create a location using this info:
 
 {
-	"id": "loc_old_sparrows_shop",
-    "type": "Building",
-    "name": "Old Sparrow's Shop",
-    "parentLocationId": "loc_village_square",
-    "connectedLocationIds": [
-      "loc_inn_backyard"
-    ],
     "context":
 }
 
@@ -19,7 +12,7 @@ Your Response:
   "core_identity": {
     "id": "loc_old_sparrows_shop",
     "name": "Old Sparrow's Shop",
-    "type": "Building",
+    "location_type": "Building",
     "exterior_description": "A weathered timber storefront with a creaky wooden sign bearing a faded sparrow emblem.",
     "purpose": "A general store providing staples and odd trinkets to local villagers.",
     "history": "Run by Old Sparrow for three decades, rumored to have once been a small tavern."

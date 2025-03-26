@@ -32,14 +32,14 @@
   
   "age": 45,
   
-  "dispositionTowardsPlayer": "professionally evaluative",
+  "dispositionTowardsPlayer": "Neutral",
   
   "knownEntities": {
     "npcsKnown": [
       {
         "name": "Elder Varric",
-        "levelOfFamiliarity": "Deep",
-        "disposition": "Respectful"
+        "levelOfFamiliarity": "Familiar",
+        "disposition": "Fond"
       },
       {
         "name": "Merchant Thorin",

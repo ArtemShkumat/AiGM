@@ -1,6 +1,7 @@
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
+using System;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -13,12 +14,20 @@ namespace AiGMBackEnd.Services.PromptBuilders
 
         public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
         {
+            // Default to generic location (without specific type)
+            return await BuildPromptAsync(userId, userInput, null);
+        }
+
+        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput, string locationType = null)
+        {
             try
             {
+                _loggingService.LogInfo($"Building location prompt for type: {locationType ?? "generic"}");
+                
                 // Load create location template files
-                var systemPrompt = await _storageService.GetCreateLocationTemplateAsync("SystemCreateLocation");
-                var responseInstructions = await _storageService.GetCreateLocationTemplateAsync("ResponseInstructions");
-                var exampleResponses = await _storageService.GetCreateLocationTemplateAsync("ExampleResponses");
+                var systemPrompt = await _storageService.GetCreateLocationTemplateAsync("System", locationType);
+                var outputStructure = await _storageService.GetCreateLocationTemplateAsync("OutputStructure", locationType);
+                var exampleResponses = await _storageService.GetCreateLocationTemplateAsync("Examples", locationType);
 
                 // Load world data for context
                 var world = await _storageService.GetWorldAsync(userId);
@@ -31,8 +40,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
                 
-                // Add response instructions and examples to system prompt
-                new TemplatePromptSection("Response Instructions", responseInstructions).AppendTo(systemPromptBuilder);
+                // Add output structure and examples to system prompt
+                new TemplatePromptSection("Output Structure", outputStructure).AppendTo(systemPromptBuilder);
                 new TemplatePromptSection("Example Responses", exampleResponses).AppendTo(systemPromptBuilder);
 
                 // Create the prompt content builder
@@ -48,16 +57,15 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Add player context
                 new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
-                // Add trigger instructions
-                new TriggerInstructionsSection("This location is being created based on a specific need in the game world.").AppendTo(promptContentBuilder);
-
                 // Add the user's input
-                new UserInputSection(userInput, "Location Creation Request").AppendTo(promptContentBuilder);
+                new UserInputSection(userInput, $"{(locationType ?? "Location")} Creation Request").AppendTo(promptContentBuilder);
 
+                var promptType = PromptType.CreateLocation;
+                
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
                     promptContent: promptContentBuilder.ToString(),
-                    promptType: PromptType.CreateLocation
+                    promptType: promptType
                 );
             }
             catch (Exception ex)

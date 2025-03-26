@@ -2,7 +2,7 @@
   "core_identity": {
     "id": "ID",
     "name": "NAME_OF_DELVE",
-    "type": "Delve",
+    "location_type": "Delve",
     "description": "ONE_OR_TWO_SENTENCES_SUMMARIZING_THE_DELVE",
     "purpose": "WHAT_WAS_THIS_PLACE_ORIGINALLY_USED_FOR_OR_WHY_IT_EXISTS"
   },

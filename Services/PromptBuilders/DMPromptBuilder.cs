@@ -1,6 +1,7 @@
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
+using System;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -18,8 +19,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 await _storageService.AddUserMessageAsync(userId, userInput);                
 
                 // Load DM template files
-                var systemPrompt = await _storageService.GetDmTemplateAsync("SystemDM");
-                var responseInstructions = await _storageService.GetDmTemplateAsync("ResponseInstructions");
+                var systemPrompt = await _storageService.GetDmTemplateAsync("System");
+                var outputStructure = await _storageService.GetDmTemplateAsync("OutputStructure");
                 var exampleResponses = await _storageService.GetDmTemplateAsync("ExampleResponses");
 
                 // Load player and world data
@@ -60,12 +61,6 @@ namespace AiGMBackEnd.Services.PromptBuilders
                         new NPCSection(npc).AppendTo(promptContentBuilder);
                     }
                 }
-                else
-                {
-                    promptContentBuilder.AppendLine("# NPCs Present");
-                    promptContentBuilder.AppendLine("There are no NPCs currently present at this location.");
-                    promptContentBuilder.AppendLine();
-                }
 
                 // Add all active quests and all their information
                 if (activeQuests != null && activeQuests.Count > 0)
@@ -75,12 +70,6 @@ namespace AiGMBackEnd.Services.PromptBuilders
                     {
                         new QuestSection(quest).AppendTo(promptContentBuilder);
                     }
-                }
-                else
-                {
-                    promptContentBuilder.AppendLine("# Active Quests");
-                    promptContentBuilder.AppendLine("The player currently has no active quests.");
-                    promptContentBuilder.AppendLine();
                 }
 
                 // Add conversation history
@@ -94,8 +83,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
                 
-                // Add response instructions
-                PromptSection.AppendSection(systemPromptBuilder, "Response Instructions", responseInstructions);
+                // Add output structure
+                PromptSection.AppendSection(systemPromptBuilder, "Output Structure", outputStructure);
 
                 // Add example responses
                 systemPromptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");

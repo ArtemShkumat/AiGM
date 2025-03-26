@@ -1,6 +1,7 @@
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
+using System;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -16,8 +17,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
             try
             {
                 // Load create NPC template files
-                var systemPrompt = await _storageService.GetCreateNpcTemplateAsync("SystemCreateNPC");
-                var responseInstructions = await _storageService.GetCreateNpcTemplateAsync("ResponseInstructions");
+                var systemPrompt = await _storageService.GetCreateNpcTemplateAsync("System");
+                var outputStructure = await _storageService.GetCreateNpcTemplateAsync("OutputStructure");
                 var exampleResponses = await _storageService.GetCreateNpcTemplateAsync("ExampleResponses");
 
                 // Load world data for context
@@ -31,8 +32,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
                 
-                // Add response instructions and examples to system prompt
-                new TemplatePromptSection("Response Instructions", responseInstructions).AppendTo(systemPromptBuilder);
+                // Add output structure and examples to system prompt
+                new TemplatePromptSection("Output Structure", outputStructure).AppendTo(systemPromptBuilder);
                 new TemplatePromptSection("Example Responses", exampleResponses).AppendTo(systemPromptBuilder);
 
                 // Create the prompt content builder
@@ -47,9 +48,6 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 
                 // Add player context
                 new PlayerContextSection(player).AppendTo(promptContentBuilder);
-
-                // Add trigger instructions
-                new TriggerInstructionsSection("This NPC is being created based on a specific need in the game world.").AppendTo(promptContentBuilder);
 
                 // Add the user's input
                 new UserInputSection(userInput, "NPC Creation Request").AppendTo(promptContentBuilder);

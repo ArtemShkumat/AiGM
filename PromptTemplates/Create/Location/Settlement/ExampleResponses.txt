@@ -3,14 +3,6 @@ EXAMPLE
 User Prompt: Create a location using this info:
 
 {
-	"id": "settlement_willowbrook",
-    "type": "Settlement",
-    "name": "Willowbrook Village",
-    "parentLocationId": "loc_greenfields",
-     "connectedLocationIds": [
-      "loc_oldmill",
-      "loc_whispering"
-    ],
     "context":
 }
 

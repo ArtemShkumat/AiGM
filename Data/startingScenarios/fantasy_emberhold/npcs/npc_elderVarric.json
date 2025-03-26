@@ -32,13 +32,13 @@
   
   "age": 78,
   
-  "dispositionTowardsPlayer": "cautiously hopeful",
+  "dispositionTowardsPlayer": "Neutral",
   
   "knownEntities": {
     "npcsKnown": [
       {
         "name": "Smith Runa",
-        "levelOfFamiliarity": "Deep",
+        "levelOfFamiliarity": "Familiar",
         "disposition": "Fond"
       },
       {

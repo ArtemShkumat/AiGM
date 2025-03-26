@@ -115,37 +115,32 @@ namespace AiGMBackEnd.Services
 
         public async Task<string> GetCreateQuestTemplateAsync(string templateName)
         {
-            return await GetTemplateAsync($"CreateQuest/{templateName}.txt");
-        }
-
-        public async Task<string> GetCreateQuestJsonTemplateAsync(string templateName)
-        {
-            return await GetTemplateAsync($"CreateQuestJson/{templateName}.txt");
+            return await GetTemplateAsync($"Create/Quest/{templateName}.txt");
         }
 
         public async Task<string> GetCreateNpcTemplateAsync(string templateName)
         {
-            return await GetTemplateAsync($"NPCCreationPrompt/{templateName}.txt");
+            return await GetTemplateAsync($"Create/NPC/{templateName}.txt");
         }
 
-        public async Task<string> GetCreateNpcJsonTemplateAsync(string templateName)
-        {
-            return await GetTemplateAsync($"NPCJsonCreationPrompt/{templateName}.txt");
-        }
 
-        public async Task<string> GetCreateLocationTemplateAsync(string templateName)
+        public async Task<string> GetCreateLocationTemplateAsync(string templateName, string locationType = null)
         {
-            return await GetTemplateAsync($"CreateLocationPrompt/{templateName}.txt");
-        }
-
-        public async Task<string> GetCreateLocationJsonTemplateAsync(string templateName)
-        {
-            return await GetTemplateAsync($"CreateLocationJson/{templateName}.txt");
+            if (string.IsNullOrEmpty(locationType))
+            {
+                // Default to general location template
+                return await GetTemplateAsync($"Create/Location/{templateName}.txt");
+            }
+            else
+            {
+                // Use location type specific template
+                return await GetTemplateAsync($"Create/Location/{locationType}/{templateName}.txt");
+            }
         }
 
         public async Task<string> GetCreatePlayerJsonTemplateAsync(string templateName)
         {
-            return await GetTemplateAsync($"CreatePlayerJson/{templateName}.txt");
+            return await GetTemplateAsync($"Create/Player/{templateName}.txt");
         }
 
         #endregion
@@ -162,6 +157,18 @@ namespace AiGMBackEnd.Services
                 }
 
                 var json = await File.ReadAllTextAsync(filePath);
+                
+                // Use custom options if we're deserializing a Location
+                if (typeof(T) == typeof(Location) || typeof(Location).IsAssignableFrom(typeof(T)))
+                {
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    
+                    return System.Text.Json.JsonSerializer.Deserialize<T>(json, options);
+                }
+                
                 return System.Text.Json.JsonSerializer.Deserialize<T>(json);
             }
             catch (Exception ex)

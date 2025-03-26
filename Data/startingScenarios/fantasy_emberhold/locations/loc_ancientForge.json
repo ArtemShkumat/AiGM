@@ -1,42 +1,75 @@
 {
-  "type": "LOCATION",
-  "id": "loc_ancientForge",
-  "name": "The Ancient Forge",
-  "locationType": "structure",
-  "description": "A massive forge built into the mountainside, with great bellows and anvils of ancient design. The central forge pit normally glows with supernatural heat, powered by a connection to the Ember Crystal, but now burns only with mundane fire. The walls are lined with weapons and armor of exceptional quality, and runes of elemental binding are carved into every surface.",
-  "knownToPlayer": true,
-  
-  "connectedLocations": [
+  "core_identity": {
+    "id": "loc_ancientForge",
+    "name": "The Ancient Forge",
+    "type": "Building",
+    "description": "A massive forge built into the mountainside, with great bellows and anvils of ancient design",
+    "purpose": "Legendary smithy where magic-infused weapons and armor are crafted",
+    "history": "Created by the founders of Emberhold to harness the Ember Crystal's power",
+    "size": "Large"
+  },
+  "navigation": {
+    "parentLocationId": "loc_emberhold",
+    "connectedLocationIds": [
+      "loc_emberhold"
+    ]
+  },
+  "demographics": {
+    "population": 1,
+    "factions": [
+      {
+        "name": "Master Smiths",
+        "description": "Elite crafters who know the secrets of elemental binding",
+        "npcs": [
+          {
+            "npcId": "npc_smithRuna"
+          }
+        ]
+      }
+    ]
+  },
+  "districts": [
     {
-      "id": "loc_emberhold",
-      "description": "The path leads south back to Emberhold village."
-    }
-  ],
-  
-  "parentLocation": null,
-  
-  "subLocations": [],
-  
-  "npcs": [
-    "npc_smithRuna"
-  ],
-  
-  "pointsOfInterest": [
-    {
-      "name": "The Master Anvil",
-      "description": "An enormous anvil of strange, dark metal at the center of the forge. Runes glow faintly along its sides when the hammer strikes it."
+      "name": "Main Forge",
+      "description": "The central working area with the Master Anvil and the empty Crystal Mounting",
+      "navigation": {
+        "connected_districts": [
+          "Storage Area"
+        ]
+      },
+      "notable_features": [
+        {
+          "name": "The Master Anvil",
+          "description": "An enormous anvil of strange, dark metal at the center of the forge. Runes glow faintly along its sides when the hammer strikes it."
+        },
+        {
+          "name": "Crystal Mounting",
+          "description": "A specially designed holder where the Ember Crystal would normally be placed to power the forge. It's now empty, with only a few glowing embers remaining."
+        }
+      ],
+      "npcs": [
+        {
+          "npcId": "npc_smithRuna"
+        }
+      ],
+      "buildings": []
     },
     {
-      "name": "Element Binding Circle",
-      "description": "A circular area marked with complex runes where items are infused with elemental properties."
-    },
-    {
-      "name": "Crystal Mounting",
-      "description": "A specially designed holder where the Ember Crystal would normally be placed to power the forge. It's now empty, with only a few glowing embers remaining."
+      "name": "Binding Chamber",
+      "description": "A dedicated area for infusing items with elemental magic",
+      "navigation": {
+        "connected_districts": [
+          "Main Forge"
+        ]
+      },
+      "notable_features": [
+        {
+          "name": "Element Binding Circle",
+          "description": "A circular area marked with complex runes where items are infused with elemental properties."
+        }
+      ],
+      "npcs": [],
+      "buildings": []
     }
-  ],
-  
-  "questIds": ["quest_emberCrystal"],
-  
-  "items": []
+  ]
 } 

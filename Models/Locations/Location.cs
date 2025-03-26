@@ -3,8 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace AiGMBackEnd.Models.Locations
 {
+    [JsonConverter(typeof(LocationConverter))]
     public abstract class Location
     {
+        // Add parameterless constructor for deserialization
+        public Location() { }
+
         [JsonPropertyName("type")]
         public string Type { get; set; }
 
@@ -29,5 +33,4 @@ namespace AiGMBackEnd.Models.Locations
         [JsonPropertyName("npcs")]
         public List<string> Npcs { get; set; } = new List<string>();
     }
-
 }

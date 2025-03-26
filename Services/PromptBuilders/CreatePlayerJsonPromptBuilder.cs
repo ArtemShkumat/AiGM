@@ -16,7 +16,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
             try
             {
                 // Load create player JSON template files
-                var systemPrompt = await _storageService.GetCreatePlayerJsonTemplateAsync("SystemCreatePlayerJson");
+                var systemPrompt = await _storageService.GetCreatePlayerJsonTemplateAsync("System");
                 var exampleResponses = await _storageService.GetCreatePlayerJsonTemplateAsync("ExampleResponses");
 
                 // Load world data for context

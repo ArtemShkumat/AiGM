@@ -9,6 +9,7 @@ namespace AiGMBackEnd.Models
         public Delve()
         {
             Type = "Delve";
+            Purpose = string.Empty;
         }
 
         [JsonPropertyName("purpose")]
@@ -20,6 +21,18 @@ namespace AiGMBackEnd.Models
 
     public class DelveRoom
     {
+        public DelveRoom()
+        {
+            Role = string.Empty;
+            Name = string.Empty;
+            Description = string.Empty;
+            HazardOrGuardian = string.Empty;
+            PuzzleOrRoleplayChallenge = string.Empty;
+            TrickOrSetback = string.Empty;
+            ClimaxConflict = string.Empty;
+            RewardOrRevelation = string.Empty;
+        }
+        
         [JsonPropertyName("room_number")]
         public int RoomNumber { get; set; }
 
@@ -53,6 +66,14 @@ namespace AiGMBackEnd.Models
 
     public class DelveValuable
     {
+        public DelveValuable()
+        {
+            Name = string.Empty;
+            WhyItsHere = string.Empty;
+            Description = string.Empty;
+            WhereExactly = string.Empty;
+        }
+        
         [JsonPropertyName("name")]
         public string Name { get; set; }
 

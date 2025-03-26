@@ -14,7 +14,7 @@ namespace AiGMBackEnd.Models.Prompts.Sections
         
         public override void AppendTo(StringBuilder builder)
         {
-            builder.AppendLine("# World Context");
+            builder.AppendLine("# Lore");
             
             // Add world lore summary if available
             if (_world.Lore != null && _world.Lore.Count > 0)

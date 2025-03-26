@@ -1,6 +1,7 @@
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Services;
 using System.Text;
+using System;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -13,6 +14,12 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
             _storageService = storageService;
             _loggingService = loggingService;
+        }
+        
+        public virtual Task<Prompt> BuildPromptAsync(string userId, string userInput, string typeParameter = null)
+        {
+            // Default implementation calls the method without typeParameter
+            return BuildPromptAsync(userId, userInput);
         }
         
         public abstract Task<Prompt> BuildPromptAsync(string userId, string userInput);

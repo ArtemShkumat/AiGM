@@ -4,6 +4,13 @@ namespace AiGMBackEnd.Models
 {
     public class Valuable
     {
+        public Valuable()
+        {
+            Name = string.Empty;
+            WhyItsHere = string.Empty;
+            Description = string.Empty;
+        }
+        
         [JsonPropertyName("name")]
         public string Name { get; set; }
 

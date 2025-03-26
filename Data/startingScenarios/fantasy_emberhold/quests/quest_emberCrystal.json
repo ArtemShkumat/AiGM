@@ -1,33 +1,83 @@
 {
-  "type": "QUEST",
   "id": "quest_emberCrystal",
   "title": "The Missing Ember Crystal",
-  "currentProgress": "discovering",
-  "questDescription": "The sacred Ember Crystal, which has protected Emberhold from harsh winters for generations, has been stolen. Without it, the village faces a deadly winter and the Ancient Forge cannot produce the masterwork items that are the village's livelihood. You must uncover who took the crystal and return it to Emberhold before the first snowfall.",
-  
-  "achievementConditions": [
-    "Gather information about the crystal's disappearance from village residents",
-    "Discover clues about who might have taken the crystal",
-    "Track down the thief",
-    "Recover the Ember Crystal",
-    "Return the crystal to its rightful place in Emberhold"
+  "coreObjective": "Recover the stolen Ember Crystal and return it to Emberhold village",
+  "overview": "The sacred Ember Crystal, which has protected Emberhold from harsh winters for generations, has been stolen. Without it, the village faces a deadly winter and the Ancient Forge cannot produce the masterwork items that are the village's livelihood.",
+  "npcs": [
+    {
+      "id": "npc_elderVarric",
+      "name": "Elder Varric",
+      "role": "Quest Giver",
+      "motivation": "To protect Emberhold and recover the Ember Crystal before winter",
+      "fears": "That the village will not survive without the crystal's warmth",
+      "secrets": "He knows more about who might have taken the crystal than he initially reveals"
+    },
+    {
+      "id": "npc_smithRuna",
+      "name": "Smith Runa",
+      "role": "Crucial Advisor",
+      "motivation": "To restore the forge's power and continue Emberhold's smithing traditions",
+      "fears": "That her apprentices will never experience the full power of the Ancient Forge",
+      "secrets": "She suspects the crystal was taken by a rival smith from another village"
+    },
+    {
+      "id": "npc_merchantThorin",
+      "name": "Merchant Thorin",
+      "role": "Information Source",
+      "motivation": "To maintain profitable trade relations with Emberhold",
+      "fears": "Economic downturn if the Ember Crystal isn't recovered",
+      "secrets": "He has heard rumors about who might have the crystal from his trade contacts"
+    }
   ],
-  
-  "failConditions": [
-    "The crystal is destroyed",
-    "Winter arrives before the crystal is returned",
-    "The village is abandoned due to the coming cold"
+  "rumorsAndLeads": [
+    {
+      "rumor": "A cloaked figure was seen heading east from the village on the night the crystal disappeared",
+      "sourceNPC": "Elder Varric",
+      "sourceLocation": "loc_emberhold"
+    },
+    {
+      "rumor": "Unusual trading activity has been reported from the rival settlement of Irondale",
+      "sourceNPC": "Merchant Thorin",
+      "sourceLocation": "loc_emberhold"
+    }
   ],
-  
-  "involvedLocations": [
-    "loc_emberhold",
-    "loc_ancientForge",
-    "loc_crystalCaverns"
+  "locationsInvolved": [
+    {"id": "loc_emberhold", "name": "Emberhold Village"},
+    {"id": "loc_ancientForge", "name": "The Ancient Forge"},
+    {"id": "loc_crystalCaverns", "name": "Crystal Caverns"}
   ],
-  
-  "involvedNpcs": [
-    "npc_elderVarric",
-    "npc_smithRuna",
-    "npc_merchantThorin"
+  "opposingForces": [
+    {
+      "name": "Rival Smith",
+      "role": "Primary",
+      "motivation": "To obtain the crystal's power for their own forge",
+      "description": "A master smith from a rival settlement who envies Emberhold's crafting prowess"
+    }
+  ],
+  "challenges": [
+    "Gathering information from reluctant villagers who have their own theories about the theft",
+    "Navigating the dangerous parts of the Crystal Caverns to find clues",
+    "Confronting the thief who may have elemental protections"
+  ],
+  "emotionalBeats": [
+    "Elder Varric revealing his personal connection to the crystal and its importance",
+    "Smith Runa demonstrating how the forge's reduced power affects the village's livelihood",
+    "The revelation of why the thief wanted the crystal and whether their motivations were truly malicious"
+  ],
+  "rewards": {
+    "experience": "Recognition as a hero of Emberhold",
+    "material": [
+      "A masterwork weapon crafted by Smith Runa",
+      "Discounts at Thorin's trading post"
+    ],
+    "narrative": [
+      "Emberhold's continued survival through the winter",
+      "Knowledge of elemental binding techniques"
+    ]
+  },
+  "followupHooks": [
+    "Reports of unusual crystal growths in deeper parts of the caverns",
+    "Tensions with the rival settlement that could escalate",
+    "Elder Varric's offer to teach the player about elemental binding"
   ]
 } 

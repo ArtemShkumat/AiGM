@@ -1,7 +1,7 @@
 {
   "core_identity": {
     "name": "NAME_OF_BUILDING",
-    "type": "Building",
+    "location_type": "Building",
     "exterior_description": "DESCRIBE_THE_OUTSIDE_APPEARANCE",
     "purpose": "ORIGINAL_OR_CURRENT_FUNCTION_OF_THE_BUILDING",
     "history": "OPTIONAL_SHORT_HISTORY_OR_BACKSTORY"

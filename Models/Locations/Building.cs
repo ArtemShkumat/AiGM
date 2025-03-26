@@ -9,6 +9,9 @@ namespace AiGMBackEnd.Models
         public Building()
         {
             Type = "Building";
+            Purpose = string.Empty;
+            History = string.Empty;
+            ExteriorDescription = string.Empty;
         }
 
         [JsonPropertyName("exterior_description")]
@@ -26,6 +29,12 @@ namespace AiGMBackEnd.Models
 
     public class Floor
     {
+        public Floor()
+        {
+            FloorName = string.Empty;
+            Description = string.Empty;
+        }
+        
         [JsonPropertyName("floor_name")]
         public string FloorName { get; set; }
 
@@ -38,6 +47,14 @@ namespace AiGMBackEnd.Models
 
     public class Room
     {
+        public Room()
+        {
+            Name = string.Empty;
+            Type = string.Empty;
+            Description = string.Empty;
+            Navigation = new RoomNavigation();
+        }
+        
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
@@ -62,6 +79,11 @@ namespace AiGMBackEnd.Models
 
     public class RoomNavigation
     {
+        public RoomNavigation()
+        {
+            ConnectedRooms = new List<string>();
+        }
+        
         [JsonPropertyName("connected_rooms")]
         public List<string> ConnectedRooms { get; set; } = new List<string>();
     }

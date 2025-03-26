@@ -1,6 +1,7 @@
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
+using System;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -26,8 +27,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                     : ParseNpcId(userInput);
                 
                 // Load NPC template files
-                var systemPrompt = await _storageService.GetNpcTemplateAsync("SystemNPC");
-                var responseInstructions = await _storageService.GetNpcTemplateAsync("ResponseInstructions");
+                var systemPrompt = await _storageService.GetNpcTemplateAsync("System");
+                var outputStructure = await _storageService.GetNpcTemplateAsync("OutputStructure");
                 var exampleResponses = await _storageService.GetNpcTemplateAsync("ExampleResponses");
 
                 // Load player, world, and specified NPC data
@@ -56,8 +57,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
                 
-                // Add response instructions to system prompt
-                PromptSection.AppendSection(systemPromptBuilder, "Response Instructions", responseInstructions);
+                // Add output structure to system prompt
+                PromptSection.AppendSection(systemPromptBuilder, "Output Structure", outputStructure);
 
                 // Add example responses to system prompt
                 PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);

@@ -1,6 +1,7 @@
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
+using System;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -16,8 +17,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
             try
             {
                 // Load create quest template files
-                var systemPrompt = await _storageService.GetCreateQuestTemplateAsync("SystemCreateQuest");
-                var responseInstructions = await _storageService.GetCreateQuestTemplateAsync("ResponseInstructions");
+                var systemPrompt = await _storageService.GetCreateQuestTemplateAsync("System");
+                var outputStructure = await _storageService.GetCreateQuestTemplateAsync("OutputStructure");
                 var exampleResponses = await _storageService.GetCreateQuestTemplateAsync("ExampleResponses");
 
                 // Load player and world data for context
@@ -31,8 +32,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
                 
-                // Add response instructions and examples to system prompt
-                PromptSection.AppendSection(systemPromptBuilder, "Response Instructions", responseInstructions);
+                // Add output structure and examples to system prompt
+                PromptSection.AppendSection(systemPromptBuilder, "Output Structure", outputStructure);
                 PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);
 
                 // Create the prompt content builder
@@ -64,9 +65,6 @@ namespace AiGMBackEnd.Services.PromptBuilders
                     promptContentBuilder.AppendLine($"Background: {player.Backstory}");
                 }
                 promptContentBuilder.AppendLine();
-
-                // Add trigger instructions
-                new TriggerInstructionsSection("This quest is being created based on a specific trigger in the game world.").AppendTo(promptContentBuilder);
 
                 // Add the user's input
                 new UserInputSection(userInput, "Quest Request").AppendTo(promptContentBuilder);

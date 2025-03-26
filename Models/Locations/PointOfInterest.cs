@@ -4,6 +4,13 @@ namespace AiGMBackEnd.Models
 {
     public class PointOfInterest
     {
+        public PointOfInterest()
+        {
+            Name = string.Empty;
+            Description = string.Empty;
+            HintingAt = string.Empty;
+        }
+        
         [JsonPropertyName("name")]
         public string Name { get; set; }
         
