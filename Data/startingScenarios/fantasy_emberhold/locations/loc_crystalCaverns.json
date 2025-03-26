@@ -1,75 +1,71 @@
 {
-  "core_identity": {
-    "id": "loc_crystalCaverns",
-    "name": "Crystal Caverns",
-    "type": "Delve",
-    "description": "A network of caves in the mountainside east of Emberhold, illuminated by naturally phosphorescent crystals",
-    "purpose": "Source of rare elemental crystals including the Ember Crystal",
-    "history": "Discovered by the founders of Emberhold, who found the first Ember Crystal here",
-    "size": "Medium"
+  "type": "Delve",
+  "locationType": "Cave System",
+  "id": "loc_crystalCaverns",
+  "name": "Crystal Caverns",
+  "description": "A network of caves in the mountainside east of Emberhold, illuminated by naturally phosphorescent crystals",
+  "knownToPlayer": true,
+  "connectedLocations": [],
+  "parentLocation": "loc_emberhold",
+  "npcs": [],
+  "purpose": "Source of rare elemental crystals including the Ember Crystal",
+  "entrance_room": {
+    "room_number": 1,
+    "role": "Entrance",
+    "name": "Entrance Cavern",
+    "description": "The first large chamber when entering from the path to Emberhold. The air is cool and damp, and faint blue light emanates from small crystals embedded in the walls.",
+    "hazard_or_guardian": "Some loose rocks near the entrance can fall if disturbed",
+    "valuables": []
   },
-  "navigation": {
-    "parentLocationId": "loc_emberhold",
-    "connectedLocationIds": [
-      "loc_emberhold"
+  "puzzle_room": {
+    "room_number": 2,
+    "role": "Puzzle",
+    "name": "Crystal Maze",
+    "description": "A confusing network of crystal formations creating a natural maze. The reflective surfaces make navigation disorienting.",
+    "puzzle_or_roleplay_challenge": "Finding the right path through the sharp crystal formations requires careful navigation. Crystal configurations change subtly when exposed to different light sources.",
+    "valuables": []
+  },
+  "setback_room": {
+    "room_number": 3,
+    "role": "Setback",
+    "name": "Crystal Growth Chamber",
+    "description": "A large cavern where most of the crystals form naturally. The chamber glows with the light of countless crystals in various colors.",
+    "trick_or_setback": "Crystal formations can occasionally crack and fall from the ceiling, blocking the path forward temporarily.",
+    "valuables": [
+      {
+        "name": "Minor Elemental Crystal",
+        "why_its_here": "Naturally growing in this mineral-rich chamber",
+        "description": "A small crystal that glows faintly with elemental energy",
+        "quantity": 4,
+        "value": 25,
+        "where_exactly": "Growing in cracks and crevices throughout the chamber"
+      }
     ]
   },
-  "demographics": {
-    "population": 0,
-    "factions": []
+  "climax_room": {
+    "room_number": 4,
+    "role": "Climax",
+    "name": "Deep Caverns",
+    "description": "The deepest accessible part of the cave system. The air is noticeably warmer here, and the rock walls have a reddish tint.",
+    "climax_conflict": "The thief who stole the Ember Crystal may be encountered here if they fled to retrieve more crystals.",
+    "hazard_or_guardian": "Heat vents occasionally release bursts of hot air that can cause burns. A fire elemental guardian may be awakened by the presence of intruders.",
+    "valuables": []
   },
-  "districts": [
-    {
-      "name": "Entrance Cavern",
-      "description": "The first large chamber when entering from the path to Emberhold",
-      "navigation": {
-        "connected_districts": [
-          "Crystal Growth Chamber",
-          "Deep Caverns"
-        ]
-      },
-      "notable_features": [],
-      "npcs": [],
-      "buildings": []
-    },
-    {
-      "name": "Crystal Growth Chamber",
-      "description": "A large cavern where most of the crystals form naturally",
-      "navigation": {
-        "connected_districts": [
-          "Entrance Cavern",
-          "Deep Caverns"
-        ]
-      },
-      "notable_features": [
-        {
-          "name": "Crystal Formations",
-          "description": "Veins of various minerals run through the walls, and crystal formations of different colors and sizes grow from the ceiling and floor."
-        }
-      ],
-      "npcs": [],
-      "buildings": []
-    },
-    {
-      "name": "Deep Caverns",
-      "description": "The deepest accessible part of the cave system",
-      "navigation": {
-        "connected_districts": [
-          "Crystal Growth Chamber"
-        ]
-      },
-      "notable_features": [
-        {
-          "name": "Ancient Altar",
-          "description": "A stone platform at the deepest part of the accessible caverns, seemingly crafted for ritual purposes. Runes similar to those at the forge are carved into its surface."
-        },
-        {
-          "name": "Ember Geode",
-          "description": "A cracked formation where the Ember Crystal was originally discovered generations ago. Faint traces of heat still emanate from the opening."
-        }
-      ],
-      "npcs": [],
-      "buildings": []
-    }
-  ]
+  "reward_room": {
+    "room_number": 5,
+    "role": "Reward",
+    "name": "Ancient Altar Chamber",
+    "description": "A hidden chamber beyond the Deep Caverns, containing an ancient stone altar. The room radiates with heat and magical energy.",
+    "reward_or_revelation": "Evidence of who took the Ember Crystal can be found near the Ancient Altar. A fragment of the original Ember Crystal remains here.",
+    "valuables": [
+      {
+        "name": "Ember Crystal Fragment",
+        "why_its_here": "Broken piece from the stolen Ember Crystal",
+        "description": "A shard of red-orange crystal that feels warm to the touch",
+        "quantity": 1,
+        "value": 100,
+        "where_exactly": "Near the Ancient Altar"
+      }
+    ]
+  }
 } 

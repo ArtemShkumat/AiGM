@@ -1,9 +1,12 @@
 EXAMPLE
 
-User Prompt: Create an NPC using this info:
+User Prompt:
 
 {
-    "context":
+  "name": "Smith Runa",
+  "id": "npc_smithRuna",
+  "currentLocationId": "loc_ancientForge",
+  "context": "The player approached the forge for the first time. He is looking for a blacksmith. He hasn't found one yet, but is about to."
 }
 
 Your Response:
@@ -13,7 +16,7 @@ Your Response:
   "id": "npc_smithRuna",
   "name": "Smith Runa",
   "currentLocationId": "loc_ancientForge",
-  "knownToPlayer": true,
+  "knownToPlayer": false,
   "knowsPlayer": false,
   "visibleToPlayer": false,
   
@@ -42,7 +45,7 @@ Your Response:
   
   "age": 45,
   
-  "dispositionTowardsPlayer": "professionally evaluative",
+  "dispositionTowardsPlayer": "neutral",
   
   "knownEntities": {
     "npcsKnown": [

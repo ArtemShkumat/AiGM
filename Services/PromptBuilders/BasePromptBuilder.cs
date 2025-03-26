@@ -16,7 +16,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
             _loggingService = loggingService;
         }
         
-        public virtual Task<Prompt> BuildPromptAsync(string userId, string userInput, string typeParameter = null)
+        public virtual Task<Prompt> BuildPromptAsync(string userId, string userInput, string npc = null, string typeParameter = null)
         {
             // Default implementation calls the method without typeParameter
             return BuildPromptAsync(userId, userInput);

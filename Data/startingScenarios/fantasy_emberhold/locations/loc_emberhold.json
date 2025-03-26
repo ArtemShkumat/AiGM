@@ -1,88 +1,63 @@
 {
-  "core_identity": {
-    "id": "loc_emberhold",
-    "name": "Emberhold Village",
-    "type": "Settlement",
-    "description": "A highland village nestled in a mountain valley, known for its master blacksmiths and the Ancient Forge",
-    "purpose": "Crafting settlement centered around the Ancient Forge and the Ember Crystal",
-    "history": "Founded by master smiths who discovered the Ember Crystal's unique properties",
-    "size": "Village"
-  },
-  "navigation": {
-    "parentLocationId": null,
-    "connectedLocationIds": [
-      "loc_ancientForge", 
-      "loc_crystalCaverns"
-    ]
-  },
-  "demographics": {
-    "population": 250,
-    "factions": [
-      {
-        "name": "Village Council",
-        "description": "The governing body of Emberhold led by Elder Varric",
-        "npcs": [
-          {
-            "npcId": "npc_elderVarric"
-          }
-        ]
-      },
-      {
-        "name": "Merchants Guild",
-        "description": "Traders who bring goods to and from Emberhold",
-        "npcs": [
-          {
-            "npcId": "npc_merchantThorin"
-          }
-        ]
-      }
-    ]
-  },
+  "type": "Settlement",
+  "locationType": "Village",
+  "id": "loc_emberhold",
+  "name": "Emberhold Village",
+  "description": "A highland village nestled in a mountain valley, known for its master blacksmiths and the Ancient Forge",
+  "knownToPlayer": true,
+  "connectedLocations": [
+    "loc_ancientForge", 
+    "loc_crystalCaverns"
+  ],
+  "parentLocation": null,
+  "npcs": [
+    "npc_elderVarric",
+    "npc_merchantThorin"
+  ],
+  "purpose": "Crafting settlement centered around the Ancient Forge and the Ember Crystal",
+  "history": "Founded by master smiths who discovered the Ember Crystal's unique properties",
+  "size": "Village",
+  "population": 250,
   "districts": [
     {
       "name": "Village Square",
       "description": "The central area of Emberhold, featuring the Empty Hearth where the Ember Crystal normally resides",
-      "navigation": {
-        "connected_districts": [
-          "Residential Quarter", 
-          "Market District"
-        ]
-      },
-      "notable_features": [
+      "connected_districts": [
+        "Residential Quarter", 
+        "Market District"
+      ],
+      "points_of_interest": [
         {
           "name": "The Empty Hearth",
-          "description": "A large circular stone platform in the center of the village square, designed to hold the Ember Crystal. The platform now sits empty, with only a few embers still glowing faintly."
+          "description": "A large circular stone platform in the center of the village square, designed to hold the Ember Crystal. The platform now sits empty, with only a few embers still glowing faintly.",
+          "hinting_at": "The missing Ember Crystal"
         },
         {
           "name": "Elder's Hut",
-          "description": "A modest stone building with intricate carvings, home to Elder Varric who leads the village council."
+          "description": "A modest stone building with intricate carvings, home to Elder Varric who leads the village council.",
+          "hinting_at": "Village leadership"
         }
       ],
       "npcs": [
-        {
-          "npcId": "npc_elderVarric"
-        }
+        "npc_elderVarric"
       ],
       "buildings": []
     },
     {
       "name": "Market District",
       "description": "The commercial hub of Emberhold where goods are traded",
-      "navigation": {
-        "connected_districts": [
-          "Village Square"
-        ]
-      },
-      "notable_features": [
+      "connected_districts": [
+        "Village Square"
+      ],
+      "points_of_interest": [
         {
           "name": "Thorin's Supplies",
-          "description": "A well-stocked trading post run by Merchant Thorin, offering goods from surrounding regions as well as local crafts."
+          "description": "A well-stocked trading post run by Merchant Thorin, offering goods from surrounding regions as well as local crafts.",
+          "hinting_at": "Trade and supply routes"
         }
       ],
       "npcs": [
-        {
-          "npcId": "npc_merchantThorin"
-        }
+        "npc_merchantThorin"
       ],
       "buildings": []
     }

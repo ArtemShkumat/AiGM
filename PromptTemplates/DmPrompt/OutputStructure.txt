@@ -9,7 +9,7 @@ If it's not here, then just assume you don't need to bother updating it, ever.
       "worldStateEffects": {object }, //various things affecting the entire world - current weather, pollution, etc, whatever is relevant. Feel free to add/update the effects, but only when they change or if they're significant.
     },
     "player": {
-      "currentLocationId": "string - ID of the location where the player is currently", //Highly important - update when the player leaves one location and enters another.
+      "currentLocationId": "string - ID of the location where the player is currently", //Highly important - update when the player leaves one location and enters another. When the player moves around inside the location, going from room to room - don't update, the exact location of the player will be understood from context.
       "visualDescription": {
         "body": "string - Physical build and appearance", //rarely update
         "condition": "string - Current physical state", //update when something happens to visual condition of the player. Say, if they get caught in the rain, or burned.

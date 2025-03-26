@@ -160,5 +160,7 @@ namespace AiGMBackEnd.Services
         public PromptType PromptType { get; set; } = PromptType.DM;
         public string NpcId { get; set; } = string.Empty;
         public TaskCompletionSource<string> CompletionSource { get; set; } = null!;
+        public string Context { get; set; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
     }
 }

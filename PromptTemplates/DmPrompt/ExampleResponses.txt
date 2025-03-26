@@ -22,72 +22,48 @@ Behind the bar, a burly man with an impressive red beard polishes a mug with a r
 <donotshow/>
 {
     "newEntities": [],
-    "partialUpdates": {
+    "partialUpdates": [{
       "player": {
         "type": "PLAYER",
         "currentLocationId": "loc_rustyAnchorTavern"
       }
-    }  
+    }]
 }
 
 
-EXAMPLE 2: Player interacts with a character
+EXAMPLE 2: Player looks around, seeking new NPCs in a busy street.
 
-USER: I approach the barkeep and ask if he's heard any interesting rumors lately.
+USER: I look around to see if there's anyone else out and about at this time of the day.
 
 ASSISTANT:
-You make your way to the bar counter, navigating between the crowded tables. The red-bearded barkeep—Gormund, as one patron calls him—sets down the mug he was polishing and leans forward, resting his massive forearms on the worn wooden surface.
-
-"Rumors, eh?" He strokes his beard thoughtfully. "Well, there's talk of strange lights in the marshlands east of town. Old Willem's sheep have been going missing too—three this week alone. And if you're looking for work..." He lowers his voice, glancing toward the hooded figure in the corner. "That one's been asking about hired swords for some venture. Wouldn't say what exactly, but the coin purse looked heavy."
+"As you look around the village, you notice a few other villagers going about their business. A pair of children play a simple game of tag near the well, their laughter a momentary spark of joy in the somber atmosphere. An older woman sweeps the stoop of her home, her brow furrowed with worry as she glances toward the mountains. You can also see a few weathered-looking miners trudging back from work. They carry heavy sacks slung over their shoulders and their faces are grim."
 
 <donotshow/>
 {
-    "partialUpdates": {
-      "npc_barkeepGormund": {
-        "type": "NPC",
-        "dispositionTowardsPlayer": "neutral"
-      }
-    }
+    "newEntities": [],
+    "partialUpdates": []
   
 }
 
+EXAMPLE 3: Player engages an NPC not present in existing NPC list.
 
-EXAMPLE 3: Player discovers a quest
-
-USER: I'll go talk to the hooded stranger about the job.
+USER: I approach the old woman I see on the street and introduce myself.
 
 ASSISTANT:
-You weave through the tavern crowd toward the corner table. The hooded figure watches your approach, one hand remaining beneath the table—likely on a weapon. As you draw near, you can make out the features of a woman with a weather-worn face and a thin scar running along her jawline.
-
-"I'm told you're looking for hired help," you say.
-
-She gestures for you to sit. "Perceptive barkeep," she mutters. "Yes, I need someone capable. I'm tracking a shipment of stolen artifacts bound for the Shadow Market in Ravenport. I need to recover one specific item—a silver amulet with a blue stone. Help me get it, and a quarter of my commission is yours." She leans forward. "Interested?"
+"The older woman looks up at you, her gaze softening slightly. "Elara," she says, her voice raspy but kind. "And you are... new to Emberhold, aren't you? I don't recognize your face." She pauses, then adds with a sigh, "A good day it might have been, before..." She trails off, gesturing vaguely towards the Empty Hearth with her broom. The sounds of the village - the children's laughter, the distant clang of the forge - seem muted, overshadowed by the unspoken dread hanging in the air."
 
 <donotshow/>
 {
     "newEntities": [
-      {
-        "type": "quest",
-        "id": "quest_stolenAmulet",
-        "title": "The Blue Amulet",
-        "currentProgress": "discovered",
-        "questDescription": "Recover a silver amulet with a blue stone from smugglers taking it to the Shadow Market in Ravenport."
-      },
-      {
-        "type": "location",
-        "id": "loc_shadowMarket",
-        "name": "Shadow Market",
-        "notes": "Black market in Ravenport where stolen goods are traded."
-      }
-    ],
-    "partialUpdates": {
-      "npc_vessa": {
-        "type": "NPC",
-        "name": "Vessa the Relic Hunter",
-        "notes": "Scarred woman hunting stolen artifacts. Hired the player to retrieve a blue amulet.",
-        "dispositionTowardsPlayer": "cautious"
-      }
+    {
+    "type": "NPC",
+    "name" "Elara",
+    "id": "npc_elara",
+    "currentLocation": "loc_emberhold",
+    "context": "The player approached a random old lady on the street of village Emberhold. So far he learned that her name is Elara, she appears old, with raspy but kind voice. So far she said she introduced herself and asked if the player is new to Emberhold..."    
     }
+    ],
+    "partialUpdates": []
   
 }
 

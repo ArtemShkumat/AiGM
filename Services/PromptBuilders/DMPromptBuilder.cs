@@ -51,7 +51,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Add location context using the location section
                 promptContentBuilder.AppendLine("currentLocation: ");
                 new LocationContextSection(location).AppendTo(promptContentBuilder);
-                if (string.IsNullOrEmpty(location.ParentLocation))
+                if (!string.IsNullOrEmpty(location.ParentLocation))
                 {
                     promptContentBuilder.AppendLine("parentLocation: ");
                     new LocationContextSection(parentLocation).AppendTo(promptContentBuilder);
@@ -91,7 +91,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 new ConversationLogSection(conversationLog).AppendTo(promptContentBuilder);
                 
                 // Add the user's input
-                new UserInputSection(userInput, "Current player prompt").AppendTo(promptContentBuilder);
+                //new UserInputSection(userInput, "Current player prompt").AppendTo(promptContentBuilder);
 
                 // Build the system prompt with response instructions and examples
                 var systemPromptBuilder = new StringBuilder();

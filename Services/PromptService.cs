@@ -59,7 +59,13 @@ namespace AiGMBackEnd.Services
                     {
                         return await locationBuilder.BuildPromptAsync(userId, userInput, locationType);
                     }
-                    
+
+                    // For CreateLocation prompt types, use locationType parameter
+                    if (promptType == PromptType.CreateNPC && builder is CreateNPCPromptBuilder createNpcBuilder)
+                    {
+                        return await createNpcBuilder.BuildPromptAsync(userId, userInput, npcName, locationType);
+                    }
+
                     return await builder.BuildPromptAsync(userId, userInput);
                 }
                 

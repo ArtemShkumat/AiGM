@@ -1,75 +1,69 @@
 {
-  "core_identity": {
-    "id": "loc_ancientForge",
-    "name": "The Ancient Forge",
-    "type": "Building",
-    "description": "A massive forge built into the mountainside, with great bellows and anvils of ancient design",
-    "purpose": "Legendary smithy where magic-infused weapons and armor are crafted",
-    "history": "Created by the founders of Emberhold to harness the Ember Crystal's power",
-    "size": "Large"
-  },
-  "navigation": {
-    "parentLocationId": "loc_emberhold",
-    "connectedLocationIds": [
-      "loc_emberhold"
-    ]
-  },
-  "demographics": {
-    "population": 1,
-    "factions": [
-      {
-        "name": "Master Smiths",
-        "description": "Elite crafters who know the secrets of elemental binding",
-        "npcs": [
-          {
-            "npcId": "npc_smithRuna"
-          }
-        ]
-      }
-    ]
-  },
-  "districts": [
+  "type": "Building",
+  "locationType": "Forge",
+  "id": "loc_ancientForge",
+  "name": "The Ancient Forge",
+  "description": "A massive forge built into the mountainside, with great bellows and anvils of ancient design",
+  "knownToPlayer": true,
+  "connectedLocations": [],
+  "parentLocation": "loc_emberhold",
+  "npcs": [
+    "npc_smithRuna"
+  ],
+  "exterior_description": "A towering stone structure built directly into the mountainside, with smoke rising from large chimneys and the warm glow of fire visible through the entrance.",
+  "purpose": "Legendary smithy where magic-infused weapons and armor are crafted",
+  "history": "Created by the founders of Emberhold to harness the Ember Crystal's power",
+  "floors": [
     {
-      "name": "Main Forge",
-      "description": "The central working area with the Master Anvil and the empty Crystal Mounting",
-      "navigation": {
-        "connected_districts": [
-          "Storage Area"
-        ]
-      },
-      "notable_features": [
+      "floor_name": "Main Level",
+      "description": "The primary workshop level of the forge",
+      "rooms": [
         {
-          "name": "The Master Anvil",
-          "description": "An enormous anvil of strange, dark metal at the center of the forge. Runes glow faintly along its sides when the hammer strikes it."
+          "name": "Main Forge Area",
+          "type": "Workshop",
+          "description": "The central working area with the Master Anvil and the empty Crystal Mounting",
+          "points_of_interest": [
+            {
+              "name": "The Master Anvil",
+              "description": "An enormous anvil of strange, dark metal at the center of the forge. Runes glow faintly along its sides when the hammer strikes it.",
+              "hinting_at": "Ancient forging techniques"
+            },
+            {
+              "name": "Crystal Mounting",
+              "description": "A specially designed holder where the Ember Crystal would normally be placed to power the forge. It's now empty, with only a few glowing embers remaining.",
+              "hinting_at": "The missing Ember Crystal"
+            }
+          ],
+          "valuables": [],
+          "npcs": [
+            "npc_smithRuna"
+          ],
+          "navigation": {
+            "connected_rooms": [
+              "Binding Chamber"
+            ]
+          }
         },
         {
-          "name": "Crystal Mounting",
-          "description": "A specially designed holder where the Ember Crystal would normally be placed to power the forge. It's now empty, with only a few glowing embers remaining."
+          "name": "Binding Chamber",
+          "type": "Magical Workshop",
+          "description": "A dedicated area for infusing items with elemental magic",
+          "points_of_interest": [
+            {
+              "name": "Element Binding Circle",
+              "description": "A circular area marked with complex runes where items are infused with elemental properties.",
+              "hinting_at": "Elemental binding rituals"
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Main Forge Area"
+            ]
+          }
         }
-      ],
-      "npcs": [
-        {
-          "npcId": "npc_smithRuna"
-        }
-      ],
-      "buildings": []
-    },
-    {
-      "name": "Binding Chamber",
-      "description": "A dedicated area for infusing items with elemental magic",
-      "navigation": {
-        "connected_districts": [
-          "Main Forge"
-        ]
-      },
-      "notable_features": [
-        {
-          "name": "Element Binding Circle",
-          "description": "A circular area marked with complex runes where items are infused with elemental properties."
-        }
-      ],
-      "npcs": [],
-      "buildings": []
+      ]
     }
   ]
 } 

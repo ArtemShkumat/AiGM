@@ -43,7 +43,9 @@ namespace AiGMBackEnd.Services.Processors
                         {
                             string entityType = entity["type"]?.ToString()?.ToLower() ?? "";
                             string entityId = entity["id"]?.ToString() ?? "";
-                                    
+                            string currentLocation = entity["currentLocationId"]?.ToString() ?? "";
+                            string context = entity["context"]?.ToString() ?? "";
+
                             if (string.IsNullOrEmpty(entityId))
                             {
                                 _loggingService.LogWarning("Skipping entity with missing ID");
@@ -56,14 +58,14 @@ namespace AiGMBackEnd.Services.Processors
                             switch (entityType)
                             {
                                 case "npc":
-                                    if (entity is JObject npcObj)
-                                    {
-                                        await _npcProcessor.ProcessAsync(npcObj, userId);
-                                    }
+                                    //if (entity is JObject npcObj)
+                                    //{
+                                    //    await _npcProcessor.ProcessAsync(npcObj, userId);
+                                    //}
                                     // Fire and forget - do not wait for job completion
                                     var npcName = entity["name"]?.ToString() ?? "New NPC";
                                     _loggingService.LogInfo($"Will trigger separate job to create NPC: {npcName}");
-                                    FireAndForgetEntityCreation(PromptType.CreateNPC, userId, $"Create {npcName}");
+                                    FireAndForgetEntityCreation(PromptType.CreateNPC, userId, context, currentLocation);
                                     break;
                                 case "location":
                                     if (entity is JObject locationObj)
@@ -73,7 +75,7 @@ namespace AiGMBackEnd.Services.Processors
                                     // Fire and forget - do not wait for job completion
                                     var locationName = entity["name"]?.ToString() ?? "New Location";
                                     _loggingService.LogInfo($"Will trigger separate job to create location: {locationName}");
-                                    FireAndForgetEntityCreation(PromptType.CreateLocation, userId, $"Create {locationName}");
+                                    FireAndForgetEntityCreation(PromptType.CreateLocation, userId, context);
                                     break;
                                 case "quest":
                                     if (entity is JObject questObj)
@@ -83,7 +85,7 @@ namespace AiGMBackEnd.Services.Processors
                                     // Fire and forget - do not wait for job completion
                                     var questTitle = entity["title"]?.ToString() ?? "New Quest";
                                     _loggingService.LogInfo($"Will trigger separate job to create quest: {questTitle}");
-                                    FireAndForgetEntityCreation(PromptType.CreateQuest, userId, $"Create {questTitle}");
+                                    FireAndForgetEntityCreation(PromptType.CreateQuest, userId, context);
                                     break;
                                 default:
                                     _loggingService.LogWarning($"Unknown entity type: {entityType}");
@@ -181,7 +183,7 @@ namespace AiGMBackEnd.Services.Processors
             _loggingService.LogInfo($"Updated {entityType} entity: {entityId}");
         }
         
-        private async Task TriggerEntityCreationJob(PromptType promptType, string userId, string userInput)
+        private async Task TriggerEntityCreationJob(PromptType promptType, string userId, string context, string location)
         {
             const int maxRetries = 3;
             int currentRetry = 0;
@@ -193,11 +195,12 @@ namespace AiGMBackEnd.Services.Processors
                     var job = new PromptJob
                     {
                         UserId = userId,
-                        UserInput = userInput,
-                        PromptType = promptType
+                        Context = context,
+                        PromptType = promptType,
+                        Location = location
                     };
                     
-                    _loggingService.LogInfo($"Triggering {promptType} job for user {userId} with input: {userInput} (attempt {currentRetry + 1})");
+                    _loggingService.LogInfo($"Triggering {promptType} job for user {userId} with input: {context} (attempt {currentRetry + 1})");
                     string result = await _backgroundJobService.EnqueuePromptAsync(job);
                     _loggingService.LogInfo($"Completed {promptType} job for user {userId}. Result length: {result?.Length ?? 0}");
                     
@@ -226,13 +229,13 @@ namespace AiGMBackEnd.Services.Processors
         }
 
         // New helper method to fire and forget entity creation jobs
-        private void FireAndForgetEntityCreation(PromptType promptType, string userId, string userInput)
+        private void FireAndForgetEntityCreation(PromptType promptType, string userId, string context, string location="")
         {
             Task.Run(async () => 
             {
                 try 
                 {
-                    await TriggerEntityCreationJob(promptType, userId, userInput);
+                    await TriggerEntityCreationJob(promptType, userId, context, location);
                 }
                 catch (Exception ex) 
                 {

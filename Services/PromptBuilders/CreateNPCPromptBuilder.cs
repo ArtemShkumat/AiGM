@@ -14,6 +14,12 @@ namespace AiGMBackEnd.Services.PromptBuilders
 
         public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
         {
+            // Default to generic location (without specific type)
+            return await BuildPromptAsync(userId, userInput, null,  null);
+        }
+
+        public override async Task<Prompt> BuildPromptAsync(string context, string npcId, string npcName ="", string npcLocation = "")
+        {
             try
             {
                 // Load create NPC template files

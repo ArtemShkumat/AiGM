@@ -9,8 +9,11 @@ namespace AiGMBackEnd.Models.Locations
         // Add parameterless constructor for deserialization
         public Location() { }
 
-        [JsonPropertyName("type")]
-        public string Type { get; set; }
+        [JsonPropertyName("type")] 
+        public string Type { get; set; } = "LOCATION";
+
+        [JsonPropertyName("locationType")]
+        public string LocationType { get; set; }
 
         [JsonPropertyName("id")]
         public string Id { get; set; }

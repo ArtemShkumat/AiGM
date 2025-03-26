@@ -113,54 +113,108 @@ namespace AiGMBackEnd.Services.Processors
                 Purpose = locationData["purpose"]?.ToString()
             };
             
-            // Process rooms
-            if (locationData["rooms"] is JArray roomsArray)
+            // Process entrance room
+            if (locationData["entrance_room"] is JObject entranceRoomObj)
             {
-                foreach (var roomData in roomsArray)
+                delve.EntranceRoom = new EntranceRoom
                 {
-                    if (roomData is JObject roomObj)
-                    {
-                        var room = new DelveRoom
-                        {
-                            RoomNumber = roomObj["room_number"]?.Value<int>() ?? 0,
-                            Role = roomObj["role"]?.ToString(),
-                            Name = roomObj["name"]?.ToString(),
-                            Description = roomObj["description"]?.ToString(),
-                            HazardOrGuardian = roomObj["hazard_or_guardian"]?.ToString(),
-                            PuzzleOrRoleplayChallenge = roomObj["puzzle_or_roleplay_challenge"]?.ToString(),
-                            TrickOrSetback = roomObj["trick_or_setback"]?.ToString(),
-                            ClimaxConflict = roomObj["climax_conflict"]?.ToString(),
-                            RewardOrRevelation = roomObj["reward_or_revelation"]?.ToString()
-                        };
-                        
-                        // Process valuables
-                        if (roomObj["valuables"] is JArray valuablesArray)
-                        {
-                            foreach (var valuableData in valuablesArray)
-                            {
-                                if (valuableData is JObject valuableObj)
-                                {
-                                    var valuable = new DelveValuable
-                                    {
-                                        Name = valuableObj["name"]?.ToString(),
-                                        WhyItsHere = valuableObj["why_its_here"]?.ToString(),
-                                        Description = valuableObj["description"]?.ToString(),
-                                        Quantity = valuableObj["quantity"]?.Value<int>() ?? 1,
-                                        Value = valuableObj["value"]?.Value<int>() ?? 0,
-                                        WhereExactly = valuableObj["where_exactly"]?.ToString()
-                                    };
-                                    
-                                    room.Valuables.Add(valuable);
-                                }
-                            }
-                        }
-                        
-                        delve.Rooms.Add(room);
-                    }
-                }
+                    RoomNumber = entranceRoomObj["room_number"]?.Value<int>() ?? 1,
+                    Role = entranceRoomObj["role"]?.ToString() ?? "Entrance",
+                    Name = entranceRoomObj["name"]?.ToString(),
+                    Description = entranceRoomObj["description"]?.ToString(),
+                    HazardOrGuardian = entranceRoomObj["hazard_or_guardian"]?.ToString()
+                };
+                
+                ProcessRoomValuables(entranceRoomObj, delve.EntranceRoom.Valuables);
+            }
+            
+            // Process puzzle room
+            if (locationData["puzzle_room"] is JObject puzzleRoomObj)
+            {
+                delve.PuzzleRoom = new PuzzleRoom
+                {
+                    RoomNumber = puzzleRoomObj["room_number"]?.Value<int>() ?? 2,
+                    Role = puzzleRoomObj["role"]?.ToString() ?? "Puzzle",
+                    Name = puzzleRoomObj["name"]?.ToString(),
+                    Description = puzzleRoomObj["description"]?.ToString(),
+                    PuzzleOrRoleplayChallenge = puzzleRoomObj["puzzle_or_roleplay_challenge"]?.ToString()
+                };
+                
+                ProcessRoomValuables(puzzleRoomObj, delve.PuzzleRoom.Valuables);
+            }
+            
+            // Process setback room
+            if (locationData["setback_room"] is JObject setbackRoomObj)
+            {
+                delve.SetbackRoom = new SetbackRoom
+                {
+                    RoomNumber = setbackRoomObj["room_number"]?.Value<int>() ?? 3,
+                    Role = setbackRoomObj["role"]?.ToString() ?? "Setback",
+                    Name = setbackRoomObj["name"]?.ToString(),
+                    Description = setbackRoomObj["description"]?.ToString(),
+                    TrickOrSetback = setbackRoomObj["trick_or_setback"]?.ToString()
+                };
+                
+                ProcessRoomValuables(setbackRoomObj, delve.SetbackRoom.Valuables);
+            }
+            
+            // Process climax room
+            if (locationData["climax_room"] is JObject climaxRoomObj)
+            {
+                delve.ClimaxRoom = new ClimaxRoom
+                {
+                    RoomNumber = climaxRoomObj["room_number"]?.Value<int>() ?? 4,
+                    Role = climaxRoomObj["role"]?.ToString() ?? "Climax",
+                    Name = climaxRoomObj["name"]?.ToString(),
+                    Description = climaxRoomObj["description"]?.ToString(),
+                    ClimaxConflict = climaxRoomObj["climax_conflict"]?.ToString(),
+                    HazardOrGuardian = climaxRoomObj["hazard_or_guardian"]?.ToString()
+                };
+                
+                ProcessRoomValuables(climaxRoomObj, delve.ClimaxRoom.Valuables);
+            }
+            
+            // Process reward room
+            if (locationData["reward_room"] is JObject rewardRoomObj)
+            {
+                delve.RewardRoom = new RewardRoom
+                {
+                    RoomNumber = rewardRoomObj["room_number"]?.Value<int>() ?? 5,
+                    Role = rewardRoomObj["role"]?.ToString() ?? "Reward",
+                    Name = rewardRoomObj["name"]?.ToString(),
+                    Description = rewardRoomObj["description"]?.ToString(),
+                    RewardOrRevelation = rewardRoomObj["reward_or_revelation"]?.ToString()
+                };
+                
+                ProcessRoomValuables(rewardRoomObj, delve.RewardRoom.Valuables);
             }
             
             return delve;
+        }
+        
+        private void ProcessRoomValuables(JObject roomObj, List<DelveValuable> valuablesList)
+        {
+            // Process valuables
+            if (roomObj["valuables"] is JArray valuablesArray)
+            {
+                foreach (var valuableData in valuablesArray)
+                {
+                    if (valuableData is JObject valuableObj)
+                    {
+                        var valuable = new DelveValuable
+                        {
+                            Name = valuableObj["name"]?.ToString(),
+                            WhyItsHere = valuableObj["why_its_here"]?.ToString(),
+                            Description = valuableObj["description"]?.ToString(),
+                            Quantity = valuableObj["quantity"]?.Value<int>() ?? 1,
+                            Value = valuableObj["value"]?.Value<int>() ?? 0,
+                            WhereExactly = valuableObj["where_exactly"]?.ToString()
+                        };
+                        
+                        valuablesList.Add(valuable);
+                    }
+                }
+            }
         }
         
         private Building ProcessBuilding(JObject locationData)
