@@ -2,6 +2,7 @@ using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
 using System;
+using AiGMBackEnd.Models.Locations;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -29,28 +30,42 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var gameSetting = await _storageService.GetGameSettingAsync(userId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
                 var location = await _storageService.GetLocationAsync(userId, player.CurrentLocationId);
+                var parentLocation = await _storageService.GetLocationAsync(userId, location.ParentLocation);
+                var connectedLocations = new List<Location>();
+                foreach (var cl in location.ConnectedLocations)
+                {
+                    connectedLocations.Add(await _storageService.GetLocationAsync(userId, cl));
+                }
                 var npcsInCurrentLocation = await _storageService.GetNpcsInLocationAsync(userId, player.CurrentLocationId);
                 var activeQuests = await _storageService.GetActiveQuestsAsync(userId, player.ActiveQuests);
                 var conversationLog = await _storageService.GetConversationLogAsync(userId);
 
-                // Create the prompt content builder
                 var promptContentBuilder = new StringBuilder();
 
-                // Add sections using our helper classes
                 new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
-                
-                // Add world context section
                 new WorldContextSection(world, includeEntityLists: true).AppendTo(promptContentBuilder);
-
-                // Add additional world lore summary if needed
                 new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
-                
-                // Add player characters context
                 new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add location context using the location section
+                promptContentBuilder.AppendLine("currentLocation: ");
                 new LocationContextSection(location).AppendTo(promptContentBuilder);
+                if (string.IsNullOrEmpty(location.ParentLocation))
+                {
+                    promptContentBuilder.AppendLine("parentLocation: ");
+                    new LocationContextSection(parentLocation).AppendTo(promptContentBuilder);
+                }
+
+                if (connectedLocations!=null && connectedLocations.Count>0)
+                {
+                    promptContentBuilder.AppendLine("connectedLocations: ");
+                    foreach (var item in connectedLocations)
+                    {
+                        new LocationContextSection(item).AppendTo(promptContentBuilder);
+                    }
+                }                
+
 
                 // Add NPCs present at this location and all the information about them
                 if (npcsInCurrentLocation != null && npcsInCurrentLocation.Count > 0)

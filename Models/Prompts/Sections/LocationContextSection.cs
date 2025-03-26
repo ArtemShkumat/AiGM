@@ -18,10 +18,28 @@ namespace AiGMBackEnd.Models.Prompts.Sections
             var options = new JsonSerializerOptions
             {
                 WriteIndented = true
-            };
+            };           
             
-            builder.AppendLine("locationContext: ");
-            builder.AppendLine(JsonSerializer.Serialize(_location, options));
+            // Instead of directly serializing the Location base class,
+            // identify the specific location type and serialize that
+            if (_location is Building building)
+            {
+                builder.AppendLine(JsonSerializer.Serialize(building, options));
+            }
+            else if (_location is Delve delve)
+            {
+                builder.AppendLine(JsonSerializer.Serialize(delve, options));
+            }
+            else if (_location is Settlement settlement)
+            {
+                builder.AppendLine(JsonSerializer.Serialize(settlement, options));
+            }
+            else
+            {
+                // Fallback to the base Location if we can't determine the specific type
+                builder.AppendLine(JsonSerializer.Serialize(_location, options));
+            }
+            
             builder.AppendLine();
         }
     }
