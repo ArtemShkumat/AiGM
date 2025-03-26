@@ -1,4 +1,5 @@
 using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
 using System;
@@ -12,13 +13,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
-        {
-            // Default to generic location (without specific type)
-            return await BuildPromptAsync(userId, userInput, null,  null);
-        }
-
-        public override async Task<Prompt> BuildPromptAsync(string context, string npcId, string npcName ="", string npcLocation = "")
+        public override async Task<Prompt> BuildPromptAsync(PromptRequest request)
         {
             try
             {
@@ -28,10 +23,10 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var exampleResponses = await _storageService.GetCreateNpcTemplateAsync("ExampleResponses");
 
                 // Load world data for context
-                var world = await _storageService.GetWorldAsync(userId);
-                var gameSetting = await _storageService.GetGameSettingAsync(userId);
-                var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
-                var player = await _storageService.GetPlayerAsync(userId);
+                var world = await _storageService.GetWorldAsync(request.UserId);
+                var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
+                var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
+                var player = await _storageService.GetPlayerAsync(request.UserId);
 
                 // Create the system prompt builder
                 var systemPromptBuilder = new StringBuilder();
@@ -56,7 +51,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add the user's input
-                new UserInputSection(userInput, "NPC Creation Request").AppendTo(promptContentBuilder);
+                new UserInputSection(request.UserInput, "NPC Creation Request").AppendTo(promptContentBuilder);
 
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),

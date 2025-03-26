@@ -1,4 +1,5 @@
 using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
 using System;
@@ -13,11 +14,11 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
+        public override async Task<Prompt> BuildPromptAsync(PromptRequest request)
         {
             try
             {
-                await _storageService.AddUserMessageAsync(userId, userInput);                
+                await _storageService.AddUserMessageAsync(request.UserId, request.UserInput);                
 
                 // Load DM template files
                 var systemPrompt = await _storageService.GetDmTemplateAsync("System");
@@ -25,20 +26,20 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var exampleResponses = await _storageService.GetDmTemplateAsync("ExampleResponses");
 
                 // Load player and world data
-                var player = await _storageService.GetPlayerAsync(userId);
-                var world = await _storageService.GetWorldAsync(userId);
-                var gameSetting = await _storageService.GetGameSettingAsync(userId);
-                var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
-                var location = await _storageService.GetLocationAsync(userId, player.CurrentLocationId);
-                var parentLocation = await _storageService.GetLocationAsync(userId, location.ParentLocation);
+                var player = await _storageService.GetPlayerAsync(request.UserId);
+                var world = await _storageService.GetWorldAsync(request.UserId);
+                var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
+                var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
+                var location = await _storageService.GetLocationAsync(request.UserId, player.CurrentLocationId);
+                var parentLocation = await _storageService.GetLocationAsync(request.UserId, location.ParentLocation);
                 var connectedLocations = new List<Location>();
                 foreach (var cl in location.ConnectedLocations)
                 {
-                    connectedLocations.Add(await _storageService.GetLocationAsync(userId, cl));
+                    connectedLocations.Add(await _storageService.GetLocationAsync(request.UserId, cl));
                 }
-                var npcsInCurrentLocation = await _storageService.GetNpcsInLocationAsync(userId, player.CurrentLocationId);
-                var activeQuests = await _storageService.GetActiveQuestsAsync(userId, player.ActiveQuests);
-                var conversationLog = await _storageService.GetConversationLogAsync(userId);
+                var npcsInCurrentLocation = await _storageService.GetNpcsInLocationAsync(request.UserId, player.CurrentLocationId);
+                var activeQuests = await _storageService.GetActiveQuestsAsync(request.UserId, player.ActiveQuests);
+                var conversationLog = await _storageService.GetConversationLogAsync(request.UserId);
 
                 var promptContentBuilder = new StringBuilder();
 
@@ -65,7 +66,6 @@ namespace AiGMBackEnd.Services.PromptBuilders
                         new LocationContextSection(item).AppendTo(promptContentBuilder);
                     }
                 }                
-
 
                 // Add NPCs present at this location and all the information about them
                 if (npcsInCurrentLocation != null && npcsInCurrentLocation.Count > 0)

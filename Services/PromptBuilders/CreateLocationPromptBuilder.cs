@@ -1,4 +1,5 @@
 using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
 using System;
@@ -12,28 +13,22 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
-        {
-            // Default to generic location (without specific type)
-            return await BuildPromptAsync(userId, userInput, null);
-        }
-
-        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput, string locationType = null)
+        public override async Task<Prompt> BuildPromptAsync(PromptRequest request)
         {
             try
             {
-                _loggingService.LogInfo($"Building location prompt for type: {locationType ?? "generic"}");
+                _loggingService.LogInfo($"Building location prompt for type: {request.LocationType ?? "generic"}");
                 
                 // Load create location template files
-                var systemPrompt = await _storageService.GetCreateLocationTemplateAsync("System", locationType);
-                var outputStructure = await _storageService.GetCreateLocationTemplateAsync("OutputStructure", locationType);
-                var exampleResponses = await _storageService.GetCreateLocationTemplateAsync("Examples", locationType);
+                var systemPrompt = await _storageService.GetCreateLocationTemplateAsync("System", request.LocationType);
+                var outputStructure = await _storageService.GetCreateLocationTemplateAsync("OutputStructure", request.LocationType);
+                var exampleResponses = await _storageService.GetCreateLocationTemplateAsync("Examples", request.LocationType);
 
                 // Load world data for context
-                var world = await _storageService.GetWorldAsync(userId);
-                var gameSetting = await _storageService.GetGameSettingAsync(userId);
-                var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
-                var player = await _storageService.GetPlayerAsync(userId);
+                var world = await _storageService.GetWorldAsync(request.UserId);
+                var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
+                var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
+                var player = await _storageService.GetPlayerAsync(request.UserId);
 
                 // Create the system prompt builder
                 var systemPromptBuilder = new StringBuilder();
@@ -58,7 +53,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add the user's input
-                new UserInputSection(userInput, $"{(locationType ?? "Location")} Creation Request").AppendTo(promptContentBuilder);
+                new UserInputSection(request.UserInput, $"{(request.LocationType ?? "Location")} Creation Request").AppendTo(promptContentBuilder);
 
                 var promptType = PromptType.CreateLocation;
                 

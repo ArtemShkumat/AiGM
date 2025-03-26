@@ -1,4 +1,5 @@
 using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
 using System;
@@ -12,19 +13,14 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
-        {
-            return await BuildPromptAsync(userId, userInput, null);
-        }
-
-        public async Task<Prompt> BuildPromptAsync(string userId, string userInput, string providedNpcId)
+        public override async Task<Prompt> BuildPromptAsync(PromptRequest request)
         {
             try
             {
                 // Use provided NpcId if available, otherwise parse from userInput
-                string npcId = !string.IsNullOrEmpty(providedNpcId) 
-                    ? providedNpcId 
-                    : ParseNpcId(userInput);
+                string npcId = !string.IsNullOrEmpty(request.NpcId) 
+                    ? request.NpcId 
+                    : ParseNpcId(request.UserInput);
                 
                 // Load NPC template files
                 var systemPrompt = await _storageService.GetNpcTemplateAsync("System");
@@ -32,14 +28,14 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var exampleResponses = await _storageService.GetNpcTemplateAsync("ExampleResponses");
 
                 // Load player, world, and specified NPC data
-                var player = await _storageService.GetPlayerAsync(userId);
-                var world = await _storageService.GetWorldAsync(userId);
-                var npc = await _storageService.GetNpcAsync(userId, npcId);
-                var gameSetting = await _storageService.GetGameSettingAsync(userId);
-                var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
+                var player = await _storageService.GetPlayerAsync(request.UserId);
+                var world = await _storageService.GetWorldAsync(request.UserId);
+                var npc = await _storageService.GetNpcAsync(request.UserId, npcId);
+                var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
+                var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
 
                 // Load current location
-                var location = await _storageService.GetLocationAsync(userId, player.CurrentLocationId);
+                var location = await _storageService.GetLocationAsync(request.UserId, player.CurrentLocationId);
 
                 // Create scene context
                 var sceneContext = new SceneContext
@@ -119,7 +115,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 }
 
                 // Add the user's input
-                new UserInputSection(userInput, "User Input").AppendTo(promptContentBuilder);
+                new UserInputSection(request.UserInput, "User Input").AppendTo(promptContentBuilder);
 
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
@@ -136,23 +132,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
 
         private string ParseNpcId(string userInput)
         {
-            // Basic parsing to extract NPC ID from user input
-            // Format expected: "talk to <npc_name>" or "interact with <npc_id>"
-            // This is a simple implementation - could be enhanced with regex or more sophisticated parsing
-            
-            if (userInput.Contains("npc_id:"))
-            {
-                var parts = userInput.Split("npc_id:");
-                if (parts.Length > 1)
-                {
-                    var idPart = parts[1].Trim();
-                    return idPart.Split(' ')[0]; // Take first part before any space
-                }
-            }
-            
-            // Default to a placeholder - in a real implementation, you'd want better NPC targeting logic
-            _loggingService.LogWarning($"Could not parse NPC ID from input: {userInput}. Using default logic.");
-            return "generic_npc";
+            // Implementation of NPC ID parsing logic
+            // This should be implemented based on your specific requirements
+            throw new NotImplementedException("NPC ID parsing logic needs to be implemented");
         }
     }
 } 

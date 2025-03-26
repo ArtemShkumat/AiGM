@@ -1,4 +1,5 @@
 using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Services;
 using System.Text;
 using System;
@@ -16,13 +17,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
             _loggingService = loggingService;
         }
         
-        public virtual Task<Prompt> BuildPromptAsync(string userId, string userInput, string npc = null, string typeParameter = null)
-        {
-            // Default implementation calls the method without typeParameter
-            return BuildPromptAsync(userId, userInput);
-        }
-        
-        public abstract Task<Prompt> BuildPromptAsync(string userId, string userInput);
+        public abstract Task<Prompt> BuildPromptAsync(PromptRequest request);
         
         protected async Task<string> GetTemplateAsync(string templateName)
         {

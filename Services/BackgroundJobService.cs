@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using AiGMBackEnd.Models.Prompts;
 
 namespace AiGMBackEnd.Services
 {
@@ -41,14 +42,12 @@ namespace AiGMBackEnd.Services
             }
         }
 
-        public async Task<string> EnqueuePromptAsync(PromptJob job)
+        public async Task<string> EnqueuePromptAsync(PromptRequest request)
         {
             EnsureProcessingTaskIsRunning();
             
-            var tcs = new TaskCompletionSource<string>();
-            job.CompletionSource = tcs;
-            
-            _loggingService.LogInfo($"Enqueueing job for user {job.UserId} with prompt type {job.PromptType}");
+            var job = new PromptJob(request);
+            _loggingService.LogInfo($"Enqueueing job for user {request.UserId} with prompt type {request.PromptType}");
             
             lock (_queueLock)
             {
@@ -56,7 +55,7 @@ namespace AiGMBackEnd.Services
                 _semaphore.Release();
             }
             
-            return await tcs.Task;
+            return await job.CompletionSource.Task;
         }
 
         private void EnsureProcessingTaskIsRunning()
@@ -93,14 +92,14 @@ namespace AiGMBackEnd.Services
                     {
                         try
                         {
-                            _loggingService.LogInfo($"Processing job for user {job.UserId} with prompt type {job.PromptType}");
+                            _loggingService.LogInfo($"Processing job for user {job.Request.UserId} with prompt type {job.Request.PromptType}");
                         
                             // 1. Build prompt
-                            var prompt = await _promptService.BuildPromptAsync(job.PromptType, job.UserId, job.UserInput, job.NpcId);
+                            var prompt = await _promptService.BuildPromptAsync(job.Request);
                         
                             // 2. Call LLM
                             var llmResponse = await _aiService.GetCompletionAsync(prompt);
-                            _loggingService.LogInfo($"LLM response received for {job.PromptType}, length: {llmResponse?.Length ?? 0}");
+                            _loggingService.LogInfo($"LLM response received for {job.Request.PromptType}, length: {llmResponse?.Length ?? 0}");
                         
                             // 3. Process response
                             if (_responseProcessingServiceFactory == null)
@@ -109,16 +108,16 @@ namespace AiGMBackEnd.Services
                             }
                         
                             var responseProcessingService = _responseProcessingServiceFactory();
-                            var processedResult = await responseProcessingService.HandleResponseAsync(llmResponse, job.PromptType, job.UserId);
+                            var processedResult = await responseProcessingService.HandleResponseAsync(llmResponse, job.Request.PromptType, job.Request.UserId);
                         
                             // 4. Set result
                             job.CompletionSource.SetResult(processedResult.UserFacingText);
                             
-                            _loggingService.LogInfo($"Successfully processed job for user {job.UserId}, prompt type: {job.PromptType}");
+                            _loggingService.LogInfo($"Successfully processed job for user {job.Request.UserId}, prompt type: {job.Request.PromptType}");
                         }
                         catch (Exception ex)
                         {
-                            _loggingService.LogError($"Error processing job for {job.PromptType} ({job.UserId}): {ex.Message}");
+                            _loggingService.LogError($"Error processing job for {job.Request.PromptType} ({job.Request.UserId}): {ex.Message}");
                             try
                             {
                                 job.CompletionSource.SetResult($"Error processing your request: {ex.Message.Substring(0, Math.Min(100, ex.Message.Length))}");
@@ -155,12 +154,13 @@ namespace AiGMBackEnd.Services
 
     public class PromptJob
     {
-        public string UserId { get; set; } = string.Empty;
-        public string UserInput { get; set; } = string.Empty;
-        public PromptType PromptType { get; set; } = PromptType.DM;
-        public string NpcId { get; set; } = string.Empty;
-        public TaskCompletionSource<string> CompletionSource { get; set; } = null!;
-        public string Context { get; set; } = string.Empty;
-        public string Location { get; set; } = string.Empty;
+        public PromptRequest Request { get; }
+        public TaskCompletionSource<string> CompletionSource { get; }
+
+        public PromptJob(PromptRequest request)
+        {
+            Request = request;
+            CompletionSource = new TaskCompletionSource<string>();
+        }
     }
 }

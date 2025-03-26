@@ -1,9 +1,10 @@
 using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Prompts;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
     public interface IPromptBuilder
     {
-        Task<Prompt> BuildPromptAsync(string userId, string userInput, string npc = null, string typeParameter = null);
+        Task<Prompt> BuildPromptAsync(PromptRequest request);
     }
 } 

@@ -1,4 +1,5 @@
 using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Services.PromptBuilders;
 using System.Text;
 using System;
@@ -41,36 +42,18 @@ namespace AiGMBackEnd.Services
             };
         }
 
-        public async Task<Prompt> BuildPromptAsync(PromptType promptType, string userId, string userInput, string npcId = null, string locationType = null)
+        public async Task<Prompt> BuildPromptAsync(PromptRequest request)
         {
             try
             {
                 // Check if we have a builder for this prompt type
-                if (_promptBuilders.TryGetValue(promptType, out var builder))
+                if (_promptBuilders.TryGetValue(request.PromptType, out var builder))
                 {
-                    // For NPC prompt types, use the dedicated NPC prompt builder with NpcId
-                    if (promptType == PromptType.NPC && builder is NPCPromptBuilder npcBuilder)
-                    {
-                        return await npcBuilder.BuildPromptAsync(userId, userInput, npcId);
-                    }
-                    
-                    // For CreateLocation prompt types, use locationType parameter
-                    if (promptType == PromptType.CreateLocation && builder is CreateLocationPromptBuilder locationBuilder)
-                    {
-                        return await locationBuilder.BuildPromptAsync(userId, userInput, locationType);
-                    }
-
-                    // For CreateLocation prompt types, use locationType parameter
-                    if (promptType == PromptType.CreateNPC && builder is CreateNPCPromptBuilder createNpcBuilder)
-                    {
-                        return await createNpcBuilder.BuildPromptAsync(userId, userInput, npcName, locationType);
-                    }
-
-                    return await builder.BuildPromptAsync(userId, userInput);
+                    return await builder.BuildPromptAsync(request);
                 }
                 
                 // If we get here, we don't have a builder for the requested prompt type
-                throw new ArgumentException($"Unsupported prompt type: {promptType}");
+                throw new ArgumentException($"Unsupported prompt type: {request.PromptType}");
             }
             catch (Exception ex)
             {

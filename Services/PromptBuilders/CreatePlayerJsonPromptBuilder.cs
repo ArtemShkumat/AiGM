@@ -1,4 +1,5 @@
 ﻿using AiGMBackEnd.Models;
+using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
 
@@ -11,7 +12,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
         }
 
-        public override async Task<Prompt> BuildPromptAsync(string userId, string userInput)
+        public override async Task<Prompt> BuildPromptAsync(PromptRequest request)
         {
             try
             {
@@ -20,9 +21,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var exampleResponses = await _storageService.GetCreatePlayerJsonTemplateAsync("ExampleResponses");
 
                 // Load world data for context
-                var world = await _storageService.GetWorldAsync(userId);
-                var gameSetting = await _storageService.GetGameSettingAsync(userId);
-                var gamePreferences = await _storageService.GetGamePreferencesAsync(userId);
+                var world = await _storageService.GetWorldAsync(request.UserId);
+                var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
+                var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
 
                 // Create the system prompt builder
                 var systemPromptBuilder = new StringBuilder();
@@ -44,11 +45,11 @@ namespace AiGMBackEnd.Services.PromptBuilders
 
                 // Add player ID info
                 promptContentBuilder.AppendLine("# Player Info");
-                promptContentBuilder.AppendLine($"Player ID: {userId}");
+                promptContentBuilder.AppendLine($"Player ID: {request.UserId}");
                 promptContentBuilder.AppendLine();
 
                 // Add the user's input containing the player description
-                new UserInputSection(userInput, "Player Description to Convert to JSON").AppendTo(promptContentBuilder);
+                new UserInputSection(request.UserInput, "Player Description to Convert to JSON").AppendTo(promptContentBuilder);
 
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),

@@ -1,3 +1,4 @@
+using AiGMBackEnd.Models.Prompts;
 using System;
 using System.Threading.Tasks;
 
@@ -30,19 +31,16 @@ namespace AiGMBackEnd.Services
             try
             {
                 _loggingService.LogInfo($"Handling input for user {userId} with promptType {promptType}: {userInput}");
-                
-                
-                // For now, we'll use the background job service for all requests
-                // In the future, we might want to bypass it for simple requests
-                var job = new PromptJob
+
+                var prompt = new PromptRequest
                 {
+                    PromptType = promptType,
                     UserId = userId,
                     UserInput = userInput,
-                    PromptType = promptType,
                     NpcId = npcId
                 };
                 
-                var response = await _backgroundJobService.EnqueuePromptAsync(job);
+                var response = await _backgroundJobService.EnqueuePromptAsync(prompt);
                 
                 _loggingService.LogInfo($"Completed handling input for user {userId}");
                 
