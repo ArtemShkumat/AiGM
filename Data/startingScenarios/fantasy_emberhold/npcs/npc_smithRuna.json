@@ -3,7 +3,7 @@
   "id": "npc_smithRuna",
   "name": "Smith Runa",
   "currentLocationId": "loc_ancientForge",
-  "knownToPlayer": true,
+  "knownToPlayer": false,
   "knowsPlayer": false,
   "visibleToPlayer": false,
   

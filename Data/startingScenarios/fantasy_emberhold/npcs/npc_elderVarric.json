@@ -3,7 +3,7 @@
   "id": "npc_elderVarric",
   "name": "Elder Varric",
   "currentLocationId": "loc_emberhold",
-  "knownToPlayer": true,
+  "knownToPlayer": false,
   "knowsPlayer": false,
   "visibleToPlayer": true,
   

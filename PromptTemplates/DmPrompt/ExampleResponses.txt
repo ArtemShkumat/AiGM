@@ -8,26 +8,59 @@ USER:
       }
   "connectedLocations":
   [ ...
-    "loc_rustyAnchorTavern"
+    "loc_rustyAnchorTavern"{
+      ...
+      "npcs": [
+      {
+        "id": "npc_redBeardedBarkeep",
+        "currentLocationId": "loc_rustyAnchorTavern",
+        "visibleToPlayer": false
+      },
+      {
+        "id": "npc_hoodedFigure",
+        "currentLocationId": "loc_rustyAnchorTavern",
+        "visibleToPlayer": false
+      }
+  ]
+      ...
+    }
     ...]
-  
+  "npcs": [
+    {
+      "id": "npc_johnTheBaptist",
+      "currentLocationId": "loc_mainStreet",
+      "visibleToPlayer": true
+    }
+  ]
 
 I walk into the tavern and look around.
 
 ASSISTANT:
-The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma of spiced mead. A crackling hearth dominates the far wall, casting dancing shadows across the weathered wooden tables. Several patrons huddle in small groups - sailors sharing tall tales, a pair of merchants haggling over a contract, and a hooded figure sitting alone in the corner, occasionally glancing toward the door.
+You leave John The Baptist behind. The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma of spiced mead. A crackling hearth dominates the far wall, casting dancing shadows across the weathered wooden tables. Several patrons huddle in small groups - sailors sharing tall tales, a pair of merchants haggling over a contract, and a hooded figure sitting alone in the corner, occasionally glancing toward the door.
 
 Behind the bar, a burly man with an impressive red beard polishes a mug with a rag that's seen better days. He notices your entrance and offers a curt nod of acknowledgment.
 
 <donotshow/>
 {
     "newEntities": [],
-    "partialUpdates": [{
+    "partialUpdates": {
       "player": {
         "type": "PLAYER",
         "currentLocationId": "loc_rustyAnchorTavern"
+      },
+      "npc_johnTheBaptist": {
+        "type": "NPC",
+        "visibleToPlayer": false
+      },
+      "npc_redBeardedBarkeep": {
+        "type": "NPC",
+        "visibleToPlayer": true
+      },
+      "npc_hoodedFigure": {
+        "type": "NPC",
+        "visibleToPlayer": true
       }
-    }]
+    }
 }
 
 
@@ -65,5 +98,44 @@ ASSISTANT:
     ],
     "partialUpdates": []
   
+}
+
+EXAMPLE 4: Player meets an NPC and they introduce themselves to each other
+
+USER:
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_marketSquare"
+},
+"npcs": [
+  {
+    "id": "npc_merchantTomas",
+    "name": "Tomas",
+    "currentLocationId": "loc_marketSquare",
+    "visibleToPlayer": true,
+    "knownToPlayer": false,
+    "knowsPlayer": false
+  }
+]
+
+I approach the merchant at his stall. "Good day! I'm Alaric, new to these parts. What's your name?"
+
+ASSISTANT:
+The merchant looks up from arranging a display of colorful fabrics. He's a middle-aged man with salt-and-pepper hair and weathered hands that speak of years of work. His initially cautious expression softens at your friendly approach.
+
+"Well met, Alaric," he replies with a slight bow of his head. "I am Tomas, purveyor of the finest textiles from across the realm. New to our humble town, you say? What brings you to these parts?" He gestures at his wares with a merchant's practiced flourish. "Perhaps something caught your eye? Or are you simply getting acquainted with the local establishments?"
+
+<donotshow/>
+{
+    "newEntities": [],
+    "partialUpdates": {
+      "npc_merchantTomas": {
+        "type": "NPC",
+        "knownToPlayer": true,
+        "knowsPlayer": true
+      }
+    }
 }
 

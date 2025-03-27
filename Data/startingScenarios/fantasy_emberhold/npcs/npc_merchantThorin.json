@@ -3,7 +3,7 @@
   "id": "npc_merchantThorin",
   "name": "Merchant Thorin",
   "currentLocationId": "loc_emberhold",
-  "knownToPlayer": true,
+  "knownToPlayer": false,
   "knowsPlayer": false,
   "visibleToPlayer": true,
   
