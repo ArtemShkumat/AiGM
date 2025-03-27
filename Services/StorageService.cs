@@ -321,6 +321,10 @@ namespace AiGMBackEnd.Services
                 // Copy scenario files and folders to the user's game directory
                 CopyDirectory(scenarioPath, userGamePath);
                 
+                // Update player.id and world.currentPlayer to gameId
+                await ApplyPartialUpdateAsync(gameId, "player", $"{{\"id\": \"{gameId}\"}}");
+                await ApplyPartialUpdateAsync(gameId, "world", $"{{\"currentPlayer\": \"{gameId}\"}}");
+                
                 // Save game preferences if provided
                 if (preferences != null)
                 {
