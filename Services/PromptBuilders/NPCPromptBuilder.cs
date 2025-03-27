@@ -17,11 +17,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
             try
             {
-                // Use provided NpcId if available, otherwise parse from userInput
-                string npcId = !string.IsNullOrEmpty(request.NpcId) 
-                    ? request.NpcId 
-                    : ParseNpcId(request.UserInput);
-                
+                await _storageService.AddUserMessageToNpcLogAsync(request.UserId, request.NpcId, request.UserInput);
+
                 // Load NPC template files
                 var systemPrompt = await _storageService.GetNpcTemplateAsync("System");
                 var outputStructure = await _storageService.GetNpcTemplateAsync("OutputStructure");
@@ -30,7 +27,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Load player, world, and specified NPC data
                 var player = await _storageService.GetPlayerAsync(request.UserId);
                 var world = await _storageService.GetWorldAsync(request.UserId);
-                var npc = await _storageService.GetNpcAsync(request.UserId, npcId);
+                var npc = await _storageService.GetNpcAsync(request.UserId, request.NpcId);
                 var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
 

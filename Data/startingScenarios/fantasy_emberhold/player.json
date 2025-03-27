@@ -1,6 +1,6 @@
 {
   "type": "Player",
-  "id": "player_001",
+  "id": "",
   "name": "Adventurer",
   "currentLocationId": "loc_emberhold",
   "visualDescription": {

@@ -34,7 +34,7 @@ namespace AiGMBackEnd.Services
             _updateProcessor = new UpdateProcessor(storageService, loggingService, backgroundJobService);
         }
 
-        public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId)
+        public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)
         {
             try
             {
@@ -57,6 +57,10 @@ namespace AiGMBackEnd.Services
                 if (promptType == PromptType.DM)
                 {
                     await _storageService.AddDmMessageAsync(userId, userFacingText);
+                }
+                else if (promptType == PromptType.NPC)
+                {
+                    await _storageService.AddDmMessageToNpcLogAsync(userId, npcId, userFacingText);
                 }
 
                 return new ProcessedResult

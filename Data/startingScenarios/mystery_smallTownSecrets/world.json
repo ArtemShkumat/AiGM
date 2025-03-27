@@ -2,7 +2,7 @@
   "type": "world",
   "gameTime": "2023-10-24T19:45:00Z",
   "daysSinceStart": 1,
-  "currentPlayer": "player_001",
+  "currentPlayer": "",
   "worldStateEffects": {
     "weather": "foggy"
   },

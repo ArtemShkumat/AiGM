@@ -115,14 +115,16 @@ namespace AiGMBackEnd.Services
                             if (job.Request.PromptType == PromptType.DM || job.Request.PromptType == PromptType.NPC)
                             {
                                 // For DM and NPC responses, we expect user-facing text and optional hidden JSON
-                                processedResult = await responseProcessingService.HandleResponseAsync(llmResponse, job.Request.PromptType, job.Request.UserId);
+                                processedResult = await responseProcessingService.HandleResponseAsync(llmResponse, job.Request.PromptType, job.Request.UserId, job.Request.NpcId);
                             }
                             else
                             {
                                 // For entity creation responses, we expect pure JSON
                                 processedResult = await responseProcessingService.HandleCreateResponseAsync(llmResponse, job.Request.PromptType, job.Request.UserId);
                             }
-                        
+
+                            
+
                             // 4. Set result
                             job.CompletionSource.SetResult(processedResult.UserFacingText);
                             

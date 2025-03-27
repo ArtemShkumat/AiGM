@@ -570,6 +570,50 @@ namespace AiGMBackEnd.Services
             
             await SaveAsync(userId, "conversationLog", log);
         }
+
+        public async Task AddUserMessageToNpcLogAsync(string userId, string npcId, string content)
+        {
+            var npc = await GetNpcAsync(userId, npcId);
+            
+            if (npc == null)
+            {
+                _loggingService.LogWarning($"Attempted to add user message to non-existent NPC log: {npcId}");
+                return;
+            }
+            
+            var messageEntry = new Dictionary<string, string>
+            {
+                { "timestamp", DateTime.UtcNow.ToString("o") },
+                { "sender", "user" },
+                { "content", content }
+            };
+            
+            npc.ConversationLog.Add(messageEntry);
+            
+            await SaveAsync(userId, $"npcs/{npcId}", npc);
+        }
+
+        public async Task AddDmMessageToNpcLogAsync(string userId, string npcId, string content)
+        {
+            var npc = await GetNpcAsync(userId, npcId);
+            
+            if (npc == null)
+            {
+                _loggingService.LogWarning($"Attempted to add DM message to non-existent NPC log: {npcId}");
+                return;
+            }
+            
+            var messageEntry = new Dictionary<string, string>
+            {
+                { "timestamp", DateTime.UtcNow.ToString("o") },
+                { "sender", npcId },
+                { "content", content }
+            };
+            
+            npc.ConversationLog.Add(messageEntry);
+            
+            await SaveAsync(userId, $"npcs/{npcId}", npc);
+        }
     }
     
     // Class to use in the StorageService methods

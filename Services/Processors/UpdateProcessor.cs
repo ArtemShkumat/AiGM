@@ -32,7 +32,7 @@ namespace AiGMBackEnd.Services.Processors
         {
             try
             {
-                _loggingService.LogInfo("Processing DM updates");
+                _loggingService.LogInfo("Processing updates");
                 
                 // Process new entities
                 if (updates["newEntities"] != null)
@@ -176,6 +176,7 @@ namespace AiGMBackEnd.Services.Processors
                         }
                     }
                 }
+
                     
                 // Do not wait for background tasks to complete
                 _loggingService.LogInfo("DM updates processing complete");
