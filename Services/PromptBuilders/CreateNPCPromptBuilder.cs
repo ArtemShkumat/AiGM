@@ -26,7 +26,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var world = await _storageService.GetWorldAsync(request.UserId);
                 var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
-                var player = await _storageService.GetPlayerAsync(request.UserId);
+                //var player = await _storageService.GetPlayerAsync(request.UserId);
+                var location = await _storageService.GetLocationAsync(request.UserId, request.NpcLocation);
 
                 // Create the system prompt builder
                 var systemPromptBuilder = new StringBuilder();
@@ -45,13 +46,29 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
 
                 // Add world context
-                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
+                new WorldContextSection(world).AppendTo(promptContentBuilder);
                 
                 // Add player context
-                new PlayerContextSection(player).AppendTo(promptContentBuilder);
+                //new PlayerContextSection(player).AppendTo(promptContentBuilder);
+
+                // Add location context
+                if (location != null)
+                {
+                    new LocationContextSection(location).AppendTo(promptContentBuilder);
+                }
+
+                // Add NPC creation details
+                new CreateNpcSection(
+                    request.NpcName,
+                    request.NpcId,
+                    request.NpcLocation,
+                    request.UserInput
+                ).AppendTo(promptContentBuilder);
+
+                //
 
                 // Add the user's input
-                new UserInputSection(request.UserInput, "NPC Creation Request").AppendTo(promptContentBuilder);
+                //new UserInputSection(request.UserInput, "NPC Creation Request").AppendTo(promptContentBuilder);
 
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),

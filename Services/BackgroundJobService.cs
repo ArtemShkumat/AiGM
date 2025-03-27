@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts;
 
 namespace AiGMBackEnd.Services
@@ -108,7 +109,19 @@ namespace AiGMBackEnd.Services
                             }
                         
                             var responseProcessingService = _responseProcessingServiceFactory();
-                            var processedResult = await responseProcessingService.HandleResponseAsync(llmResponse, job.Request.PromptType, job.Request.UserId);
+                            ProcessedResult processedResult;
+
+                            // Call the appropriate method based on the PromptType
+                            if (job.Request.PromptType == PromptType.DM || job.Request.PromptType == PromptType.NPC)
+                            {
+                                // For DM and NPC responses, we expect user-facing text and optional hidden JSON
+                                processedResult = await responseProcessingService.HandleResponseAsync(llmResponse, job.Request.PromptType, job.Request.UserId);
+                            }
+                            else
+                            {
+                                // For entity creation responses, we expect pure JSON
+                                processedResult = await responseProcessingService.HandleCreateResponseAsync(llmResponse, job.Request.PromptType, job.Request.UserId);
+                            }
                         
                             // 4. Set result
                             job.CompletionSource.SetResult(processedResult.UserFacingText);

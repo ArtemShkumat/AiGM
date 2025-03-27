@@ -78,6 +78,71 @@ namespace AiGMBackEnd.Services
             }
         }
 
+        public async Task<ProcessedResult> HandleCreateResponseAsync(string llmResponse, PromptType promptType, string userId)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Processing create {promptType} response for user {userId}");
+                
+                // Clean up JSON response
+                string jsonContent = CleanJsonResponse(llmResponse);
+
+                // Validate JSON
+                try
+                {
+                    JToken.Parse(jsonContent);
+                }
+                catch (JsonException ex)
+                {
+                    _loggingService.LogError($"Invalid JSON in create response: {ex.Message}");
+                    return new ProcessedResult
+                    {
+                        UserFacingText = string.Empty,
+                        Success = false,
+                        ErrorMessage = $"Invalid JSON: {ex.Message}"
+                    };
+                }
+
+                // Process the JSON for entity creation
+                await ProcessHiddenJsonAsync(jsonContent, promptType, userId);
+
+                return new ProcessedResult
+                {
+                    UserFacingText = string.Empty,
+                    Success = true,
+                    ErrorMessage = string.Empty
+                };
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing create response: {ex.Message}");
+                return new ProcessedResult
+                {
+                    UserFacingText = string.Empty,
+                    Success = false,
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
+
+        private string CleanJsonResponse(string jsonResponse)
+        {
+            // Remove any markdown code block formatting
+            jsonResponse = Regex.Replace(jsonResponse, @"^```json\s*|\s*```$", string.Empty, RegexOptions.Multiline).Trim();
+            
+            // Find the start of the actual JSON content
+            int jsonStartIndex = jsonResponse.IndexOf('{');
+            if (jsonStartIndex == -1)
+                jsonStartIndex = jsonResponse.IndexOf('[');
+
+            if (jsonStartIndex >= 0)
+            {
+                return jsonResponse.Substring(jsonStartIndex).Trim();
+            }
+            
+            return jsonResponse.Trim();
+        }
+
         private async Task ProcessHiddenJsonAsync(string jsonContent, PromptType promptType, string userId)
         {
             try

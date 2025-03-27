@@ -2,7 +2,7 @@ EXAMPLE
 
 User Prompt:
 
-{
+creationRequestDetails{
   "name": "Smith Runa",
   "id": "npc_smithRuna",
   "currentLocationId": "loc_ancientForge",
