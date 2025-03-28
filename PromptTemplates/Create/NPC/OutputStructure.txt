@@ -4,44 +4,41 @@ Completeness: Even if given minimal info, fill in creative details that align wi
 Format adherence: Use only the field names provided below. An array means you may include as many or as few items as you wish to create a deep NPC.
 
 {
-  "core_identity": {
-    "type": "NPC",
-    "id": "UNIQUE_NPC_IDENTIFIER",
-    "name": "NAME_OF_NPC",
-    "age": 0,
-    "backstory": "NPC_BACKGROUND_HISTORY"
-  },
-  "navigation": {
-    "currentLocationId": "ID_OF_THE_LOCATION_WHERE_NPC_STARTS",
-    "locationsKnown": [
-      "LIST_OF_LOCATION_IDS_THIS_NPC_KNOWS_ABOUT"
-    ]
-  },
-  "player_interaction": {
-    "knownToPlayer": false,
-    "knowsPlayer": false,
-    "visibleToPlayer": false,
-    "dispositionTowardsPlayer": "HOSTILE/UNFRIENDLY/NEUTRAL/FOND/LOYAL",
-    "conversationLog": []
-  },
-  "appearance": {
+  "type": "NPC",
+  "id": "UNIQUE_NPC_IDENTIFIER",
+  "name": "NAME_OF_NPC",
+  "currentLocationId": "ID_OF_THE_LOCATION_WHERE_NPC_STARTS",
+  "knownToPlayer": false,
+  "knowsPlayer": false,
+  "visibleToPlayer": false,
+  
+  "visualDescription": {
     "gender": "MALE/FEMALE",
     "body": "DESCRIPTION_OF_PHYSICAL_BUILD_AND_APPEARANCE",
     "visibleClothing": "DESCRIPTION_OF_VISIBLE_ATTIRE",
     "condition": "CURRENT_PHYSICAL_STATE",
     "resemblingCelebrity": "CELEBRITY_NPC_RESEMBLES"
   },
-  "character": {
+  
+  "personality": {
     "temperament": "GENERAL_DISPOSITION",
     "quirks": "NOTABLE_CHARACTER_TRAITS",
     "motivations": "WHAT_DRIVES_THIS_NPC",
     "fears": "WHAT_THIS_NPC_IS_AFRAID_OF",
-    "currentGoal": "WHAT_NPC_IS_CURRENTLY_TRYING_TO_ACHIEVE",
     "secrets": [
       "THINGS_THE_NPC_WANTS_TO_KEEP_HIDDEN"
     ]
   },
-  "relationships": {
+  
+  "backstory": "NPC_BACKGROUND_HISTORY",
+  
+  "currentGoal": "WHAT_NPC_IS_CURRENTLY_TRYING_TO_ACHIEVE",
+  
+  "age": 0,
+  
+  "dispositionTowardsPlayer": "HOSTILE/UNFRIENDLY/NEUTRAL/FOND/LOYAL",
+  
+  "knownEntities": {
     "npcsKnown": [
       {
         "name": "NAME_OF_KNOWN_NPC",
@@ -49,15 +46,20 @@ Format adherence: Use only the field names provided below. An array means you ma
         "disposition": "HOSTILE/UNFRIENDLY/NEUTRAL/FOND/LOYAL"
       }
     ],
-    "questInvolvement": [
-      "LIST_OF_QUEST_IDS_NPC_IS_INVOLVED_IN"
+    "locationsKnown": [
+      "LIST_OF_LOCATION_IDS_THIS_NPC_KNOWS_ABOUT"
     ]
   },
+  
+  "questInvolvement": ["LIST_OF_QUEST_IDS_NPC_IS_INVOLVED_IN"],
+  
   "inventory": [
     {
       "name": "ITEM_NAME",
       "description": "BRIEF_ITEM_DESCRIPTION",
       "quantity": 0
     }
-  ]
+  ],
+  
+  "conversationLog": []
 }

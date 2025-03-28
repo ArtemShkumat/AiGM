@@ -13,5 +13,7 @@ namespace AiGMBackEnd.Models.Prompts
         public string NpcLocation { get; set; } = string.Empty;
         public string LocationType { get; set; } = string.Empty;
         public string Context { get; set; } = string.Empty;
+        public string QuestName { get; set; } = string.Empty;
+        public string QuestId { get; set; } = string.Empty;
     }
 } 

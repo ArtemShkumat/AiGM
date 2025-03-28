@@ -62,7 +62,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                     request.NpcName,
                     request.NpcId,
                     request.NpcLocation,
-                    request.UserInput
+                    request.Context
                 ).AppendTo(promptContentBuilder);
 
                 //

@@ -67,8 +67,12 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 }
                 promptContentBuilder.AppendLine();
 
-                // Add the user's input
-                new UserInputSection(request.UserInput, "Quest Request").AppendTo(promptContentBuilder);
+                // Add NPC creation details
+                new CreateQuestSection(
+                    request.QuestId,
+                    request.QuestName,
+                    request.Context
+                ).AppendTo(promptContentBuilder);
 
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),

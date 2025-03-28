@@ -45,6 +45,7 @@ namespace AiGMBackEnd.Services.Processors
                             string entityType = entity["type"]?.ToString()?.ToLower() ?? "";
                             string entityId = entity["id"]?.ToString() ?? "";
                             string currentLocation = entity["currentLocationId"]?.ToString() ?? "";
+                            string entityName = entity["name"]?.ToString() ?? "";
                             string context = entity["context"]?.ToString() ?? "";
 
                             if (string.IsNullOrEmpty(entityId))
@@ -72,11 +73,6 @@ namespace AiGMBackEnd.Services.Processors
                                     break;
                                 
                                 case "location":
-                                    if (entity is JObject locationObj)
-                                    {
-                                        await _locationProcessor.ProcessAsync(locationObj, userId);
-                                    }
-                                    // Fire and forget - do not wait for job completion
                                     var locationName = entity["name"]?.ToString() ?? "New Location";
                                     _loggingService.LogInfo($"Will trigger separate job to create location: {locationName}");
                                     FireAndForgetEntityCreation(new PromptRequest 
@@ -86,19 +82,16 @@ namespace AiGMBackEnd.Services.Processors
                                         Context = context
                                     });
                                     break;
-                                case "quest":
-                                    if (entity is JObject questObj)
-                                    {
-                                        await _questProcessor.ProcessAsync(questObj, userId);
-                                    }
-                                    // Fire and forget - do not wait for job completion
-                                    var questTitle = entity["title"]?.ToString() ?? "New Quest";
+                                case "quest":                                    
+                                    var questTitle = entity["name"]?.ToString() ?? "New Quest";
                                     _loggingService.LogInfo($"Will trigger separate job to create quest: {questTitle}");
                                     FireAndForgetEntityCreation(new PromptRequest 
                                     { 
                                         PromptType = PromptType.CreateQuest,
                                         UserId = userId,
-                                        Context = context
+                                        Context = context,
+                                        QuestName = entityName,
+                                        QuestId = entityId
                                     });
                                     break;
                                 default:
