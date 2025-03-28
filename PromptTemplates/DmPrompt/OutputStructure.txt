@@ -17,11 +17,6 @@ If it's not here, then just assume you don't need to bother updating it, ever.
         "visibleClothing": "string - Outfit and visible attire" //This is clothing that people around the player can see. So if the player wears layers, only describe the clothes that are actually visible. NPCs will use it for reference when interacting with player. Update when player dresses/undresses/changes clothes.
       },
       "inventory": [// What is currently is in player's inventory. Update when items are added/removed
-        {
-          "name": "string - Item name",
-          "description": "string - Item description",
-          "quantity": "number - How many of this item"
-        }
       ],
       "money": "number - Amount of currency the player has", //Obviously update as necessary
       "statusEffects": ["string - Current effects on the player (buffs, debuffs, etc.)"], //This are status effects that would affect the player temporarily - being cursed, exhausted, buffed, etc. Update only when a significant change to player status happens.

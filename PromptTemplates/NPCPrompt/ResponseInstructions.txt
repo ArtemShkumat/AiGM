@@ -28,7 +28,7 @@ Example format:
         ...other fields
       },
       "loc_townSquare": {
-        "type": "LOCATION",
+        "type": "QUEST",
         ...other fields
       }
     }  

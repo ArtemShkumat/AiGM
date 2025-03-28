@@ -24,16 +24,16 @@ PROMPT: Create a quest using this data:
     {
       "name": "Ema",
       "role": "Missing Daughter",
-      "motivation": "Disappeared under uncertain circumstances—possibly abducted.",
+      "motivation": "Disappeared under uncertain circumstancesï¿½possibly abducted.",
       "fears": "Being trapped in the forest or used as leverage by criminals",
-      "secrets": "She secretly longed for escape from a mundane life; there’s a chance she left willingly."
+      "secrets": "She secretly longed for escape from a mundane life; thereï¿½s a chance she left willingly."
     },
     {
       "name": "Mara",
       "role": "Mother",
-      "motivation": "Fears her husband’s decisions led to their daughter’s disappearance.",
-      "fears": "That Harrick’s recklessness will destroy their family",
-      "secrets": "She’s been contemplating leaving Harrick if Ema isn’t found safely."
+      "motivation": "Fears her husbandï¿½s decisions led to their daughterï¿½s disappearance.",
+      "fears": "That Harrickï¿½s recklessness will destroy their family",
+      "secrets": "Sheï¿½s been contemplating leaving Harrick if Ema isnï¿½t found safely."
     },
     {
       "name": "Elim",
@@ -45,7 +45,7 @@ PROMPT: Create a quest using this data:
   ],
   "rumorsAndLeads": [
     {
-      "rumor": "Torchlights spotted heading into Gavelwood at night—possible kidnappers.",
+      "rumor": "Torchlights spotted heading into Gavelwood at nightï¿½possible kidnappers.",
       "sourceNPC": "Elim",
       "sourceLocation": ""
     },
@@ -63,7 +63,7 @@ PROMPT: Create a quest using this data:
   "locationsInvolved": [
     "Gavelwood Forest",
     "Old Watchtower Ruin",
-    "Harrick’s Farm",
+    "Harrickï¿½s Farm",
     "Village Tavern"
   ],
   "opposingForces": [
@@ -89,7 +89,7 @@ PROMPT: Create a quest using this data:
   "emotionalBeats": [
     "Mara confronts Harrick about endangering their family",
     "Villagers refusing to help due to fear of the Basilisk and brigands",
-    "Ema’s shock or trauma upon rescue if she’s been exposed to the forest’s horrors"
+    "Emaï¿½s shock or trauma upon rescue if sheï¿½s been exposed to the forestï¿½s horrors"
   ],
   "rewards": {
     "experience": "Enough to approach the next level upon completion",

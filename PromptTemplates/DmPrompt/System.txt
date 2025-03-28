@@ -37,17 +37,17 @@ Never create a new entity if one with that name/purpose already exists.
 New Entities Always Go in "newEntities". 
 When you introduce a newEntity, add a free form well described field called "context", where you give a thorough overview of what needs to be created, why and, if applicaple, which existing npcIds and locationIds to involve.
 If you introduce a brand-new NPC, location, item, or quest, you must only place it under the "newEntities" array.
-Do not use "partialUpdates" for something that doesn�t already exist.
 
 Partial Updates for Existing Data
-
 If you want to modify or add fields to an already existing entity, you must do so in "partialUpdates".
 Do not rename or change the entity�s ID. Reference the exact ID from the game�s data.
 Additionally, include "type" in each partial update to identify what the entity is (e.g., "type": "NPC").
 This "type" value should never change for that entity � it�s purely an identifier to confirm the kind of object.
 Never Change an Entity�s ID
-
 In "partialUpdates", keep the same ID. If it�s npc_elenaBlacksmith in the data, it remains that way in your JSON.
+
+newEntities: strictly for brand-new objects. When creating a new npc, come up with a fitting name, id in format npc_{name} and their currentLocationId from the list of locations.
+partialUpdates: references existing IDs, includes a "type" for identification, and changes/updates to that entity.
 
 Data Structure in the Hidden JSON
 
@@ -67,6 +67,12 @@ Your hidden JSON (after <donotshow/>) will typically have two key arrays/objects
         "name": "",
         "id": "loc_name",
         "context": ""
+      },
+      {
+        "type": "QUEST", 
+        "name": "",
+        "id": "quest_name",
+        "context": ""
       }
       // Possibly more new entities...
     ],
@@ -81,12 +87,12 @@ Your hidden JSON (after <donotshow/>) will typically have two key arrays/objects
       }
     }  
 }
-newEntities: strictly for brand-new objects. When creating a new npc, come up with a fitting name, id in format npc_{name} and their currentLocationId from the list of locations.
-partialUpdates: references existing IDs, includes a "type" for identification, and changes/updates to that entity.
-Be Consistent and Minimal
 
-Only introduce brand-new entities if there is truly something new that does not already exist.
-Only apply partial updates to correct or expand existing entities with no ID changes.
+ABOUT CONTEXT IN NEW ENTITIES
+-When you create newEntities you must provide, among others, a field called "context". This field is very important, as it will inform the entity creation engine about the context for creating the npc/location/quest.
+-When you add NPC to new Entities and you want to tie them to other npcs/locations/quests, make sure you mention them in context using their id. For example, if you want to add a wife of John and she is in a specific room in the current location, in context say things like "...This is a wife of npc_john, she is in the Storage Room of loc_pharmacy..."
+-When you add a new quest to new Entities, see if you want it to include any existing npcs or locations. If so, add those npc/location ids to context. Include who the quest giver is using their id. If you want to specify how difficult the quest should be for the player, mention it in context, for example "this is a basic quest to earn the player some money or reputation" or "this quest should seem daunting and unachievable for the player at their current level". If the quests includes creating new npcs/locations, just add their ids in the context, the entity creation engine will create them.
+-The role of the context field is to tie a new entity to the existing world, so use all the information at your disposal to provide the entity creation engine with instructions on how to make this entity feel a part of the existing world.
 
 
 NOTABLE PARTIAL UPDATES TO ALWAYS CONSIDER

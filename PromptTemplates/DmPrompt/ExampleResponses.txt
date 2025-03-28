@@ -143,3 +143,45 @@ The merchant looks up from arranging a display of colorful fabrics. He's a middl
     }
 }
 
+EXAMPLE 5: Player discovers a new location with connections to existing NPCs and potential quests
+
+USER:
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_marketSquare"
+},
+"npcs": [
+  {
+    "id": "npc_merchantTomas",
+    "name": "Tomas",
+    "currentLocationId": "loc_marketSquare",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true
+  }
+]
+
+I ask Tomas, "I've heard rumors of an abandoned mine north of town that might have valuable ore deposits. Do you know anything about it?"
+
+ASSISTANT:
+Tomas scratches his chin thoughtfully, leaning against his stall. "The old Whispering Depths? Aye, I know of it. Closed down nearly fifteen years ago after a collapse trapped a dozen miners inside." He lowers his voice, glancing around as if checking who might be listening.
+
+"Most folks avoid it now. Some say they hear voices echoing from within at night—the trapped miners, still calling for help." He shivers visibly. "My sister's husband, Gareth, was the mine's foreman before the accident. He survived but was never the same after. Lives in a cottage at the edge of town now, rarely speaks to anyone."
+
+Tomas straightens up and adjusts his wares. "If you're thinking of exploring it, I'd advise caution. Though I suppose if anyone could safely investigate and perhaps put some old ghosts to rest, it might be someone of your... capabilities."
+
+<donotshow/>
+{
+    "newEntities": [
+      {
+        "type": "QUEST", 
+        "name": "Echoes of the Depths",
+        "id": "quest_echoesOfTheDepths",
+        "context": "This is a multi-part quest centered around exploring the abandoned Whispering Depths Mine (loc_whisperingDepthsMine) and uncovering its secrets. The quest would begin when the player speaks with npc_gareth (quest giver) and learns more about the mine's history. The quest should feel somewhat dangerous and mysterious, dealing with themes of grief, guilt, and possibly supernatural elements related to the miners who died in the collapse. It could involve gathering equipment for the exploration, mapping the dangerous mine tunnels, discovering what really caused the collapse, and potentially dealing with either real ghosts or a more mundane explanation for the voices heard in the mine. This quest would be moderately challenging, requiring both combat skills and diplomatic abilities to complete successfully."
+      }
+    ],
+    "partialUpdates": {}
+}
+
