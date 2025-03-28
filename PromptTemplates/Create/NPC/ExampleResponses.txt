@@ -1,4 +1,4 @@
-EXAMPLE
+EXAMPLE 1.
 
 User Prompt:
 
@@ -83,3 +83,83 @@ Your Response:
   
   "conversationLog": []
 } 
+
+EXAMPLE 2
+
+User Prompt:
+gameSetting:{
+"genre": "zombie survival"
+"setting:" "a post apocalyptic world where survivors are rare"
+}
+
+creationRequestDetails{
+"name": "Finn",
+"id": "npc_Finn",
+"currentLocationId": "loc_boston_pharmacy",
+"context": "The player is looting a pharmacy and hears a noise coming from the back room. A young kid raises his hands and says "Don't shoot". The player can see the kid, but doesn't know his name yet or given his name to him. "
+}
+
+Your Response:
+
+{
+  "type": "NPC",
+  "id": "npc_Finn",
+  "name": "Finn",
+  "currentLocationId": "loc_boston_pharmacy",
+  "knownToPlayer": false,
+  "knowsPlayer": false,
+  "visibleToPlayer": true,
+  
+  "visualDescription": {
+    "gender": "Male",
+    "body": "Small and thin, with wide, scared eyes.",
+    "visibleClothing": "Oversized hoodie, tattered jeans, and dirty sneakers. Clearly scavenged.",
+    "condition": "Malnourished and frightened, but appears uninjured.",
+    "resemblingCelebrity": "Jacob Tremblay"
+  },
+  
+  "personality": {
+    "temperament": "Anxious and skittish, but hopeful.",
+    "quirks": "Clutches a worn teddy bear, tends to repeat phrases when nervous.",
+    "motivations": "Survival, finding his missing family.",
+    "fears": "Zombies, starvation, being alone.",
+    "secrets": [
+      "He saw his parents get taken by a horde.",
+      "He has a hidden stash of medicine he's been hoarding for a 'really bad' day."
+    ]
+  },
+  
+  "backstory": "Finn was separated from his family during the initial outbreak. He's been surviving on his own in the city, scavenging for food and supplies. He's learned to be wary of strangers, but still hopes to find his parents and sister.",
+  
+  "currentGoal": "To find a safe place to hide and get some food.",
+  
+  "age": 10,
+  
+  "dispositionTowardsPlayer": "Unfriendly",
+  
+  "knownEntities": {
+    "npcsKnown": [],
+    "locationsKnown": [
+      "loc_boston_pharmacy",
+      "loc_boston_apartments",
+      "loc_boston_park"
+    ]
+  },
+  
+  "questInvolvement": [],
+  
+  "inventory": [
+    {
+      "name": "Worn Teddy Bear",
+      "description": "A plush bear, missing an eye and covered in dirt. Finn clings to it tightly.",
+      "quantity": 1
+    },
+    {
+      "name": "Candy Bar",
+      "description": "A slightly melted candy bar",
+      "quantity": 1
+    }
+  ],
+  
+  "conversationLog": []
+}

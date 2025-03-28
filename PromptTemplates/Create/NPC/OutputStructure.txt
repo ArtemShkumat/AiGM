@@ -70,9 +70,9 @@ id: This is a unique text identifier for this NPC. Choose something descriptive 
 
 name: The name of the NPC.
 
-currentLocationId: The ID of the location where the NPC starts the game. This should match an existing location in your game world.
+currentLocationId: The ID of the location where the NPC starts the game. This should match an existing location  game world.
 
-knownToPlayer: Set this to false when creating the NPC. This will be changed to true later when the player meets the NPC.
+knownToPlayer: Set this to false when creating the NPC. This will be changed to true later when the player introduces himself to the NPC.
 
 knowsPlayer: Start with false. This will be set to true when the NPC learns the player's name.
 

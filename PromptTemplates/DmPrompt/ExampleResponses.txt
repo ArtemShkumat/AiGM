@@ -14,12 +14,16 @@ USER:
       {
         "id": "npc_redBeardedBarkeep",
         "currentLocationId": "loc_rustyAnchorTavern",
-        "visibleToPlayer": false
+        "visibleToPlayer": false,
+        "knownToPlayer": false,
+        "knowsPlayer": false
       },
       {
         "id": "npc_hoodedFigure",
         "currentLocationId": "loc_rustyAnchorTavern",
-        "visibleToPlayer": false
+        "visibleToPlayer": false,
+        "knownToPlayer": false,
+        "knowsPlayer": false
       }
   ]
       ...
@@ -38,7 +42,7 @@ I walk into the tavern and look around.
 ASSISTANT:
 You leave John The Baptist behind. The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma of spiced mead. A crackling hearth dominates the far wall, casting dancing shadows across the weathered wooden tables. Several patrons huddle in small groups - sailors sharing tall tales, a pair of merchants haggling over a contract, and a hooded figure sitting alone in the corner, occasionally glancing toward the door.
 
-Behind the bar, a burly man with an impressive red beard polishes a mug with a rag that's seen better days. He notices your entrance and offers a curt nod of acknowledgment.
+Behind the bar, a burly man with an impressive red beard polishes a mug with a rag that's seen better days. He notices your entrance and offers a curt nod of acknowledgment. Must be a professional habit, as you've never met him before, or anyone here, for that matter.
 
 <donotshow/>
 {

@@ -15,24 +15,18 @@ GUIDELINES FOR NPC CREATION:
    - Ensure the NPC fits naturally within the established lore and setting
 
 3. PLAYER INTERACTION POTENTIAL
-   - Create clear reasons why a player might want to interact with this NPC
    - Consider what services, information, or quests they might provide
    - Define how their disposition toward the player might change over time
-   - Include conversation topics that reveal character depth or useful information
 
 4. OUTPUT GUIDELINES
-   - Provide a comprehensive narrative description of the NPC
    - Focus on creating someone who feels like a real individual with a life beyond their interactions with the player
    - Include enough detail to make the character memorable and distinct
-   - Your description should cover appearance, personality, backstory, motivations, and potential player interactions
-   - Do NOT include any JSON in your response - focus purely on narrative description
+   - Your description should cover all of the available fields. If the context provides no details, 
 
 When creating an NPC, consider:
 - The specific needs of the location or storyline they will support
 - How this character might subvert player expectations or stereotypes
 - What makes this NPC memorable or distinct from similar characters
-- How the NPC might evolve or change based on player interactions and world events
-
-Remember: Create rich narrative descriptions only. All technical implementation details will be handled in a separate step.
 
 Your goal is to create NPCs that feel like they have lives and purposes independent of the player, yet provide engaging interactions and contribute meaningfully to the player's experience. 
+The output structure shows many fields, all them must be filled out in order to create a deep multidimensional NPC.
