@@ -4,7 +4,7 @@ PROMPT: Create a quest using this data:
 
 {
   "id": "quest_lost_in_gavelwood",
-  "context": "The player has encountered npc_harrick, "
+  "context": "The player has encountered npc_harrick, who told the player that his daughter is missing. Harrick says that she might have been kidnapped and he suspects she was taken to loc_gavelwood_forest. This quest should be fairly challenging for a player that is still quite low level and should be an opportunity to earch some trust and money."
 }
 
 {
@@ -110,20 +110,9 @@ PROMPT: Create a quest using this data:
     "Villagers refusing to help due to fear of the Basilisk and brigands",
     "Ema�s shock or trauma upon rescue if she�s been exposed to the forest�s horrors"
   ],
-  "rewards": {
-    "experience": "Enough to approach the next level upon completion",
-    "material": [
+  "rewards": [
       "A modest pouch of coins",
-      "Heirloom farming tool or keepsake from the family"
-    ],
-    "narrative": [
-      "Respect from local villagers",
-      "Growing renown as fearless adventurer"
-    ]
-  },
-  "followupHooks": [
-    "Evidence the Ironfang Brigands are part of a regional criminal network",
-    "A rumor that the Basilisk is but one of many monstrous threats in deeper Gavelwood",
-    "Mara asks the party to help uproot the brigands entirely, before others are taken"
-  ]
+      "Keepsake from the family",
+      "Respect from local villagers"
+    ]  
 }

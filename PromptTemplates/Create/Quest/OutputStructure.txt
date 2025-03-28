@@ -4,67 +4,49 @@ Completeness: Even if given minimal info, fill in creative details that align wi
 Format adherence: Use only the field names provided below. An array means you may include as many or as few items as you wish to create a fulfilling quest.
 
 {
-  "core_identity": {
-    "id": "UNIQUE_QUEST_IDENTIFIER_AS_PROVIDED",
-    "title": "SHORT_MEMORABLE_QUEST_NAME",
-    "coreObjective": "PRIMARY_STATEMENT_OF_WHAT_MUST_BE_ACCOMPLISHED",
-    "overview": "BRIEF_SYNOPSIS_DESCRIBING_NATURE_TONE_AND_STAKES"
-  },
-  "participants": {
-    "npcs": [
-      {
-        "id": "NPC_IDENTIFIER",
-        "name": "NAME_OF_NPC",
-        "role": "QUEST_GIVER_MISSING_PERSON_VILLAGER_ETC",
-        "motivation": "WHY_THEY_DO_WHAT_THEY_DO",
-        "fears": "WHAT_THEY_DREAD_COULD_HAPPEN",
-        "secrets": "HIDDEN_TRUTHS_THAT_CAN_BE_REVEALED"
-      }
-    ],
-    "opposingForces": [
-      {
-        "name": "NAME_OF_OPPOSING_FORCE",
-        "role": "PRIMARY_OR_SECONDARY",
-        "motivation": "WHY_THEY_OPPOSE_THE_PLAYER",
-        "description": "BEHAVIOR_THREAT_LEVEL_NOTABLE_TRAITS"
-      }
-    ]
-  },
-  "navigation": {
-    "locationsInvolved": [
-      {
-        "id": "LOCATION_IDENTIFIER",
-        "name": "NAME_OF_LOCATION"
-      }
-    ],
-    "rumorsAndLeads": [
-      {
-        "rumor": "HINT_OR_PARTIAL_INFORMATION",
-        "sourceNPC": "NPC_PROVIDING_THIS_RUMOR",
-        "sourceLocation": "LOCATION_WHERE_RUMOR_CAN_BE_HEARD"
-      }
-    ]
-  },
-  "progression": {
-    "challenges": [
-      "SPECIFIC_OBSTACLES_OR_COMPLICATIONS"
-    ],
-    "emotionalBeats": [
-      "POTENTIAL_MOMENTS_OF_TENSION_CONFLICT_OR_ROLEPLAY"
-    ]
-  },
-  "resolution": {
-    "rewards": {
-      "experience": "PROGRESS_IN_GAME_SYSTEM",
-      "material": [
-        "MONEY_ITEMS_ETC"
-      ],
-      "narrative": [
-        "REPUTATION_BOOST_FAVORS_NEW_STORY_OPPORTUNITIES"
-      ]
-    },
-    "followupHooks": [
-      "TEASERS_FOR_FUTURE_STORY_ARCS"
-    ]
-  }
+  "id": "UNIQUE_QUEST_IDENTIFIER_AS_PROVIDED",
+  "title": "SHORT_MEMORABLE_QUEST_NAME",
+  "coreObjective": "PRIMARY_STATEMENT_OF_WHAT_MUST_BE_ACCOMPLISHED",
+  "overview": "BRIEF_SYNOPSIS_DESCRIBING_NATURE_TONE_AND_STAKES",
+  "npcs": [
+    {
+      "id": "NPC_IDENTIFIER",
+      "name": "NAME_OF_NPC",
+      "role": "QUEST_GIVER_MISSING_PERSON_VILLAGER_ETC",
+      "motivation": "WHY_THEY_DO_WHAT_THEY_DO",
+      "fears": "WHAT_THEY_DREAD_COULD_HAPPEN",
+      "secrets": "HIDDEN_TRUTHS_THAT_CAN_BE_REVEALED"
+    }
+  ],
+  "rumorsAndLeads": [
+    {
+      "rumor": "HINT_OR_PARTIAL_INFORMATION",
+      "sourceNPC": "NPC_PROVIDING_THIS_RUMOR",
+      "sourceLocation": "LOCATION_WHERE_RUMOR_CAN_BE_HEARD"
+    }
+  ],
+  "locationsInvolved": [
+    {
+      "id": "LOCATION_IDENTIFIER",
+      "name": "NAME_OF_LOCATION",
+      "type": "BUILDING/SETTLEMENT/DELVE/WILDS"
+    }
+  ],
+  "opposingForces": [
+    {
+      "name": "NAME_OF_OPPOSING_FORCE",
+      "role": "PRIMARY_OR_SECONDARY",
+      "motivation": "WHY_THEY_OPPOSE_THE_PLAYER",
+      "description": "BEHAVIOR_THREAT_LEVEL_NOTABLE_TRAITS"
+    }
+  ],
+  "challenges": [
+    "SPECIFIC_OBSTACLES_OR_COMPLICATIONS"
+  ],
+  "emotionalBeats": [
+    "POTENTIAL_MOMENTS_OF_TENSION_CONFLICT_OR_ROLEPLAY"
+  ],
+  "rewards": [
+    "MONEY_ITEMS_REPUTATION_ETC"
+  ]
 }

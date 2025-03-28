@@ -42,7 +42,7 @@ namespace AiGMBackEnd.Services.Processors
                     Title = questData["title"]?.ToString() ?? "Unknown Quest",
                     CoreObjective = questData["coreObjective"]?.ToString(),
                     Overview = questData["overview"]?.ToString(),
-                    Rewards = new QuestRewards()
+                    Rewards = new List<string>()
                 };
                 
                 // Handle NPCs involved
@@ -87,12 +87,17 @@ namespace AiGMBackEnd.Services.Processors
                 // Handle Locations Involved
                 if (questData["locationsInvolved"] is JArray locationsArray)
                 {
-                    foreach (var location in locationsArray)
+                    foreach (var locationData in locationsArray)
                     {
-                        var locationStr = location.ToString();
-                        if (!string.IsNullOrEmpty(locationStr))
+                        if (locationData is JObject locationObj)
                         {
-                            quest.LocationsInvolved.Add(locationStr);
+                            var location = new QuestLocation
+                            {
+                                Id = locationObj["id"]?.ToString(),
+                                Name = locationObj["name"]?.ToString(),
+                                Type = locationObj["type"]?.ToString()
+                            };
+                            quest.LocationsInvolved.Add(location);
                         }
                     }
                 }
@@ -142,45 +147,15 @@ namespace AiGMBackEnd.Services.Processors
                     }
                 }
                 
-                // Handle Rewards
-                if (questData["rewards"] is JObject rewardsObj)
+                // Handle Rewards - now a simple list of strings
+                if (questData["rewards"] is JArray rewardsArray)
                 {
-                    quest.Rewards.Experience = rewardsObj["experience"]?.ToString();
-                    
-                    if (rewardsObj["material"] is JArray materialRewards)
+                    foreach (var reward in rewardsArray)
                     {
-                        foreach (var reward in materialRewards)
+                        var rewardStr = reward.ToString();
+                        if (!string.IsNullOrEmpty(rewardStr))
                         {
-                            var rewardStr = reward.ToString();
-                            if (!string.IsNullOrEmpty(rewardStr))
-                            {
-                                quest.Rewards.Material.Add(rewardStr);
-                            }
-                        }
-                    }
-                    
-                    if (rewardsObj["narrative"] is JArray narrativeRewards)
-                    {
-                        foreach (var reward in narrativeRewards)
-                        {
-                            var rewardStr = reward.ToString();
-                            if (!string.IsNullOrEmpty(rewardStr))
-                            {
-                                quest.Rewards.Narrative.Add(rewardStr);
-                            }
-                        }
-                    }
-                }
-                
-                // Handle Follow-up Hooks
-                if (questData["followupHooks"] is JArray hooksArray)
-                {
-                    foreach (var hook in hooksArray)
-                    {
-                        var hookStr = hook.ToString();
-                        if (!string.IsNullOrEmpty(hookStr))
-                        {
-                            quest.FollowupHooks.Add(hookStr);
+                            quest.Rewards.Add(rewardStr);
                         }
                     }
                 }

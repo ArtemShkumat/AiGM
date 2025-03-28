@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace AiGMBackEnd.Models
@@ -27,7 +26,7 @@ namespace AiGMBackEnd.Models
         public List<RumorAndLead> RumorsAndLeads { get; set; } = new List<RumorAndLead>();
         
         [JsonPropertyName("locationsInvolved")]
-        public List<string> LocationsInvolved { get; set; } = new List<string>();
+        public List<QuestLocation> LocationsInvolved { get; set; } = new List<QuestLocation>();
         
         [JsonPropertyName("opposingForces")]
         public List<OpposingForce> OpposingForces { get; set; } = new List<OpposingForce>();
@@ -39,10 +38,7 @@ namespace AiGMBackEnd.Models
         public List<string> EmotionalBeats { get; set; } = new List<string>();
         
         [JsonPropertyName("rewards")]
-        public QuestRewards Rewards { get; set; } = new QuestRewards();
-        
-        [JsonPropertyName("followupHooks")]
-        public List<string> FollowupHooks { get; set; } = new List<string>();
+        public List<string> Rewards { get; set; } = new List<string>();
     }
 
     public class QuestNpc
@@ -78,6 +74,18 @@ namespace AiGMBackEnd.Models
         public string SourceLocation { get; set; }
     }
 
+    public class QuestLocation
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
+        
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
+    }
+
     public class OpposingForce
     {
         [JsonPropertyName("name")]
@@ -91,17 +99,5 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("description")]
         public string Description { get; set; }
-    }
-
-    public class QuestRewards
-    {
-        [JsonPropertyName("experience")]
-        public string Experience { get; set; }
-        
-        [JsonPropertyName("material")]
-        public List<string> Material { get; set; } = new List<string>();
-        
-        [JsonPropertyName("narrative")]
-        public List<string> Narrative { get; set; } = new List<string>();
     }
 }
