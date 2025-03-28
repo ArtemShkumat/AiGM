@@ -1,0 +1,47 @@
+{
+  "core_identity": {
+    "id": "ID",
+    "name": "NAME_OF_WILDERNESS",
+    "type": "Wilds",
+    "description": "A_BRIEF_OVERVIEW_OF_THE_ENVIRONMENT_AND_ATMOSPHERE",
+    "terrain": "DESCRIPTION_OF_PHYSICAL_LANDSCAPE (FOREST, MOUNTAINS, SWAMP, ETC.)",
+    "dangers": "WHAT_MAKES_THIS_AREA_DANGEROUS_OR_THREATENING"
+  },
+  "navigation": {
+    "parentLocationId": "ID_OF_THE_REGION_OR_WORLD",
+    "connectedLocationIds": [
+      "ID_OF_AN_ADJACENT_TERRITORY",
+      "ID_OF_ANOTHER_LINKED_LOCATION"
+    ]
+  },
+  "details": {
+    "danger_level": 0,
+    "wildlife": "COMMON_CREATURES_OR_BEASTS_FOUND_HERE",
+    "weather_patterns": "TYPICAL_OR_UNUSUAL_WEATHER_CONDITIONS"
+  },
+  "points_of_interest": [
+    {
+      "name": "LANDMARK_NAME",
+      "description": "WHAT_MAKES_THIS_FEATURE_INTERESTING_OR_RELEVANT",
+      "dangers": "SPECIFIC_THREATS_ASSOCIATED_WITH_THIS_LOCATION",
+      "resources": "WHAT_VALUABLE_ITEMS_OR_MATERIALS_MIGHT_BE_FOUND_HERE"
+    }
+  ],
+  "traversal": {
+    "difficulty": "HOW_CHALLENGING_IT_IS_TO_NAVIGATE_THIS_AREA",
+    "common_obstacles": "TYPICAL_BARRIERS_OR_HAZARDS_TRAVELERS_FACE",
+    "paths": [
+      {
+        "name": "PATH_OR_TRAIL_NAME",
+        "description": "CONDITION_AND_NATURE_OF_THIS_ROUTE",
+        "safety_level": "RELATIVE_DANGER_COMPARED_TO_SURROUNDINGS"
+      }
+    ]
+  },
+  "npcs": [
+    {
+      "npcId": "ID_OF_NPC_FOUND_IN_THIS_WILDERNESS",
+      "location_hint": "WHERE_THIS_NPC_MIGHT_BE_ENCOUNTERED"
+    }
+  ]
+} 

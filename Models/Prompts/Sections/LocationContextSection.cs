@@ -34,6 +34,10 @@ namespace AiGMBackEnd.Models.Prompts.Sections
             {
                 builder.AppendLine(JsonSerializer.Serialize(settlement, options));
             }
+            else if (_location is Wilds wilds)
+            {
+                builder.AppendLine(JsonSerializer.Serialize(wilds, options));
+            }
             else
             {
                 // Fallback to the base Location if we can't determine the specific type

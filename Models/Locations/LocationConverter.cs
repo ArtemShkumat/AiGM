@@ -35,6 +35,7 @@ namespace AiGMBackEnd.Models.Locations
                     "delve" => JsonSerializer.Deserialize<Delve>(json, newOptions),
                     "building" => JsonSerializer.Deserialize<Building>(json, newOptions),
                     "settlement" => JsonSerializer.Deserialize<Settlement>(json, newOptions),
+                    "wilds" => JsonSerializer.Deserialize<Wilds>(json, newOptions),
                     _ => throw new JsonException($"Unknown location type: {locationType}")
                 };
             }
@@ -65,6 +66,9 @@ namespace AiGMBackEnd.Models.Locations
                     break;
                 case Settlement settlement:
                     JsonSerializer.Serialize(writer, settlement, newOptions);
+                    break;
+                case Wilds wilds:
+                    JsonSerializer.Serialize(writer, wilds, newOptions);
                     break;
                 default:
                     throw new JsonException($"Unknown location type: {value.GetType().Name}");

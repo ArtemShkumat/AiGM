@@ -3,8 +3,8 @@ EXAMPLE 1: Lost in Gavelwood
 PROMPT: Create a quest using this data:
 
 {
-  "id": "quest_0012",
-  "context": 
+  "id": "quest_lost_in_gavelwood",
+  "context": "The player has encountered npc_harrick, "
 }
 
 {
@@ -14,7 +14,7 @@ PROMPT: Create a quest using this data:
   "overview": "A straightforward rescue mission that plunges adventurers into the dark heart of Gavelwood Forest. In searching for the missing daughter, they face a ruthless bandit gang and a deadly creature that even the brigands fear. Survival will hinge on cunning, cooperation, and courage.",
   "npcs": [
     {
-      "id": 
+      "id": "npc_harric",
       "name": "Harrick",
       "role": "Farmer (Quest Giver)",
       "motivation": "Desperate to find his daughter; terrified of local threats.",
@@ -22,6 +22,7 @@ PROMPT: Create a quest using this data:
       "secrets": "He has hidden gambling debts that might have drawn the brigands' attention."
     },
     {
+      "id": "npc_ema",
       "name": "Ema",
       "role": "Missing Daughter",
       "motivation": "Disappeared under uncertain circumstances�possibly abducted.",
@@ -29,6 +30,7 @@ PROMPT: Create a quest using this data:
       "secrets": "She secretly longed for escape from a mundane life; there�s a chance she left willingly."
     },
     {
+      "id": "npc_mara",
       "name": "Mara",
       "role": "Mother",
       "motivation": "Fears her husband�s decisions led to their daughter�s disappearance.",
@@ -36,6 +38,7 @@ PROMPT: Create a quest using this data:
       "secrets": "She�s been contemplating leaving Harrick if Ema isn�t found safely."
     },
     {
+      "id": "npc_elim",
       "name": "Elim",
       "role": "Nervous Neighbor",
       "motivation": "Witnessed suspicious activity but is afraid to speak up.",
@@ -46,13 +49,13 @@ PROMPT: Create a quest using this data:
   "rumorsAndLeads": [
     {
       "rumor": "Torchlights spotted heading into Gavelwood at night�possible kidnappers.",
-      "sourceNPC": "Elim",
+      "sourceNPC": "npc_elim",
       "sourceLocation": ""
     },
     {
       "rumor": "Ominous roars echo near the old watchtower ruin.",
       "sourceNPC": "",
-      "sourceLocation": "Abandoned Watchtower"
+      "sourceLocation": "loc_abandoned_ruin"
     },
     {
       "rumor": "A traveling merchant saw a large, reptilian beast lurking among the trees.",
@@ -61,10 +64,26 @@ PROMPT: Create a quest using this data:
     }
   ],
   "locationsInvolved": [
-    "Gavelwood Forest",
-    "Old Watchtower Ruin",
-    "Harrick�s Farm",
-    "Village Tavern"
+    {
+      "id": "loc_gavelwood_forest",
+      "name": "Gavelwood Forest",
+      "type": "wilds"
+    },
+    {
+      "id": "loc_abandoned_Watchtower_ruin", 
+      "name": "Abandoned Watchtower Ruin",
+      "type": "delve"
+    },
+    {
+      "id": "loc_harricks_farm",
+      "name": "Harrick's Farm",
+      "type": "settlement"
+    },
+    {
+      "id": "loc_village_tavern",
+      "name": "Village Tavern",
+      "type": "building"
+    }
   ],
   "opposingForces": [
     {
@@ -99,7 +118,7 @@ PROMPT: Create a quest using this data:
     ],
     "narrative": [
       "Respect from local villagers",
-      "Growing renown as fearless adventurers"
+      "Growing renown as fearless adventurer"
     ]
   },
   "followupHooks": [

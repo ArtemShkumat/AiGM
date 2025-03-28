@@ -51,6 +51,9 @@ namespace AiGMBackEnd.Services.Processors
                     case "settlement":
                         location = ProcessSettlement(locationData);
                         break;
+                    case "wilds":
+                        location = ProcessWilds(locationData);
+                        break;
                     default:
                         _loggingService.LogError($"Unknown location type: {locationType}");
                         return;
@@ -104,6 +107,36 @@ namespace AiGMBackEnd.Services.Processors
                 _loggingService.LogError($"Error processing location creation: {ex.Message}");
                 throw;
             }
+        }
+        
+        private Wilds ProcessWilds(JObject locationData)
+        {
+            var wilds = new Wilds
+            {
+                Terrain = locationData["terrain"]?.ToString(),
+                Dangers = locationData["dangers"]?.ToString()
+            };
+            
+            // Process points of interest
+            if (locationData["points_of_interest"] is JArray poisArray)
+            {
+                foreach (var poiData in poisArray)
+                {
+                    if (poiData is JObject poiObj)
+                    {
+                        var poi = new PointOfInterest
+                        {
+                            Name = poiObj["name"]?.ToString(),
+                            Description = poiObj["description"]?.ToString(),
+                            HintingAt = poiObj["hinting_at"]?.ToString()
+                        };
+                        
+                        wilds.PointsOfInterest.Add(poi);
+                    }
+                }
+            }
+            
+            return wilds;
         }
         
         private Delve ProcessDelve(JObject locationData)
