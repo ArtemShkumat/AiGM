@@ -336,6 +336,46 @@ namespace AiGMBackEnd.Controllers
                 return StatusCode(500, $"Error retrieving inventory: {ex.Message}");
             }
         }
+
+        [HttpGet("{gameId}/validate")]
+        public async Task<IActionResult> ValidateGameData(string gameId)
+        {
+            if (string.IsNullOrEmpty(gameId))
+            {
+                return BadRequest("GameId is required");
+            }
+
+            try
+            {
+                _loggingService.LogInfo($"Starting validation for game: {gameId}");
+                var danglingRefs = await _storageService.FindDanglingReferencesAsync(gameId);
+
+                if (danglingRefs == null || !danglingRefs.Any())
+                {
+                    _loggingService.LogInfo($"Validation complete for game {gameId}. No dangling references found.");
+                    return Ok(new { Message = "Validation successful. No dangling references found.", DanglingReferences = new List<DanglingReferenceInfo>() });
+                }
+                else
+                {
+                    // Log details of each dangling reference
+                    foreach (var dr in danglingRefs)
+                    {
+                        _loggingService.LogWarning($"Validation for game {gameId}: Found dangling reference '{dr.ReferenceId}' in file '{dr.FilePath}'");
+                    }
+                    return Ok(new { Message = "Validation finished. Found dangling references.", DanglingReferences = danglingRefs });
+                }
+            }
+            catch (DirectoryNotFoundException dnfe)
+            {
+                _loggingService.LogWarning($"Validation failed for game {gameId}. Game directory not found: {dnfe.Message}");
+                return NotFound(new { Message = $"Validation failed. Game with ID '{gameId}' not found." });
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error during validation for game {gameId}: {ex.Message}");
+                return StatusCode(500, new { Message = $"An unexpected error occurred during validation.", Error = ex.Message });
+            }
+        }
     }
 
     public class NewGameRequest
