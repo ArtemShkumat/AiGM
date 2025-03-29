@@ -30,7 +30,6 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                 // Create a simplified player object with limited properties
                 playerToSerialize = new
                 {
-                    id = _player.Id,
                     type = _player.Type,
                     visualDescription = _player.VisualDescription,
                     age = _player.Age,

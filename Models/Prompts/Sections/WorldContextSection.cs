@@ -28,7 +28,10 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                 currentTime = _world.GameTime,
                 daysSinceStart = _world.DaysSinceStart,
                 worldStateEffects = _world.WorldStateEffects,
-                lore = _world.Lore
+                lore = _world.Lore,
+                locations = _world.Locations,
+                npcs = _world.Npcs,
+                quests = _world.Quests                
             };
             
             // If entity lists should be included

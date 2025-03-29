@@ -56,11 +56,11 @@ namespace AiGMBackEnd.Services
                 // Add DM's message to conversation log for DM and NPC responses
                 if (promptType == PromptType.DM)
                 {
-                    await _storageService.AddDmMessageAsync(userId, userFacingText);
+                    await _storageService.AddDmMessageAsync(userId, userFacingText + " " + hiddenJson);
                 }
                 else if (promptType == PromptType.NPC)
                 {
-                    await _storageService.AddDmMessageToNpcLogAsync(userId, npcId, userFacingText);
+                    await _storageService.AddDmMessageToNpcLogAsync(userId, npcId, userFacingText + " " + hiddenJson);
                 }
 
                 return new ProcessedResult

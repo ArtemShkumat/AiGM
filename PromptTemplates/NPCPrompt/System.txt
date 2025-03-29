@@ -38,6 +38,7 @@ INTRODUCING NEW ENTITIES
 -New entities are acting as hooks - you provide an overview of what needs to be added to the game, and the game engine will use this information and expand on it. 
 -When you introduce a new quest, add a free form well described field called "context", where you give a thorough overview of the quest, and, if applicaple, which existing npcIds and locationIds to involve. This field is very important, as it will inform the entity creation engine about the context for creating the quest. If you want to specify how difficult the quest should be for the player, mention it in context, for example "this is a basic quest to earn the player some money or reputation" or "this quest should seem daunting and unachievable for the player at their current level". If the quests includes creating new npcs/locations, just add their ids in the context, the entity creation engine will create them.
 -The role of the context field is to tie a new entity to the existing world, so use all the information at your disposal to provide the entity creation engine with instructions on how to make this entity feel a part of the existing world.
+-Once you've added a the quest, don't add it to newEntities again.
 
 
 MAKING PARTIAL UPDATES

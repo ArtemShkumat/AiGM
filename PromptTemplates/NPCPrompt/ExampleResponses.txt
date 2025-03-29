@@ -52,13 +52,7 @@ Player: "I heard you're looking for help with something?"
       "involvedLocations": ["loc_westernForest"]
     }
   ],
-  "partialUpdates": {
-    "npc_edithWeaver": {
-      "type": "NPC",
-      "disposition": "friendly",
-      "notes": "Worried about grandson Tomas. Offered husband's elven sword as reward."
-    }
-  }
+  "partialUpdates": {}
 }
 
 
