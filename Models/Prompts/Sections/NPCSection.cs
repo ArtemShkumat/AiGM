@@ -21,26 +21,26 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                 WriteIndented = true
             };
             
-            // If not detailed, we might want to simplify the NPC object
+            // If detailed is true, serialize the entire NPC object
+            // If detailed is false, use a simplified version with specific properties
             object npcToSerialize = _npc;
             
             if (!_detailed)
             {
-                // Create a simplified NPC with only basic information
-                var simplifiedPersonality = new
-                {
-                    temperament = _npc.Personality?.Temperament,
-                    quirks = _npc.Personality?.Quirks
-                };
-                
                 npcToSerialize = new
                 {
                     id = _npc.Id,
+                    type = _npc.Type,
                     name = _npc.Name,
                     visualDescription = _npc.VisualDescription,
-                    personality = simplifiedPersonality,
+                    knownToPlayer = _npc.KnownToPlayer,
+                    knowsPlayer = _npc.KnowsPlayer,
+                    visibleToPlayer = _npc.VisibleToPlayer,
                     backstory = _npc.Backstory,
-                    dispositionTowardsPlayer = _npc.DispositionTowardsPlayer
+                    age = _npc.Age,
+                    currentGoal = _npc.CurrentGoal,
+                    dispositionTowardsPlayer = _npc.DispositionTowardsPlayer,
+                    questInvolvement = _npc.QuestInvolvement
                 };
             }
             

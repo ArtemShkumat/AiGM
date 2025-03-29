@@ -1,47 +1,48 @@
-Your response should consist of two parts:
+These are the fields that you should consider updating in partialUpdates.
+If it's not here, then just assume you don't need to bother updating it, ever.
 
-1. CHARACTER RESPONSE:
-   Respond as the NPC would in this situation, using their voice, mannerisms, and knowledge. Include:
-   - Dialogue in quotation marks
-   - Brief descriptions of actions, expressions, or tone in *asterisks*
-   - Emotional reactions appropriate to the conversation and NPC's personality
-
-2. STATE UPDATES (when needed):
-   If your response involves changes to game state, include a JSON block within <donotshow/> tags at the END of your response. This should ONLY be included if there are actual changes to record.
-
-Example format:
-```
-*The merchant eyes your coin purse* "Finest wares in all the kingdom, right here. What catches your fancy?"
-
-<donotshow/>
 {
-    "newEntities": [
-      {
-        "type": "NPC",
-        ...otherfields
-      }
-      // Possibly more new entities...
-    ],
-    "partialUpdates": {
-      "npc_elenaBlacksmith": {
-        "type": "NPC",
-        ...other fields
+  "gameState": {
+    "player": {      
+      "visualDescription": {
+        "condition": "string - Current physical state", //update when something happens to visual condition of the player. Say, if they get caught in the rain, or burned.
+        "visibleClothing": "string - Outfit and visible attire" //This is clothing that people around the player can see. So if the player wears layers, only describe the clothes that are actually visible. NPCs will use it for reference when interacting with player. Update when player dresses/undresses/changes clothes.
       },
-      "loc_townSquare": {
-        "type": "QUEST",
-        ...other fields
+      "inventory": [// What is currently is in player's inventory. Update when you either trade with the player or player takes something from you.
+      ],
+      "money": "number - Amount of currency the player has", //Obviously update as necessary
+      "statusEffects": ["string - Current effects on the player (buffs, debuffs, etc.)"], //This are status effects that would affect the player temporarily - being cursed, exhausted, buffed, etc. Update only when a significant change to player status happens.      
+    },
+    "npc_id": [
+      {
+        "currentLocationId": "string - ID of the location where this NPC is",  //Update if an NPC leaves the location, but always assign a new one from the list of EXISTING locations in world.locations
+        "knownToPlayer": "boolean - Whether the player has met this NPC", //Update once to true - when meeting player
+        "knowsPlayer": "boolean - Whether the NPC has met the player", //Update once to true - when learns player's name
+        "visibleToPlayer": "boolean - Whether the NPC is currently visible to the player", //Important! Judge from context, but if the NPC in scene either leaves or hides or if the player leaves location update this to false. This must only ever be true if the NPC is in direct line of sight of the player.
+        "visualDescription": {
+          "condition": "string - Current physical state", //update when something happens to visual condition of the NPC. Say, if they get visibly damaged or frozen in ice.e
+          "visibleClothing": "string - Outfit and visible attire" //Just like in player - This is clothing that people around the NPC can see. Update when NPC dresses/undresses/changes clothes.
+        },
+        "currentGoal": "string - What the NPC is currently trying to achieve", //Only update when the current goal is achieved or once this NPC decides to no longer pursue it.
+        "dispositionTowardsPlayer": "string - How the NPC feels about the player", //can be one of these things - Hostile/Unfriendly/Neutral/Fond/Loyal. Update only when the relationship meaningfully progresses. Hostile means enemy - will generally attack player on sight or actively seek to harm the player in other ways. Loyal means will take personal risks to help the player. 
+        "knownEntities": { //This is a subset of entities from world.npcs and world.locations. There must never be an entity here that doesn't exist in world section.
+          "npcsKnown": [
+            {
+              "name": "string - Name of an NPC this one knows", //Never update - for reference
+              "levelOfFamiliarity": "string - How well they know each other (Aware/Met/Known/Familiar/Deep)", //Update as story demands
+              "disposition": "string - How they feel about each other (Hostile/Unfriendly/Neutral/Fond/Loyal)" //Update as story demands
+            }
+          ],
+          "locationsKnown": ["string - IDs of locations this NPC knows about"] //Update once player mentions a location that exists in world.locations.
+        },
+        "inventory": [ Update when items are added/removed
+          {
+            "name": "string - Item name",
+            "description": "string - Item description",
+            "quantity": "number - How many of this item"
+          }
+        ]        
       }
-    }  
+    ],
+  }
 }
-
-```
-
-JSON RULES:
-1. ONLY include the <donotshow/> block if there are actual updates to record.
-2. Always use valid JSON format with proper quotes, commas, brackets, etc.
-3. Only update fields that have actually changed.
-4. For disposition changes, use: hostile, unfriendly, neutral, friendly, or allied.
-5. When revealing information that should be remembered, add it to the NPC's notes.
-6. If the player receives an item, quest, or knowledge, include that information in the appropriate section.
-
-Keep your response focused on the immediate interaction. Don't make assumptions about future events or player actions beyond the current exchange.

@@ -85,7 +85,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                     promptContentBuilder.AppendLine("npcsPresentInThisLocation:");
                     foreach (var npc in npcsInCurrentLocation)
                     {
-                        new NPCSection(npc).AppendTo(promptContentBuilder);
+                        new NPCSection(npc, false).AppendTo(promptContentBuilder);
                     }
                 }
 

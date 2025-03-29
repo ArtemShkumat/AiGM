@@ -21,18 +21,22 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                 WriteIndented = true
             };
             
-            // If not detailed, we might want to simplify the player object
+            // If detailed is true, serialize the entire Player object
+            // If detailed is false, use a simplified version with specific properties
             object playerToSerialize = _player;
             
             if (!_detailed)
             {
-                // Create a simplified player object without detailed RPG elements, inventory, etc.
+                // Create a simplified player object with limited properties
                 playerToSerialize = new
                 {
-                    name = _player.Name,
-                    currentLocationId = _player.CurrentLocationId,
-                    backstory = _player.Backstory,
-                    visualDescription = _player.VisualDescription
+                    id = _player.Id,
+                    type = _player.Type,
+                    visualDescription = _player.VisualDescription,
+                    age = _player.Age,
+                    statusEffects = _player.StatusEffects,
+                    inventory = _player.Inventory,
+                    money = _player.Money
                 };
             }
             

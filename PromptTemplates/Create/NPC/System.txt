@@ -29,4 +29,4 @@ When creating an NPC, consider:
 - What makes this NPC memorable or distinct from similar characters
 
 Your goal is to create NPCs that feel like they have lives and purposes independent of the player, yet provide engaging interactions and contribute meaningfully to the player's experience. 
-The output structure shows many fields, all them must be filled out in order to create a deep multidimensional NPC.
+The output structure shows many fields, you must fill out all of them in order to create a deep multidimensional NPC.

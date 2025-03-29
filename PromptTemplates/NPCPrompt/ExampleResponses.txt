@@ -10,7 +10,6 @@ Player: "Hello there! I'm looking for some potions. Do you sell any healing item
     "npc_elizaHerbalist": {
       "type": "NPC",
       "disposition": "friendly",
-      "notes": "Offered healing potions at 3 silver each with a deal on purchases of 3+"
     },
     "lore_winterWolvesNorthRoad": {
       "type": "LORE",

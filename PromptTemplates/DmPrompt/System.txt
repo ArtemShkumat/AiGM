@@ -92,8 +92,3 @@ Your hidden JSON (after <donotshow/>) will typically have two key arrays/objects
       }
     }  
 }
-
-ABOUT CONTEXT IN NEW ENTITIES
-
-
-NOTABLE PARTIAL UPDATES TO ALWAYS CONSIDER
