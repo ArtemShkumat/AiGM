@@ -42,9 +42,9 @@
     }
   ],
   "locationsInvolved": [
-    {"id": "loc_emberhold", "name": "Emberhold Village"},
-    {"id": "loc_ancientForge", "name": "The Ancient Forge"},
-    {"id": "loc_crystalCaverns", "name": "Crystal Caverns"}
+    {"id": "loc_emberhold", "name": "Emberhold Village", "type": "Settlement"},
+    {"id": "loc_ancientForge", "name": "The Ancient Forge", "type": "Building"},
+    {"id": "loc_crystalCaverns", "name": "Crystal Caverns", "type": "Delve"}
   ],
   "opposingForces": [
     {
@@ -64,20 +64,11 @@
     "Smith Runa demonstrating how the forge's reduced power affects the village's livelihood",
     "The revelation of why the thief wanted the crystal and whether their motivations were truly malicious"
   ],
-  "rewards": {
-    "experience": "Recognition as a hero of Emberhold",
-    "material": [
-      "A masterwork weapon crafted by Smith Runa",
-      "Discounts at Thorin's trading post"
-    ],
-    "narrative": [
-      "Emberhold's continued survival through the winter",
-      "Knowledge of elemental binding techniques"
-    ]
-  },
-  "followupHooks": [
-    "Reports of unusual crystal growths in deeper parts of the caverns",
-    "Tensions with the rival settlement that could escalate",
-    "Elder Varric's offer to teach the player about elemental binding"
+  "rewards": [
+    "Recognition as a hero of Emberhold",
+    "A masterwork weapon crafted by Smith Runa",
+    "Discounts at Thorin's trading post",
+    "Emberhold's continued survival through the winter",
+    "Knowledge of elemental binding techniques"
   ]
 } 

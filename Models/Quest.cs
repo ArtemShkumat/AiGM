@@ -38,10 +38,7 @@ namespace AiGMBackEnd.Models
         public List<string> EmotionalBeats { get; set; } = new List<string>();
         
         [JsonPropertyName("rewards")]
-        public QuestRewards Rewards { get; set; } = new QuestRewards();
-        
-        [JsonPropertyName("followupHooks")]
-        public List<string> FollowupHooks { get; set; } = new List<string>();
+        public List<string> Rewards { get; set; } = new List<string>();
     }
 
     public class QuestNpc
@@ -83,7 +80,7 @@ namespace AiGMBackEnd.Models
         public string Id { get; set; }
         
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string Name { get; set; }        
         
         [JsonPropertyName("type")]
         public string Type { get; set; }
@@ -102,17 +99,5 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("description")]
         public string Description { get; set; }
-    }
-    
-    public class QuestRewards
-    {
-        [JsonPropertyName("experience")]
-        public string Experience { get; set; }
-        
-        [JsonPropertyName("material")]
-        public List<string> Material { get; set; } = new List<string>();
-        
-        [JsonPropertyName("narrative")]
-        public List<string> Narrative { get; set; } = new List<string>();
     }
 }
