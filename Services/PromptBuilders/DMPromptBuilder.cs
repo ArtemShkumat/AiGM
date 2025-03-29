@@ -18,7 +18,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
             try
             {
-                await _storageService.AddUserMessageAsync(request.UserId, request.UserInput);                
+                         
 
                 // Load DM template files
                 var systemPrompt = await _storageService.GetDmTemplateAsync("System");
@@ -49,6 +49,18 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
                 new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
+                // Build the system prompt with response instructions and examples
+                var systemPromptBuilder = new StringBuilder();
+                systemPromptBuilder.AppendLine(systemPrompt);
+                systemPromptBuilder.AppendLine();
+
+                // Add output structure
+                PromptSection.AppendSection(systemPromptBuilder, "Output Structure", outputStructure);
+
+                // Add example responses
+                systemPromptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");
+                PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);
+
                 // Add location context using the location section
                 promptContentBuilder.AppendLine("currentLocation: ");
                 new LocationContextSection(location).AppendTo(promptContentBuilder);
@@ -70,7 +82,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Add NPCs present at this location and all the information about them
                 if (npcsInCurrentLocation != null && npcsInCurrentLocation.Count > 0)
                 {
-                    promptContentBuilder.AppendLine("# NPCs Present");
+                    promptContentBuilder.AppendLine("npcsPresentInThisLocation:");
                     foreach (var npc in npcsInCurrentLocation)
                     {
                         new NPCSection(npc).AppendTo(promptContentBuilder);
@@ -80,7 +92,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Add all active quests and all their information
                 if (activeQuests != null && activeQuests.Count > 0)
                 {
-                    promptContentBuilder.AppendLine("# Active Quests");
+                    promptContentBuilder.AppendLine("activeQuests:");
                     foreach (var quest in activeQuests)
                     {
                         new QuestSection(quest).AppendTo(promptContentBuilder);
@@ -91,20 +103,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 new ConversationLogSection(conversationLog).AppendTo(promptContentBuilder);
                 
                 // Add the user's input
-                //new UserInputSection(userInput, "Current player prompt").AppendTo(promptContentBuilder);
+                new UserInputSection(request.UserInput, "Current player prompt").AppendTo(promptContentBuilder);
+                await _storageService.AddUserMessageAsync(request.UserId, request.UserInput);
 
-                // Build the system prompt with response instructions and examples
-                var systemPromptBuilder = new StringBuilder();
-                systemPromptBuilder.AppendLine(systemPrompt);
-                systemPromptBuilder.AppendLine();
-                
-                // Add output structure
-                PromptSection.AppendSection(systemPromptBuilder, "Output Structure", outputStructure);
-
-                // Add example responses
-                systemPromptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");
-                PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);
-                
                 // Create the prompt object
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),

@@ -13,7 +13,7 @@ Format adherence: Use only the field names provided below. An array means you ma
   "visibleToPlayer": false,
   
   "visualDescription": {
-    "gender": "MALE/FEMALE",
+    "gender": "MALE/FEMALE",vi
     "body": "DESCRIPTION_OF_PHYSICAL_BUILD_AND_APPEARANCE",
     "visibleClothing": "DESCRIPTION_OF_VISIBLE_ATTIRE",
     "condition": "CURRENT_PHYSICAL_STATE",
