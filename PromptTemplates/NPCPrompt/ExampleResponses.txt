@@ -1,7 +1,7 @@
-EXAMPLE 1: FRIENDLY MERCHANT
-Player: "Hello there! I'm looking for some potions. Do you sell any healing items?"
+EXAMPLE 1: FIRST MEETING
+Player: "Hello there! I'm John. I'm looking for some potions. Do you sell any healing items?"
 
-*Eliza wipes her hands on her apron and beams at you* "Well met, traveler! Indeed I do! Got a fresh batch of healing potions just brewed yesterday. Three silvers each, and I'll throw in a minor stamina potion if you buy three or more. The winter wolves have been making the north road treacherous lately, so folks are stocking up."
+*Eliza wipes her hands on her apron and beams at you* "Well met, traveler! My name is Eliza and Indeed I do! Got a fresh batch of healing potions just brewed yesterday. Three silvers each, and I'll throw in a minor stamina potion if you buy three or more. The winter wolves have been making the north road treacherous lately, so folks are stocking up."
 
 <donotshow/>
 {
@@ -9,12 +9,8 @@ Player: "Hello there! I'm looking for some potions. Do you sell any healing item
   "partialUpdates": {
     "npc_elizaHerbalist": {
       "type": "NPC",
-      "disposition": "friendly",
-    },
-    "lore_winterWolvesNorthRoad": {
-      "type": "LORE",
-      "title": "Winter Wolf Danger",
-      "content": "Winter wolves have been making the north road dangerous for travelers."
+      "knowsPlayer": true,
+      "isKnownToPlayer": true
     }
   }
 }
@@ -63,5 +59,17 @@ Player: "I heard you're looking for help with something?"
       "notes": "Worried about grandson Tomas. Offered husband's elven sword as reward."
     }
   }
+}
+
+
+EXAMPLE 4: CASUAL CHAT
+Player: "How are things going today?"
+
+*I look up from polishing the bar counter and give a friendly shrug* "Same as always, really. Morning rush for breakfast porridge is done, now just tidying up before the lunch crowd arrives." *I toss the rag over my shoulder* "Though I did hear some interesting gossip about Lady Fairfax's new hat. Apparently it's got three peacock feathers and a small mechanical bird that chirps on the hour. Ridiculous if you ask me, but that's nobility for you."
+
+<donotshow/>
+{
+  "newEntities": [],
+  "partialUpdates": {}
 }
 

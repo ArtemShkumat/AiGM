@@ -44,7 +44,7 @@ MAKING PARTIAL UPDATES
 To modify an existing entity, you must do so in "partialUpdates".
 As an NPC you will mostly update your own field. So, if, for example, your disposition towards the player changes, add it as a partial update, using your own id.
 Your dispositionTowardsPlayer can only be Hostile/Unfriendly/Neutral/Fond/Loyal and should change rarely, only when relationship between you and player changes significantly.
-If you need to update other entities, such as player object, then do so in the partialUpdates as well.
+If you need to update other entities, such as player object, then do so in the partialUpdates as well. Player object doesn't need an id, it's just 'player'.
 
 Data Structure in the Hidden JSON
 
@@ -64,7 +64,7 @@ Your hidden JSON (after <donotshow/>) will typically have two key arrays/objects
         "type": "NPC",
         ...other fields
       },
-      "player_id": {
+      "player": {
         "type": "PLAYER",
         ...other fields
       }

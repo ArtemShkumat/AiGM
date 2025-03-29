@@ -14,7 +14,8 @@
     "gender": "male",
     "body": "lean",
     "visibleClothing": "Simple tunic and leather boots",
-    "condition": "Rested but dusty from travel"
+    "condition": "Rested but dusty from travel",
+    "resemblingCelebrity": "Josh Hartnett"
   },
   
   "backstory": "A wanderer who lost his home during the Dragon War and now seeks purpose.",
@@ -73,7 +74,8 @@
     "gender": "female",
     "body": "wiry and tough",
     "visibleClothing": "Practical cargo pants, reinforced jacket, and weathered boots",
-    "condition": "Exhausted with a healing cut above right eyebrow"
+    "condition": "Exhausted with a healing cut above right eyebrow",
+    "resemblingCelebrity": "Mackenzie Davis"
   },
   
   "backstory": "Former paramedic who survived the initial outbreak by barricading in a hospital pharmacy. Has been on the move ever since, using medical knowledge to barter for safety and supplies.",
@@ -155,7 +157,8 @@
     "gender": "female",
     "body": "short and athletic",
     "visibleClothing": "Formal Alliance uniform with tactical modifications",
-    "condition": "Composed despite visible cybernetic implant scarring on right temple"
+    "condition": "Composed despite visible cybernetic implant scarring on right temple",
+    "resemblingCelebrity": "Michelle Yeoh"
   },
   
   "backstory": "Decorated tactical officer whose career was sidelined after voicing concerns about classified Xenovek research. Officially on administrative leave, secretly investigating corporate ties to prohibited xenotechnology.",

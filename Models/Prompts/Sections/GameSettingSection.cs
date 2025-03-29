@@ -31,7 +31,6 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                     genre = _gameSetting.Genre,
                     theme = _gameSetting.Theme,
                     description = _gameSetting.Description,
-                    gameName = _gameSetting.GameName,
                     setting = _gameSetting.Setting
                 };
             }

@@ -54,7 +54,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine();
 
                 // Add output structure
-                PromptSection.AppendSection(systemPromptBuilder, "Output Structure", outputStructure);
+                PromptSection.AppendSection(systemPromptBuilder, "Detailed information on fields that can be used for partial updates", outputStructure);
 
                 // Add example responses
                 systemPromptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");
