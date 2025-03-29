@@ -18,8 +18,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
             try
             {
-                         
-
+                await _storageService.AddUserMessageAsync(request.UserId, request.UserInput);
                 // Load DM template files
                 var systemPrompt = await _storageService.GetDmTemplateAsync("System");
                 var outputStructure = await _storageService.GetDmTemplateAsync("OutputStructure");
@@ -104,7 +103,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 
                 // Add the user's input
                 new UserInputSection(request.UserInput, "Current player prompt").AppendTo(promptContentBuilder);
-                await _storageService.AddUserMessageAsync(request.UserId, request.UserInput);
+                
 
                 // Create the prompt object
                 return new Prompt(

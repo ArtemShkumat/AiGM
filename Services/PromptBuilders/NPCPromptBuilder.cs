@@ -50,6 +50,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
                 new WorldContextSection(world, includeEntityLists: true).AppendTo(promptContentBuilder);
+                promptContentBuilder.Append("currentLocation:");
                 new LocationContextSection(location).AppendTo(promptContentBuilder);
                 new PlayerContextSection(player, false).AppendTo(promptContentBuilder);
 

@@ -72,12 +72,18 @@ namespace AiGMBackEnd.Services.AIProviders
                     Encoding.UTF8,
                     "application/json");
 
-                _loggingService.LogInfo("request:"+ json);
+                // Preprocess the JSON for better logging readability
+                var prettyJson = PreprocessJsonForLogging(json);
+                _loggingService.LogFormattedInfo("request", prettyJson);
+                
                 var response = await _httpClient.PostAsync("chat/completions", requestContent);
                 response.EnsureSuccessStatusCode();
 
                 var responseContent = await response.Content.ReadAsStringAsync();
-                _loggingService.LogInfo("response:" + responseContent.ToString());
+                // Preprocess the response JSON for better logging
+                var prettyResponse = PreprocessJsonForLogging(responseContent);
+                _loggingService.LogFormattedInfo("response", prettyResponse);
+                
                 var responseObject = JsonSerializer.Deserialize<JsonElement>(responseContent);
 
                 if (responseObject.TryGetProperty("choices", out var choices) && 
@@ -95,6 +101,33 @@ namespace AiGMBackEnd.Services.AIProviders
                 _loggingService.LogError($"Error in OpenAI provider: {ex.Message}");
                 throw;
             }
+        }
+
+        private string PreprocessJsonForLogging(string json)
+        {
+            if (string.IsNullOrEmpty(json))
+                return json;
+                
+            // Replace escape sequences directly in the JSON string
+            string processed = json
+                .Replace("\\r\\n", Environment.NewLine)
+                .Replace("\\n", Environment.NewLine)
+                .Replace("\\t", "\t")
+                .Replace("\\\"", "\"")
+                .Replace("\\'", "'")
+                .Replace("\\\\", "\\");
+                
+            // Replace unicode escapes
+            processed = System.Text.RegularExpressions.Regex.Replace(
+                processed, 
+                "\\\\u([0-9a-fA-F]{4})", 
+                match => {
+                    string hex = match.Groups[1].Value;
+                    int code = Convert.ToInt32(hex, 16);
+                    return ((char)code).ToString();
+                });
+                
+            return processed;
         }
     }
 }

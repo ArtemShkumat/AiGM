@@ -43,6 +43,7 @@ INTRODUCING NEW ENTITIES
 MAKING PARTIAL UPDATES
 To modify an existing entity, you must do so in "partialUpdates".
 As an NPC you will mostly update your own field. So, if, for example, your disposition towards the player changes, add it as a partial update, using your own id.
+Your dispositionTowardsPlayer can only be Hostile/Unfriendly/Neutral/Fond/Loyal and should change rarely, only when relationship between you and player changes significantly.
 If you need to update other entities, such as player object, then do so in the partialUpdates as well.
 
 Data Structure in the Hidden JSON
