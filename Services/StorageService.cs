@@ -618,6 +618,93 @@ namespace AiGMBackEnd.Services
             
             await SaveAsync(userId, $"npcs/{npcId}", npc);
         }
+
+        #region World Entity Management
+
+        public async Task AddEntityToWorldAsync(string userId, string entityId, string entityName, string entityType)
+        {
+            try
+            {
+                var world = await GetWorldAsync(userId);
+                if (world == null)
+                {
+                    _loggingService.LogWarning($"World object not found for user {userId}");
+                    return;
+                }
+
+                bool entityAdded = false;
+                
+                switch (entityType.ToLower())
+                {
+                    case "npc":
+                        if (world.Npcs == null)
+                        {
+                            world.Npcs = new List<NpcSummary>();
+                        }
+                        
+                        if (!world.Npcs.Any(n => n.Id == entityId))
+                        {
+                            world.Npcs.Add(new NpcSummary
+                            {
+                                Id = entityId,
+                                Name = entityName
+                            });
+                            entityAdded = true;
+                        }
+                        break;
+                        
+                    case "location":
+                        if (world.Locations == null)
+                        {
+                            world.Locations = new List<LocationSummary>();
+                        }
+                        
+                        if (!world.Locations.Any(l => l.Id == entityId))
+                        {
+                            world.Locations.Add(new LocationSummary
+                            {
+                                Id = entityId,
+                                Name = entityName
+                            });
+                            entityAdded = true;
+                        }
+                        break;
+                        
+                    case "quest":
+                        if (world.Quests == null)
+                        {
+                            world.Quests = new List<QuestSummary>();
+                        }
+                        
+                        if (!world.Quests.Any(q => q.Id == entityId))
+                        {
+                            world.Quests.Add(new QuestSummary
+                            {
+                                Id = entityId,
+                                Title = entityName
+                            });
+                            entityAdded = true;
+                        }
+                        break;
+                        
+                    default:
+                        _loggingService.LogWarning($"Unknown entity type for world addition: {entityType}");
+                        break;
+                }
+                
+                if (entityAdded)
+                {
+                    await SaveAsync(userId, "world", world);
+                    _loggingService.LogInfo($"Added {entityType} {entityId} to world for user {userId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error adding entity to world: {ex.Message}");
+            }
+        }
+
+        #endregion
     }
     
     // Class to use in the StorageService methods

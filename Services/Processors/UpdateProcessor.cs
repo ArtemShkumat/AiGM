@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Services;
+using System;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace AiGMBackEnd.Services.Processors
@@ -53,6 +55,46 @@ namespace AiGMBackEnd.Services.Processors
                                 _loggingService.LogWarning("Skipping entity with missing ID");
                                 continue;
                             }
+
+                            // Get world object to check if entity already exists
+                            var world = await _storageService.GetWorldAsync(userId);
+                            if (world != null)
+                            {
+                                bool entityExists = false;
+                                
+                                // Check if entity already exists in the corresponding section of the world object
+                                switch (entityType)
+                                {
+                                    case "npc":
+                                        entityExists = world.Npcs?.Any(n => n.Id == entityId) ?? false;
+                                        break;
+                                    case "location":
+                                        entityExists = world.Locations?.Any(l => l.Id == entityId) ?? false;
+                                        break;
+                                    case "quest":
+                                        entityExists = world.Quests?.Any(q => q.Id == entityId) ?? false;
+                                        break;
+                                }
+                                
+                                if (entityExists)
+                                {
+                                    _loggingService.LogInfo($"Skipping creation of {entityType} entity: {entityId} - already exists in world");
+                                    continue;
+                                }
+                                else
+                                {
+                                    // Add the entity to the world before proceeding with its creation
+                                    string entityDisplayName = entityName;
+                                    
+                                    // For quests, use "title" rather than "name"
+                                    if (entityType == "quest")
+                                    {
+                                        entityDisplayName = entity["title"]?.ToString() ?? entityName;
+                                    }
+                                    
+                                    await _storageService.AddEntityToWorldAsync(userId, entityId, entityDisplayName, entityType);
+                                }
+                            }
                                     
                             _loggingService.LogInfo($"Processing creation of {entityType} entity: {entityId}");
                                     
@@ -74,11 +116,15 @@ namespace AiGMBackEnd.Services.Processors
                                 
                                 case "location":
                                     var locationName = entity["name"]?.ToString() ?? "New Location";
+                                    var locationType = entity["locationType"]?.ToString() ?? "";
                                     _loggingService.LogInfo($"Will trigger separate job to create location: {locationName}");
                                     FireAndForgetEntityCreation(new PromptRequest 
                                     { 
                                         PromptType = PromptType.CreateLocation,
                                         UserId = userId,
+                                        LocationId = entityId,
+                                        LocationName = locationName,
+                                        LocationType = locationType,
                                         Context = context
                                     });
                                     break;

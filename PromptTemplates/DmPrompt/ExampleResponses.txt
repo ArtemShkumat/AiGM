@@ -184,4 +184,3 @@ Tomas straightens up and adjusts his wares. "If you're thinking of exploring it,
     ],
     "partialUpdates": {}
 }
-
