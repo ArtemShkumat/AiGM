@@ -54,7 +54,13 @@ namespace AiGMBackEnd.Services.Processors
                         ResemblingCelebrity = visualDesc["resemblingCelebrity"]?.ToString()
                     };
                 }
-                
+
+                if (playerData["age"] != null)
+                {
+                    player.Money = playerData["age"].Value<int>();
+                }
+
+
                 // Handle inventory
                 if (playerData["inventory"] is JArray inventory)
                 {

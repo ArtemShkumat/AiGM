@@ -6,10 +6,12 @@ namespace AiGMBackEnd.Models.Prompts.Sections
     public class GameSettingSection : PromptSection
     {
         private readonly GameSetting _gameSetting;
+        private readonly bool _detailed;
 
-        public GameSettingSection(GameSetting gameSetting)
+        public GameSettingSection(GameSetting gameSetting, bool detailed = true)
         {
             _gameSetting = gameSetting;
+            _detailed = detailed;
         }
 
         public override void AppendTo(StringBuilder builder)
@@ -19,8 +21,23 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                 WriteIndented = true
             };
             
+            object gameSettingToSerialize = _gameSetting;
+            
+            if (!_detailed)
+            {
+                // Create a simplified game setting object with limited properties
+                gameSettingToSerialize = new
+                {
+                    genre = _gameSetting.Genre,
+                    theme = _gameSetting.Theme,
+                    description = _gameSetting.Description,
+                    gameName = _gameSetting.GameName,
+                    setting = _gameSetting.Setting
+                };
+            }
+            
             builder.AppendLine("gameSetting: ");
-            builder.AppendLine(JsonSerializer.Serialize(_gameSetting, options));
+            builder.AppendLine(JsonSerializer.Serialize(gameSettingToSerialize, options));
             builder.AppendLine();
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Text.Json;
 
@@ -7,11 +8,13 @@ namespace AiGMBackEnd.Models.Prompts.Sections
     {
         private readonly string _userInput;
         private readonly string _title;
+        private readonly bool _detailed;
 
-        public UserInputSection(string userInput, string title = "User Input")
+        public UserInputSection(string userInput, string title = "User Input", bool detailed = true)
         {
             _userInput = userInput;
             _title = title;
+            _detailed = detailed;
         }
 
         public override void AppendTo(StringBuilder builder)
@@ -21,11 +24,25 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                 WriteIndented = true
             };
             
-            var userInputObj = new
+            object userInputObj;
+            
+            if (_detailed)
             {
-                title = _title,
-                content = _userInput
-            };
+                userInputObj = new
+                {
+                    title = _title,
+                    content = _userInput,
+                    timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                };
+            }
+            else
+            {
+                userInputObj = new
+                {
+                    title = _title,
+                    content = _userInput
+                };
+            }
             
             builder.AppendLine("userInput: ");
             builder.AppendLine(JsonSerializer.Serialize(userInputObj, options));

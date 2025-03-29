@@ -21,8 +21,6 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                 WriteIndented = true
             };
             
-            // If detailed is true, serialize the entire NPC object
-            // If detailed is false, use a simplified version with specific properties
             object npcToSerialize = _npc;
             
             if (!_detailed)
