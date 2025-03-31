@@ -362,7 +362,7 @@ namespace AiGMBackEnd.Controllers
                     // Log details of each dangling reference
                     foreach (var dr in danglingRefs)
                     {
-                        _loggingService.LogWarning($"Validation for game {gameId}: Found dangling reference '{dr.ReferenceId}' in file '{dr.FilePath}'");
+                        _loggingService.LogWarning($"Validation for game {gameId}: Found dangling reference '{dr.ReferenceId}' of type '{dr.ReferenceType}' in file '{dr.FilePath}'");
                     }
                     return Ok(new { Message = "Validation finished. Found dangling references.", DanglingReferences = danglingRefs });
                 }

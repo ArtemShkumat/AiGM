@@ -97,7 +97,8 @@ namespace AiGMBackEnd.Services.Storage
                             danglingReferencesResult.Add(new StorageService.DanglingReferenceInfo
                             {
                                 ReferenceId = referenceId,
-                                FilePath = filePath // Store the file path
+                                FilePath = filePath, // Store the file path
+                                ReferenceType = GetReferenceType(referenceId)
                             });
                         }
                     }
@@ -162,6 +163,19 @@ namespace AiGMBackEnd.Services.Storage
                     FindReferencesRecursive(item, referencesMap, prefixes, filePath);
                 }
             }
+        }
+
+        // Helper method to determine the reference type based on the prefix
+        private string GetReferenceType(string referenceId)
+        {
+            if (referenceId.StartsWith("npc_"))
+                return "NPC";
+            else if (referenceId.StartsWith("loc_"))
+                return "Location";
+            else if (referenceId.StartsWith("quest_"))
+                return "Quest";
+            else
+                return "Unknown";
         }
     }
 } 

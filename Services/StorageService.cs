@@ -44,6 +44,7 @@ namespace AiGMBackEnd.Services
         {
             public string ReferenceId { get; set; }
             public string FilePath { get; set; }
+            public string ReferenceType { get; set; }
         }
 
         #region Base Storage Operations

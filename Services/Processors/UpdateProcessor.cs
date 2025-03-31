@@ -116,7 +116,7 @@ namespace AiGMBackEnd.Services.Processors
                                 
                                 case "location":
                                     var locationName = entity["name"]?.ToString() ?? "New Location";
-                                    var locationType = entity["locationType"]?.ToString() ?? "";
+                                    var locationType = entity["locationType"]?.ToString() ?? "Building";
                                     _loggingService.LogInfo($"Will trigger separate job to create location: {locationName}");
                                     FireAndForgetEntityCreation(new PromptRequest 
                                     { 
