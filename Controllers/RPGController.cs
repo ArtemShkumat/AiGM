@@ -5,6 +5,8 @@ using AiGMBackEnd.Models;
 using AiGMBackEnd.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using AiGMBackEnd.Services.Storage;
+using static AiGMBackEnd.Services.StorageService;
 
 namespace AiGMBackEnd.Controllers
 {
@@ -426,6 +428,6 @@ namespace AiGMBackEnd.Controllers
         public string CurrentLocationId { get; set; }
         public string LocationName { get; set; }
         public string LocationDescription { get; set; }
-        public List<Services.NpcInfo> VisibleNpcs { get; set; } = new List<Services.NpcInfo>();
+        public List<NpcInfo> VisibleNpcs { get; set; } = new List<NpcInfo>();
     }
 }
