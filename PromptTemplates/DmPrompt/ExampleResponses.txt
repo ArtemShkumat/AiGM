@@ -245,3 +245,67 @@ ASSISTANT:
     "newEntities": [],
     "partialUpdates": {}
 }
+
+EXAMPLE 8: Player enters a tavern that has no NPCs assigned to it.
+
+USER:
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_northGate"
+},
+"connectedLocations": [
+  {
+    "id": "loc_silverFoxTavern",
+    "name": "Silver Fox Tavern",
+    "locationType": "BUILDING",
+    "description": "A popular tavern located near the northern edge of town, known for its hearty meals and warm atmosphere.",
+    "npcs": []
+  }
+]
+
+I head into the Silver Fox Tavern to get a drink after my long journey.
+
+ASSISTANT:
+You push open the heavy wooden door of the Silver Fox Tavern, and warmth immediately envelops you. The tavern is lively this evening—the crackling hearth in the corner casting dancing shadows across the room. The air is thick with the aroma of roasted meat, spilled ale, and woodsmoke.
+
+Behind the bar stands a portly man with a magnificent mustache, expertly filling mugs from a large barrel. He gives you a quick nod as you enter. A young serving girl weaves between tables, balancing a tray of drinks with practiced ease. 
+
+In the corner, an elderly man strums a lute, playing a cheerful tune that blends with the hum of conversation. Several patrons occupy the tables—a group of laborers still dusty from their day's work, a pair of merchants engaged in hushed conversation, and a weathered traveler nursing a drink alone by the window.
+
+<donotshow/>
+{
+    "newEntities": [
+      {
+        "type": "NPC",
+        "name": "Barton",
+        "id": "npc_bartonInnkeeper",
+        "currentLocationId": "loc_silverFoxTavern",
+        "context": "Barton is the innkeeper and barkeep of the Silver Fox Tavern. He's a portly middle-aged man with a magnificent mustache and a welcoming demeanor. He's been running this establishment for over fifteen years and knows everyone in town. He's a source of local gossip and information, with a friendly but no-nonsense attitude. He takes pride in his tavern and the quality of his ale."
+      },
+      {
+        "type": "NPC",
+        "name": "Lina",
+        "id": "npc_linaBarmaid",
+        "currentLocationId": "loc_silverFoxTavern",
+        "context": "Lina is a young serving girl at the Silver Fox Tavern. She's quick on her feet and good at her job, known for her ability to remember complex orders and navigate the crowded tavern without spilling a drop. She's from a poor family in town and works to help support her younger siblings. She appears cheerful to customers but is actually quite ambitious and saving up to leave town someday."
+      },
+      {
+        "type": "NPC",
+        "name": "Old Tobin",
+        "id": "npc_oldTobin",
+        "currentLocationId": "loc_silverFoxTavern",
+        "context": "Old Tobin is an elderly man who plays music at the Silver Fox Tavern most evenings in exchange for meals and drinks. He was once a traveling bard of some renown but now prefers the comfort of a regular spot. He knows countless songs and tales from across the realm and has a surprisingly sharp memory despite his advanced age. He's a gentle soul but has witnessed much in his travels."
+      }
+    ],
+    "partialUpdates": {
+      "player": {
+        "type": "PLAYER",
+        "currentLocationId": "loc_silverFoxTavern"
+      },
+      "loc_silverFoxTavern":{
+        "npcs": ["npc_bartonInnkeeper", "npc_linaBarmaid", "npc_oldTobin"]
+      }
+    }
+}
