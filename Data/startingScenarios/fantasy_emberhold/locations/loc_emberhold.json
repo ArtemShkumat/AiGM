@@ -1,6 +1,6 @@
 {
-  "type": "Settlement",
-  "locationType": "Village",
+  "type": "Location",
+  "locationType": "Settlement",
   "id": "loc_emberhold",
   "name": "Emberhold Village",
   "description": "A highland village nestled in a mountain valley, known for its master blacksmiths and the Ancient Forge",

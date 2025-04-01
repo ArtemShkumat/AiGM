@@ -141,10 +141,29 @@ namespace AiGMBackEnd.Services
 
             if (jsonStartIndex >= 0)
             {
-                return jsonResponse.Substring(jsonStartIndex).Trim();
+                string extractedJson = jsonResponse.Substring(jsonStartIndex).Trim();
+                return FixJsonEscaping(extractedJson);
             }
             
-            return jsonResponse.Trim();
+            return FixJsonEscaping(jsonResponse.Trim());
+        }
+
+        /// <summary>
+        /// Fixes common JSON escaping issues, particularly problematic backslashes
+        /// </summary>
+        private string FixJsonEscaping(string json)
+        {
+            if (string.IsNullOrEmpty(json))
+                return json;
+
+            // Fix improperly escaped backslashes in string content
+            // This regex looks for a backslash that isn't followed by a valid escape character
+            json = Regex.Replace(json, @"\\(?![\""/\\bfnrtu])", @"\\");
+
+            // Fix common escaped quotes problems like \"Text\" -> "Text"
+            json = Regex.Replace(json, @"\\""([^""\\]*?)\\""", "\"$1\"");
+
+            return json;
         }
 
         private async Task ProcessHiddenJsonAsync(string jsonContent, PromptType promptType, string userId)
@@ -212,6 +231,9 @@ namespace AiGMBackEnd.Services
                 if (jsonStartIndex >= 0)
                 {
                     var jsonCandidate = jsonContent.Substring(jsonStartIndex).Trim();
+                    // Apply JSON escape sequence fixes
+                    jsonCandidate = FixJsonEscaping(jsonCandidate);
+
                     // Try to find the end of the JSON
                     try
                     {
@@ -222,8 +244,21 @@ namespace AiGMBackEnd.Services
                     catch (JsonException ex)
                     {
                         _loggingService.LogWarning($"Invalid JSON found in hidden content: {ex.Message}");
-                        // Return what we have anyway and let the processor handle it
-                        return (userFacingText, jsonCandidate);
+                        
+                        // Try more aggressive fixing for specific known issues
+                        try
+                        {
+                            // Fix backslashes in quoted text like \The Weary Wanderer Inn\
+                            string fixedJson = Regex.Replace(jsonCandidate, @"\\([A-Za-z0-9 ]+)\\", "\"$1\"");
+                            JToken.Parse(fixedJson);
+                            _loggingService.LogInfo("Fixed JSON with additional rules");
+                            return (userFacingText, fixedJson);
+                        }
+                        catch
+                        {
+                            // Return what we have anyway and let the processor handle it
+                            return (userFacingText, jsonCandidate);
+                        }
                     }
                 }
 

@@ -13,7 +13,7 @@ namespace AiGMBackEnd.Models.Locations
             var rootElement = jsonDoc.RootElement;
             
             // Try to get the type property
-            if (rootElement.TryGetProperty("type", out var typeProperty))
+            if (rootElement.TryGetProperty("locationType", out var typeProperty))
             {
                 string locationType = typeProperty.GetString();
                 

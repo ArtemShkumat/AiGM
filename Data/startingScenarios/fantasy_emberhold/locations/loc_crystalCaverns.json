@@ -1,6 +1,6 @@
 {
-  "type": "Delve",
-  "locationType": "Cave System",
+  "type": "Location",
+  "locationType": "Delve",
   "id": "loc_crystalCaverns",
   "name": "Crystal Caverns",
   "description": "A network of caves in the mountainside east of Emberhold, illuminated by naturally phosphorescent crystals",

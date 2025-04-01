@@ -1,6 +1,6 @@
 {
-  "type": "Building",
-  "locationType": "Forge",
+  "type": "Location",
+  "locationType": "Building",
   "id": "loc_ancientForge",
   "name": "The Ancient Forge",
   "description": "A massive forge built into the mountainside, with great bellows and anvils of ancient design",
