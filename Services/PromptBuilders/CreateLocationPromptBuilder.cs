@@ -22,7 +22,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Load create location template files
                 var systemPrompt = await _storageService.GetCreateLocationTemplateAsync("System", request.LocationType);
                 var outputStructure = await _storageService.GetCreateLocationTemplateAsync("OutputStructure", request.LocationType);
-                var exampleResponses = await _storageService.GetCreateLocationTemplateAsync("Examples", request.LocationType);
+                var exampleResponses = await _storageService.GetCreateLocationTemplateAsync("ExampleResponses", request.LocationType);
 
                 // Load world data for context
                 var world = await _storageService.GetWorldAsync(request.UserId);
@@ -43,17 +43,25 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var promptContentBuilder = new StringBuilder();
 
                 // Add game setting and preferences using section helpers
-                new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
+                new GameSettingSection(gameSetting, false).AppendTo(promptContentBuilder);
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
 
-                // Add world context
-                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
-                
+                // Add NPC creation details
+                new CreateNpcSection(
+                    request.LocationType,
+                    request.LocationId,
+                    request.LocationName,
+                    request.Context
+                ).AppendTo(promptContentBuilder);
+
+                //// Add world context
+                //new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
+
                 // Add player context
-                new PlayerContextSection(player).AppendTo(promptContentBuilder);
+                //new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add the user's input
-                new UserInputSection(request.UserInput, $"{(request.LocationType ?? "Location")} Creation Request").AppendTo(promptContentBuilder);
+                //new UserInputSection(request.UserInput, $"{(request.LocationType ?? "Location")} Creation Request").AppendTo(promptContentBuilder);
 
                 var promptType = PromptType.CreateLocation;
                 

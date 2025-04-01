@@ -274,8 +274,8 @@ namespace AiGMBackEnd.Services.Processors
             }
         }
 
-        // New helper method to fire and forget entity creation jobs
-        private void FireAndForgetEntityCreation(PromptRequest request)
+        // Changed from private to public to enable reuse
+        public void FireAndForgetEntityCreation(PromptRequest request)
         {
             Task.Run(async () => 
             {

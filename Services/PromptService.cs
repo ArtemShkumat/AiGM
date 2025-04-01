@@ -11,10 +11,10 @@ namespace AiGMBackEnd.Services
     {
         DM,
         NPC,
-        CreateQuest,
-        CreateNPC,
-        CreateLocation,
-        CreatePlayerJson
+            CreateQuest,
+            CreateNPC,
+            CreateLocation,
+            CreatePlayerJson
     }
 
     public class PromptService

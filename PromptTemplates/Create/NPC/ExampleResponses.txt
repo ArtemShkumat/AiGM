@@ -87,17 +87,21 @@ Your Response:
 EXAMPLE 2
 
 User Prompt:
+
+...
 gameSetting:{
 "genre": "zombie survival"
 "setting:" "a post apocalyptic world where survivors are rare"
 }
-
+...
+...
 creationRequestDetails{
 "name": "Finn",
 "id": "npc_Finn",
 "currentLocationId": "loc_boston_pharmacy",
 "context": "The player is looting a pharmacy and hears a noise coming from the back room. A young kid raises his hands and says "Don't shoot". The player can see the kid, but doesn't know his name yet or given his name to him. "
 }
+...
 
 Your Response:
 

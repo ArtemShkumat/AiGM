@@ -378,6 +378,38 @@ namespace AiGMBackEnd.Controllers
                 return StatusCode(500, new { Message = $"An unexpected error occurred during validation.", Error = ex.Message });
             }
         }
+        
+        [HttpPost("{gameId}/autocreate-dangling")]
+        public async Task<IActionResult> AutoCreateDanglingReferences(string gameId)
+        {
+            if (string.IsNullOrEmpty(gameId))
+            {
+                return BadRequest("GameId is required");
+            }
+
+            try
+            {
+                _loggingService.LogInfo($"Starting auto-creation of dangling references for game: {gameId}");
+                
+                // Call the presenter service to handle the auto-creation
+                int createdCount = await _presenterService.AutoCreateDanglingReferencesAsync(gameId);
+                
+                return Ok(new { 
+                    Message = $"Auto-creation of dangling references initiated. {createdCount} entities queued for creation.", 
+                    EntitiesCreated = createdCount 
+                });
+            }
+            catch (DirectoryNotFoundException dnfe)
+            {
+                _loggingService.LogWarning($"Auto-creation failed for game {gameId}. Game directory not found: {dnfe.Message}");
+                return NotFound(new { Message = $"Auto-creation failed. Game with ID '{gameId}' not found." });
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error during auto-creation for game {gameId}: {ex.Message}");
+                return StatusCode(500, new { Message = $"An unexpected error occurred during auto-creation.", Error = ex.Message });
+            }
+        }
     }
 
     public class NewGameRequest

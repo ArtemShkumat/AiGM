@@ -26,4 +26,5 @@ Settlement is where people live.
 Delve is a dungeon or ruin or some other place that is highly dangerous and usually have a reward at the end. The delves are designed using 5 room dungeon framework. If you want to add a point in the quest where the player needs to go to a dangerous place to complete the quest - use type 'Delve' for that location. Just give that delve a basic outline, the design of the Delve itself will be handled elsewhere.
 Wilds is a place like forest, lake, desolate area, etc. A place that is fairly dangerous, but not defined by rooms. Usually Wilds are an obstacle to overcome while getting from one place to another.
 
+Sometimes the context will mention that this is automatically generated request and then provide the context of the entity(npc, player, location) that triggered the request. That means that you should find the id of the NPC you're creating in the provided context, analyze and make your best guess as to why it's there and produce the output that takes it into account.
 Your goal is to create quests that are narratively compelling for the player while making logical sense within the game world.
