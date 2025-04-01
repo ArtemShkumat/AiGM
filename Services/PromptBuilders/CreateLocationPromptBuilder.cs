@@ -49,10 +49,10 @@ namespace AiGMBackEnd.Services.PromptBuilders
 
                 // Add NPC creation details
                 new CreateLocationSection(
-                    request.LocationType,
-                    request.LocationId,
-                    request.LocationName,
-                    request.Context
+                    locationType: request.LocationType,
+                    locationId: request.LocationId,
+                    locationName: request.LocationName,
+                    context: request.Context
                 ).AppendTo(promptContentBuilder);
 
                 //// Add world context

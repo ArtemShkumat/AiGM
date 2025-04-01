@@ -84,3 +84,269 @@ Your Response:
   ]
 }
 
+EXAMPLE 2
+
+User Prompt:
+
+creationRequestDetails:
+{
+  "locationType": "BUILDING",
+  "id": "loc_oakheaven_trading_post",
+  "name": "oakheaven trading post",
+  "context": "This is automatically created request to produce Location.This reference was found in Quest 'Salvage the Forge' with ID quest_secureDecliningGoods. Find where in this Quest context is the quest_secureDecliningGoods and create it in such a way that it would be relevant to this Quest.\
+\
+Here is the full content of the source entity:\
+\
+{\r\
+  "Type": "QUEST",\r\
+  "Id": "quest_secureDecliningGoods",\r\
+  "Title": "Salvage the Forge",\r\
+  "CoreObjective": "Safely transport the remaining valuable, though rapidly declining, goods from Emberhold's forge to a neutral trading post outside the village.",\r\
+  "Overview": "With the Ember Crystal stolen and the mountain winds biting harder each day, the quality of Emberhold's renowned forged goods is rapidly deteriorating. Merchant Thorin, desperate to salvage what he can, hires adventurers to transport the remaining valuables to the trading post of Oakhaven, hoping to minimize losses before the items become worthless. Success depends on speed and the player's ability to navigate the increasingly dangerous mountain passes.",\r\
+  "Npcs": [\r\
+    {\r\
+      "Id": "npc_merchantThorin",\r\
+      "Name": "Thorin",\r\
+      "Role": "Merchant (Quest Giver)",\r\
+      "Motivation": "Prevent financial ruin and maintain his reputation as a shrewd trader in the face of disaster.",\r\
+      "Fears": "Bankruptcy, becoming an outcast in Emberhold due to his losses",\r\
+      "Secrets": "He knows more about the Ember Crystal's weaknesses than he lets on, information he withheld to exploit the forge's power."\r\
+    }\r\
+  ],\r\
+  "RumorsAndLeads": [\r\
+    {\r\
+      "Rumor": "The mountain passes are unusually active with monstrous activity. Something has driven creatures down from their lairs.",\r\
+      "SourceNPC": "Villager",\r\
+      "SourceLocation": "loc_emberhold"\r\
+    },\r\
+    {\r\
+      "Rumor": "Mercenaries have been spotted heading towards Oakhaven. They are likely looking for work following Emberhold decline",\r\
+      "SourceNPC": "Traveling Merchant",\r\
+      "SourceLocation": "loc_emberhold"\r\
+    }\r\
+  ],\r\
+  "LocationsInvolved": [\r\
+    {\r\
+      "Id": "loc_emberhold",\r\
+      "Name": "Emberhold",\r\
+      "Type": "settlement"\r\
+    },\r\
+    {\r\
+      "Id": "loc_oakheaven_trading_post",\r\
+      "Name": "Oakhaven Trading Post",\r\
+      "Type": "settlement"\r\
+    },\r\
+    {\r\
+      "Id": "loc_mountain_pass",\r\
+      "Name": "Mountain Pass",\r\
+      "Type": "wilds"\r\
+    }\r\
+  ],\r\
+  "OpposingForces": [\r\
+    {\r\
+      "Name": "Mountain Drakes",\r\
+      "Role": "Primary",\r\
+      "Motivation": "Driven from their higher altitude habitats by the increasingly harsh conditions, they are seeking new territory and prey.",\r\
+      "Description": "Territorial predators that attack anyone venturing through their hunting grounds. They are drawn to the scent of worked metal and will aggressively defend their claimed areas."\r\
+    },\r\
+    {\r\
+      "Name": "Bandits",\r\
+      "Role": "Secondary",\r\
+      "Motivation": "Opportunistic scavengers preying on the chaos and desperation surrounding Emberhold's decline.",\r\
+      "Description": "A small band of brigands hoping to steal the valuable goods being transported."\r\
+    }\r\
+  ],\r\
+  "Challenges": [\r\
+    "The forged goods are heavy and require careful handling to prevent further damage.",\r\
+    "Navigating treacherous mountain passes, complicated by worsening weather and potential ambushes.",\r\
+    "Defending against opportunistic bandits or territorial creatures seeking to steal the cargo.",\r\
+    "Making timely deliveries to Oakhaven before the quality of the goods deteriorates too much further."\r\
+  ],\r\
+  "EmotionalBeats": [\r\
+    "Witnessing the despair and decline of craftsmanship in Emberhold's once-proud forge.",\r\
+    "Moral dilemma: Should the player inform Thorin about everything they know about Ember Crystal for a larger reward?",\r\
+    "Encountering desperate villagers attempting to flee Emberhold with nothing.",\r\
+    "The player needs to decide if he helps villages or makes sure the goods are transported as soon as possible."\r\
+  ],\r\
+  "Rewards": [\r\
+    "A sum of coins depending on the quality of goods delivered to Oakhaven.",\r\
+    "Increased reputation with Merchant Thorin.",\r\
+    "Potential for future trading opportunities with Oakhaven's merchants.",\r\
+    "Access to information how to find Ember Crystal"\r\
+  ]\r\
+}"
+}
+
+Your response:
+
+{
+  "type": "LOCATION",
+  "locationType": "BUILDING",
+  "id": "loc_oakheaven_trading_post",
+  "name": "Oakhaven Trading Post",
+  "description": "A bustling hub for merchants and travelers, Oakhaven Trading Post provides essential services and acts as a neutral ground for trade in the region.",
+  "knownToPlayer": false,
+  "connectedLocations": [
+    "loc_mountain_pass"
+  ],
+  "parentLocation": "loc_mountain_pass",
+  "npcs": [],
+  "exterior_description": "A sturdy, two-story building constructed of rough-hewn timber and stone. A wide porch wraps around the front, offering shelter from the elements. The sound of bartering and the smell of roasted meat fill the air.",
+  "purpose": "A neutral trading post facilitating commerce between various settlements and traveling merchants.",
+  "history": "Established decades ago as a convenient meeting point for traders avoiding Emberhold's strictly regulated markets, Oakhaven has grown into a thriving community centered around its trading post.",
+  "floors": [
+    {
+      "floor_name": "Ground Floor",
+      "description": "The main trading floor, a bustling tavern, and a common room for travelers.",
+      "rooms": [
+        {
+          "name": "Main Trading Floor",
+          "type": "Retail Area",
+          "description": "A large, open space filled with stalls and counters displaying various goods. Merchants haggle with customers amidst the constant movement of people and piles of wares.",
+          "points_of_interest": [
+            {
+              "description": "A wanted poster for bandits known to roam the mountain passes.",
+              "hinting_at": "The dangers faced by those transporting goods to Oakhaven."
+            },
+            {
+              "description": "A large scale set for measuring goods, recently recalibrated",
+              "hinting_at": "Oakhaven is known for it's fair deals."
+            }
+          ],
+          "valuables": [
+            {
+              "name": "Trade Beads",
+              "why_its_here": "Common currency used in bartering.",
+              "description": "A string of colorful glass beads, used for small transactions.",
+              "quantity": 1,
+              "value": 1
+            }
+          ],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Common Room",
+              "Tavern",
+              "Storage Room"
+            ]
+          }
+        },
+        {
+          "name": "Tavern",
+          "type": "Tavern",
+          "description": "A noisy and lively tavern filled with rough-looking patrons. The air is thick with the smell of ale and woodsmoke. A bard strums a melancholic tune in the corner.",
+          "points_of_interest": [
+            {
+              "description": "A group of mercenaries drinking and boasting about their exploits.",
+              "hinting_at": "Potential allies or rivals, depending on the player's actions."
+            },
+            {
+              "description": "A wanted poster for deserters of Emberhold",
+              "hinting_at": "Some people are fleeing Emberhold Village"
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Main Trading Floor",
+              "Kitchen"
+            ]
+          }
+        },
+        {
+          "name": "Common Room",
+          "type": "Rest Area",
+          "description": "A sparsely furnished room with several wooden benches and a fireplace. Weary travelers rest and share stories.",
+          "points_of_interest": [
+            {
+              "description": "A map of the surrounding region, marked with safe routes and bandit lairs.",
+              "hinting_at": "Valuable information for navigating the mountain passes."
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Main Trading Floor",
+              "Upstairs Landing"
+            ]
+          }
+        },
+        {
+          "name": "Storage Room",
+          "type": "Storage",
+          "description": "Crates, sacks, and barrels fill this room. The air is thick with the scents of different goods.",
+          "points_of_interest": [
+            {
+              "description": "A partially open crate with Emberhold's emblem on the side.",
+              "hinting_at": "The quality of the goods coming from Emberhold is declining."
+            }
+          ],
+          "valuables": [
+            {
+              "name": "Fine Wine",
+              "why_its_here": "Merchant Thorin barters wine.",
+              "description": "Bottle of fine wine",
+              "quantity": 1,
+              "value": 20
+            }
+          ],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Main Trading Floor"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "floor_name": "Second Floor",
+      "description": "Private rooms for rent and storage.",
+      "rooms": [
+        {
+          "name": "Upstairs Landing",
+          "type": "Hallway",
+          "description": "Connects to rooms for rent",
+          "points_of_interest": [],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Common Room",
+              "Room 1",
+              "Room 2"
+            ]
+          }
+        },
+        {
+          "name": "Room 1",
+          "type": "Room",
+          "description": "This old room seems to be untouched for days.",
+          "points_of_interest": [],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Upstairs Landing"
+            ]
+          }
+        },
+        {
+          "name": "Room 2",
+          "type": "Room",
+          "description": "Occupied room with a sleeping man.",
+          "points_of_interest": [],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Upstairs Landing"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

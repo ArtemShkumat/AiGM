@@ -3,28 +3,29 @@ EXAMPLE
 User Prompt: Create a location using this info:
 
 {
-    "context":
+    "id": "wilds_darkwood_forest",
+    "name": "Darkwood Forest",
+    "locationType": "Wilds",
+    "context": "A very dangerous forest in region_northern_frontier, connected with settlement_oakhollow, delve_forgotten_barrow and settlement_mist_harbor."
 }
 
 Your Response:
 
 {
-  "core_identity": {
-    "id": "wilds_darkwood_forest",
-    "name": "Darkwood Forest",
-    "type": "Wilds",
-    "description": "A foreboding forest of ancient, towering pines that blot out the sun, creating an eternal twilight beneath their dense canopy. The air hangs heavy with mist and the scent of damp earth.",
-    "terrain": "Dense forest with massive pines, undergrowth of thorny bushes, and occasional clearings. The ground is uneven, with exposed roots, hidden sinkholes, and patches of treacherous bog.",
-    "dangers": "Poisonous fungi that release spores when disturbed, packs of aggressive shadow wolves, and the disorienting nature of the forest itself which seems to shift when travelers aren't looking directly at their path."
-  },
-  "navigation": {
-    "parentLocationId": "region_northern_frontier",
-    "connectedLocationIds": [
-      "settlement_oakhollow",
-      "delve_forgotten_barrow",
-      "settlement_mist_harbor"
-    ]
-  },
+  "id": "wilds_darkwood_forest",
+  "name": "Darkwood Forest",
+  "type": "LOCATION",
+  "locationType": "Wilds"
+  "description": "A foreboding forest of ancient, towering pines that blot out the sun, creating an eternal twilight beneath their dense canopy. The air hangs heavy with mist and the scent of damp earth.",
+  "terrain": "Dense forest with massive pines, undergrowth of thorny bushes, and occasional clearings. The ground is uneven, with exposed roots, hidden sinkholes, and patches of treacherous bog.",
+  "dangers": "Poisonous fungi that release spores when disturbed, packs of aggressive shadow wolves, and the disorienting nature of the forest itself which seems to shift when travelers aren't looking directly at their path.",
+  "parentLocationId": "region_northern_frontier",
+  "connectedLocationIds": [
+    "settlement_oakhollow",
+    "delve_forgotten_barrow",
+    "settlement_mist_harbor"
+  ]
+  ,
   "details": {
     "danger_level": 7,
     "wildlife": "Shadow wolves, venomous spiders the size of dinner plates, owlbears, and the rare forest drake that hunts at night.",

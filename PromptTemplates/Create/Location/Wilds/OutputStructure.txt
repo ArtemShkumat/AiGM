@@ -1,19 +1,16 @@
 {
-  "core_identity": {
-    "id": "ID",
-    "name": "NAME_OF_WILDERNESS",
-    "type": "Wilds",
-    "description": "A_BRIEF_OVERVIEW_OF_THE_ENVIRONMENT_AND_ATMOSPHERE",
-    "terrain": "DESCRIPTION_OF_PHYSICAL_LANDSCAPE (FOREST, MOUNTAINS, SWAMP, ETC.)",
-    "dangers": "WHAT_MAKES_THIS_AREA_DANGEROUS_OR_THREATENING"
-  },
-  "navigation": {
-    "parentLocationId": "ID_OF_THE_REGION_OR_WORLD",
-    "connectedLocationIds": [
-      "ID_OF_AN_ADJACENT_TERRITORY",
-      "ID_OF_ANOTHER_LINKED_LOCATION"
-    ]
-  },
+  "id": "ID",
+  "name": "NAME_OF_WILDERNESS",
+  "type": "LOCATION", //Always set this to LOCATION
+  "locationType": "WILDS",  //Always set this to WILDS
+  "description": "A_BRIEF_OVERVIEW_OF_THE_ENVIRONMENT_AND_ATMOSPHERE",
+  "terrain": "DESCRIPTION_OF_PHYSICAL_LANDSCAPE (FOREST, MOUNTAINS, SWAMP, ETC.)",
+  "dangers": "WHAT_MAKES_THIS_AREA_DANGEROUS_OR_THREATENING",  
+  "parentLocationId": "ID_OF_THE_REGION_OR_WORLD",
+  "connectedLocationIds": [
+    "ID_OF_AN_ADJACENT_TERRITORY",
+    "ID_OF_ANOTHER_LINKED_LOCATION"
+  ],
   "details": {
     "danger_level": 0,
     "wildlife": "COMMON_CREATURES_OR_BEASTS_FOUND_HERE",

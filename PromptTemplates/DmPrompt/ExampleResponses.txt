@@ -184,3 +184,64 @@ Tomas straightens up and adjusts his wares. "If you're thinking of exploring it,
     ],
     "partialUpdates": {}
 }
+
+EXAMPLE 6: Player asks if there's a tavern in town where it's reasonable to expect one, but you currently don't have it in context.
+
+USER: 
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_marketSquare"
+},
+"npcs": [
+  {
+    "id": "npc_merchantTomas",
+    "name": "Tomas",
+    "currentLocationId": "loc_marketSquare",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true
+  }
+]
+
+Is there a tavern in this town? I could use a drink after a long day of travel.
+
+ASSISTANT:
+Looking around the market square, you notice a weathered sign hanging from a building down the street - "The Rusty Anchor" it reads, with a faded painting of an anchor below. The building looks well-worn but inviting, with warm light spilling from its windows. You can just make out the sound of laughter and conversation drifting from within. It seems to be a popular spot for locals and travelers alike.
+
+<donotshow/>
+{
+    "newEntities": [
+      {
+        "type": "LOCATION",
+        "name": "The Rusty Anchor",
+        "id": "loc_rustyAnchorTavern",
+        "locationType": "BUILDING",
+        "context": "This is a well-established tavern located near the market square. It's a popular gathering spot for locals and travelers, known for its warm atmosphere and good ale. The tavern has a main common room with a bar, several tables, and a small stage for entertainment. The building should feel welcoming but worn, with nautical decorations and a warm atmosphere. It should be connected to loc_marketSquare and other nearby locations."
+      }
+    ],
+    "partialUpdates": {}
+}
+
+EXAMPLE 7: Player asks about something that wouldn't reasonably exist in the current location.
+
+USER: 
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_marketSquare"
+}
+...
+
+Is there anywhere I can buy some powerful magic items? I'm looking for enchanted weapons or scrolls.
+
+ASSISTANT:
+*chuckles* Sorry bud, but powerful magic items in this tiny village? Not a chance. Looking around the market square, all you see are the basics - Tomas's textile stall, some farmers with their produce, and a few craftsmen selling simple tools. This is the kind of place where finding a copper nail is considered treasure hunting. You'll need to find a proper city if you're looking for enchanted gear.
+
+<donotshow/>
+{
+    "newEntities": [],
+    "partialUpdates": {}
+}

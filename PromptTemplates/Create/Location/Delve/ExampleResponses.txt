@@ -1,25 +1,26 @@
 EXAMPLE
 
-User Prompt: Create an NPC using this info:
+User Prompt: Create a Delve location using this info:
 
 {
-    "context":
+    "id": "loc_green_pines_stop",
+    "name": "Green Pines Rest Stop",
+    "location_type": "Delve",
+    "context": "A rest stop that the player is considering looting in the middle of loc_outskirts."
 }
 
 Your Response:
 
 {
-  "core_identity": {
-    "id": "loc_green_pines_stop",
-    "name": "Green Pines Rest Stop",
-    "location_type": "Delve",
-    "description": "An old highway rest stop half-buried in overgrowth. Signs of hasty evacuation and rot linger in the air.",
-    "purpose": "Originally a traveler's respite with bathrooms, a convenience store, and a maintenance bunker. Now partially collapsed and infested by infected."
-  },
-  "navigation": {
-    "parentLocationId": "loc_outskirts",
-    "connectedLocationIds": []
-  },
+  "id": "loc_green_pines_stop",
+  "type": "LOCATION",
+  "name": "Green Pines Rest Stop",
+  "location_type": "Delve",
+  "description": "An old highway rest stop half-buried in overgrowth. Signs of hasty evacuation and rot linger in the air.",
+  "purpose": "Originally a traveler's respite with bathrooms, a convenience store, and a maintenance bunker. Now partially collapsed and infested by infected.",
+  "parentLocationId": "loc_outskirts",
+  "connectedLocationIds": []
+  ,
   "rooms": [
     {
       "room_number": 1,
@@ -40,7 +41,7 @@ Your Response:
       "role": "Trick or Setback",
       "name": "Collapsed Corridor",
       "description": "A hallway partially caved in. A dangling corpse with a backpack sways from exposed rebar above a heap of debris.",
-      "trick_or_setback": "Unstable rubble—attempting to retrieve the backpack risks a partial collapse or attracting nearby infected."
+      "trick_or_setback": "Unstable rubbleï¿½attempting to retrieve the backpack risks a partial collapse or attracting nearby infected."
     },
     {
       "room_number": 4,
@@ -58,7 +59,7 @@ Your Response:
       "valuables": [
         {
           "name": "Shortwave Radio",
-          "why_its_here": "The bunker’s last occupant used it to monitor survivor broadcasts.",
+          "why_its_here": "The bunkerï¿½s last occupant used it to monitor survivor broadcasts.",
           "description": "Operational but crackling with static.",
           "quantity": 1,
           "value": 75,

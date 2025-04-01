@@ -8,7 +8,6 @@ namespace AiGMBackEnd.Models
     {
         public Building()
         {
-            Type = "Building";
             Purpose = string.Empty;
             History = string.Empty;
             ExteriorDescription = string.Empty;

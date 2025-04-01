@@ -3,28 +3,28 @@ EXAMPLE
 User Prompt: Create a location using this info:
 
 {
-    "context":
+    "id": "settlement_willowbrook"
+    "name": "Willowbrook Village"
+    "locationType": "Settlement"
+    "context": "A small village the player has stumbled upon near loc_greenfields.
 }
 
 Your Response:
 
 {
-  "core_identity": {
-    "id": "settlement_willowbrook",
-    "name": "Willowbrook Village",
-    "type": "Settlement",
-    "description": "A quaint rural village nestled along a gentle, meandering brook, renowned for its warm community and simple charm.",
-    "purpose": "A farming and trading community sustained by agriculture and local crafts.",
-    "history": "Founded centuries ago by settlers seeking fertile lands, Willowbrook has endured storms and conflicts while retaining its close-knit spirit.",
-    "size": "Village"
-  },
-  "navigation": {
-    "parentLocationId": "loc_greenfields",
-    "connectedLocationIds": [
-      "road_oldmill",
-      "forest_whispering"
-    ]
-  },
+  "id": "settlement_willowbrook",
+  "name": "Willowbrook Village",
+  "type": "LOCATION",
+  "locationType": "Settlement",
+  "description": "A quaint rural village nestled along a gentle, meandering brook, renowned for its warm community and simple charm.",
+  "purpose": "A farming and trading community sustained by agriculture and local crafts.",
+  "history": "Founded centuries ago by settlers seeking fertile lands, Willowbrook has endured storms and conflicts while retaining its close-knit spirit.",
+  "size": "Village",  
+  "parentLocationId": "loc_greenfields",
+  "connectedLocationIds": [
+    "road_oldmill",
+    "forest_whispering"
+  ],  
   "demographics": {
     "population": 350,
     "factions": [
@@ -114,7 +114,7 @@ Your Response:
       "notable_features": [
         {
           "name": "Old Mill Ruins",
-          "description": "Remnants of a once-thriving watermill that powered the village’s early industry."
+          "description": "Remnants of a once-thriving watermill that powered the villageï¿½s early industry."
         }
       ],
       "npcs": [],

@@ -4,7 +4,7 @@ User Prompt:
 
 creationRequestDetails{
   "name": "Smith Runa",
-  "id": "npc_smithRuna",
+  "id": "npc_smith_Runa",
   "currentLocationId": "loc_ancientForge",
   "context": "The player approached the forge for the first time. He is looking for a blacksmith. He hasn't found one yet, but is about to."
 }
@@ -13,7 +13,7 @@ Your Response:
 
 {
   "type": "NPC",
-  "id": "npc_smithRuna",
+  "id": "npc_smith_Runa",
   "name": "Smith Runa",
   "currentLocationId": "loc_ancientForge",
   "knownToPlayer": false,

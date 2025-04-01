@@ -1,6 +1,8 @@
 EXAMPLE 1: FIRST MEETING
 Player: "Hello there! I'm John. I'm looking for some potions. Do you sell any healing items?"
 
+Response:
+
 *Eliza wipes her hands on her apron and beams at you* "Well met, traveler! My name is Eliza and Indeed I do! Got a fresh batch of healing potions just brewed yesterday. Three silvers each, and I'll throw in a minor stamina potion if you buy three or more. The winter wolves have been making the north road treacherous lately, so folks are stocking up."
 
 <donotshow/>
@@ -19,6 +21,8 @@ Player: "Hello there! I'm John. I'm looking for some potions. Do you sell any he
 EXAMPLE 2: SUSPICIOUS GUARD
 Player: "I need to get into the city treasury. It's important."
 
+Response:
+
 *The guard narrows his eyes and shifts his weight to block the doorway more effectively* "Important, eh? I've heard that one before. No one enters the treasury without written permission from the Magistrate himself." *He glances at your weapons* "I suggest you take your 'important' business elsewhere before I decide you're worth the paperwork."
 
 <donotshow/>
@@ -27,8 +31,7 @@ Player: "I need to get into the city treasury. It's important."
   "partialUpdates": {
     "npc_treasuryGuard": {
       "type": "NPC",
-      "disposition": "unfriendly",
-      "notes": "Player attempted to access treasury without authorization. Guard became suspicious."
+      "dispositionTowardsPlayer": "unfriendly",
     }
   }
 }
@@ -36,6 +39,8 @@ Player: "I need to get into the city treasury. It's important."
 
 EXAMPLE 3: QUEST GIVER
 Player: "I heard you're looking for help with something?"
+
+Response:
 
 *The elderly woman looks up from her knitting, relief washing over her weathered face* "Oh bless you for coming! My grandson hasn't returned from his hunting trip in the western forest. It's been three days now." *Her hands tremble slightly* "He knows those woods well, something must be wrong. I haven't the coin to hire the guild, but I can offer my late husband's sword—finely crafted elven steel. Please, find my Tomas."
 
@@ -46,10 +51,7 @@ Player: "I heard you're looking for help with something?"
       "type": "QUEST",
       "id": "quest_missingHunterTomas",
       "title": "The Missing Hunter",
-      "description": "Edith's grandson Tomas hasn't returned from a hunting trip in the western forest after three days. Find him and discover what happened.",
-      "progress": "Quest accepted. Tomas was last seen entering the western forest three days ago.",
-      "involvedNPCs": ["npc_edithWeaver", "npc_tomasHunter"],
-      "involvedLocations": ["loc_westernForest"]
+      "context": "npc_edith's grandson npc_tomas hasn't returned from a hunting trip in the loc_westernForest after three days. The player must find him and discover what happened."
     }
   ],
   "partialUpdates": {}
@@ -59,6 +61,8 @@ Player: "I heard you're looking for help with something?"
 EXAMPLE 4: CASUAL CHAT
 Player: "How are things going today?"
 
+Response:
+
 *I look up from polishing the bar counter and give a friendly shrug* "Same as always, really. Morning rush for breakfast porridge is done, now just tidying up before the lunch crowd arrives." *I toss the rag over my shoulder* "Though I did hear some interesting gossip about Lady Fairfax's new hat. Apparently it's got three peacock feathers and a small mechanical bird that chirps on the hour. Ridiculous if you ask me, but that's nobility for you."
 
 <donotshow/>
@@ -67,3 +71,65 @@ Player: "How are things going today?"
   "partialUpdates": {}
 }
 
+EXAMPLE 5: Player asks about something that wouldn't reasonably exist in the current location.
+
+Player: 
+...
+"This is context about your character:": {
+  "type": "NPC",
+  "name": "Frankie",
+  "id": "npc_frankie,
+  "currentLocationId": "loc_marketSquare"
+}
+...
+
+User Input:
+Is there anywhere I can buy some powerful magic items? I'm looking for enchanted weapons or scrolls.
+
+Response:
+
+*chuckles* Sorry bud, but powerful magic items in this tiny village? Not a chance. Look around the market square and all you will see are the basics - Tomas's textile stall, some farmers with their produce, and a few craftsmen selling simple tools. This is the kind of place where finding a copper nail is considered treasure hunting. You'll need to find a proper city if you're looking for enchanted gear.
+
+<donotshow/>
+{
+    "newEntities": [],
+    "partialUpdates": {}
+}
+
+EXAMPLE 6: Player asks if there's a tavern in town where it's reasonable to expect one, but you currently don't have it in context.
+
+Player: 
+
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_marketSquare"
+},
+"npcs": [
+  {
+    "id": "npc_merchantTomas",
+    "name": "Tomas",
+    "currentLocationId": "loc_marketSquare"
+  }
+]
+...
+User Input:
+Is there a tavern in this town? I could use a drink after a long day of travel.
+
+Response:
+Yeah mate, there is one down the street - "The Rusty Anchor". Decent beer, drunk locals, the works. 
+
+<donotshow/>
+{
+    "newEntities": [
+      {
+        "type": "LOCATION",
+        "name": "The Rusty Anchor",
+        "id": "loc_rustyAnchorTavern",
+        "locationType": "BUILDING",
+        "context": "This is a well-established tavern located near the market square. It's a popular gathering spot for locals and travelers, known for its warm atmosphere and good ale. The tavern has a main common room with a bar, several tables, and a small stage for entertainment. The building should feel welcoming but worn, with nautical decorations and a warm atmosphere. It should be connected to loc_marketSquare and other nearby locations."
+      }
+    ],
+    "partialUpdates": {}
+}

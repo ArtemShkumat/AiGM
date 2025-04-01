@@ -8,7 +8,6 @@ namespace AiGMBackEnd.Models
     {
         public Wilds()
         {
-            Type = "Wilds";
             Terrain = string.Empty;
             Dangers = string.Empty;
             LocationType = "Wilds";

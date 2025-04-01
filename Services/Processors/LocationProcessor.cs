@@ -58,8 +58,9 @@ namespace AiGMBackEnd.Services.Processors
                         _loggingService.LogError($"Unknown location type: {locationType}");
                         return;
                 }
-                
+
                 // Set common properties
+                location.LocationType = locationType;
                 location.Id = locationId;
                 location.Name = locationData["name"]?.ToString() ?? "Unknown Location";
                 location.Description = locationData["description"]?.ToString();

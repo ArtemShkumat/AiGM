@@ -7,6 +7,7 @@ PROMPT: Create a quest using this data:
   "context": "The player has encountered npc_harrick, who told the player that his daughter is missing. Harrick says that she might have been kidnapped and he suspects she was taken to loc_gavelwood_forest. This quest should be fairly challenging for a player that is still quite low level and should be an opportunity to earch some trust and money."
 }
 
+Response
 {
   "id": "quest_0012",
   "title": "Lost in Gavelwood",
