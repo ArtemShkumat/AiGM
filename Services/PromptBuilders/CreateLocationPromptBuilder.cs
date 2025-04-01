@@ -17,7 +17,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
         {
             try
             {
-                _loggingService.LogInfo($"Building location prompt for type: {request.LocationType ?? "generic"}");
+                _loggingService.LogInfo($"Building location prompt for type: {request.LocationType ?? "Building"}");
                 
                 // Load create location template files
                 var systemPrompt = await _storageService.GetCreateLocationTemplateAsync("System", request.LocationType);
@@ -45,9 +45,10 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Add game setting and preferences using section helpers
                 new GameSettingSection(gameSetting, false).AppendTo(promptContentBuilder);
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
+                new WorldContextSection(world).AppendTo(promptContentBuilder);
 
                 // Add NPC creation details
-                new CreateNpcSection(
+                new CreateLocationSection(
                     request.LocationType,
                     request.LocationId,
                     request.LocationName,

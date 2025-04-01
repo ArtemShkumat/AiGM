@@ -9,12 +9,14 @@ namespace AiGMBackEnd.Models.Prompts.Sections
         private readonly string _locationName;
         private readonly string _locationId;
         private readonly string _context;
+        private readonly string _locationType;
         private readonly bool _detailed;
 
-        public CreateLocationSection(string locationName, string locationId, string context, bool detailed = true)
+        public CreateLocationSection(string locationName, string locationId, string context, string locationType, bool detailed = true)
         {
             _locationName = locationName;
             _locationId = locationId;
+            _locationType = locationType;
             _context = context;
             _detailed = detailed;
         }
@@ -35,7 +37,7 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                     name = _locationName,
                     id = _locationId,
                     context = _context,
-                    timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                    locationType = _locationType
                 };
             }
             else
@@ -43,8 +45,7 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                 creationRequestDetails = new
                 {
                     name = _locationName,
-                    id = _locationId,
-                    context = _context
+                    id = _locationId
                 };
             }
 

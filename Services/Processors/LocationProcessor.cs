@@ -29,7 +29,7 @@ namespace AiGMBackEnd.Services.Processors
                 
                 // Extract location details
                 var locationId = locationData["id"]?.ToString();
-                var locationType = locationData["type"]?.ToString();
+                var locationType = locationData["locationType"]?.ToString();
                 
                 if (string.IsNullOrEmpty(locationId))
                 {

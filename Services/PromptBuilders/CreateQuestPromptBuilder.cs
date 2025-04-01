@@ -43,28 +43,25 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Add game setting and preferences using section helpers
                 new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
-
-                // Add world context
+                new WorldContextSection(world).AppendTo(promptContentBuilder);
                 new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
-
-                // Add player context
                 new PlayerContextSection(player).AppendTo(promptContentBuilder);
 
                 // Add player RPG elements if available
-                if (player.RpgElements != null && player.RpgElements.ContainsKey("class"))
-                {
-                    promptContentBuilder.AppendLine($"Class: {player.RpgElements["class"]}");
-                }
+                //if (player.RpgElements != null && player.RpgElements.ContainsKey("class"))
+                //{
+                //    promptContentBuilder.AppendLine($"Class: {player.RpgElements["class"]}");
+                //}
                 
-                if (player.RpgElements != null && player.RpgElements.ContainsKey("level"))
-                {
-                    promptContentBuilder.AppendLine($"Level: {player.RpgElements["level"]}");
-                }
+                //if (player.RpgElements != null && player.RpgElements.ContainsKey("level"))
+                //{
+                //    promptContentBuilder.AppendLine($"Level: {player.RpgElements["level"]}");
+                //}
                 
-                if (!string.IsNullOrEmpty(player.Backstory))
-                {
-                    promptContentBuilder.AppendLine($"Background: {player.Backstory}");
-                }
+                //if (!string.IsNullOrEmpty(player.Backstory))
+                //{
+                //    promptContentBuilder.AppendLine($"Background: {player.Backstory}");
+                //}
                 promptContentBuilder.AppendLine();
 
                 // Add NPC creation details

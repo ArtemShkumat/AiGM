@@ -20,6 +20,8 @@ namespace AiGMBackEnd.Services
         private readonly ValidationService _validationService;
         private readonly GameScenarioService _gameScenarioService;
         private readonly ConversationLogService _conversationLogService;
+        private readonly LoggingService _loggingService;
+        private readonly WorldSyncService _worldSyncService;
 
         public StorageService(LoggingService loggingService)
         {
@@ -29,6 +31,8 @@ namespace AiGMBackEnd.Services
             _validationService = new ValidationService(loggingService);
             _gameScenarioService = new GameScenarioService(loggingService, _baseStorageService);
             _conversationLogService = new ConversationLogService(loggingService, _baseStorageService, _entityStorageService);
+            _worldSyncService = new WorldSyncService(loggingService, _baseStorageService);
+            _loggingService = loggingService;
         }
 
         // Move NpcInfo and DanglingReferenceInfo classes definitions here
@@ -174,6 +178,19 @@ namespace AiGMBackEnd.Services
 
         public async Task<List<DanglingReferenceInfo>> FindDanglingReferencesAsync(string userId) => 
             await _validationService.FindDanglingReferencesAsync(userId);
+
+        #endregion
+
+        #region World Sync Operations
+
+        /// <summary>
+        /// Synchronizes the world.json file with all existing entities in the game directory structure.
+        /// This method scans the NPCs, locations, quests, and lore folders and updates the world.json file accordingly.
+        /// </summary>
+        /// <param name="userId">The user/game ID</param>
+        /// <returns>Task representing the asynchronous operation</returns>
+        public async Task SyncWorldWithEntitiesAsync(string userId) => 
+            await _worldSyncService.SyncWorldWithEntitiesAsync(userId);
 
         #endregion
     }

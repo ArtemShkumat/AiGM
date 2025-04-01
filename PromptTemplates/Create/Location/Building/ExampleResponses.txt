@@ -1,28 +1,33 @@
-EXAMPLE
+EXAMPLE 1.
 
 User Prompt: Create a location using this info:
 
 {
-    "context":
+    "id": "loc_old_sparrows_shop",
+    "locationType": "Building"
+    "name": "Old Sparrow's Shop",
+    "context": "The player is location loc_village_square, and asked for a general store to do some trading. An NPC advised the player that there is one shop called Old Sparrow's Shop."
 }
 
 Your Response:
 
 {
-  "core_identity": {
-    "id": "loc_old_sparrows_shop",
-    "name": "Old Sparrow's Shop",
-    "location_type": "Building",
-    "exterior_description": "A weathered timber storefront with a creaky wooden sign bearing a faded sparrow emblem.",
-    "purpose": "A general store providing staples and odd trinkets to local villagers.",
-    "history": "Run by Old Sparrow for three decades, rumored to have once been a small tavern."
-  },
-  "navigation": {
-    "parentLocationId": "loc_village_square",
-    "connectedLocationIds": [
-      "loc_inn_backyard"
-    ]
-  },
+  "type": "LOCATION",
+  "locationType": "Building",
+  "id": "loc_old_sparrows_shop",
+  "name": "Old Sparrow's Shop",
+  "description": "A general store providing staples and odd trinkets to local villagers.",
+  "knownToPlayer": true,
+  "connectedLocations": [
+    "loc_inn_backyard"
+  ],
+  "parentLocation": "loc_village_square",
+  "npcs": [
+    "npc_OldSparrow"
+  ],
+  "exterior_description": "A weathered timber storefront with a creaky wooden sign bearing a faded sparrow emblem.",
+  "purpose": "A general store providing staples and odd trinkets to local villagers.",
+  "history": "Run by Old Sparrow for three decades, rumored to have once been a small tavern.",
   "floors": [
     {
       "floor_name": "Ground Floor",
@@ -35,14 +40,12 @@ Your Response:
           "points_of_interest": [
             {
               "description": "A faded poster showing local harvesting seasons, pinned behind the counter.",
-              "hinting_at": "Indicates Old Sparrow’s focus on homegrown produce and local trade."
+              "hinting_at": "Indicates Old Sparrow's focus on homegrown produce and local trade."
             }
           ],
           "valuables": [],
           "npcs": [
-            {
-              "npcId": "npc_OldSparrow"
-            }
+            "npc_OldSparrow"
           ],
           "navigation": {
             "connected_rooms": [
@@ -80,3 +83,4 @@ Your Response:
     }
   ]
 }
+

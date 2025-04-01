@@ -52,6 +52,9 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("name")]
         public string Name { get; set; }
+
+        [JsonPropertyName("locationType")]
+        public string LocationType { get; set; }
     }
 
     public class NpcSummary

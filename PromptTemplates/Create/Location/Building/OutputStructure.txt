@@ -1,17 +1,20 @@
 {
-  "core_identity": {
-    "name": "NAME_OF_BUILDING",
-    "location_type": "Building",
-    "exterior_description": "DESCRIBE_THE_OUTSIDE_APPEARANCE",
-    "purpose": "ORIGINAL_OR_CURRENT_FUNCTION_OF_THE_BUILDING",
-    "history": "OPTIONAL_SHORT_HISTORY_OR_BACKSTORY"
-  },
-  "navigation": {
-    "parentLocationId": "ID_OF_THE_LOCATION_CONTAINING_THIS_BUILDING",
-    "connectedLocationIds": [
-      "LIST_OF_OTHER_LOCATION_IDS_DIRECTLY_CONNECTED"
-    ]
-  },
+  "type": "LOCATION", //Always set this to LOCATION
+  "locationType": "BUILDING",  //Always set this to BUILDING
+  "id": "ID_OF_BUILDING_FROM_CONTEXT",
+  "name": "NAME_OF_BUILDING",
+  "description": "BUILDING_DESCRIPTION",
+  "knownToPlayer": "BOOL_DISCERN_FROM_CONTEXT",
+  "connectedLocations": [
+    "LIST_OF_OTHER_LOCATION_IDS_DIRECTLY_CONNECTED"
+  ],
+  "parentLocation": "ID_OF_THE_LOCATION_CONTAINING_THIS_BUILDING",
+  "npcs": [
+    "LIST_OF_NPC_IDS_ASSOCIATED_WITH_THIS_BUILDING"
+  ],
+  "exterior_description": "DESCRIBE_THE_OUTSIDE_APPEARANCE",
+  "purpose": "ORIGINAL_OR_CURRENT_FUNCTION_OF_THE_BUILDING",
+  "history": "OPTIONAL_SHORT_HISTORY_OR_BACKSTORY",
   "floors": [
     {
       "floor_name": "FLOOR_NAME_OR_NUMBER",
@@ -37,9 +40,7 @@
             }
           ],
           "npcs": [
-            {
-              "npcId": "ID_OF_AN_NPC_PRESENT_IN_THIS_ROOM"
-            }
+            "ID_OF_AN_NPC_PRESENT_IN_THIS_ROOM"
           ],
           "navigation": {
             "connected_rooms": [

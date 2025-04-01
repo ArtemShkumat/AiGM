@@ -20,15 +20,17 @@ namespace AiGMBackEnd.Services
         private readonly object _queueLock = new object();
         private bool _isProcessing = false;
         private bool _isInitialized = false;
-
+        private readonly StorageService _storageService;
         public BackgroundJobService(
             LoggingService loggingService,
             PromptService promptService,
-            AiService aiService)
+            AiService aiService,
+            StorageService storageService)
         {
             _loggingService = loggingService;
             _promptService = promptService;
-            _aiService = aiService;
+            _aiService = aiService; 
+            _storageService = storageService;
         }
         
         public void SetResponseProcessingServiceFactory(Func<ResponseProcessingService> factory)
@@ -122,8 +124,8 @@ namespace AiGMBackEnd.Services
                                 // For entity creation responses, we expect pure JSON
                                 processedResult = await responseProcessingService.HandleCreateResponseAsync(llmResponse, job.Request.PromptType, job.Request.UserId);
                             }
-
-                            
+                            // Sync world state with entities after successful processing
+                            await _storageService.SyncWorldWithEntitiesAsync(job.Request.UserId);
 
                             // 4. Set result
                             job.CompletionSource.SetResult(processedResult.UserFacingText);
