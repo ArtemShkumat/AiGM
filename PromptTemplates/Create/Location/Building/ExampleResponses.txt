@@ -73,11 +73,9 @@ Your Response:
             }
           ],
           "npcs": [],
-          "navigation": {
-            "connected_rooms": [
+          "connected_rooms": [
               "Main Shop Area"
-            ]
-          }
+          ]          
         }
       ]
     }
@@ -223,13 +221,11 @@ Your response:
             }
           ],
           "npcs": [],
-          "navigation": {
             "connected_rooms": [
               "Common Room",
               "Tavern",
               "Storage Room"
             ]
-          }
         },
         {
           "name": "Tavern",

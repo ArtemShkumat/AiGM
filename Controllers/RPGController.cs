@@ -396,7 +396,8 @@ namespace AiGMBackEnd.Controllers
                 
                 return Ok(new { 
                     Message = $"Auto-creation of dangling references initiated. {createdCount} entities queued for creation.", 
-                    EntitiesCreated = createdCount 
+                    EntitiesCreated = createdCount,
+                    CheckStatusEndpoint = $"/api/EntityStatus/pending/{gameId}"
                 });
             }
             catch (DirectoryNotFoundException dnfe)

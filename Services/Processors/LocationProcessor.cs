@@ -284,8 +284,7 @@ namespace AiGMBackEnd.Services.Processors
                                     {
                                         Name = roomObj["name"]?.ToString(),
                                         Type = roomObj["type"]?.ToString(),
-                                        Description = roomObj["description"]?.ToString(),
-                                        Navigation = new RoomNavigation()
+                                        Description = roomObj["description"]?.ToString()
                                     };
                                     
                                     // Process points of interest
@@ -339,14 +338,14 @@ namespace AiGMBackEnd.Services.Processors
                                     }
                                     
                                     // Process connected rooms
-                                    if (roomObj["navigation"]?["connected_rooms"] is JArray connectedRoomsArray)
+                                    if (roomObj["connected_rooms"] is JArray connectedRoomsArray)
                                     {
                                         foreach (var connectedRoom in connectedRoomsArray)
                                         {
                                             var roomStr = connectedRoom.ToString();
                                             if (!string.IsNullOrEmpty(roomStr))
                                             {
-                                                room.Navigation.ConnectedRooms.Add(roomStr);
+                                                room.ConnectedRooms.Add(roomStr);
                                             }
                                         }
                                     }

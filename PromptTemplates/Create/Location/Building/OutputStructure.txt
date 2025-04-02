@@ -42,11 +42,9 @@
           "npcs": [
             "ID_OF_AN_NPC_PRESENT_IN_THIS_ROOM"
           ],
-          "navigation": {
-            "connected_rooms": [
-              "NAMES_OF_OTHER_ROOMS_ON_THIS_FLOOR"
-            ]
-          }
+          "connected_rooms": [
+                "NAMES_OF_OTHER_ROOMS_ON_THIS_FLOOR"
+          ]          
         }
       ]
     }

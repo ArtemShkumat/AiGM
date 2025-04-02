@@ -12,26 +12,27 @@ namespace AiGMBackEnd.Services
     {
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;
-        private readonly BackgroundJobService _backgroundJobService;
+        private readonly IStatusTrackingService _statusTrackingService;
         private readonly LocationProcessor _locationProcessor;
         private readonly QuestProcessor _questProcessor;
         private readonly NPCProcessor _npcProcessor;
         private readonly PlayerProcessor _playerProcessor;
-        private readonly UpdateProcessor _updateProcessor;
+        private readonly IUpdateProcessor _updateProcessor;
 
         public ResponseProcessingService(
             StorageService storageService,
             LoggingService loggingService,
-            BackgroundJobService backgroundJobService)
+            IStatusTrackingService statusTrackingService,
+            IUpdateProcessor updateProcessor)
         {
             _storageService = storageService;
             _loggingService = loggingService;
-            _backgroundJobService = backgroundJobService;
+            _statusTrackingService = statusTrackingService;
             _locationProcessor = new LocationProcessor(storageService, loggingService);
             _questProcessor = new QuestProcessor(storageService, loggingService);
             _npcProcessor = new NPCProcessor(storageService, loggingService);
             _playerProcessor = new PlayerProcessor(storageService, loggingService);
-            _updateProcessor = new UpdateProcessor(storageService, loggingService, backgroundJobService);
+            _updateProcessor = updateProcessor;
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)

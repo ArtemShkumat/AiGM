@@ -1,3 +1,9 @@
+using Hangfire;
+using Hangfire.MemoryStorage;
+using Hangfire.Dashboard;
+using AiGMBackEnd.Services;
+using AiGMBackEnd.Services.Processors;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,17 +21,34 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Register application services
-builder.Services.AddSingleton<AiGMBackEnd.Services.LoggingService>();
-builder.Services.AddSingleton<AiGMBackEnd.Services.StorageService>();
-builder.Services.AddSingleton<AiGMBackEnd.Services.AIProviders.AIProviderFactory>();
-builder.Services.AddSingleton<AiGMBackEnd.Services.AiService>();
-builder.Services.AddSingleton<AiGMBackEnd.Services.PromptService>();
+// Configure Hangfire
+builder.Services.AddHangfire(config =>
+{
+    config.UseMemoryStorage();
+    config.UseRecommendedSerializerSettings();
+});
 
-// Register services with circular dependency
-builder.Services.AddSingleton<AiGMBackEnd.Services.BackgroundJobService>();
-builder.Services.AddSingleton<AiGMBackEnd.Services.ResponseProcessingService>();
-builder.Services.AddSingleton<AiGMBackEnd.Services.PresenterService>();
+// Add the Hangfire server
+builder.Services.AddHangfireServer(options =>
+{
+    options.WorkerCount = 4; // Number of concurrent background jobs
+});
+
+// Register application services
+builder.Services.AddSingleton<LoggingService>();
+builder.Services.AddSingleton<StorageService>();
+builder.Services.AddSingleton<AiGMBackEnd.Services.AIProviders.AIProviderFactory>();
+builder.Services.AddSingleton<AiService>();
+builder.Services.AddSingleton<PromptService>();
+
+// Register new StatusTrackingService
+builder.Services.AddSingleton<IStatusTrackingService, StatusTrackingService>();
+
+// Register processors and other services in the correct dependency order to avoid circular dependencies
+builder.Services.AddSingleton<IUpdateProcessor, UpdateProcessor>();
+builder.Services.AddSingleton<ResponseProcessingService>();
+builder.Services.AddSingleton<HangfireJobsService>();
+builder.Services.AddSingleton<PresenterService>();
 
 // Configure Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -33,16 +56,17 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Resolve and configure services with circular dependencies
-var backgroundJobService = app.Services.GetRequiredService<AiGMBackEnd.Services.BackgroundJobService>();
-backgroundJobService.SetResponseProcessingServiceFactory(() => 
-    app.Services.GetRequiredService<AiGMBackEnd.Services.ResponseProcessingService>());
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    // Add Hangfire Dashboard in development
+    app.UseHangfireDashboard("/hangfire", new DashboardOptions
+    {
+        Authorization = new[] { new AllowAllConnectionsFilter() }
+    });
 }
 
 // Enable CORS
@@ -53,3 +77,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Allow all connections to the Hangfire Dashboard in development
+public class AllowAllConnectionsFilter : IDashboardAuthorizationFilter
+{
+    public bool Authorize(DashboardContext context) => true;
+}

@@ -77,9 +77,10 @@ namespace AiGMBackEnd.Services.AIProviders
                     "application/json");
 
                 // Preprocess the JSON for better logging readability
-                var prettyJson = PreprocessJsonForLogging(json);
-                _loggingService.LogFormattedInfo("request", prettyJson);
-                
+                //var prettyJson = PreprocessJsonForLogging(json);
+                //_loggingService.LogFormattedInfo("request", prettyJson);
+                _loggingService.LogFormattedInfo("request", prompt.PromptContent);
+
                 var response = await _httpClient.PostAsync("chat/completions", requestContent);
                 response.EnsureSuccessStatusCode();
 

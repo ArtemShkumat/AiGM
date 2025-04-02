@@ -53,7 +53,7 @@ Long-Term Persistence
 The user can leave the game at any point. Next session, the system reloads all JSON data--locations, NPC states, active quests.
 The LLM sees only relevant data for each scene, preserving continuity over days or weeks.
 4. Concurrency & Performance
-A BackgroundJobService queue ensures big tasks (like generating a whole new quest with multiple NPCs/locations) happen sequentially, preventing GPU overload.
+A Hangfire job queue ensures big tasks (like generating a whole new quest with multiple NPCs/locations) happen sequentially, preventing GPU overload.
 For small interactions (like a quick conversation with a single NPC), the user might only see a brief queue wait if multiple tasks are pending.
 5. Tone & Setting Customizations
 The gameSetting field in each prompt ensures users can run "Medieval fantasy," "Space opera," or "Zombie apocalypse" worlds.
@@ -70,6 +70,7 @@ The system is designed for single-user sessions right now. Adding concurrency or
 7. High-Level Technologies & Data
 Backend Services (in C#):
 PresenterService for user input (creates requests).
+Hangfire for queuing and orchestrating all requests.
 BackgroundJobService for queuing and orchestrating all requests.
 PromptService (uses specialized `IPromptBuilder` implementations).
 AiService (uses specialized `IAIProvider` implementations via a factory).

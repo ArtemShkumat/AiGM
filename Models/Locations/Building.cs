@@ -51,7 +51,6 @@ namespace AiGMBackEnd.Models
             Name = string.Empty;
             Type = string.Empty;
             Description = string.Empty;
-            Navigation = new RoomNavigation();
         }
         
         [JsonPropertyName("name")]
@@ -72,17 +71,6 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("npcs")]
         public List<string> Npcs { get; set; } = new List<string>();
 
-        [JsonPropertyName("navigation")]
-        public RoomNavigation Navigation { get; set; }
-    }
-
-    public class RoomNavigation
-    {
-        public RoomNavigation()
-        {
-            ConnectedRooms = new List<string>();
-        }
-        
         [JsonPropertyName("connected_rooms")]
         public List<string> ConnectedRooms { get; set; } = new List<string>();
     }
