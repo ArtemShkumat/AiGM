@@ -3,6 +3,7 @@ using Hangfire.MemoryStorage;
 using Hangfire.Dashboard;
 using AiGMBackEnd.Services;
 using AiGMBackEnd.Services.Processors;
+using AiGMBackEnd.Services.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,9 +35,18 @@ builder.Services.AddHangfireServer(options =>
     options.WorkerCount = 4; // Number of concurrent background jobs
 });
 
-// Register application services
+// Register application services - Storage layer
 builder.Services.AddSingleton<LoggingService>();
+builder.Services.AddSingleton<IBaseStorageService, BaseStorageService>();
+builder.Services.AddSingleton<IEntityStorageService, EntityStorageService>();
+builder.Services.AddSingleton<ITemplateService, TemplateService>();
+builder.Services.AddSingleton<IValidationService, ValidationService>();
+builder.Services.AddSingleton<IWorldSyncService, WorldSyncService>();
+builder.Services.AddSingleton<IGameScenarioService, GameScenarioService>();
+builder.Services.AddSingleton<IConversationLogService, ConversationLogService>();
 builder.Services.AddSingleton<StorageService>();
+
+// Register AI services
 builder.Services.AddSingleton<AiGMBackEnd.Services.AIProviders.AIProviderFactory>();
 builder.Services.AddSingleton<AiService>();
 builder.Services.AddSingleton<PromptService>();
@@ -44,8 +54,14 @@ builder.Services.AddSingleton<PromptService>();
 // Register new StatusTrackingService
 builder.Services.AddSingleton<IStatusTrackingService, StatusTrackingService>();
 
-// Register processors and other services in the correct dependency order to avoid circular dependencies
+// Register entity processors
+builder.Services.AddSingleton<ILocationProcessor, LocationProcessor>();
+builder.Services.AddSingleton<INPCProcessor, NPCProcessor>();
+builder.Services.AddSingleton<IQuestProcessor, QuestProcessor>();
+builder.Services.AddSingleton<IPlayerProcessor, PlayerProcessor>();
 builder.Services.AddSingleton<IUpdateProcessor, UpdateProcessor>();
+
+// Register processing services (dependent on other services)
 builder.Services.AddSingleton<ResponseProcessingService>();
 builder.Services.AddSingleton<HangfireJobsService>();
 builder.Services.AddSingleton<PresenterService>();

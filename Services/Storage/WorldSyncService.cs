@@ -8,13 +8,13 @@ using AiGMBackEnd.Models.Locations;
 
 namespace AiGMBackEnd.Services.Storage
 {
-    public class WorldSyncService
+    public class WorldSyncService : IWorldSyncService
     {
         private readonly LoggingService _loggingService;
-        private readonly BaseStorageService _baseStorageService;
+        private readonly IBaseStorageService _baseStorageService;
         private readonly string _dataPath;
 
-        public WorldSyncService(LoggingService loggingService, BaseStorageService baseStorageService)
+        public WorldSyncService(LoggingService loggingService, IBaseStorageService baseStorageService)
         {
             _loggingService = loggingService;
             _baseStorageService = baseStorageService;

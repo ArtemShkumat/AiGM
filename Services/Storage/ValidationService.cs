@@ -8,7 +8,7 @@ using AiGMBackEnd.Services;
 
 namespace AiGMBackEnd.Services.Storage
 {
-    public class ValidationService
+    public class ValidationService : IValidationService
     {
         private readonly LoggingService _loggingService;
         private readonly string _dataPath;

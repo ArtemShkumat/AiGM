@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AiGMBackEnd.Services.Storage
 {
-    public class BaseStorageService
+    public class BaseStorageService : IBaseStorageService
     {
         protected readonly LoggingService _loggingService;
         protected readonly string _dataPath;
@@ -115,13 +115,13 @@ namespace AiGMBackEnd.Services.Storage
             }
         }
 
-        protected string GetFilePath(string userId, string fileId)
+        public string GetFilePath(string userId, string fileId)
         {
             return Path.Combine(_dataPath, "userData", userId, $"{fileId}.json");
         }
         
         // Helper method to copy directory and its contents
-        protected void CopyDirectory(string sourceDir, string destinationDir)
+        public void CopyDirectory(string sourceDir, string destinationDir)
         {
             // Create the destination directory if it doesn't exist
             Directory.CreateDirectory(destinationDir);

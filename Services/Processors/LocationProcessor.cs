@@ -8,7 +8,7 @@ using System;
 
 namespace AiGMBackEnd.Services.Processors
 {
-    public class LocationProcessor : IEntityProcessor
+    public class LocationProcessor : ILocationProcessor
     {
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;

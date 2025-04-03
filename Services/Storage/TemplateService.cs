@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace AiGMBackEnd.Services.Storage
 {
-    public class TemplateService
+    public class TemplateService : ITemplateService
     {
         private readonly LoggingService _loggingService;
         private readonly string _promptTemplatesPath;

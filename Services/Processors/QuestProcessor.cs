@@ -7,7 +7,7 @@ using System;
 
 namespace AiGMBackEnd.Services.Processors
 {
-    public class QuestProcessor : IEntityProcessor
+    public class QuestProcessor : IQuestProcessor
     {
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;

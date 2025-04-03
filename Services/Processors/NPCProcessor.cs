@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AiGMBackEnd.Services.Processors
 {
-    public class NPCProcessor : IEntityProcessor
+    public class NPCProcessor : INPCProcessor
     {
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;

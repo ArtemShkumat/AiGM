@@ -5,16 +5,16 @@ using AiGMBackEnd.Models;
 
 namespace AiGMBackEnd.Services.Storage
 {
-    public class ConversationLogService
+    public class ConversationLogService : IConversationLogService
     {
         private readonly LoggingService _loggingService;
-        private readonly BaseStorageService _baseStorageService;
-        private readonly EntityStorageService _entityStorageService;
+        private readonly IBaseStorageService _baseStorageService;
+        private readonly IEntityStorageService _entityStorageService;
 
         public ConversationLogService(
             LoggingService loggingService, 
-            BaseStorageService baseStorageService,
-            EntityStorageService entityStorageService)
+            IBaseStorageService baseStorageService,
+            IEntityStorageService entityStorageService)
         {
             _loggingService = loggingService;
             _baseStorageService = baseStorageService;

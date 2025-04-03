@@ -14,24 +14,32 @@ namespace AiGMBackEnd.Services
 {
     public class StorageService
     {
-        private readonly BaseStorageService _baseStorageService;
-        private readonly EntityStorageService _entityStorageService;
-        private readonly TemplateService _templateService;
-        private readonly ValidationService _validationService;
-        private readonly GameScenarioService _gameScenarioService;
-        private readonly ConversationLogService _conversationLogService;
+        private readonly IBaseStorageService _baseStorageService;
+        private readonly IEntityStorageService _entityStorageService;
+        private readonly ITemplateService _templateService;
+        private readonly IValidationService _validationService;
+        private readonly IGameScenarioService _gameScenarioService;
+        private readonly IConversationLogService _conversationLogService;
         private readonly LoggingService _loggingService;
-        private readonly WorldSyncService _worldSyncService;
+        private readonly IWorldSyncService _worldSyncService;
 
-        public StorageService(LoggingService loggingService)
+        public StorageService(
+            IBaseStorageService baseStorageService,
+            IEntityStorageService entityStorageService,
+            ITemplateService templateService,
+            IValidationService validationService,
+            IGameScenarioService gameScenarioService,
+            IConversationLogService conversationLogService,
+            IWorldSyncService worldSyncService,
+            LoggingService loggingService)
         {
-            _baseStorageService = new BaseStorageService(loggingService);
-            _entityStorageService = new EntityStorageService(loggingService);
-            _templateService = new TemplateService(loggingService);
-            _validationService = new ValidationService(loggingService);
-            _gameScenarioService = new GameScenarioService(loggingService, _baseStorageService);
-            _conversationLogService = new ConversationLogService(loggingService, _baseStorageService, _entityStorageService);
-            _worldSyncService = new WorldSyncService(loggingService, _baseStorageService);
+            _baseStorageService = baseStorageService;
+            _entityStorageService = entityStorageService;
+            _templateService = templateService;
+            _validationService = validationService;
+            _gameScenarioService = gameScenarioService;
+            _conversationLogService = conversationLogService;
+            _worldSyncService = worldSyncService;
             _loggingService = loggingService;
         }
 

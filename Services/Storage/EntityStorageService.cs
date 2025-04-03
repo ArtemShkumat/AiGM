@@ -10,7 +10,7 @@ using AiGMBackEnd.Services;
 
 namespace AiGMBackEnd.Services.Storage
 {
-    public class EntityStorageService : BaseStorageService
+    public class EntityStorageService : BaseStorageService, IEntityStorageService
     {
         public EntityStorageService(LoggingService loggingService) : base(loggingService)
         {

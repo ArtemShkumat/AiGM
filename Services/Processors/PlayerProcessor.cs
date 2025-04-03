@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AiGMBackEnd.Services.Processors
 {
-    public class PlayerProcessor : IEntityProcessor
+    public class PlayerProcessor : IPlayerProcessor
     {
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;

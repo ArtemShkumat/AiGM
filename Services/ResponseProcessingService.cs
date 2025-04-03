@@ -13,26 +13,30 @@ namespace AiGMBackEnd.Services
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;
         private readonly IStatusTrackingService _statusTrackingService;
-        private readonly LocationProcessor _locationProcessor;
-        private readonly QuestProcessor _questProcessor;
-        private readonly NPCProcessor _npcProcessor;
-        private readonly PlayerProcessor _playerProcessor;
+        private readonly ILocationProcessor _locationProcessor;
+        private readonly IQuestProcessor _questProcessor;
+        private readonly INPCProcessor _npcProcessor;
+        private readonly IPlayerProcessor _playerProcessor;
         private readonly IUpdateProcessor _updateProcessor;
 
         public ResponseProcessingService(
             StorageService storageService,
             LoggingService loggingService,
             IStatusTrackingService statusTrackingService,
-            IUpdateProcessor updateProcessor)
+            IUpdateProcessor updateProcessor,
+            ILocationProcessor locationProcessor,
+            IQuestProcessor questProcessor,
+            INPCProcessor npcProcessor,
+            IPlayerProcessor playerProcessor)
         {
             _storageService = storageService;
             _loggingService = loggingService;
             _statusTrackingService = statusTrackingService;
-            _locationProcessor = new LocationProcessor(storageService, loggingService);
-            _questProcessor = new QuestProcessor(storageService, loggingService);
-            _npcProcessor = new NPCProcessor(storageService, loggingService);
-            _playerProcessor = new PlayerProcessor(storageService, loggingService);
             _updateProcessor = updateProcessor;
+            _locationProcessor = locationProcessor;
+            _questProcessor = questProcessor;
+            _npcProcessor = npcProcessor;
+            _playerProcessor = playerProcessor;
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)

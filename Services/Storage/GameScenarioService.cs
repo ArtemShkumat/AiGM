@@ -8,13 +8,13 @@ using AiGMBackEnd.Models;
 
 namespace AiGMBackEnd.Services.Storage
 {
-    public class GameScenarioService
+    public class GameScenarioService : IGameScenarioService
     {
         private readonly LoggingService _loggingService;
         private readonly string _dataPath;
-        private readonly BaseStorageService _baseStorageService;
+        private readonly IBaseStorageService _baseStorageService;
 
-        public GameScenarioService(LoggingService loggingService, BaseStorageService baseStorageService)
+        public GameScenarioService(LoggingService loggingService, IBaseStorageService baseStorageService)
         {
             _loggingService = loggingService;
             _baseStorageService = baseStorageService;

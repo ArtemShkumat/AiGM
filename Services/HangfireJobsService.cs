@@ -23,9 +23,9 @@ namespace AiGMBackEnd.Services
         private readonly ResponseProcessingService _responseProcessingService;
         private readonly IStatusTrackingService _statusTrackingService;
         private readonly StorageService _storageService;
-        private readonly NPCProcessor _npcProcessor;
-        private readonly LocationProcessor _locationProcessor;
-        private readonly QuestProcessor _questProcessor;
+        private readonly INPCProcessor _npcProcessor;
+        private readonly ILocationProcessor _locationProcessor;
+        private readonly IQuestProcessor _questProcessor;
 
         public HangfireJobsService(
             LoggingService loggingService,
@@ -33,7 +33,10 @@ namespace AiGMBackEnd.Services
             AiService aiService,
             ResponseProcessingService responseProcessingService,
             IStatusTrackingService statusTrackingService,
-            StorageService storageService)
+            StorageService storageService,
+            INPCProcessor npcProcessor,
+            ILocationProcessor locationProcessor,
+            IQuestProcessor questProcessor)
         {
             _loggingService = loggingService;
             _promptService = promptService;
@@ -41,11 +44,9 @@ namespace AiGMBackEnd.Services
             _responseProcessingService = responseProcessingService;
             _statusTrackingService = statusTrackingService;
             _storageService = storageService;
-            
-            // Initialize processors
-            _npcProcessor = new NPCProcessor(storageService, loggingService);
-            _locationProcessor = new LocationProcessor(storageService, loggingService);
-            _questProcessor = new QuestProcessor(storageService, loggingService);
+            _npcProcessor = npcProcessor;
+            _locationProcessor = locationProcessor;
+            _questProcessor = questProcessor;
         }
 
         /// <summary>

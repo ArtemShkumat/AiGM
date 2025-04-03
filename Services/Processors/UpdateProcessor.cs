@@ -17,24 +17,27 @@ namespace AiGMBackEnd.Services.Processors
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;
         private readonly IStatusTrackingService _statusTrackingService;
-        private readonly LocationProcessor _locationProcessor;
-        private readonly QuestProcessor _questProcessor;
-        private readonly NPCProcessor _npcProcessor;
+        private readonly ILocationProcessor _locationProcessor;
+        private readonly IQuestProcessor _questProcessor;
+        private readonly INPCProcessor _npcProcessor;
         private readonly IServiceProvider _serviceProvider;
 
         public UpdateProcessor(
             StorageService storageService,
             LoggingService loggingService,
             IStatusTrackingService statusTrackingService,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            ILocationProcessor locationProcessor,
+            IQuestProcessor questProcessor,
+            INPCProcessor npcProcessor)
         {
             _storageService = storageService;
             _loggingService = loggingService;
             _statusTrackingService = statusTrackingService;
             _serviceProvider = serviceProvider;
-            _locationProcessor = new LocationProcessor(storageService, loggingService);
-            _questProcessor = new QuestProcessor(storageService, loggingService);
-            _npcProcessor = new NPCProcessor(storageService, loggingService);
+            _locationProcessor = locationProcessor;
+            _questProcessor = questProcessor;
+            _npcProcessor = npcProcessor;
         }
 
         public async Task ProcessUpdatesAsync(JObject updates, string userId)
