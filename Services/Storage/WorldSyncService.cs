@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using AiGMBackEnd.Models;
@@ -12,12 +13,14 @@ namespace AiGMBackEnd.Services.Storage
     {
         private readonly LoggingService _loggingService;
         private readonly IBaseStorageService _baseStorageService;
+        private readonly IEntityStorageService _entityStorageService;
         private readonly string _dataPath;
 
-        public WorldSyncService(LoggingService loggingService, IBaseStorageService baseStorageService)
+        public WorldSyncService(LoggingService loggingService, IBaseStorageService baseStorageService, IEntityStorageService entityStorageService)
         {
             _loggingService = loggingService;
             _baseStorageService = baseStorageService;
+            _entityStorageService = entityStorageService;
             
             // Set the data path
             string rootDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
@@ -158,6 +161,104 @@ namespace AiGMBackEnd.Services.Storage
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error synchronizing world with entities: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Synchronizes NPCs with their locations to ensure location.Npcs arrays contain the NPCs that reference them
+        /// </summary>
+        /// <param name="gameId">The game/user ID</param>
+        /// <returns>Detailed results of the synchronization process</returns>
+        public async Task<(int UpdatedCount, List<object> SyncResults)> SyncNpcLocationsAsync(string gameId)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Starting NPC location synchronization for game: {gameId}");
+                
+                // Get all NPCs in the game
+                var allNpcs = await _entityStorageService.GetAllNpcsAsync(gameId);
+                
+                if (allNpcs == null || !allNpcs.Any())
+                {
+                    return (0, new List<object> { new { Message = "No NPCs found to synchronize." } });
+                }
+                
+                var syncResults = new List<object>();
+                int updatedCount = 0;
+                
+                // Process each NPC
+                foreach (var npc in allNpcs)
+                {
+                    if (string.IsNullOrEmpty(npc.CurrentLocationId))
+                    {
+                        syncResults.Add(new { 
+                            NpcId = npc.Id, 
+                            NpcName = npc.Name, 
+                            Status = "Skipped", 
+                            Reason = "No current location set" 
+                        });
+                        continue;
+                    }
+                    
+                    // Get the location
+                    var location = await _entityStorageService.GetLocationAsync(gameId, npc.CurrentLocationId);
+                    
+                    if (location == null)
+                    {
+                        syncResults.Add(new { 
+                            NpcId = npc.Id, 
+                            NpcName = npc.Name, 
+                            Status = "Error", 
+                            Reason = $"Location {npc.CurrentLocationId} not found" 
+                        });
+                        continue;
+                    }
+                    
+                    // Initialize NPCs list if it's null
+                    if (location.Npcs == null)
+                    {
+                        location.Npcs = new List<string>();
+                    }
+                    
+                    // Check if the NPC is already in the location's NPCs list
+                    if (!location.Npcs.Contains(npc.Id))
+                    {
+                        // Add the NPC to the location
+                        location.Npcs.Add(npc.Id);
+                        
+                        // Save the updated location
+                        await _baseStorageService.SaveAsync(gameId, $"locations/{location.Id}", location);
+                        
+                        updatedCount++;
+                        syncResults.Add(new { 
+                            NpcId = npc.Id, 
+                            NpcName = npc.Name, 
+                            LocationId = location.Id, 
+                            LocationName = location.Name, 
+                            Status = "Updated", 
+                            Action = "Added NPC to location" 
+                        });
+                    }
+                    else
+                    {
+                        syncResults.Add(new { 
+                            NpcId = npc.Id, 
+                            NpcName = npc.Name, 
+                            LocationId = location.Id, 
+                            LocationName = location.Name, 
+                            Status = "Skipped", 
+                            Reason = "NPC already in location list" 
+                        });
+                    }
+                }
+                
+                _loggingService.LogInfo($"NPC location synchronization complete for game {gameId}. Updated {updatedCount} locations.");
+                return (updatedCount, syncResults);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error during NPC location synchronization for game {gameId}: {ex.Message}");
                 throw;
             }
         }

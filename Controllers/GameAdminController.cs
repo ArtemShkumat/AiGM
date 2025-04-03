@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Services;
+using AiGMBackEnd.Services.Storage;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace AiGMBackEnd.Controllers
 {
@@ -15,12 +17,18 @@ namespace AiGMBackEnd.Controllers
         private readonly PresenterService _presenterService;
         private readonly LoggingService _loggingService;
         private readonly StorageService _storageService;
+        private readonly IWorldSyncService _worldSyncService;
 
-        public GameAdminController(PresenterService presenterService, LoggingService loggingService, StorageService storageService)
+        public GameAdminController(
+            PresenterService presenterService, 
+            LoggingService loggingService, 
+            StorageService storageService,
+            IWorldSyncService worldSyncService)
         {
             _presenterService = presenterService;
             _loggingService = loggingService;
             _storageService = storageService;
+            _worldSyncService = worldSyncService;
         }
 
         [HttpGet("{gameId}/validate")]
@@ -93,6 +101,37 @@ namespace AiGMBackEnd.Controllers
             {
                 _loggingService.LogError($"Error during auto-creation for game {gameId}: {ex.Message}");
                 return StatusCode(500, new { Message = $"An unexpected error occurred during auto-creation.", Error = ex.Message });
+            }
+        }
+        
+        [HttpPost("{gameId}/sync-npc-locations")]
+        public async Task<IActionResult> SyncNpcLocations(string gameId)
+        {
+            if (string.IsNullOrEmpty(gameId))
+            {
+                return BadRequest("GameId is required");
+            }
+
+            try
+            {
+                // Call the service to perform the synchronization
+                var (updatedCount, syncResults) = await _worldSyncService.SyncNpcLocationsAsync(gameId);
+                
+                return Ok(new { 
+                    Message = $"NPC location synchronization complete. Updated {updatedCount} locations.", 
+                    UpdatedCount = updatedCount,
+                    Details = syncResults 
+                });
+            }
+            catch (DirectoryNotFoundException dnfe)
+            {
+                _loggingService.LogWarning($"Synchronization failed for game {gameId}. Game directory not found: {dnfe.Message}");
+                return NotFound(new { Message = $"Synchronization failed. Game with ID '{gameId}' not found." });
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error during NPC location synchronization for game {gameId}: {ex.Message}");
+                return StatusCode(500, new { Message = $"An unexpected error occurred during synchronization.", Error = ex.Message });
             }
         }
     }
