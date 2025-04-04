@@ -59,7 +59,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 new NPCSection(npc, true).AppendTo(promptContentBuilder);
 
                 // Add the user's input
-                new UserInputSection(request.UserInput, "User Input").AppendTo(promptContentBuilder);
+                new UserInputSection(request.UserInput, "User Input", false).AppendTo(promptContentBuilder);
 
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),

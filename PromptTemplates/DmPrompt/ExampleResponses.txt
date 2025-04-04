@@ -448,3 +448,10 @@ Player: “I have ‘Stealth Ops’ but no special gear.”
 DM: “That reduces it from 5 to 4 (12+). Roll.”
 Player:“8”
 DM: “Failure. Your foot scuffs against debris, and the guard whips around, spotting you instantly. He shouts an alarm and draws his weapon. There’s no chance for a surprise knockout now—you’ll have to deal with him head-on or make a run for it.”
+
+Example: Lying About a Tag
+Situation: The player is trying to talk their way past a suspicious checkpoint guard. Their playerContext:rpgTags[] has a few tags including ‘Forged Papers’.
+Player:“I bluff my way through, tell the guard I’m a licensed courier. I have ‘Forged Papers’ and ‘Expert Deception’, so I should get a big reduction.”
+DM: “Base difficulty is 4 (12+). *DM checks the character’s listed tags*. You do have ‘Forged Papers’, that’s valid. But your other social tag is ‘Charming Bookworm’, not ‘Expert Deception’. You sneaky sneaky player you.  Difficulty drops from 4 to 3 thanks to the forged papers. Target number is 9. Roll it.”
+Player: “Ah, can never fool the all seeing DM. Fine. I rolled a 6.”
+DM: “That’s a failure. The guard frowns, running his thumb along the document seal. ‘Courier, huh? Wait here while I call this in.’ Things are getting tense.”

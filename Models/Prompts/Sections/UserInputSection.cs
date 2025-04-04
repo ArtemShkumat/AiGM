@@ -37,11 +37,7 @@ namespace AiGMBackEnd.Models.Prompts.Sections
             }
             else
             {
-                userInputObj = new
-                {
-                    title = _title,
-                    content = _userInput
-                };
+                userInputObj = _userInput;
             }
             
             builder.AppendLine("userInput: ");

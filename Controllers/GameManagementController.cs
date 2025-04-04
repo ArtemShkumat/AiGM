@@ -108,15 +108,7 @@ namespace AiGMBackEnd.Controllers
                         
                         if (!string.IsNullOrEmpty(player.CurrentLocationId))
                         {
-                            var location = await _storageService.GetLocationAsync(gameId, player.CurrentLocationId);
-                            if (location != null)
-                            {
-                                playerLocation = location.Name ?? player.CurrentLocationId;
-                            }
-                            else
-                            {
-                                playerLocation = player.CurrentLocationId;
-                            }
+                            playerLocation = player.CurrentLocationId;
                         }
                     }
                     
