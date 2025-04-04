@@ -102,7 +102,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 new ConversationLogSection(conversationLog).AppendTo(promptContentBuilder);
                 
                 // Add the user's input
-                new UserInputSection(request.UserInput, "Current player prompt").AppendTo(promptContentBuilder);
+                new UserInputSection(request.UserInput, "Current player prompt", false).AppendTo(promptContentBuilder);
                 
 
                 // Create the prompt object
