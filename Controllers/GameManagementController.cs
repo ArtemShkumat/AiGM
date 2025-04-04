@@ -88,27 +88,35 @@ namespace AiGMBackEnd.Controllers
                 {
                     var world = await _storageService.GetWorldAsync(gameId);
                     var gameSetting = await _storageService.GetGameSettingAsync(gameId);
+                    var player = await _storageService.GetPlayerAsync(gameId);
                     
                     var gameName = gameId;
-                    var gameDescription = "No description available";
+                    var playerName = "No player created";
+                    var playerLocation = "Unknown";
                                         
                     if (gameSetting != null)
                     {
-                        if (!string.IsNullOrEmpty(gameSetting.Genre))
-                        {
-                            gameName = gameSetting.Genre;
-                        }
-                        if (!string.IsNullOrEmpty(gameSetting.Description))
-                        {
-                            gameDescription = gameSetting.Description;
-                        }
                         if (!string.IsNullOrEmpty(gameSetting.GameName))
                         {
                             gameName = gameSetting.GameName;
                         }
-                        if (!string.IsNullOrEmpty(gameSetting.Setting))
+                    }
+                    
+                    if (player != null)
+                    {
+                        playerName = player.Name ?? "Unnamed";
+                        
+                        if (!string.IsNullOrEmpty(player.CurrentLocationId))
                         {
-                            gameDescription = gameSetting.Setting;
+                            var location = await _storageService.GetLocationAsync(gameId, player.CurrentLocationId);
+                            if (location != null)
+                            {
+                                playerLocation = location.Name ?? player.CurrentLocationId;
+                            }
+                            else
+                            {
+                                playerLocation = player.CurrentLocationId;
+                            }
                         }
                     }
                     
@@ -116,7 +124,8 @@ namespace AiGMBackEnd.Controllers
                     {
                         GameId = gameId,
                         Name = gameName,
-                        Description = gameDescription
+                        PlayerName = playerName,
+                        PlayerLocation = playerLocation
                     });
                 }
                 

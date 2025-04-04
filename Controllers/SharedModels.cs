@@ -39,7 +39,8 @@ namespace AiGMBackEnd.Controllers
     {
         public string GameId { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
+        public string PlayerName { get; set; }
+        public string PlayerLocation { get; set; }
     }
 
     public class CreateCharacterRequest
