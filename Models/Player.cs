@@ -35,8 +35,8 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("statusEffects")]
         public List<string> StatusEffects { get; set; } = new List<string>();
         
-        [JsonPropertyName("rpgElements")]
-        public Dictionary<string, object> RpgElements { get; set; } = new Dictionary<string, object>();
+        [JsonPropertyName("rpgTags")]
+        public List<RpgTag> RpgTags { get; set; } = new List<RpgTag>();
         
         [JsonPropertyName("activeQuests")]
         public List<string> ActiveQuests { get; set; } = new List<string>();        

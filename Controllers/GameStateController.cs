@@ -114,7 +114,7 @@ namespace AiGMBackEnd.Controllers
                     player.CurrentLocationId,
                     player.Money,
                     player.StatusEffects,
-                    player.RpgElements,
+                    player.RpgTags,
                     player.ActiveQuests
                 };
                 

@@ -1,3 +1,5 @@
+Examples of interactions with player:
+
 EXAMPLE 1: Player enters a location
 
 USER: 
@@ -309,3 +311,15 @@ In the corner, an elderly man strums a lute, playing a cheerful tune that blends
       }
     }
 }
+
+Examples of situations requiring rolls and how to handle them:
+
+Example : Climbing a Crumbling Wall
+Situation: The character needs to climb a crumbling stone wall before patrolling guards return.
+Player: “I scramble up the wall to get to the ruined battlements. Time is short!”
+DM: “Base difficulty is 4—the wall is quite unstable. Because the guards are nearly here, I’m adding +1 difficulty for urgency, raising it to 5. That means you need to roll 15 or higher on a d20 for a success.”
+Player: “I have the ‘Street Climber’ tag from my urban background. Also, I’ll use the vines growing along the wall for extra handholds.”
+DM: “‘Street Climber’ reduces the difficulty from 5 down to 4. Using the vines is a clever environmental advantage, so that reduces it from 4 down to 3. Now you need 9 or higher.”
+Player: “I got a 10!”
+DM: “You succeed. You clamber up the wall just in time, flattening yourself against the parapet as the guards march past below.”
+

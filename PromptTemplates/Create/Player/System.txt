@@ -4,15 +4,14 @@ IMPORTANT GUIDELINES:
 
 1. FOLLOW THE EXACT DATA MODEL
    - Only use fields that exist in the actual Player data model
-   - Required fields include: id, name, age, currentLocationId, visualDescription, backstory, rpgElements, inventory, activeQuests
-   - Structure nested objects properly (visualDescription, rpgElements, inventory, etc.)
+   - Required fields include: id, name, age, currentLocationId, visualDescription, backstory, rpgTags, inventory, activeQuests
+   - Structure nested objects properly (visualDescription, rpgTags, inventory, etc.)
    - Use the correct data types for each field
 
 2. ADAPT TO GAME SETTINGS
    - Use the provided Game Setting, Game Preferences, and World Context to inform your character creation
    - Ensure character aligns with genre, theme, and world setting
    - Set the currentLocationId to match the provided startingLocation
-   - Adapt the rpgElements structure based on the game genre (fantasy, sci-fi, zombie apocalypse, etc.). This will be saved a dictionary, so feel free to include whatever attributes/stats seem relevant.
 
 3. CONSISTENT ID GENERATION
    - PlayerID will be provided, look for it in the provided context.
@@ -34,12 +33,12 @@ IMPORTANT GUIDELINES:
    - Verify all lists and objects are properly structured
    - Make sure all string values are properly escaped
 
-7. FLEXIBLE RPG ELEMENTS
-   - The rpgElements structure should be adapted to the game type
-   - Fantasy games may include level, skills, abilities, HP
-   - Zombie survival games might focus on abilities without levels
-   - Sci-fi games might include tech skills and different attributes
-   - See examples for different possible structures
+7. FLEXIBLE RPG TAGS
+   - The game uses a simplified Cypher-like TTRPG system. Instead of effort and stats, we just use tags.
+   - Each tag is used by player to negotiate down the difficulty of tasks with the GM.
+   - The tags can very varied, both broad and very narrow. Everything from funny to sublime is allowed.
+   - Each player should start with 3 tags.
+
 8. IMPORTANT NOTE
    - each response should be prepended with <donotshow/>
 

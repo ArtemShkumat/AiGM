@@ -4,9 +4,7 @@ Based on a review of the codebase (April 2nd, 2024), the following areas present
 
 ## 1. Dependency Injection (DI) Usage
 
-*   **Finding:** Several key services (`HangfireJobsService`, `ResponseProcessingService`, `UpdateProcessor`, `StorageService`, and processors instantiated within them) manually create their dependencies using `new Service(...)` instead of receiving them via constructor injection.
-*   **Impact:** This makes the code harder to test, less flexible, and increases coupling.
-*   **Recommendation:** Refactor these services and their consumers to consistently use constructor dependency injection. Register all relevant services and processors in the DI container (e.g., `Program.cs`).
+done
 
 ## 2. Large Controller (`RPGController.cs`)
 

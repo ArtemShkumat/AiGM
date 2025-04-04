@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Services;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace AiGMBackEnd.Services.Processors
 {
@@ -97,29 +98,45 @@ namespace AiGMBackEnd.Services.Processors
                     }
                 }
                 
-                // Handle RPG elements - this is a special case as it's a dictionary
-                if (playerData["rpgElements"] is JObject rpgElements)
+                // Handle RPG tags
+                if (playerData["rpgTags"] is JArray rpgTags)
                 {
-                    foreach (var prop in rpgElements.Properties())
+                    foreach (var tag in rpgTags)
                     {
-                        // Handle different value types
-                        if (prop.Value is JObject)
+                        if (tag is JObject tagObj)
                         {
-                            // Convert JObject to Dictionary
-                            var dict = prop.Value.ToObject<Dictionary<string, object>>();
-                            player.RpgElements[prop.Name] = dict;
+                            player.RpgTags.Add(new Models.RpgTag
+                            {
+                                Name = tagObj["name"]?.ToString(),
+                                Description = tagObj["description"]?.ToString()
+                            });
                         }
-                        else if (prop.Value is JArray)
+                    }
+                }
+                // Handle completed quests - moved outside the rpgElements section
+                if (playerData["completedQuests"] is JArray completedQuests)
+                {
+                    // Handle completed quests in a different way since we're no longer using rpgElements
+                    List<string> completedQuestsList = new List<string>();
+                    
+                    foreach (var quest in completedQuests)
+                    {
+                        var questStr = quest.ToString();
+                        if (!string.IsNullOrEmpty(questStr))
                         {
-                            // Convert JArray to List
-                            var list = prop.Value.ToObject<List<object>>();
-                            player.RpgElements[prop.Name] = list;
+                            completedQuestsList.Add(questStr);
                         }
-                        else
+                    }
+                    
+                    // Store as a separate property if needed, or update this as necessary
+                    // For now, let's add a special tag
+                    if (completedQuestsList.Count > 0)
+                    {
+                        player.RpgTags.Add(new Models.RpgTag
                         {
-                            // Simple properties
-                            player.RpgElements[prop.Name] = prop.Value.ToObject<object>();
-                        }
+                            Name = "Completed Quests",
+                            Description = string.Join(", ", completedQuestsList)
+                        });
                     }
                 }
                 
@@ -135,32 +152,6 @@ namespace AiGMBackEnd.Services.Processors
                         }
                     }
                 }
-                
-                // Handle completed quests
-                if (playerData["completedQuests"] is JArray completedQuests)
-                {
-                    if (player.RpgElements.ContainsKey("completedQuests"))
-                    {
-                        // Update existing
-                        var existing = player.RpgElements["completedQuests"] as List<object>;
-                        if (existing != null)
-                        {
-                            foreach (var quest in completedQuests)
-                            {
-                                var questStr = quest.ToString();
-                                if (!string.IsNullOrEmpty(questStr) && !existing.Contains(questStr))
-                                {
-                                    existing.Add(questStr);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Create new
-                        player.RpgElements["completedQuests"] = completedQuests.ToObject<List<object>>();
-                    }
-                }               
                 
                 // Save the player data
                 await _storageService.SaveAsync(userId, "player", player);

@@ -20,9 +20,12 @@ If it's not here, then just assume you don't need to bother updating it, ever.
       ],
       "money": "number - Amount of currency the player has", //Obviously update as necessary
       "statusEffects": ["string - Current effects on the player (buffs, debuffs, etc.)"], //This are status effects that would affect the player temporarily - being cursed, exhausted, buffed, etc. Update only when a significant change to player status happens.
-      "rpgElements": { //This is specific to the game setting and may have different things inside it. Exercise your judgement, but at the end of the day it's up to you. If a player acquires new skills, abilities, xp, or loses health, etc - it all goes here.		
-        "object - Contains RPG-specific attributes like class, level, abilities, etc."
-      },
+      "rpgTags": [ //This is specific to the game setting and may have different things inside it. Exercise your judgement, but at the end of the day it's up to you. If a player acquires new skills, abilities, etc. you can add them here.
+        {
+          "name": "New Skill Name",
+          "description": "Description of what this skill or ability represents"
+        }
+      ],
       "activeQuests": ["string - IDs of quests the player is currently undertaking"]//important - update when the player explicitly agrees to undertake a quest.
     },
     "location_id": {

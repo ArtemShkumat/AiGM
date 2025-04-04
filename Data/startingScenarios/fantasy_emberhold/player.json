@@ -26,12 +26,27 @@
   ],
   "money": 10,
   "statusEffects": [],
-  "rpgElements": {
-    "skills": {
-      "Combat": "Basic",
-      "Survival": "Intermediate",
-      "LocalKnowledge": "Basic"
+  "rpgTags": [
+    {
+      "name": "Combat: Basic",
+      "description": "You have basic combat skills"
+    },
+    {
+      "name": "Survival: Intermediate",
+      "description": "You have intermediate survival skills"
+    },
+    {
+      "name": "LocalKnowledge: Basic",
+      "description": "You have basic knowledge of local areas"
+    },
+    {
+      "name": "Swordsman",
+      "description": "You are proficient with swords"
+    },
+    {
+      "name": "Life of the party",
+      "description": "You feel at home in large social gatherings"
     }
-  },
+  ],
   "activeQuests": ["quest_emberCrystal"]
 } 

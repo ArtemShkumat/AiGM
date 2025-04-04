@@ -40,16 +40,24 @@
     }
   ],
   
-  "money": 15,
+  "money": 25,
   
   "statusEffects": [],
 
-  "rpgElements": {
-    "skills": {
-      "swordplay": 3,
-      "persuasion": 2
+  "rpgTags": [
+    {
+      "name": "Rogue",
+      "description": "You are skilled in stealth and subterfuge"
+    },
+    {
+      "name": "Silver Tongue",
+      "description": "You have a natural talent for persuasion"
+    },
+    {
+      "name": "Lockpicking",
+      "description": "You can pick simple locks"
     }
-  },
+  ],
   
   "activeQuests": [],
   
@@ -114,25 +122,24 @@
     }
   ],
   
-  "money": 0,
+  "money": 15,
   
-  "statusEffects": [
+  "statusEffects": [],
+
+  "rpgTags": [
     {
-      "name": "Fatigue",
-      "effect": "Reduced stamina and reflexes",
-      "duration": "Until properly rested"
+      "name": "Engineer",
+      "description": "You have advanced technical knowledge"
+    },
+    {
+      "name": "Hacker",
+      "description": "You can hack into simple computer systems"
+    },
+    {
+      "name": "Tech Savvy",
+      "description": "Technology comes naturally to you"
     }
   ],
-
-  "rpgElements": {
-    "abilities": {
-      "scavenging": 4,
-      "first aid": 5,
-      "stealth": 3,
-      "bartering": 3,
-      "infected knowledge": 4
-    }
-  },
   
   "activeQuests": [],
   
@@ -197,26 +204,24 @@
     }
   ],
   
-  "money": 6500,
+  "money": 8,
   
-  "statusEffects": [
+  "statusEffects": ["Paranoid"],
+
+  "rpgTags": [
     {
-      "name": "Neural Enhancement",
-      "effect": "Improved data processing and reaction time",
-      "duration": "Permanent"
+      "name": "Survivalist",
+      "description": "You have experience surviving in harsh conditions"
+    },
+    {
+      "name": "Medic",
+      "description": "You have basic medical knowledge"
+    },
+    {
+      "name": "Hunter",
+      "description": "You are skilled at tracking and hunting"
     }
   ],
-
-  "rpgElements": {
-    "level": 5,
-    "skills": {
-      "tactical systems": 5,
-      "xeno-linguistics": 3,
-      "hacking": 4,
-      "zero-g combat": 4,
-      "intelligence analysis": 5
-    }
-  },
   
   "activeQuests": [],
   

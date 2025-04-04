@@ -41,10 +41,12 @@ THE CORE PLAYER MODEL STRUCTURE:
     }
   ],
 
-  "rpgElements": {
-    // Flexible structure based on game type
-    // May include: level, skills, abilities, attributes, etc.
-  },
+  "rpgTags": [
+    {
+      "name": "string",
+      "description": "string"
+    }
+  ],
   
   "activeQuests": [], //empty, the player starts without a quest.
   

@@ -21,14 +21,26 @@
     
     "inventory": [],
     
-    "money": 0,
+    "money": 15,
     
     "statusEffects": [],
   
-    "rpgElements": {
-    },
+    "rpgTags": [
+      {
+        "name": "Fighter",
+        "description": "You are trained in combat and martial skills"
+      },
+      {
+        "name": "Level 3",
+        "description": "You have gained some experience but are still developing"
+      },
+      {
+        "name": "Town Hero",
+        "description": "People in small settlements tend to recognize your deeds"
+      }
+    ],
     
-    "activeQuests": [],
+    "activeQuests": ["quest_id_1", "quest_id_2"],
     
     "playerLog": [],
     
