@@ -192,15 +192,14 @@ namespace AiGMBackEnd.Services.Processors
                     // Check if there's a currentLocationId in the update data
                     string newLocationId = null;
                     var currentLocationProperty = updateData["currentLocationId"];
-                    if (currentLocationProperty != null)
+                    if (currentLocationProperty != null && currentLocationProperty.ToString() != previousLocationId)
                     {
                         newLocationId = currentLocationProperty.ToString();
                     }
                     
                     // If the player had a previous location and is now moving to a different one,
                     // we should summarize the conversation from the previous location
-                    if (!string.IsNullOrEmpty(previousLocationId) && 
-                        (string.IsNullOrEmpty(newLocationId) || previousLocationId != newLocationId))
+                    if (!string.IsNullOrEmpty(previousLocationId) && !string.IsNullOrEmpty(newLocationId) && previousLocationId != newLocationId)
                     {
                         _loggingService.LogInfo($"Player leaving location {previousLocationId}. Triggering conversation summarization.");
                         await _serviceProvider.GetService<HangfireJobsService>().SummarizeConversationAsync(userId);

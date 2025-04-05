@@ -1,0 +1,339 @@
+{
+  "type": "LOCATION",
+  "locationType": "BUILDING",
+  "id": "loc_stJosephHospital",
+  "name": "St. Joseph Medical Center",
+  "description": "A large regional hospital complex in North Bellingham. Eerily silent, signs of chaos and desertion are everywhere. This is where you woke up from a coma.",
+  "knownToPlayer": true,
+  "connectedLocations": [],
+  "parentLocation": null,
+  "npcs": [],
+  "exterior_description": "A multi-story modern hospital building dominates the view, connected to older wings. Emergency bay doors hang open, windows are dark or broken. Abandoned cars litter the parking lot.",
+  "purpose": "Regional healthcare facility (former)",
+  "history": "A major medical center serving the Whatcom County region before the outbreak devastated the area.",
+  "floors": [
+    {
+      "floor_name": "Floor 3 - Patient Wing",
+      "description": "A standard patient care floor. Flickering emergency lights cast long shadows down the main corridor.",
+      "rooms": [
+        {
+          "name": "Patient Room 305",
+          "type": "Patient Room",
+          "description": "Your starting point. A standard hospital room with a bed, bedside table, and an empty IV stand. The window looks out onto the chaotic parking lot below.",
+          "points_of_interest": [
+            {
+              "description": "Rumpled sheets and a discarded basic hospital gown on the floor.",
+              "hinting_at": "Your recent presence, potential basic clothing"
+            },
+            {
+              "description": "A small, locked drawer in the bedside table.",
+              "hinting_at": "Requires tools to open, potential minor personal effects or supplies"
+            }
+          ],
+          "valuables": [
+            {
+              "name": "Hospital Gown",
+              "why_its_here": "Standard patient attire.",
+              "description": "A thin, revealing cotton gown.",
+              "quantity": 1,
+              "value": 0
+            }
+          ],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Corridor - Floor 3"
+          ]          
+        },
+        {
+          "name": "Nurses' Station - Floor 3",
+          "type": "Workstation",
+          "description": "The central hub for the floor staff. Computers are dark, papers scattered, phones off the hook. An overturned coffee mug stains patient charts.",
+          "points_of_interest": [
+            {
+              "description": "Wall-mounted racks of patient charts.",
+              "hinting_at": "Potential information (lore), maybe notes about the outbreak's early stages"
+            },
+            {
+              "description": "A first-aid kit mounted on the wall, partially open.",
+              "hinting_at": "Basic medical supplies"
+            }
+          ],
+          "valuables": [
+            {
+              "name": "Bandages",
+              "why_its_here": "Standard medical supplies.",
+              "description": "Sterile gauze bandages.",
+              "quantity": 3,
+              "value": 1
+            },
+            {
+              "name": "Painkillers (generic)",
+              "why_its_here": "Commonly available at nurse stations.",
+              "description": "A small bottle of over-the-counter pain relief tablets.",
+              "quantity": 1,
+              "value": 2
+            }
+          ],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Corridor - Floor 3"
+          ]          
+        },
+        {
+          "name": "Linen Closet - Floor 3",
+          "type": "Storage",
+          "description": "A small room stacked with shelves of clean and soiled linens, blankets, and gowns.",
+          "points_of_interest": [
+            {
+              "description": "A pile of clean towels and sheets.",
+              "hinting_at": "Can be used as makeshift bandages or warmth"
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Corridor - Floor 3"
+          ]          
+        },
+         {
+          "name": "Main Corridor - Floor 3",
+          "type": "Hallway",
+          "description": "The main hallway connecting the rooms on this floor. Doors lead to patient rooms, utility closets, and the elevator bay/stairs.",
+          "points_of_interest": [
+            {
+              "description": "Gurneys left haphazardly, some with dried bloodstains.",
+              "hinting_at": "Signs of recent panic and struggle"
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Patient Room 305",
+            "Nurses' Station - Floor 3",
+            "Linen Closet - Floor 3",
+            "Elevator Bay - Floor 3",
+            "Stairwell Access - Floor 3"
+          ]          
+        },
+        {
+          "name": "Elevator Bay - Floor 3",
+          "type": "Transit",
+          "description": "A bank of elevators. Call buttons are dark and unresponsive. One door is jammed half-open, revealing a dark shaft.",
+          "points_of_interest": [
+            {
+              "description": "Pry marks on the jammed elevator door control panel.",
+              "hinting_at": "Attempted entry, potential hazard or path"
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Corridor - Floor 3"
+          ]          
+        },
+        {
+          "name": "Stairwell Access - Floor 3",
+          "type": "Transit",
+          "description": "A heavy fire door leading to a concrete stairwell marked 'Staff Only'. Echoes travel easily.",
+          "points_of_interest": [
+             {
+              "description": "Sounds (or silence) from above or below.",
+              "hinting_at": "Potential danger or clear path on other floors"
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Corridor - Floor 3"
+          ]          
+        }
+      ]
+    },
+    {
+      "floor_name": "Ground Floor",
+      "description": "The main public-access level of the hospital. Signs of chaos are more pronounced here.",
+      "rooms": [
+        {
+          "name": "Main Lobby",
+          "type": "Public Area",
+          "description": "Once the main entrance and waiting area. Furniture is overturned, luggage scattered, dried bloodstains on the tile floor. The main glass doors are shattered.",
+          "points_of_interest": [
+            {
+              "description": "A long, deserted reception desk with smashed computer monitors.",
+              "hinting_at": "Potential keys, security logs, minor office supplies"
+            },
+            {
+              "description": "Access ways to other parts of the ground floor are visible.",
+              "hinting_at": "Multiple exploration paths"
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Elevator Bay - Ground Floor", 
+            "Stairwell Access - Ground Floor",
+            "Gift Shop",
+            "Emergency Wing Corridor",
+            "Cafeteria Entrance",
+            "Pharmacy Entrance"
+          ]
+        },
+        {
+          "name": "Elevator Bay - Ground Floor",
+          "type": "Transit",
+          "description": "Elevator access on the ground floor. Same state as Floor 3 - unresponsive, one jammed door.",
+           "points_of_interest": [],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Lobby"
+          ]
+        },
+        {
+          "name": "Stairwell Access - Ground Floor",
+          "type": "Transit",
+          "description": "Access to the main stairwell from the ground floor.",
+           "points_of_interest": [
+            {
+              "description": "The door to Floor 2 seems barricaded from the other side.",
+              "hinting_at": "Blocked path, potential survivors or danger"
+            }
+           ],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Lobby"
+          ]
+        },
+        {
+          "name": "Gift Shop",
+          "type": "Retail",
+          "description": "Small shop near the lobby. Shelves are mostly ransacked, goods strewn about.",
+          "points_of_interest": [
+            {
+              "description": "Overturned display of candy and snacks.",
+              "hinting_at": "Potential non-perishable food"
+            },
+             {
+              "description": "A rack of unsold local newspapers, dated from just before the collapse.",
+              "hinting_at": "Lore, timeline information"
+            }
+          ],
+          "valuables": [
+             {
+              "name": "Candy Bar",
+              "why_its_here": "Standard gift shop stock.",
+              "description": "A slightly crushed chocolate bar.",
+              "quantity": 2,
+              "value": 1
+            }
+          ],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Lobby"
+          ]
+        },
+        {
+          "name": "Emergency Wing Corridor",
+          "type": "Hallway",
+          "description": "Wide corridor leading towards the Emergency Department. More gurneys and medical debris here. Double doors at the end are marked 'Emergency - Restricted Access'.",
+           "points_of_interest": [
+             {
+              "description": "An abandoned ambulance visible through damaged bay doors at a side entrance.",
+              "hinting_at": "Potential vehicle (needs repair?), medical supplies"
+            }
+           ],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Lobby"
+          ]
+        },
+        {
+          "name": "Cafeteria Entrance",
+          "type": "Hallway",
+          "description": "Entrance to the hospital cafeteria dining area.",
+           "points_of_interest": [],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Lobby",
+            "Cafeteria Dining Area"
+          ]
+        },
+         {
+          "name": "Cafeteria Dining Area",
+          "type": "Dining",
+          "description": "Large room with rows of tables and chairs, many overturned. Trays with decaying food sit abandoned.",
+           "points_of_interest": [
+            {
+              "description": "Vending machines along one wall. Some are smashed, others seem intact but dark.",
+              "hinting_at": "Potential food/drinks (needs power or tools?)"
+            }
+           ],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Cafeteria Entrance",
+            "Kitchen"
+          ]
+        },
+        {
+          "name": "Kitchen",
+          "type": "Service",
+          "description": "Industrial kitchen with stainless steel counters, ovens, and other equipment. A strong smell of decay hangs in the air.",
+          "points_of_interest": [
+            {
+              "description": "A walk-in freezer with a heavy, closed door. Power is off.",
+              "hinting_at": "Spoiled food, potential preserved supplies, danger, requires forcing open"
+            },
+             {
+              "description": "Dry pantry shelves, mostly empty but a few canned goods remain.",
+              "hinting_at": "Food source"
+            },
+             {
+              "description": "A magnetic strip on the wall holds several large chef's knives.",
+              "hinting_at": "Melee weapon"
+            }
+          ],
+          "valuables": [
+            {
+              "name": "Canned Beans",
+              "why_its_here": "Standard kitchen stock.",
+              "description": "A can of baked beans.",
+              "quantity": 3,
+              "value": 1
+            },
+             {
+              "name": "Chef's Knife",
+              "why_its_here": "Kitchen equipment.",
+              "description": "A large, sturdy kitchen knife. Could serve as a basic weapon.",
+              "quantity": 2,
+              "value": 3
+            }
+          ],
+          "npcs": [],
+          "connected_rooms": [
+            "Cafeteria Dining Area"
+          ]
+        },
+        {
+          "name": "Pharmacy Entrance",
+          "type": "Public Area",
+          "description": "A counter area for prescription pickup, protected by a heavy metal grate that has been pulled down and locked. A separate, sturdy door marked 'Pharmacy - Staff Only' is nearby.",
+          "points_of_interest": [
+             {
+              "description": "The locked staff door to the main pharmacy storage.",
+              "hinting_at": "Valuable medical supplies, requires lockpicking or heavy breaching"
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "connected_rooms": [
+            "Main Lobby"
+          ]
+        }
+      ]
+    }
+  ]
+} 

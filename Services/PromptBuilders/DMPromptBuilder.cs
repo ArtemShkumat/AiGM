@@ -30,7 +30,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
                 var location = await _storageService.GetLocationAsync(request.UserId, player.CurrentLocationId);
-                var parentLocation = await _storageService.GetLocationAsync(request.UserId, location.ParentLocation);
+                
                 var connectedLocations = new List<Location>();
                 foreach (var cl in location.ConnectedLocations)
                 {
@@ -42,6 +42,16 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var conversationLog = await _storageService.GetConversationLogAsync(request.UserId);
 
                 var promptContentBuilder = new StringBuilder();
+
+                if (location.ParentLocation!=null)
+                {
+                    var parentLocation = await _storageService.GetLocationAsync(request.UserId, location.ParentLocation);
+                    if (!string.IsNullOrEmpty(location.ParentLocation))
+                    {
+                        promptContentBuilder.AppendLine("parentLocation: ");
+                        new LocationContextSection(parentLocation).AppendTo(promptContentBuilder);
+                    }
+                }                
 
                 new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
@@ -64,11 +74,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Add location context using the location section
                 promptContentBuilder.AppendLine("currentLocation: ");
                 new LocationContextSection(location).AppendTo(promptContentBuilder);
-                if (!string.IsNullOrEmpty(location.ParentLocation))
-                {
-                    promptContentBuilder.AppendLine("parentLocation: ");
-                    new LocationContextSection(parentLocation).AppendTo(promptContentBuilder);
-                }
+                
 
                 if (connectedLocations!=null && connectedLocations.Count>0)
                 {

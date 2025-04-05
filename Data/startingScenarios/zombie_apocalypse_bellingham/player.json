@@ -1,0 +1,39 @@
+{
+  "type": "Player",
+  "id": "",
+  "name": "Survivor",
+  "currentLocationId": "loc_stJosephHospital",
+  "visualDescription": {
+    "gender": "unknown",
+    "body": "Thin and weakened from extended hospitalization",
+    "visibleClothing": "Hospital gown, in need of proper clothing",
+    "condition": "Recently awakened from a coma, disoriented but mobile",
+    "resemblingCelebrity": "Choose your own appearance"
+  },
+  "age": 32,
+  "backstory": "You were admitted to St. Joseph Medical Center with severe injuries prior to the outbreak. You've been in a coma for months, and have awakened to find the hospital abandoned, with signs of chaos everywhere. Your memory is foggy about the events leading up to your hospitalization, but you know you need to survive in this changed world.",
+  "inventory": [
+    {
+      "name": "Hospital Bracelet",
+      "description": "A plastic ID bracelet with your patient information on it",
+      "quantity": 1
+    }
+  ],
+  "money": 0,
+  "statusEffects": ["Weakened", "Dehydrated"],
+  "rpgTags": [
+    {
+      "name": "Survival: Basic",
+      "description": "You have fundamental survival instincts"
+    },
+    {
+      "name": "Medical: Basic",
+      "description": "You have a basic understanding of first aid"
+    },
+    {
+      "name": "Observant",
+      "description": "Your senses are sharp, helpful for spotting danger or resources"
+    }
+  ],
+  "activeQuests": []
+} 
