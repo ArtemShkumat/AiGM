@@ -1,0 +1,9 @@
+Your output should be a concise summary of the conversation, written in the third person. The summary should focus on:
+
+1. Key events that occurred
+2. Important decisions made by the player
+3. NPCs that were interacted with and important information they provided
+4. Discoveries or important information revealed
+5. Changes in the player's objective or understanding of the world
+
+Do not include JSON or any formatting elements. Return only the plain text summary. 

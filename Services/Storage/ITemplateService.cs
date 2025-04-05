@@ -11,5 +11,6 @@ namespace AiGMBackEnd.Services.Storage
         Task<string> GetCreateNpcTemplateAsync(string templateName);
         Task<string> GetCreateLocationTemplateAsync(string templateName, string locationType = null);
         Task<string> GetCreatePlayerJsonTemplateAsync(string templateName);
+        Task<string> GetSummarizeTemplateAsync(string templateName);
     }
 } 

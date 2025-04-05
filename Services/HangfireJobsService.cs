@@ -142,6 +142,63 @@ namespace AiGMBackEnd.Services
         }
         
         /// <summary>
+        /// Processes a conversation to generate a summary. Used when a player leaves a location.
+        /// </summary>
+        public async Task SummarizeConversationAsync(string userId)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Starting conversation summarization for user {userId}");
+                
+                // Create the prompt request
+                var request = new PromptRequest
+                {
+                    PromptType = PromptType.Summarize,
+                    UserId = userId
+                };
+                
+                // Process the summarization in the background
+                var jobId = BackgroundJob.Enqueue(() => ProcessSummarizationJobAsync(request));
+                
+                _loggingService.LogInfo($"Scheduled summarization job for user {userId}, job ID: {jobId}");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error scheduling summarization job: {ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Background job to process summarization
+        /// </summary>
+        public async Task ProcessSummarizationJobAsync(PromptRequest request)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Processing summarization job for user {request.UserId}");
+                
+                // 1. Build the summarization prompt
+                var prompt = await _promptService.BuildPromptAsync(request);
+                _loggingService.LogInfo($"Built summarization prompt for user {request.UserId}");
+                
+                // 2. Call LLM to generate summary
+                var llmResponse = await _aiService.GetCompletionAsync(prompt);
+                _loggingService.LogInfo($"LLM response received for summarization, length: {llmResponse?.Length ?? 0}");
+                
+                // 3. Process the summary response
+                await _responseProcessingService.HandleSummaryResponseAsync(llmResponse, request.UserId);
+                
+                _loggingService.LogInfo($"Successfully processed summarization for user {request.UserId}");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing summarization job: {ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
         /// Processes a normal user input (DM or NPC response). Accepts PerformContext for Job ID access.
         /// </summary>
         public async Task<string> ProcessUserInputAsync(PromptRequest request, PerformContext context)

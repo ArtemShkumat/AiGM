@@ -1,0 +1,104 @@
+EXAMPLE 1:
+The adventurer arrived in Emberhold Village and discovered the Ember Crystal was missing from the Empty Hearth. They spoke with Elder Varric who revealed the crystal's importance to the village's protection and warmth. Merchant Thorin explained the recent strange occurrences in the nearby Whisperwood Forest, including reports of bandits. The adventurer agreed to investigate the missing crystal, receiving directions to the forest where they might find clues about who took it.
+
+## INPUT CONVERSATION LOG:
+
+{
+  "messages": [
+    {
+      "Player to DM": "Where am I?"
+    },
+    {
+      "DM to Player": "You find yourself in the heart of Emberhold Village... You see the Elder's Hut. And not too far from you, two people... an elderly man... a shorter, stout man... likely a merchant. { \"newEntities\": [], \"partialUpdates\": { \"npc_elderVarric\": { \"type\": \"NPC\", \"visibleToPlayer\": true }, \"npc_merchantThorin\": { \"type\": \"NPC\", \"visibleToPlayer\": true } } }"
+    },
+    {
+      "Player to Merchant Thorin": "Hail friend! How's business?"
+    },
+    {
+      "Merchant Thorin to Player": "\"Well met, friend! Business is... 'Interesting' at the moment. The village is quiet what with the Ember Crystal gone... But I'm always open for trade...\" { \"newEntities\": [], \"partialUpdates\": { \"npc_merchantThorin\": { \"type\": \"NPC\", \"knowsPlayer\": true, \"knownToPlayer\": true } } }"
+    },
+    {
+      "Player to Merchant Thorin": "Anywhere I can get a drink around here?"
+    },
+    {
+      "Merchant Thorin to Player": "\"Well, the Empty Hearth is normally the social gathering spot, but without the Ember Crystal... Ah, but there's always the back room at my place! I keep a private stock of fine dwarven ale... I'll even let you have a cup on the house...\" { \"newEntities\": [], \"partialUpdates\": {} }"
+    },
+    {
+      "Player to DM": "I go where Thorin suggests."
+    }
+  ]
+}
+
+## EXPECTED SUMMARY OUTPUT:
+
+The adventurer arrived in Emberhold Village, noting the missing Ember Crystal from the Empty Hearth and meeting Elder Varric and Merchant Thorin. Thorin mentioned the crystal's disappearance affecting business and offered the adventurer a drink in his shop's back room, which the adventurer accepted.
+
+EXAMPLE 2:
+The adventurer explored the Whisperwood Forest, encountering a wounded forest guardian who warned of dark magic corrupting the woods. They followed tracks to a hidden cave where they confronted a group of bandits who admitted to stealing the Ember Crystal under orders from someone called "The Veiled One." After defeating the bandits, the adventurer recovered a map showing the location of an ancient ruin where the Ember Crystal was supposedly being taken.
+
+## INPUT CONVERSATION LOG:
+
+{
+  "messages": [
+    {
+      "Player to DM": "I search the clearing for tracks."
+    },
+    {
+      "DM to Player": "You scan the muddy ground near the ancient standing stones. Faintly, you make out large, clawed footprints leading deeper into the Whispering Woods, alongside smaller, booted prints. An unnatural chill hangs in the air. { \"newEntities\": [], \"partialUpdates\": { \"loc_ancientStones\": { \"type\": \"LOCATION\", \"descriptionDetails\": \"Clawed and booted tracks lead into the woods.\" } } }"
+    },
+    {
+      "Player to DM": "Follow the tracks."
+    },
+    {
+      "DM to Player": "Pushing through tangled vines, you follow the tracks deeper into the woods. The light dims. Suddenly, you hear a low growl. Ahead, a large wolf with fur the color of shadow and glowing red eyes blocks your path. It doesn't look natural. { \"newEntities\": [ { \"type\": \"npc\", \"id\": \"npc_shadowWolf\", \"name\": \"Shadow Wolf\", \"description\": \"A large wolf seemingly infused with shadow magic, glowing red eyes.\" } ], \"partialUpdates\": { \"npc_shadowWolf\": { \"type\": \"NPC\", \"visibleToPlayer\": true, \"hostile\": true } } }"
+    },
+    {
+      "Player to DM": "I draw my sword and prepare to fight."
+    },
+    {
+      "DM to Player": "The Shadow Wolf lunges! You manage to parry its snapping jaws. The fight is fierce, but your blade finds its mark. The creature dissolves into wisps of black smoke, leaving behind a strange, cold amulet shaped like a coiled snake. { \"newEntities\": [], \"partialUpdates\": { \"npc_shadowWolf\": { \"type\": \"NPC\", \"visibleToPlayer\": false, \"status\": \"defeated\" }, \"player\": { \"type\": \"PLAYER\", \"inventory\": [ { \"itemId\": \"item_snakeAmulet\", \"name\": \"Shadow Snake Amulet\", \"quantity\": 1 } ] } } }"
+    },
+    {
+      "Player to DM": "I continue following the tracks, examining the amulet."
+    }
+  ]
+}
+
+## EXPECTED SUMMARY OUTPUT:
+
+The adventurer investigated a clearing with ancient stones in the Whispering Woods, finding tracks leading further in. Following them, they were attacked by a Shadow Wolf, which they defeated. The wolf dissolved, leaving behind a Shadow Snake Amulet, and the adventurer continued tracking.
+
+EXAMPLE 3:
+The player visited the Dusty Tome Tavern in Westdale where they met Innkeeper Greta. Through conversation with various patrons, they learned about recent disappearances in the nearby mines and rumors of strange lights at night. The town's captain of the guard, Marius, was dismissive of these concerns, but the blacksmith's apprentice secretly shared that Marius had forbidden guards from investigating the mines. The player decided to explore the mines the following morning.
+
+## INPUT CONVERSATION LOG:
+
+{
+  "messages": [
+    {
+      "Player to DM": "I approach the city guard captain."
+    },
+    {
+      "DM to Player": "You walk up to Captain Valerius near the West Gate of Silverhaven. He stands tall, his armor gleaming, observing the flow of traffic. He eyes you warily. { \"newEntities\": [], \"partialUpdates\": { \"npc_captainValerius\": { \"type\": \"NPC\", \"visibleToPlayer\": true } } }"
+    },
+    {
+      "Player to Captain Valerius": "Captain, I've heard troubling rumors about disappearances near the old docks. What can you tell me?"
+    },
+    {
+      "Captain Valerius to Player": "\"Rumors are just that - rumors, citizen. The docks are rough, people come and go. Nothing for the City Watch to worry about. Keep your nose out of guard business.\" His tone is dismissive. { \"newEntities\": [], \"partialUpdates\": { \"npc_captainValerius\": { \"type\": \"NPC\", \"attitudeTowardsPlayer\": \"dismissive\" } } }"
+    },
+    {
+      "Player to DM": "I try to gauge his reaction. Does he seem nervous or just annoyed?"
+    },
+    {
+      "DM to Player": "He seems mostly annoyed, perhaps a little impatient, but you don't detect obvious nervousness. He clearly wants you to leave. { \"newEntities\": [], \"partialUpdates\": {} }"
+    },
+    {
+      "Player to DM": "I leave the captain and head towards the Rusty Flagon tavern near the docks."
+    }
+  ]
+}
+
+## EXPECTED SUMMARY OUTPUT:
+
+The adventurer approached Captain Valerius at Silverhaven's West Gate to inquire about rumored disappearances near the docks. The Captain dismissed the rumors and warned the adventurer to stay out of guard business. Seeming annoyed rather than nervous, the Captain prompted the adventurer to leave, who then decided to head towards the Rusty Flagon tavern. 

@@ -20,8 +20,9 @@ namespace AiGMBackEnd.Services
         private readonly IValidationService _validationService;
         private readonly IGameScenarioService _gameScenarioService;
         private readonly IConversationLogService _conversationLogService;
-        private readonly LoggingService _loggingService;
         private readonly IWorldSyncService _worldSyncService;
+        private readonly IRecentEventsService _recentEventsService;
+        private readonly LoggingService _loggingService;
 
         public StorageService(
             IBaseStorageService baseStorageService,
@@ -31,6 +32,7 @@ namespace AiGMBackEnd.Services
             IGameScenarioService gameScenarioService,
             IConversationLogService conversationLogService,
             IWorldSyncService worldSyncService,
+            IRecentEventsService recentEventsService,
             LoggingService loggingService)
         {
             _baseStorageService = baseStorageService;
@@ -40,6 +42,7 @@ namespace AiGMBackEnd.Services
             _gameScenarioService = gameScenarioService;
             _conversationLogService = conversationLogService;
             _worldSyncService = worldSyncService;
+            _recentEventsService = recentEventsService;
             _loggingService = loggingService;
         }
 
@@ -145,6 +148,9 @@ namespace AiGMBackEnd.Services
         public async Task<string> GetCreatePlayerJsonTemplateAsync(string templateName) => 
             await _templateService.GetCreatePlayerJsonTemplateAsync(templateName);
 
+        public async Task<string> GetSummarizeTemplateAsync(string templateName) => 
+            await _templateService.GetSummarizeTemplateAsync(templateName);
+
         #endregion
 
         #region Game Scenario Operations
@@ -199,6 +205,23 @@ namespace AiGMBackEnd.Services
         /// <returns>Task representing the asynchronous operation</returns>
         public async Task SyncWorldWithEntitiesAsync(string userId) => 
             await _worldSyncService.SyncWorldWithEntitiesAsync(userId);
+
+        #endregion
+
+        #region Recent Events Operations
+
+        /// <summary>
+        /// Loads the recent events summary for a user.
+        /// </summary>
+        /// <param name="userId">The user/game ID.</param>
+        /// <returns>The RecentEvents object, or null if not found.</returns>
+        public async Task<RecentEvents> GetRecentEventsAsync(string userId) =>
+            await _recentEventsService.GetRecentEventsAsync(userId);
+        
+        // Optionally, keep a method to add summaries directly if needed elsewhere,
+        // but it's better handled by the processor via the service.
+        // public async Task AddSummaryToRecentEventsAsync(string userId, string summary) =>
+        //     await _recentEventsService.AddSummaryToRecentEventsAsync(userId, summary);
 
         #endregion
     }

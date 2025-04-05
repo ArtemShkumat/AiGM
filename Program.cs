@@ -44,6 +44,7 @@ builder.Services.AddSingleton<IValidationService, ValidationService>();
 builder.Services.AddSingleton<IWorldSyncService, WorldSyncService>();
 builder.Services.AddSingleton<IGameScenarioService, GameScenarioService>();
 builder.Services.AddSingleton<IConversationLogService, ConversationLogService>();
+builder.Services.AddSingleton<IRecentEventsService, RecentEventsService>();
 builder.Services.AddSingleton<StorageService>();
 
 // Register AI services
@@ -60,6 +61,7 @@ builder.Services.AddSingleton<INPCProcessor, NPCProcessor>();
 builder.Services.AddSingleton<IQuestProcessor, QuestProcessor>();
 builder.Services.AddSingleton<IPlayerProcessor, PlayerProcessor>();
 builder.Services.AddSingleton<IUpdateProcessor, UpdateProcessor>();
+builder.Services.AddSingleton<ISummarizePromptProcessor, SummarizePromptProcessor>();
 
 // Register processing services (dependent on other services)
 builder.Services.AddSingleton<ResponseProcessingService>();

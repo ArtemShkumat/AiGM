@@ -67,7 +67,12 @@ namespace AiGMBackEnd.Services.Storage
 
         public async Task<string> GetCreatePlayerJsonTemplateAsync(string templateName)
         {
-            return await GetTemplateAsync($"Create/Player/{templateName}.txt");
+            return await GetTemplateAsync($"Create/PlayerJson/{templateName}.txt");
+        }
+
+        public async Task<string> GetSummarizeTemplateAsync(string templateName)
+        {
+            return await GetTemplateAsync($"Summarize/{templateName}.txt");
         }
     }
 } 

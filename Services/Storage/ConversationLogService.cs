@@ -142,5 +142,42 @@ namespace AiGMBackEnd.Services.Storage
             dmLog.Messages.Add(messageEntryDm);
             await _baseStorageService.SaveAsync(userId, "conversationLog", dmLog);
         }
+
+        /// <summary>
+        /// Wipes the conversation log for a user, keeping only the last message.
+        /// </summary>
+        public async Task WipeLogAsync(string userId)
+        {
+            try
+            {
+                var conversationLog = await GetConversationLogAsync(userId);
+                if (conversationLog != null && conversationLog.Messages.Count > 1)
+                {
+                    var lastMessage = conversationLog.Messages.LastOrDefault();
+                    conversationLog.Messages.Clear();
+                    if (lastMessage != null)
+                    {
+                        conversationLog.Messages.Add(lastMessage);
+                    }
+                    await _baseStorageService.SaveAsync(userId, GetLogFileName(userId), conversationLog);
+                    _loggingService.LogInfo($"Wiped conversation log for user {userId}, keeping last message.");
+                }
+                else
+                {
+                    _loggingService.LogInfo($"Conversation log for user {userId} has 1 or fewer messages. No wipe needed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error wiping conversation log for user {userId}: {ex.Message}");
+                throw;
+            }
+        }
+
+        // Private helper methods
+        private string GetLogFileName(string userId)
+        {
+            return "conversationLog";
+        }
     }
 } 

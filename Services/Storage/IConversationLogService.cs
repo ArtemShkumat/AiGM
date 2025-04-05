@@ -10,5 +10,6 @@ namespace AiGMBackEnd.Services.Storage
         Task AddDmMessageAsync(string userId, string content);
         Task AddUserMessageToNpcLogAsync(string userId, string npcId, string content);
         Task AddDmMessageToNpcLogAsync(string userId, string npcId, string content);
+        Task WipeLogAsync(string userId);
     }
 } 

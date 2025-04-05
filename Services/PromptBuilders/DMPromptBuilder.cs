@@ -38,6 +38,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 }
                 var npcsInCurrentLocation = await _storageService.GetNpcsInLocationAsync(request.UserId, player.CurrentLocationId);
                 var activeQuests = await _storageService.GetActiveQuestsAsync(request.UserId, player.ActiveQuests);
+                var recentEvents = await _storageService.GetRecentEventsAsync(request.UserId);
                 var conversationLog = await _storageService.GetConversationLogAsync(request.UserId);
 
                 var promptContentBuilder = new StringBuilder();
@@ -97,6 +98,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                         new QuestSection(quest).AppendTo(promptContentBuilder);
                     }
                 }
+
+                new RecentEventsSection(recentEvents).AppendTo(promptContentBuilder);
 
                 // Add conversation history
                 new ConversationLogSection(conversationLog).AppendTo(promptContentBuilder);

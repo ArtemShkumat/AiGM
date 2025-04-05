@@ -184,6 +184,28 @@ namespace AiGMBackEnd.Services.Processors
                 if (entityId.ToLower() == "player")
                 {
                     _loggingService.LogInfo("Processing player update");
+                    
+                    // Check if the player is changing locations
+                    var previousPlayer = await _storageService.GetPlayerAsync(userId);
+                    string previousLocationId = previousPlayer?.CurrentLocationId;
+                    
+                    // Check if there's a currentLocationId in the update data
+                    string newLocationId = null;
+                    var currentLocationProperty = updateData["currentLocationId"];
+                    if (currentLocationProperty != null)
+                    {
+                        newLocationId = currentLocationProperty.ToString();
+                    }
+                    
+                    // If the player had a previous location and is now moving to a different one,
+                    // we should summarize the conversation from the previous location
+                    if (!string.IsNullOrEmpty(previousLocationId) && 
+                        (string.IsNullOrEmpty(newLocationId) || previousLocationId != newLocationId))
+                    {
+                        _loggingService.LogInfo($"Player leaving location {previousLocationId}. Triggering conversation summarization.");
+                        await _serviceProvider.GetService<HangfireJobsService>().SummarizeConversationAsync(userId);
+                    }
+                    
                     await UpdateEntityAsync(userId, "", "player", updateData.ToString());
                     _loggingService.LogInfo("Applied partial update to player");
                     continue;

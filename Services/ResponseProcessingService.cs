@@ -18,6 +18,7 @@ namespace AiGMBackEnd.Services
         private readonly INPCProcessor _npcProcessor;
         private readonly IPlayerProcessor _playerProcessor;
         private readonly IUpdateProcessor _updateProcessor;
+        private readonly ISummarizePromptProcessor _summarizePromptProcessor;
 
         public ResponseProcessingService(
             StorageService storageService,
@@ -27,7 +28,8 @@ namespace AiGMBackEnd.Services
             ILocationProcessor locationProcessor,
             IQuestProcessor questProcessor,
             INPCProcessor npcProcessor,
-            IPlayerProcessor playerProcessor)
+            IPlayerProcessor playerProcessor,
+            ISummarizePromptProcessor summarizePromptProcessor)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -37,6 +39,7 @@ namespace AiGMBackEnd.Services
             _questProcessor = questProcessor;
             _npcProcessor = npcProcessor;
             _playerProcessor = playerProcessor;
+            _summarizePromptProcessor = summarizePromptProcessor;
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)
@@ -272,6 +275,51 @@ namespace AiGMBackEnd.Services
 
             // No hidden content found
             return (llmResponse, string.Empty);
+        }
+
+        /// <summary>
+        /// Handles the response from a summarization prompt
+        /// </summary>
+        public async Task<ProcessedResult> HandleSummaryResponseAsync(string llmResponse, string userId)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Processing summarization response for user {userId}");
+                
+                if (string.IsNullOrEmpty(llmResponse))
+                {
+                    _loggingService.LogWarning("Empty summarization response received");
+                    return new ProcessedResult
+                    {
+                        UserFacingText = string.Empty,
+                        Success = false,
+                        ErrorMessage = "Empty summarization response"
+                    };
+                }
+                
+                // Clean the response if needed (e.g. remove markdown formatting)
+                string summary = CleanJsonResponse(llmResponse).Trim();
+                
+                // Process the summary using the summarize processor
+                await _summarizePromptProcessor.ProcessSummaryAsync(summary, userId);
+                
+                return new ProcessedResult
+                {
+                    UserFacingText = summary,
+                    Success = true,
+                    ErrorMessage = string.Empty
+                };
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing summarization response: {ex.Message}");
+                return new ProcessedResult
+                {
+                    UserFacingText = string.Empty,
+                    Success = false,
+                    ErrorMessage = ex.Message
+                };
+            }
         }
     }
 }

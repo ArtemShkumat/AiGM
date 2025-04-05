@@ -11,10 +11,11 @@ namespace AiGMBackEnd.Services
     {
         DM,
         NPC,
-            CreateQuest,
-            CreateNPC,
-            CreateLocation,
-            CreatePlayerJson
+        CreateQuest,
+        CreateNPC,
+        CreateLocation,
+        CreatePlayerJson,
+        Summarize
     }
 
     public class PromptService
@@ -38,7 +39,8 @@ namespace AiGMBackEnd.Services
                 { PromptType.CreateQuest, new CreateQuestPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateNPC, new CreateNPCPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateLocation, new CreateLocationPromptBuilder(storageService, loggingService) },
-                { PromptType.CreatePlayerJson, new CreatePlayerJsonPromptBuilder(storageService, loggingService) }
+                { PromptType.CreatePlayerJson, new CreatePlayerJsonPromptBuilder(storageService, loggingService) },
+                { PromptType.Summarize, new SummarizePromptBuilder(storageService, loggingService) }
             };
         }
 
