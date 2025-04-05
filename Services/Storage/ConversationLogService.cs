@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AiGMBackEnd.Models;
+using System.Linq;
 
 namespace AiGMBackEnd.Services.Storage
 {
@@ -40,11 +41,13 @@ namespace AiGMBackEnd.Services.Storage
         {
             var log = await GetConversationLogAsync(userId);
             
-            log.Messages.Add(new Message
+            // Create the message in the new format
+            var message = new Dictionary<string, string>
             {
-                Sender = "user",
-                Content = content
-            });
+                { "Player to DM", content }
+            };
+            
+            log.Messages.Add(message);
             
             await _baseStorageService.SaveAsync(userId, "conversationLog", log);
         }
@@ -53,11 +56,13 @@ namespace AiGMBackEnd.Services.Storage
         {
             var log = await GetConversationLogAsync(userId);
             
-            log.Messages.Add(new Message
+            // Create the message in the new format
+            var message = new Dictionary<string, string>
             {
-                Sender = "dm",
-                Content = content
-            });
+                { "DM to Player", content }
+            };
+            
+            log.Messages.Add(message);
             
             await _baseStorageService.SaveAsync(userId, "conversationLog", log);
         }
@@ -72,16 +77,32 @@ namespace AiGMBackEnd.Services.Storage
                 return;
             }
             
-            var messageEntry = new Dictionary<string, string>
+            // Use NPC Name if available, otherwise use ID
+            string npcIdentifier = string.IsNullOrEmpty(npc.Name) ? npcId : npc.Name;
+            string messageKey = $"Player to {npcIdentifier}";
+            
+            // Create message for NPC log
+            var messageEntryNpc = new Dictionary<string, string>
             {
-                { "timestamp", DateTime.UtcNow.ToString("o") },
-                { "sender", "user" },
-                { "content", content }
+                { messageKey, content }
             };
             
-            npc.ConversationLog.Add(messageEntry);
-            
+            // Change NPC ConversationLog type to match main log
+            if (npc.ConversationLog == null)
+            {
+                 npc.ConversationLog = new List<Dictionary<string, string>>();
+            }
+            npc.ConversationLog.Add(messageEntryNpc);
             await _baseStorageService.SaveAsync(userId, $"npcs/{npcId}", npc);
+
+            // Also add to the main DM log
+            var dmLog = await GetConversationLogAsync(userId);
+            var messageEntryDm = new Dictionary<string, string>
+            {
+                { messageKey, content }
+            };
+            dmLog.Messages.Add(messageEntryDm);
+            await _baseStorageService.SaveAsync(userId, "conversationLog", dmLog);
         }
 
         public async Task AddDmMessageToNpcLogAsync(string userId, string npcId, string content)
@@ -93,17 +114,33 @@ namespace AiGMBackEnd.Services.Storage
                 _loggingService.LogWarning($"Attempted to add DM message to non-existent NPC log: {npcId}");
                 return;
             }
+
+            // Use NPC Name if available, otherwise use ID
+            string npcIdentifier = string.IsNullOrEmpty(npc.Name) ? npcId : npc.Name;
+            string messageKey = $"{npcIdentifier} to Player";
             
-            var messageEntry = new Dictionary<string, string>
+            // Create message for NPC log
+            var messageEntryNpc = new Dictionary<string, string>
             {
-                { "timestamp", DateTime.UtcNow.ToString("o") },
-                { "sender", npcId },
-                { "content", content }
+                { messageKey, content }
             };
-            
-            npc.ConversationLog.Add(messageEntry);
-            
+
+            // Change NPC ConversationLog type to match main log
+            if (npc.ConversationLog == null)
+            {
+                 npc.ConversationLog = new List<Dictionary<string, string>>();
+            }
+            npc.ConversationLog.Add(messageEntryNpc);
             await _baseStorageService.SaveAsync(userId, $"npcs/{npcId}", npc);
+
+            // Also add to the main DM log
+            var dmLog = await GetConversationLogAsync(userId);
+            var messageEntryDm = new Dictionary<string, string>
+            {
+                { messageKey, content }
+            };
+            dmLog.Messages.Add(messageEntryDm);
+            await _baseStorageService.SaveAsync(userId, "conversationLog", dmLog);
         }
     }
 } 
