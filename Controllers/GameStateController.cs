@@ -156,5 +156,31 @@ namespace AiGMBackEnd.Controllers
                 return StatusCode(500, $"Error retrieving inventory: {ex.Message}");
             }
         }
+
+        [HttpGet("currencies")]
+        public async Task<IActionResult> GetPlayerCurrencies(string gameId)
+        {
+            if (string.IsNullOrEmpty(gameId))
+            {
+                return BadRequest("GameId is required");
+            }
+            
+            try
+            {
+                var player = await _storageService.GetPlayerAsync(gameId);
+                
+                if (player == null)
+                {
+                    return BadRequest("Player data not found. Character may not have been created yet.");
+                }
+                
+                return Ok(player.Currencies);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting currencies for game {gameId}: {ex.Message}");
+                return StatusCode(500, $"Error retrieving currencies: {ex.Message}");
+            }
+        }
     }
 } 
