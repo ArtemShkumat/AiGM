@@ -44,6 +44,7 @@ builder.Services.AddHangfireServer(options =>
 builder.Services.AddSingleton<LoggingService>();
 builder.Services.AddSingleton<IBaseStorageService, BaseStorageService>();
 builder.Services.AddSingleton<IEntityStorageService, EntityStorageService>();
+builder.Services.AddSingleton<IInventoryStorageService, InventoryStorageService>();
 builder.Services.AddSingleton<ITemplateService, TemplateService>();
 builder.Services.AddSingleton<IValidationService, ValidationService>();
 builder.Services.AddSingleton<IWorldSyncService, WorldSyncService>();

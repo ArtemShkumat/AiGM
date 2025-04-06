@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using System.Threading;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
+using AiGMBackEnd.Services.Storage;
 
 namespace AiGMBackEnd.Services.Processors
 {
@@ -22,6 +23,7 @@ namespace AiGMBackEnd.Services.Processors
         private readonly INPCProcessor _npcProcessor;
         private readonly IServiceProvider _serviceProvider;
         private readonly GameNotificationService _notificationService;
+        private readonly IInventoryStorageService _inventoryStorageService;
 
         public UpdateProcessor(
             StorageService storageService,
@@ -31,7 +33,8 @@ namespace AiGMBackEnd.Services.Processors
             ILocationProcessor locationProcessor,
             IQuestProcessor questProcessor,
             INPCProcessor npcProcessor,
-            GameNotificationService notificationService)
+            GameNotificationService notificationService,
+            IInventoryStorageService inventoryStorageService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -41,6 +44,7 @@ namespace AiGMBackEnd.Services.Processors
             _questProcessor = questProcessor;
             _npcProcessor = npcProcessor;
             _notificationService = notificationService;
+            _inventoryStorageService = inventoryStorageService;
         }
 
         public async Task ProcessUpdatesAsync(JObject updates, string userId)
@@ -203,13 +207,31 @@ namespace AiGMBackEnd.Services.Processors
             
             // Check if inventory is being updated
             bool inventoryChanged = updateData["inventory"] != null;
+            bool currencyChanged = updateData["currencies"] != null;
             
-            // Apply the update
-            await UpdateEntityAsync(userId, "", "player", updateData.ToString());
-            _loggingService.LogInfo("Applied partial update to player");
+            // Handle inventory updates if present
+            if (inventoryChanged)
+            {
+                await ProcessPlayerInventoryUpdatesAsync(userId, updateData["inventory"] as JArray);
+                updateData.Remove("inventory"); // Remove inventory updates as they're handled separately
+            }
+            
+            // Handle currency updates if present
+            if (currencyChanged)
+            {
+                await ProcessPlayerCurrencyUpdatesAsync(userId, updateData["currencies"] as JArray);
+                updateData.Remove("currencies"); // Remove currency updates as they're handled separately
+            }
+            
+            // Apply the remaining updates
+            if (updateData.HasValues)
+            {
+                await UpdateEntityAsync(userId, "", "player", updateData.ToString());
+                _loggingService.LogInfo("Applied partial update to player");
+            }
             
             // If inventory was updated, send a notification
-            if (inventoryChanged)
+            if (inventoryChanged || currencyChanged)
             {
                 await NotifyInventoryChangedAsync(userId);
             }
@@ -345,6 +367,108 @@ namespace AiGMBackEnd.Services.Processors
             catch (System.IO.FileNotFoundException)
             {
                 _loggingService.LogWarning($"Cannot apply partial update to non-existent file: {filePath}");
+            }
+        }
+
+        private async Task ProcessPlayerInventoryUpdatesAsync(string userId, JArray inventoryUpdates)
+        {
+            if (inventoryUpdates == null || !inventoryUpdates.Any())
+            {
+                _loggingService.LogInfo("No inventory updates to process");
+                return;
+            }
+            
+            _loggingService.LogInfo($"Processing {inventoryUpdates.Count} inventory updates");
+            
+            foreach (JObject itemUpdate in inventoryUpdates)
+            {
+                string itemName = itemUpdate["name"]?.ToString();
+                string itemDescription = itemUpdate["description"]?.ToString();
+                string action = itemUpdate["action"]?.ToString()?.ToLower();
+                
+                // Parse quantity (could be string or int in JSON)
+                int quantity = 1;
+                var quantityToken = itemUpdate["quantity"];
+                if (quantityToken != null)
+                {
+                    if (quantityToken.Type == JTokenType.String)
+                    {
+                        int.TryParse(quantityToken.ToString(), out quantity);
+                    }
+                    else if (quantityToken.Type == JTokenType.Integer)
+                    {
+                        quantity = quantityToken.Value<int>();
+                    }
+                }
+                
+                if (string.IsNullOrEmpty(itemName))
+                {
+                    _loggingService.LogWarning("Skipping inventory update with missing item name");
+                    continue;
+                }
+                
+                if (action == "add")
+                {
+                    var item = new InventoryItem
+                    {
+                        Name = itemName,
+                        Description = itemDescription ?? $"A {itemName}",
+                        Quantity = quantity
+                    };
+                    
+                    await _inventoryStorageService.AddItemToPlayerInventoryAsync(userId, item);
+                }
+                else if (action == "remove")
+                {
+                    await _inventoryStorageService.RemoveItemFromPlayerInventoryAsync(userId, itemName, quantity);
+                }
+                else
+                {
+                    _loggingService.LogWarning($"Unknown inventory action: {action}");
+                }
+            }
+        }
+        
+        private async Task ProcessPlayerCurrencyUpdatesAsync(string userId, JArray currencyUpdates)
+        {
+            if (currencyUpdates == null || !currencyUpdates.Any())
+            {
+                _loggingService.LogInfo("No currency updates to process");
+                return;
+            }
+            
+            _loggingService.LogInfo($"Processing {currencyUpdates.Count} currency updates");
+            
+            foreach (JObject currencyUpdate in currencyUpdates)
+            {
+                string currencyName = currencyUpdate["name"]?.ToString();
+                string action = currencyUpdate["action"]?.ToString()?.ToLower();
+                int amount = currencyUpdate["amount"]?.Value<int>() ?? 0;
+                
+                if (string.IsNullOrEmpty(currencyName))
+                {
+                    _loggingService.LogWarning("Skipping currency update with missing currency name");
+                    continue;
+                }
+                
+                if (amount <= 0)
+                {
+                    _loggingService.LogWarning($"Skipping currency update with invalid amount: {amount}");
+                    continue;
+                }
+                
+                if (action == "add")
+                {
+                    await _inventoryStorageService.AddCurrencyAmountAsync(userId, currencyName, amount);
+                }
+                else if (action == "remove")
+                {
+                    await _inventoryStorageService.RemoveCurrencyAmountAsync(userId, currencyName, amount);
+                }
+                else
+                {
+                    _loggingService.LogWarning($"Unknown currency action: {action}");
+                }
             }
         }
     }
