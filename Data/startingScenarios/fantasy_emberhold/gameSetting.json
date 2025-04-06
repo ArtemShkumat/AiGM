@@ -1,8 +1,9 @@
 {
   "genre": "fantasy",
   "theme": "adventure",
-  "description": "A fantasy setting centered around the highland village of Emberhold, famous for its master blacksmiths and the mystical Ember Crystal that once kept the harsh mountain winters at bay.",
+  "description": "A generic fantasy adventure",
   "startingLocation": "loc_emberhold",
-  "gameName": "The Emberhold",
-  "setting": "medieval"
+  "gameName": "Fantasy Adventure",
+  "setting": "medieval",
+  "currencies": ["Gold", "Silver", "Copper", "Platinum"]
 } 

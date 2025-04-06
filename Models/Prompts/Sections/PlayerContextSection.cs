@@ -35,7 +35,7 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                     age = _player.Age,
                     statusEffects = _player.StatusEffects,
                     inventory = _player.Inventory,
-                    money = _player.Money
+                    currencies = _player.Currencies
                 };
             }
             

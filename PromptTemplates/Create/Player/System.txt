@@ -39,6 +39,10 @@ IMPORTANT GUIDELINES:
    - The tags can very varied, both broad and very narrow. Everything from funny to sublime is allowed.
    - Each player should start with 3 tags.
 
+8. HANDLING SCENARIO SPECIFICS.
+   - You'll be provided with specific scenario information in "gameSetting" context section.
+   - "currencies" under gamesetting should tell you what kind of currencies to use in player creation.
+
 8. IMPORTANT NOTE
    - each response should be prepended with <donotshow/>
 

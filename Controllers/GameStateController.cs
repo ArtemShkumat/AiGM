@@ -116,7 +116,7 @@ namespace AiGMBackEnd.Controllers
                     player.Age,
                     player.Backstory,
                     player.CurrentLocationId,
-                    player.Money,
+                    player.Currencies,
                     player.StatusEffects,
                     player.RpgTags,
                     player.ActiveQuests

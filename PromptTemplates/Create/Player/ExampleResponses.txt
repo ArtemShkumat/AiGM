@@ -1,4 +1,13 @@
 ---Example 1---
+// 
+request:
+gameSetting: 
+{
+  ...
+  "currencies": ["Gold", "Silver"]
+  ...
+}
+
 // Prompt: "I'm a wandering swordsman named Thorne who lost his home in a war and is now in Haven Village."
 
 //response:
@@ -40,7 +49,16 @@
     }
   ],
   
-  "money": 25,
+   "currencies": [
+    {
+      "name": "Gold",
+      "amount": 10
+    },
+    {
+      "name": "Silver",
+      "amount": 0
+    }
+   ],
   
   "statusEffects": [],
 
@@ -67,6 +85,13 @@
 }
 
 ---Example 2---
+request:
+gameSetting: 
+{
+  ...
+  "currencies": ["Dollars"]
+  ...
+}
 // Prompt: "I'd like to play as Morgan, a tough 34-year-old former paramedic who survived a zombie outbreak by hiding in a hospital pharmacy. She's good at scavenging and first aid, and has just arrived at a safety zone after being rescued while searching for medical supplies. She's exhausted and has a cut above her eyebrow. She carries a medical kit, antibiotics, a hunting knife, and some canned food. She's worried about her family and constantly plans escape routes just in case. Morgan has no money in this post-apocalyptic world, and she's just helped someone named Rodriguez with an infected wound in exchange for shelter."
 
 //response:
@@ -122,7 +147,12 @@
     }
   ],
   
-  "money": 15,
+  "currencies": [
+    {
+      "name": "Dollars",
+      "amount": 16
+    }
+   ],
   
   "statusEffects": [],
 
@@ -149,6 +179,13 @@
 }
 
 ---Example 3---
+request:
+gameSetting: 
+{
+  ...
+  "currencies": ["Credits"]
+  ...
+}
 // Prompt: "merchant space station sci-fi"
 
 //response:
@@ -204,7 +241,12 @@
     }
   ],
   
-  "money": 8,
+  "currencies": [
+    {
+      "name": "Credits",
+      "amount": 100
+    }
+   ],
   
   "statusEffects": ["Paranoid"],
 

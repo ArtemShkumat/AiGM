@@ -31,7 +31,12 @@ THE CORE PLAYER MODEL STRUCTURE:
     }
   ],
   
-  "money": number,
+  "currencies": [
+    {
+      "name": "string",
+      "amount": number
+    }
+  ],
   
   "statusEffects": [
     {

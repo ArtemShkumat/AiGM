@@ -33,6 +33,11 @@ Use partial updates to update the location of characters:
 Use knownToPlayer and knowsPlayer tags to track who knows who:
 - When an NPC learns Player's name, update knowsPlayer to true. When Player learns NPC's name, update knownToPlayer to true. If knowsPlayer is false, it means the NPC has never met the player and should act accordingly.
 
+Handling trade and inventory management via partial updates:
+- In order to handle adding or removing currencies or inventory items, add a special field called "action" to item you want to add/remove with value of either "add" or "remove".
+- Look at player's currencies to see what kind of currencies the game uses.
+- Only player has "currencies", we don't track NPC's money, only their inventory.
+
 Data Structure in the Hidden JSON
 
 Your hidden JSON (after <donotshow/>) will typically have two key arrays/objects:

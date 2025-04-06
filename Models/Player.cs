@@ -29,8 +29,8 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("inventory")]
         public List<InventoryItem> Inventory { get; set; } = new List<InventoryItem>();
         
-        [JsonPropertyName("money")]
-        public int Money { get; set; }
+        [JsonPropertyName("currencies")]
+        public List<Currency> Currencies { get; set; } = new List<Currency>();
         
         [JsonPropertyName("statusEffects")]
         public List<string> StatusEffects { get; set; } = new List<string>();
@@ -40,5 +40,14 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("activeQuests")]
         public List<string> ActiveQuests { get; set; } = new List<string>();        
+    }
+
+    public class Currency
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        
+        [JsonPropertyName("amount")]
+        public int Amount { get; set; }
     }
 }

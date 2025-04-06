@@ -4,5 +4,6 @@
   "description": "A realistic zombie apocalypse scenario set in Bellingham, Washington. The world has collapsed after a devastating outbreak. You wake up from a coma in St. Joseph Medical Center to find civilization in ruins. Your focus is on survival, finding resources, building shelter, and eventually thriving in this dangerous new world.",
   "startingLocation": "loc_stJosephHospital",
   "gameName": "Aftermath: Bellingham",
-  "setting": "modern"
+  "setting": "modern",
+  "currencies": ["Dollars"]
 } 

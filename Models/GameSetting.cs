@@ -22,5 +22,8 @@ namespace AiGMBackEnd.Models
 
         [JsonPropertyName("setting")]
         public string Setting { get; set; }
+
+        [JsonPropertyName("currencies")]
+        public List<string> Currencies { get; set; } = new List<string>();
     }
 } 

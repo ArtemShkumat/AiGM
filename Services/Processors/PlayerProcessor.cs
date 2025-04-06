@@ -58,7 +58,7 @@ namespace AiGMBackEnd.Services.Processors
 
                 if (playerData["age"] != null)
                 {
-                    player.Money = playerData["age"].Value<int>();
+                    player.Age = playerData["age"].Value<int>();
                 }
 
 
@@ -77,12 +77,22 @@ namespace AiGMBackEnd.Services.Processors
                             });
                         }
                     }
-                }
+                }                
                 
-                // Handle money
-                if (playerData["money"] != null)
+                // Handle currencies (if present in new format)
+                if (playerData["currencies"] is JArray currencies)
                 {
-                    player.Money = playerData["money"].Value<int>();
+                    foreach (var currency in currencies)
+                    {
+                        if (currency is JObject currencyObj)
+                        {
+                            player.Currencies.Add(new Models.Currency
+                            {
+                                Name = currencyObj["name"]?.ToString() ?? "Unknown",
+                                Amount = currencyObj["amount"]?.Value<int>() ?? 0
+                            });
+                        }
+                    }
                 }
                 
                 // Handle status effects

@@ -324,15 +324,21 @@ DM: "The merchant nods and counts out 15 gold coins, placing them in your palm. 
         "inventory": [{
             "name": "Steel Helmet",
             "description": "A well-crafted steel helmet offering good protection",
-            "quantity": "0"
+            "quantity": "1",
+            "action": "add"
           }],
-        "money": 15
+        "currencies": [{
+            "name": "Gold",
+            "amount": 15,
+            "action": "add"
+          }],
       },
       "npc_villageMerchant": {
         "inventory": [{
             "name": "Steel Helmet",
             "description": "A well-crafted steel helmet offering good protection",
-            "quantity": "1"
+            "quantity": "1",
+            "action": "add"
           }]
       }
     }
@@ -351,8 +357,8 @@ DM:"Yum! You eat the apple. Keep them doctors away, eh?.{
         "type": "PLAYER",
         "inventory": [{
             "name": "Apple",
-            "description": "A fresh, red apple",
-            "quantity": "0"
+            "quantity": 1,
+            "action": remove
           }]
       }
     }

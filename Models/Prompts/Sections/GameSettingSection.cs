@@ -31,7 +31,8 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                     genre = _gameSetting.Genre,
                     theme = _gameSetting.Theme,
                     description = _gameSetting.Description,
-                    setting = _gameSetting.Setting
+                    setting = _gameSetting.Setting,
+                    currencies = _gameSetting.Currencies
                 };
             }
             
