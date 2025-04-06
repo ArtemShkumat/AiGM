@@ -145,8 +145,8 @@ namespace AiGMBackEnd.Services
         public async Task<string> GetCreateLocationTemplateAsync(string templateName, string locationType = null) => 
             await _templateService.GetCreateLocationTemplateAsync(templateName, locationType);
 
-        public async Task<string> GetCreatePlayerJsonTemplateAsync(string templateName) => 
-            await _templateService.GetCreatePlayerJsonTemplateAsync(templateName);
+        public async Task<string> GetCreatePlayerTemplateAsync(string templateName) => 
+            await _templateService.GetCreatePlayerTemplateAsync(templateName);
 
         public async Task<string> GetSummarizeTemplateAsync(string templateName) => 
             await _templateService.GetSummarizeTemplateAsync(templateName);

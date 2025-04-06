@@ -5,9 +5,9 @@ using System.Text;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
-    public class CreatePlayerJsonPromptBuilder : BasePromptBuilder
+    public class CreatePlayerPromptBuilder : BasePromptBuilder
     {
-        public CreatePlayerJsonPromptBuilder(StorageService storageService, LoggingService loggingService)
+        public CreatePlayerPromptBuilder(StorageService storageService, LoggingService loggingService)
             : base(storageService, loggingService)
         {
         }
@@ -17,8 +17,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
             try
             {
                 // Load create player JSON template files
-                var systemPrompt = await _storageService.GetCreatePlayerJsonTemplateAsync("System");
-                var exampleResponses = await _storageService.GetCreatePlayerJsonTemplateAsync("ExampleResponses");
+                var systemPrompt = await _storageService.GetCreatePlayerTemplateAsync("System");
+                var exampleResponses = await _storageService.GetCreatePlayerTemplateAsync("ExampleResponses");
 
                 // Load world data for context
                 var world = await _storageService.GetWorldAsync(request.UserId);
@@ -54,7 +54,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
                     promptContent: promptContentBuilder.ToString(),
-                    promptType: PromptType.CreatePlayerJson
+                    promptType: PromptType.CreatePlayer
                 );
             }
             catch (Exception ex)

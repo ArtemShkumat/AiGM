@@ -72,11 +72,11 @@ namespace AiGMBackEnd.Controllers
             
             try
             {
-                // Create a job using the CreatePlayerJson prompt type
+                // Create a job using the CreatePlayer prompt type
                 var result = await _presenterService.HandleUserInputAsync(
                     request.GameId, 
                     request.CharacterDescription, 
-                    PromptType.CreatePlayerJson);
+                    PromptType.CreatePlayer);
                 
                 return Ok(new { 
                     Success = true,

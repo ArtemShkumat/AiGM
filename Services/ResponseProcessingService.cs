@@ -208,7 +208,7 @@ namespace AiGMBackEnd.Services
                     case PromptType.CreateLocation:
                         await _locationProcessor.ProcessAsync(jsonObject, userId);
                         break;
-                    case PromptType.CreatePlayerJson:
+                    case PromptType.CreatePlayer:
                         await _playerProcessor.ProcessAsync(jsonObject, userId);
                         break;
                 }

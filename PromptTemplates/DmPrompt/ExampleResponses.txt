@@ -271,9 +271,7 @@ I head into the Silver Fox Tavern to get a drink after my long journey.
 
 ASSISTANT:
 You push open the heavy wooden door of the Silver Fox Tavern, and warmth immediately envelops you. The tavern is lively this evening—the crackling hearth in the corner casting dancing shadows across the room. The air is thick with the aroma of roasted meat, spilled ale, and woodsmoke.
-
 Behind the bar stands a portly man with a magnificent mustache, expertly filling mugs from a large barrel. He gives you a quick nod as you enter. A young serving girl weaves between tables, balancing a tray of drinks with practiced ease. 
-
 In the corner, an elderly man strums a lute, playing a cheerful tune that blends with the hum of conversation. Several patrons occupy the tables—a group of laborers still dusty from their day's work, a pair of merchants engaged in hushed conversation, and a weathered traveler nursing a drink alone by the window.
 
 <donotshow/>
@@ -311,6 +309,57 @@ In the corner, an elderly man strums a lute, playing a cheerful tune that blends
       }
     }
 }
+
+
+Example: Selling an Item to a Merchant
+Situation: The player wants to sell a helmet to a trader.
+Player: "I'd like to sell this steel helmet to the merchant. It's in good condition, barely a scratch on it."
+DM: "The merchant examines the helmet carefully, turning it over in his hands. 'Hmm, decent craftsmanship. I can give you 15 gold pieces for it.' He looks up at you expectantly."
+Player: "That sounds fair. I'll take the 15 gold."
+DM: "The merchant nods and counts out 15 gold coins, placing them in your palm. He takes the helmet and places it on a display with his other wares. 'Pleasure doing business with you,' he says with a satisfied smile.{
+    "newEntities": [],
+    "partialUpdates": {
+      "player": {
+        "type": "PLAYER",
+        "inventory": [{
+            "name": "Steel Helmet",
+            "description": "A well-crafted steel helmet offering good protection",
+            "quantity": "0"
+          }],
+        "money": 15
+      },
+      "npc_villageMerchant": {
+        "inventory": [{
+            "name": "Steel Helmet",
+            "description": "A well-crafted steel helmet offering good protection",
+            "quantity": "1"
+          }]
+      }
+    }
+}"
+
+
+
+
+Example: Using Up an Item
+Situation: The player wants to eat an apple from their inventory.
+Player:"I take out an apple and eat it."
+DM:"Yum! You eat the apple. Keep them doctors away, eh?.{
+    "newEntities": [],
+    "partialUpdates": {
+      "player": {
+        "type": "PLAYER",
+        "inventory": [{
+            "name": "Apple",
+            "description": "A fresh, red apple",
+            "quantity": "0"
+          }]
+      }
+    }
+}"
+
+
+
 
 Examples of situations requiring rolls and how to handle them:
 
@@ -414,6 +463,9 @@ DM: “Well done!. You skillfully remove the pelt without a single mistake. It's
       }
     }
 }”
+
+
+
 
 Example: Building a Simple Shed
 Situation: The character wants to build a small wooden shed behind their cottage.
