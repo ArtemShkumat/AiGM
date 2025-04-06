@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace AiGMBackEnd.Controllers
 {
@@ -12,11 +14,13 @@ namespace AiGMBackEnd.Controllers
     {
         private readonly LoggingService _loggingService;
         private readonly StorageService _storageService;
+        private readonly GameNotificationService _notificationService;
 
-        public GameStateController(LoggingService loggingService, StorageService storageService)
+        public GameStateController(LoggingService loggingService, StorageService storageService, GameNotificationService notificationService)
         {
             _loggingService = loggingService;
             _storageService = storageService;
+            _notificationService = notificationService;
         }
 
         [HttpGet("scene")]

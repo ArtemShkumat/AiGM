@@ -4,6 +4,7 @@ using Hangfire.Dashboard;
 using AiGMBackEnd.Services;
 using AiGMBackEnd.Services.Processors;
 using AiGMBackEnd.Services.Storage;
+using AiGMBackEnd.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +19,13 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:3000") // Assuming frontend runs on port 3000
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials(); // Required for SignalR
         });
 });
+
+// Configure SignalR
+builder.Services.AddSignalR();
 
 // Configure Hangfire
 builder.Services.AddHangfire(config =>
@@ -46,6 +51,9 @@ builder.Services.AddSingleton<IGameScenarioService, GameScenarioService>();
 builder.Services.AddSingleton<IConversationLogService, ConversationLogService>();
 builder.Services.AddSingleton<IRecentEventsService, RecentEventsService>();
 builder.Services.AddSingleton<StorageService>();
+
+// Register notification service
+builder.Services.AddSingleton<GameNotificationService>();
 
 // Register AI services
 builder.Services.AddSingleton<AiGMBackEnd.Services.AIProviders.AIProviderFactory>();
@@ -93,6 +101,9 @@ app.UseCors();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// Map SignalR hubs
+app.MapHub<GameHub>("/hubs/game");
 
 app.Run();
 

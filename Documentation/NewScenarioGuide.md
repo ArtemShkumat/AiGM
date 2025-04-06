@@ -4,49 +4,105 @@ This guide provides detailed instructions on how to create the necessary JSON fi
 
 ## 1. Overview
 
-A starting scenario defines the initial state of the game world when a user begins a new session or campaign. It consists of several JSON files placed within a dedicated data directory (typically `RPGGame/Data/<UserId>/` or `RPGGame/Data/<CampaignId>/`). These files describe the world, the player character, the starting location, and any NPCs present at the start.
+A starting scenario defines the initial state of the game world when a user begins a new session or campaign. It consists of several JSON files placed within a dedicated data directory (`Data/startingScenarios/<scenarioId>/`). These files describe the world, the player character, the starting location, and any NPCs present at the start.
+
+The following folder structure is required for a starting scenario:
+```
+Data/
+  startingScenarios/
+    <scenarioId>/          # Your scenario's unique identifier (e.g., "fantasy_emberhold")
+      player.json          # The player character definition
+      world.json           # Global world parameters
+      gameSetting.json     # Genre, theme, and setting information
+      gamePreferences.json # Game preferences and settings
+      conversationLog.json # Empty conversation log
+      recentEvents.json    # Empty recent events
+      locations/           # Folder containing all location files
+        loc_*.json         # Individual location files
+      npcs/                # Folder containing all NPC files
+        npc_*.json         # Individual NPC files
+      quests/              # Folder containing all quest files
+        quest_*.json       # Individual quest files
+      lore/                # Folder containing all lore files
+        lore_*.json        # Individual lore files
+```
+
+When a user starts a new game based on a scenario, the system copies these files to `Data/userData/<gameId>/` where they are modified during gameplay.
 
 ## 2. Core Scenario Files
 
-The following JSON files are essential for a minimal starting scenario:
+The following JSON files are essential for a complete starting scenario:
 
-*   `world.json`: Defines global world parameters.
+*   `world.json`: Defines global world parameters, game time, and references to locations, NPCs, and quests.
 *   `player.json`: Defines the player character's initial state.
-*   At least one `location_*.json` file (e.g., `locations/loc_starting_tavern.json`): Defines the player's starting location.
-*   Optionally, one or more `npc_*.json` files (e.g., `npcs/npc_friendly_barkeep.json`): Defines NPCs present in the starting location or relevant to the initial context.
+*   `gameSetting.json`: Defines the genre, theme, description, and starting location for the scenario.
+*   `gamePreferences.json`: Defines game mechanic preferences specific to the scenario.
+*   `conversationLog.json`: Initially empty, will store conversation history during gameplay.
+*   `recentEvents.json`: Initially empty, will store recent game events during gameplay.
+*   Location files in the `locations/` subfolder (e.g., `locations/loc_emberhold.json`): Define all locations in the world.
+*   NPC files in the `npcs/` subfolder (e.g., `npcs/npc_elderVarric.json`): Define all NPCs in the world.
+*   Quest files in the `quests/` subfolder (e.g., `quests/quest_emberCrystal.json`): Define all quests in the world.
+*   Lore files in the `lore/` subfolder (e.g., `lore/lore_emberCrystal.json`): Define all lore items in the world.
 
 ## 3. File Structures and Key Fields
 
 ### 3.1. `world.json`
 
-This file holds global information about the game world. While a strict template isn't provided in the documentation, essential fields would likely include:
+This file holds global information about the game world. Structure it according to the `World.cs` model:
 
 ```json
 {
-  "id": "world_unique_identifier", // e.g., "world_emberhold_campaign"
-  "name": "Scenario Name", // e.g., "Emberhold Mysteries"
-  "gameSetting": "Setting Type", // e.g., "Medieval Fantasy", "Sci-Fi", "Post-Apocalyptic"
-  "currentDateTime": { // Optional: For tracking time
-    "day": 1,
-    "time": "Morning" // Or a more precise time format
+  "type": "WORLD", // Always set this to "WORLD"
+  "gameTime": "1247-05-15T14:30:00Z", // ISO timestamp for the starting game time
+  "daysSinceStart": 1, // Days elapsed since the beginning of the scenario
+  "currentPlayer": "", // Usually empty at start
+  "worldStateEffects": { // Dictionary of global state conditions
+    "weather": "clear",
+    "season": "spring"
   },
-  "globalFlags": [ // Optional: For world-state events
-    // { "flagId": "event_plague_started", "status": true }
+
+  "lore": [ // Important world lore elements
+    {
+      "id": "lore_emberCrystal",
+      "title": "The Ember Crystal",
+      "summary": "An ancient artifact with significant story importance."
+    }
   ],
-  "knownLocations": [ // List of location IDs known globally at start
-    // "loc_starting_tavern", "loc_town_square"
+
+  "locations": [ // List of location summaries
+    {
+      "id": "loc_starting_tavern",
+      "name": "The Rusty Anchor"
+    },
+    {
+      "id": "loc_town_square",
+      "name": "Town Square"
+    }
   ],
-  "knownNPCs": [ // List of NPC IDs known globally at start
-    // "npc_friendly_barkeep"
+
+  "npcs": [ // List of NPC summaries
+    {
+      "id": "npc_friendly_barkeep",
+      "name": "Bob the Barkeep"
+    }
+  ],
+
+  "quests": [ // List of quest summaries
+    {
+      "id": "quest_missing_shipment", 
+      "title": "The Missing Shipment"
+    }
   ]
-  // Add other relevant global parameters as needed
 }
 ```
 
 **Key Points:**
 
-*   `gameSetting`: Crucial for informing the LLM about the tone and context.
-*   `knownLocations`/`knownNPCs`: Can pre-populate the world's "awareness" of certain entities, though individual NPC/Player knowledge is separate.
+*   `type`: Must be exactly `"WORLD"`.
+*   `gameTime`: Sets the starting time in the world. Use ISO format.
+*   `worldStateEffects`: Used for global conditions like weather, season, or special world states.
+*   The lists for `lore`, `locations`, `npcs`, and `quests` contain summary objects, not just IDs.
+*   These summary objects must match the full detailed objects in their respective files.
 
 ### 3.2. `player.json`
 
@@ -55,13 +111,13 @@ This file defines the player character. Structure it according to `PromptTemplat
 ```json
 {
   "type": "PLAYER", // MUST be "PLAYER"
-  "id": "player_unique_id", // A unique identifier (e.g., a GUID or descriptive ID)
+  "id": "", // Empty for the new player.
   "name": "Player Character Name",
   "age": 30, // Set a reasonable starting age
   "currentLocationId": "loc_starting_location_id", // MUST match the ID of the starting location file
 
   "visualDescription": {
-    "gender": "Male/Female/Non-binary",
+    "gender": "Male/Female",
     "body": "Brief description (e.g., 'Average build, scar over left eye')",
     "visibleClothing": "Starting clothes (e.g., 'Simple tunic and trousers')",
     "condition": "Initial state (e.g., 'Healthy', 'Tired')"
@@ -205,6 +261,47 @@ NPC files define non-player characters. Place them in the `npcs/` subfolder (e.g
 *   `knownEntities`: Defines the NPC's awareness of the world.
 *   `conversationLog`: Must be an empty array `[]` initially.
 
+### 3.5. `gameSetting.json`
+
+This file defines the genre, theme, and overall setting for the scenario:
+
+```json
+{
+  "genre": "fantasy", 
+  "theme": "adventure",
+  "description": "A fantasy setting centered around the highland village of Emberhold, famous for its master blacksmiths and the mystical Ember Crystal that once kept the harsh mountain winters at bay.",
+  "startingLocation": "loc_emberhold",
+  "gameName": "The Emberhold",
+  "setting": "medieval"
+}
+```
+
+**Key Points:**
+
+*   `genre`: The broad genre classification (e.g., "fantasy", "sci-fi", "post-apocalyptic").
+*   `theme`: The thematic focus (e.g., "adventure", "mystery", "horror").
+*   `description`: A detailed description of the scenario setting.
+*   `startingLocation`: **Critically important.** Must match the `id` of the location where the player starts.
+*   `gameName`: The display name for the scenario.
+*   `setting`: The time period or technological level (e.g., "medieval", "modern", "futuristic").
+
+### 3.6. `gamePreferences.json`
+
+This file defines game mechanic preferences specific to the scenario:
+
+```json
+{
+  "tone": "atmospheric",
+  "complexity": "high",
+  "ageAppropriateness": "adult"
+}
+```
+
+**Key Points:**
+
+*   These preferences can be customized based on the specific needs of your scenario.
+*   They help inform the AI game master about how to run the game.
+
 ## 4. Linking Entities and Consistency
 
 The `id` fields are the glue holding the scenario together.
@@ -234,3 +331,17 @@ The `id` fields are the glue holding the scenario together.
 *   **Consistency is Key:** Ensure descriptions, NPC personalities, and location purposes align with the overall `world.json` `gameSetting` and scenario theme.
 
 By following these guidelines and carefully structuring your JSON files, you can create robust and engaging starting scenarios for the RPG system.
+
+## 7. How Scenarios Are Used by the Game
+
+When a user starts a new game:
+
+1. They select a starting scenario from the available options in `Data/startingScenarios/`.
+2. The system creates a new game ID (a GUID).
+3. The entire scenario folder structure is copied from `Data/startingScenarios/<scenarioId>/` to `Data/userData/<gameId>/`.
+4. The player's ID in `player.json` and the currentPlayer field in `world.json` are updated to match the new game ID.
+5. Any provided game preferences are applied.
+6. The game begins with the player at the starting location specified in `gameSetting.json`.
+
+This copying mechanism ensures that the original scenario remains unchanged and can be used to start multiple different games. Each user's game state evolves independently in their own game folder.
+

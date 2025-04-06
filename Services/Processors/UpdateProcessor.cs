@@ -21,6 +21,7 @@ namespace AiGMBackEnd.Services.Processors
         private readonly IQuestProcessor _questProcessor;
         private readonly INPCProcessor _npcProcessor;
         private readonly IServiceProvider _serviceProvider;
+        private readonly GameNotificationService _notificationService;
 
         public UpdateProcessor(
             StorageService storageService,
@@ -29,7 +30,8 @@ namespace AiGMBackEnd.Services.Processors
             IServiceProvider serviceProvider,
             ILocationProcessor locationProcessor,
             IQuestProcessor questProcessor,
-            INPCProcessor npcProcessor)
+            INPCProcessor npcProcessor,
+            GameNotificationService notificationService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -38,6 +40,7 @@ namespace AiGMBackEnd.Services.Processors
             _locationProcessor = locationProcessor;
             _questProcessor = questProcessor;
             _npcProcessor = npcProcessor;
+            _notificationService = notificationService;
         }
 
         public async Task ProcessUpdatesAsync(JObject updates, string userId)
@@ -183,112 +186,149 @@ namespace AiGMBackEnd.Services.Processors
                 // Handle player special case
                 if (entityId.ToLower() == "player")
                 {
-                    _loggingService.LogInfo("Processing player update");
-                    
-                    // Check if the player is changing locations
-                    var previousPlayer = await _storageService.GetPlayerAsync(userId);
-                    string previousLocationId = previousPlayer?.CurrentLocationId;
-                    
-                    // Check if there's a currentLocationId in the update data
-                    string newLocationId = null;
-                    var currentLocationProperty = updateData["currentLocationId"];
-                    if (currentLocationProperty != null && currentLocationProperty.ToString() != previousLocationId)
-                    {
-                        newLocationId = currentLocationProperty.ToString();
-                    }
-                    
-                    // If the player had a previous location and is now moving to a different one,
-                    // we should summarize the conversation from the previous location
-                    if (!string.IsNullOrEmpty(previousLocationId) && !string.IsNullOrEmpty(newLocationId) && previousLocationId != newLocationId)
-                    {
-                        _loggingService.LogInfo($"Player leaving location {previousLocationId}. Triggering conversation summarization.");
-                        await _serviceProvider.GetService<HangfireJobsService>().SummarizeConversationAsync(userId);
-                    }
-                    
-                    await UpdateEntityAsync(userId, "", "player", updateData.ToString());
-                    _loggingService.LogInfo("Applied partial update to player");
+                    await ProcessPlayerUpdateAsync(userId, updateData);
                     continue;
                 }
                 
-                // Get the entity type from the update data
-                var entityType = updateData["type"]?.ToString();
-                if (string.IsNullOrEmpty(entityType))
-                {
-                    _loggingService.LogWarning($"Entity type missing for {entityId}");
-                    continue;
-                }
-                
-                // Remove ID and Type from update data to preserve them
-                updateData.Remove("id");
-                updateData.Remove("type");
-                
-                // Check if this entity is currently being created
-                if (entityCreationJobs.TryGetValue(entityId, out string jobId))
-                {
-                    // Wait for the entity to be created before applying the update
-                    _loggingService.LogInfo($"Waiting for {entityType} {entityId} to be created before applying update");
-                    try
-                    {
-                        // Instead of waiting directly for the job, we'll check the status
-                        // periodically (with a timeout) through the status tracking service
-                        var timeoutTask = Task.Delay(TimeSpan.FromMinutes(2));
-                        var checkInterval = TimeSpan.FromSeconds(2);
-                        var startTime = DateTime.UtcNow;
-                        bool isComplete = false;
-                        
-                        // Poll every few seconds to check if the entity creation is complete
-                        while (!isComplete && DateTime.UtcNow - startTime < TimeSpan.FromMinutes(2))
-                        {
-                            var status = await _statusTrackingService.GetEntityStatusAsync(userId, entityId);
-                            if (status != null && (status.Status == "complete" || status.Status == "error"))
-                            {
-                                isComplete = true;
-                                if (status.Status == "complete")
-                                {
-                                    _loggingService.LogInfo($"Entity {entityType} {entityId} creation completed");
-                                }
-                                else
-                                {
-                                    _loggingService.LogWarning($"Entity {entityType} {entityId} creation failed: {status.ErrorMessage}");
-                                }
-                                break;
-                            }
-                            
-                            await Task.Delay(checkInterval);
-                        }
-                        
-                        if (!isComplete)
-                        {
-                            _loggingService.LogWarning($"Timed out waiting for {entityType} {entityId} creation, proceeding with update anyway");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _loggingService.LogError($"Error checking creation status for {entityType} {entityId}: {ex.Message}");
-                        // Proceed with update anyway
-                    }
-                }
-                
-                // Determine collection based on the entity type
-                string collection = entityType.ToLower() switch
-                {
-                    "npc" => "npcs",
-                    "location" => "locations",
-                    "quest" => "quests",
-                    "world" => "",
-                    "player" => "",
-                    _ => null
-                };
-                
-                if (collection == null)
-                {
-                    _loggingService.LogWarning($"Unknown entity type: {entityType} for entity {entityId}");
-                    continue;
-                }
-                
-                // Apply the update
-                await UpdateEntityAsync(userId, collection, entityId, updateData.ToString());
+                await ProcessEntityUpdateAsync(userId, entityId, updateData, entityCreationJobs);
             }
+        }
+
+        private async Task ProcessPlayerUpdateAsync(string userId, JObject updateData)
+        {
+            _loggingService.LogInfo("Processing player update");
+            
+            // Check if the player is changing locations
+            bool locationChanged = await CheckAndHandleLocationChangeAsync(userId, updateData);
+            
+            // Check if inventory is being updated
+            bool inventoryChanged = updateData["inventory"] != null;
+            
+            // Apply the update
+            await UpdateEntityAsync(userId, "", "player", updateData.ToString());
+            _loggingService.LogInfo("Applied partial update to player");
+            
+            // If inventory was updated, send a notification
+            if (inventoryChanged)
+            {
+                await NotifyInventoryChangedAsync(userId);
+            }
+        }
+
+        private async Task<bool> CheckAndHandleLocationChangeAsync(string userId, JObject updateData)
+        {
+            var previousPlayer = await _storageService.GetPlayerAsync(userId);
+            string previousLocationId = previousPlayer?.CurrentLocationId;
+            
+            // Check if there's a currentLocationId in the update data
+            string newLocationId = null;
+            var currentLocationProperty = updateData["currentLocationId"];
+            if (currentLocationProperty != null && currentLocationProperty.ToString() != previousLocationId)
+            {
+                newLocationId = currentLocationProperty.ToString();
+            }
+            
+            // If the player had a previous location and is now moving to a different one,
+            // we should summarize the conversation from the previous location
+            if (!string.IsNullOrEmpty(previousLocationId) && !string.IsNullOrEmpty(newLocationId) && previousLocationId != newLocationId)
+            {
+                _loggingService.LogInfo($"Player leaving location {previousLocationId}. Triggering conversation summarization.");
+                await _serviceProvider.GetService<HangfireJobsService>().SummarizeConversationAsync(userId);
+                return true;
+            }
+            
+            return false;
+        }
+
+        private async Task NotifyInventoryChangedAsync(string userId)
+        {
+            try
+            {
+                await _notificationService.NotifyInventoryChangedAsync(userId);
+                _loggingService.LogInfo($"Sent inventory change notification for game {userId}");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Failed to send inventory notification: {ex.Message}");
+            }
+        }
+
+        private async Task ProcessEntityUpdateAsync(string userId, string entityId, JObject updateData, Dictionary<string, string> entityCreationJobs)
+        {
+            // Get the entity type from the update data
+            var entityType = updateData["type"]?.ToString();
+            if (string.IsNullOrEmpty(entityType))
+            {
+                _loggingService.LogWarning($"Entity type missing for {entityId}");
+                return;
+            }
+            
+            // Remove ID and Type from update data to preserve them
+            updateData.Remove("id");
+            updateData.Remove("type");
+            
+            // Wait for entity creation if needed
+            if (entityCreationJobs.ContainsKey(entityId) && !await WaitForEntityCreationAsync(userId, entityId, entityType))
+            {
+                return; // Skip update if entity creation didn't complete
+            }
+            
+            // Determine the collection based on entity type
+            string collection = GetCollectionForEntityType(entityType);
+            if (collection == null)
+            {
+                _loggingService.LogWarning($"Unknown entity type: {entityType} for entity {entityId}");
+                return;
+            }
+            
+            // Apply the update
+            await UpdateEntityAsync(userId, collection, entityId, updateData.ToString());
+        }
+
+        private async Task<bool> WaitForEntityCreationAsync(string userId, string entityId, string entityType)
+        {
+            _loggingService.LogInfo($"Waiting for {entityType} {entityId} to be created before applying update");
+            try
+            {
+                // Instead of waiting directly for the job, we'll check the status
+                // periodically (with a timeout) through the status tracking service
+                var timeoutTask = Task.Delay(TimeSpan.FromMinutes(2));
+                var checkInterval = TimeSpan.FromSeconds(2);
+                var startTime = DateTime.UtcNow;
+                bool isComplete = false;
+                
+                // Poll every few seconds to check if the entity creation is complete
+                while (!isComplete && DateTime.UtcNow - startTime < TimeSpan.FromMinutes(2))
+                {
+                    await Task.Delay(checkInterval);
+                    var status = await _statusTrackingService.GetEntityStatusAsync(userId, entityId);
+                    isComplete = status != null && (status.Status == "complete" || status.Status == "error");
+                }
+                
+                if (!isComplete)
+                {
+                    _loggingService.LogWarning($"Timed out waiting for {entityType} {entityId} to be created");
+                    return false;
+                }
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error waiting for entity creation: {ex.Message}");
+                return false;
+            }
+        }
+
+        private string GetCollectionForEntityType(string entityType)
+        {
+            return entityType.ToLower() switch
+            {
+                "npc" => "npcs",
+                "location" => "locations",
+                "quest" => "quests",
+                _ => null
+            };
         }
         
         private async Task UpdateEntityAsync(string userId, string entityType, string entityId, string updateData)
@@ -305,7 +345,6 @@ namespace AiGMBackEnd.Services.Processors
             catch (System.IO.FileNotFoundException)
             {
                 _loggingService.LogWarning($"Cannot apply partial update to non-existent file: {filePath}");
-                _loggingService.LogInfo($"Updated {entityType} entity: {entityId}");
             }
         }
     }
