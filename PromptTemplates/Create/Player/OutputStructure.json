@@ -1,0 +1,70 @@
+{
+  "type": "object",
+  "properties": {
+    "type": { "type": "string", "const": "Player", "description": "Object type, always 'Player'" },
+    "id": { "type": "string", "description": "Unique identifier (GUID format recommended)" },
+    "name": { "type": "string", "description": "Player character's name" },
+    "currentLocationId": { "type": "string", "description": "ID of the player's current location" },
+    "visualDescription": {
+      "type": "object",
+      "properties": {
+        "gender": { "type": "string" },
+        "body": { "type": "string", "description": "e.g., lean, muscular, average" },
+        "visibleClothing": { "type": "string", "description": "Description of currently worn clothes" },
+        "condition": { "type": "string", "description": "e.g., rested, tired, wounded" },
+        "resemblingCelebrity": { "type": "string", "description": "Optional: Celebrity the character resembles" }
+      },
+      "required": ["gender", "body", "visibleClothing", "condition"]
+    },
+    "age": { "type": "integer", "description": "Player's age" },
+    "backstory": { "type": "string", "description": "Brief history of the player character" },
+    "inventory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "quantity": { "type": "integer" }
+        },
+        "required": ["name", "description", "quantity"]
+      }
+    },
+    "currencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Name of the currency (e.g., Gold, Credits)" },
+          "amount": { "type": "integer" }
+        },
+        "required": ["name", "amount"]
+      }
+    },
+    "statusEffects": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of active status effects affecting the player"
+    },
+    "rpgTags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Name of the tag" },
+          "description": { "type": "string", "description": "Description of what the tag allows/represents" }
+        },
+        "required": ["name", "description"]
+      },
+      "description": "List of RPG tags defining player abilities or traits"
+    },
+    "activeQuests": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of IDs for quests the player is currently pursuing"
+    }
+  },
+  "required": [
+    "type", "id", "name", "currentLocationId", "visualDescription", "age", "backstory", "inventory", "currencies", "statusEffects", "rpgTags", "activeQuests"
+  ]
+}

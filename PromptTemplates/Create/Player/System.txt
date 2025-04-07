@@ -43,8 +43,5 @@ IMPORTANT GUIDELINES:
    - You'll be provided with specific scenario information in "gameSetting" context section.
    - "currencies" under gamesetting should tell you what kind of currencies to use in player creation.
 
-8. IMPORTANT NOTE
-   - each response should be prepended with <donotshow/>
-
 Your goal is to create a technical implementation of the player character that precisely follows the game's data model while capturing all the important character details from the narrative description and aligning with the game world.
 

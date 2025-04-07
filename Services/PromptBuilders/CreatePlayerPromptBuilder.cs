@@ -17,8 +17,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
             try
             {
                 // Load create player JSON template files
-                var systemPrompt = await _storageService.GetCreatePlayerTemplateAsync("System");
-                var exampleResponses = await _storageService.GetCreatePlayerTemplateAsync("ExampleResponses");
+                var systemPrompt = await _storageService.GetCreatePlayerTemplateAsync("System.txt");
+                var exampleResponses = await _storageService.GetCreatePlayerTemplateAsync("ExampleResponses.txt");
+                var outputStructureSchema = await _storageService.GetCreatePlayerTemplateAsync("OutputStructure.json");
 
                 // Load world data for context
                 var world = await _storageService.GetWorldAsync(request.UserId);
@@ -54,7 +55,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
                     promptContent: promptContentBuilder.ToString(),
-                    promptType: PromptType.CreatePlayer
+                    promptType: PromptType.CreatePlayer,
+                    outputStructureJsonSchema: outputStructureSchema
                 );
             }
             catch (Exception ex)

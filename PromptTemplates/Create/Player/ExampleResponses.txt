@@ -11,7 +11,6 @@ gameSetting:
 // Prompt: "I'm a wandering swordsman named Thorne who lost his home in a war and is now in Haven Village."
 
 //response:
-<donotshow/>
 {
   "type": "PLAYER",
   "id": "a7e5f120-8c4d-42e3-9f23-c8b258e5b85a",
@@ -95,7 +94,6 @@ gameSetting:
 // Prompt: "I'd like to play as Morgan, a tough 34-year-old former paramedic who survived a zombie outbreak by hiding in a hospital pharmacy. She's good at scavenging and first aid, and has just arrived at a safety zone after being rescued while searching for medical supplies. She's exhausted and has a cut above her eyebrow. She carries a medical kit, antibiotics, a hunting knife, and some canned food. She's worried about her family and constantly plans escape routes just in case. Morgan has no money in this post-apocalyptic world, and she's just helped someone named Rodriguez with an infected wound in exchange for shelter."
 
 //response:
-<donotshow/>
 {
   "type": "PLAYER",
   "id": "e7a2c649-b1fd-4e82-9c5f-d8b736a4e0f8",
@@ -189,7 +187,6 @@ gameSetting:
 // Prompt: "merchant space station sci-fi"
 
 //response:
-<donotshow/>
 {
   "type": "PLAYER",
   "id": "9c4d7b12-306e-4ea9-8563-f2e4b0a19d8e",

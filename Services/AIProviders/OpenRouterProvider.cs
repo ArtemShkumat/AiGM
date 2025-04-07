@@ -58,19 +58,41 @@ namespace AiGMBackEnd.Services.AIProviders
             {
                 _loggingService.LogInfo($"Sending {prompt.PromptType} prompt to OpenRouter using new Prompt class");
 
-                var requestData = new
+                object requestPayload;
+                if (!string.IsNullOrEmpty(prompt.OutputStructureJsonSchema))
                 {
-                    model = _modelName,
-                    messages = new[]
+                    // If schema is provided, use structured output format
+                    _loggingService.LogInfo("Detected OutputStructureJsonSchema. Using structured output config.");
+                    requestPayload = new
                     {
-                        new { role = "system", content = prompt.SystemPrompt },
-                        new { role = "user", content = prompt.PromptContent }
-                    },
-                    max_tokens = _maxTokens,
-                    temperature = _temperature
-                };
+                        model = _modelName,
+                        messages = new[]
+                        {
+                            new { role = "system", content = prompt.SystemPrompt },
+                            new { role = "user", content = prompt.PromptContent }
+                        },
+                        max_tokens = _maxTokens,
+                        temperature = _temperature,
+                        response_format = new { type = "json_object", schema = JsonDocument.Parse(prompt.OutputStructureJsonSchema).RootElement } // Parse the schema string
+                    };
+                }
+                else
+                {
+                    // Otherwise, use the standard request format
+                    requestPayload = new
+                    {
+                        model = _modelName,
+                        messages = new[]
+                        {
+                            new { role = "system", content = prompt.SystemPrompt },
+                            new { role = "user", content = prompt.PromptContent }
+                        },
+                        max_tokens = _maxTokens,
+                        temperature = _temperature
+                    };
+                }
 
-                var json = JsonSerializer.Serialize(requestData);
+                var json = JsonSerializer.Serialize(requestPayload, new JsonSerializerOptions { WriteIndented = false }); // Avoid pretty printing for the actual request
                 var requestContent = new StringContent(
                     json,
                     Encoding.UTF8,
