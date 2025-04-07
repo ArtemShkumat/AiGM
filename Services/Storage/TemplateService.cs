@@ -33,22 +33,22 @@ namespace AiGMBackEnd.Services.Storage
         // Specific template accessor methods for different prompt types
         public async Task<string> GetDmTemplateAsync(string templateName)
         {
-            return await GetTemplateAsync($"DmPrompt/{templateName}.txt");
+            return await GetTemplateAsync($"DmPrompt/{templateName}");
         }
 
         public async Task<string> GetNpcTemplateAsync(string templateName)
         {
-            return await GetTemplateAsync($"NPCPrompt/{templateName}.txt");
+            return await GetTemplateAsync($"NPCPrompt/{templateName}");
         }
 
         public async Task<string> GetCreateQuestTemplateAsync(string templateName)
         {
-            return await GetTemplateAsync($"Create/Quest/{templateName}.txt");
+            return await GetTemplateAsync($"Create/Quest/{templateName}");
         }
 
         public async Task<string> GetCreateNpcTemplateAsync(string templateName)
         {
-            return await GetTemplateAsync($"Create/NPC/{templateName}.txt");
+            return await GetTemplateAsync($"Create/NPC/{templateName}");
         }
 
         public async Task<string> GetCreateLocationTemplateAsync(string templateName, string locationType = null)
@@ -56,12 +56,12 @@ namespace AiGMBackEnd.Services.Storage
             if (string.IsNullOrEmpty(locationType))
             {
                 // Default to general location template
-                return await GetTemplateAsync($"Create/Location/{templateName}.txt");
+                return await GetTemplateAsync($"Create/Location/{templateName}");
             }
             else
             {
                 // Use location type specific template
-                return await GetTemplateAsync($"Create/Location/{locationType}/{templateName}.txt");
+                return await GetTemplateAsync($"Create/Location/{locationType}/{templateName}");
             }
         }
 
@@ -72,7 +72,7 @@ namespace AiGMBackEnd.Services.Storage
 
         public async Task<string> GetSummarizeTemplateAsync(string templateName)
         {
-            return await GetTemplateAsync($"Summarize/{templateName}.txt");
+            return await GetTemplateAsync($"Summarize/{templateName}");
         }
     }
 } 

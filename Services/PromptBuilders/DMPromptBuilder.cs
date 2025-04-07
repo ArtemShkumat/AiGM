@@ -20,9 +20,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
             {
                 await _storageService.AddUserMessageAsync(request.UserId, request.UserInput);
                 // Load DM template files
-                var systemPrompt = await _storageService.GetDmTemplateAsync("System");
-                var outputStructure = await _storageService.GetDmTemplateAsync("OutputStructure");
-                var exampleResponses = await _storageService.GetDmTemplateAsync("ExampleResponses");
+                var systemPrompt = await _storageService.GetDmTemplateAsync("System.txt");
+                var outputStructure = await _storageService.GetDmTemplateAsync("OutputStructure.txt");
+                var exampleResponses = await _storageService.GetDmTemplateAsync("ExampleResponses.txt");
 
                 // Load player and world data
                 var player = await _storageService.GetPlayerAsync(request.UserId);

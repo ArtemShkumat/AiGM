@@ -18,9 +18,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
             try
             {
                 // Load create NPC template files
-                var systemPrompt = await _storageService.GetCreateNpcTemplateAsync("System");
-                var outputStructure = await _storageService.GetCreateNpcTemplateAsync("OutputStructure");
-                var exampleResponses = await _storageService.GetCreateNpcTemplateAsync("ExampleResponses");
+                var systemPrompt = await _storageService.GetCreateNpcTemplateAsync("System.txt");
+                var outputStructure = await _storageService.GetCreateNpcTemplateAsync("OutputStructure.json");
+                var exampleResponses = await _storageService.GetCreateNpcTemplateAsync("ExampleResponses.txt");
 
                 // Load world data for context
                 var world = await _storageService.GetWorldAsync(request.UserId);
@@ -34,8 +34,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
                 
-                // Add output structure and examples to system prompt
-                new TemplatePromptSection("Output Structure", outputStructure).AppendTo(systemPromptBuilder);
+                // Add examples to system prompt
                 new TemplatePromptSection("Example Responses", exampleResponses).AppendTo(systemPromptBuilder);
 
                 // Create the prompt content builder
@@ -73,7 +72,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
                     promptContent: promptContentBuilder.ToString(),
-                    promptType: PromptType.CreateNPC
+                    promptType: PromptType.CreateNPC,
+                    outputStructureJsonSchema: outputStructure
                 );
             }
             catch (Exception ex)
