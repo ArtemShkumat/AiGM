@@ -3,6 +3,7 @@ using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
 using System;
+using System.Threading.Tasks;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -18,9 +19,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
             try
             {
                 // Load create quest template files
-                var systemPrompt = await _storageService.GetCreateQuestTemplateAsync("System");
-                var outputStructure = await _storageService.GetCreateQuestTemplateAsync("OutputStructure");
-                var exampleResponses = await _storageService.GetCreateQuestTemplateAsync("ExampleResponses");
+                var systemPrompt = await _storageService.GetCreateQuestTemplateAsync("System.txt");
+                var outputStructure = await _storageService.GetCreateQuestTemplateAsync("OutputStructure.json");
+                var exampleResponses = await _storageService.GetCreateQuestTemplateAsync("ExampleResponses.txt");
 
                 // Load player and world data for context
                 var player = await _storageService.GetPlayerAsync(request.UserId);
@@ -49,7 +50,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 
                 promptContentBuilder.AppendLine();
 
-                // Add NPC creation details
+                // Add quest creation details
                 new CreateQuestSection(
                     request.QuestId,
                     request.QuestName,
@@ -59,7 +60,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
                     promptContent: promptContentBuilder.ToString(),
-                    promptType: PromptType.CreateQuest
+                    promptType: PromptType.CreateQuest,
+                    outputStructureJsonSchema: outputStructure
                 );
             }
             catch (Exception ex)
