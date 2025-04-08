@@ -35,14 +35,14 @@ Moving Around
 
 The user issues DM prompts: "I head to the marketplace" or "Explore the forest."
 The system receives the input, creates a request object, and queues it in a background job service.
-The job service orchestrates the process: a prompt builder gathers relevant location/NPC/player data, an AI service calls the LLM, and a response processor handles the narrative and any hidden JSON updates (like new items or NPC state changes), saving them to disk.
-The DM response describes the new scene and can optionally add new entities (e.g., "a mysterious peddler arrives"), which get saved in the JSON via specialized processors.
+The job service orchestrates the process: a prompt builder gathers relevant location/NPC/player data, an AI service calls the LLM (which returns a structured JSON response), and a response processor deserializes the JSON, extracts the narrative text (`userFacingText`), and applies any game state updates (`partialUpdates` or `newEntities`) contained within the JSON, saving them to disk.
+The DM response (the `userFacingText` field from the JSON) describes the new scene.
 Interacting with NPCs
 
 The user switches to an NPC prompt: "Talk to Elena the Blacksmith."
 The system loads npc_elenaBlacksmith.json, location data, and any logs (e.g., past interactions).
-The system queues the request. The background service uses an NPC-specific prompt builder to gather relevant data (NPC state, location, conversation history), calls the LLM via the AI service, and processes the response.
-The LLM responds in character, referencing only what Elena knows or believes. The response might include hidden JSON to update Elena's state or relationship with the player, handled by the response processor and saved to disk.
+The system queues the request. The background service uses an NPC-specific prompt builder to gather relevant data (NPC state, location, conversation history), calls the LLM via the AI service (which returns structured JSON), and processes the response.
+The LLM responds in character (via the `userFacingText` field). The response JSON might also include updates (`partialUpdates`) to Elena's state or relationship with the player, or new entities (`newEntities`) she introduces, handled by the response processor and saved to disk.
 Quest Generation
 
 If an NPC says, "I have a job for you," a behind-the-scenes quest creation step might occur (with user approval).
@@ -88,8 +88,9 @@ Conclusion
 This document captures the vision, flow, and key features of your LLM-driven RPG:
 
 Persistent, fair questlines
-Rich NPC interactions
+Rich NPC interactions using structured JSON for reliability
 DM vs. NPC prompts for flexible roleplay
 Single source of truth via JSON files
 Job queue for concurrency control
+Structured LLM responses for robust game state updates
 Players get a robust, evolving narrative that never "forgets" important details, bridging the gap between AI-driven creativity and consistent, long-term RPG play.
