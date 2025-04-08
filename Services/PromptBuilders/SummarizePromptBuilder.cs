@@ -36,9 +36,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
 
 
                 // Step 1: Get the templates
-                string systemPrompt = await _storageService.GetSummarizeTemplateAsync("System");
-                string outputStructure = await _storageService.GetSummarizeTemplateAsync("OutputStructure");
-                string exampleResponses = await _storageService.GetSummarizeTemplateAsync("ExampleResponses");
+                string systemPrompt = await _storageService.GetSummarizeTemplateAsync("System.txt");
+                //string outputStructure = await _storageService.GetSummarizeTemplateAsync("OutputStructure.txt");
+                string exampleResponses = await _storageService.GetSummarizeTemplateAsync("ExampleResponses.txt");
 
                 var systemPromptBuilder = new StringBuilder();
                 systemPromptBuilder.AppendLine(systemPrompt);
@@ -49,9 +49,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine();
 
                 // Add output structure and examples
-                systemPromptBuilder.AppendLine("# OUTPUT STRUCTURE:");
-                systemPromptBuilder.AppendLine(outputStructure);
-                systemPromptBuilder.AppendLine();
+                //systemPromptBuilder.AppendLine("# OUTPUT STRUCTURE:");
+                //systemPromptBuilder.AppendLine(outputStructure);
+                //systemPromptBuilder.AppendLine();
 
                 systemPromptBuilder.AppendLine("# EXAMPLE SUMMARIES:");
                 systemPromptBuilder.AppendLine(exampleResponses);

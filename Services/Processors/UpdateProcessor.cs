@@ -10,6 +10,11 @@ using System.Threading;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using AiGMBackEnd.Services.Storage;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+// Check which interface is being used
+using AiGMBackEnd.Services.Processors; // This will use IUpdateProcessor from Services/Processors
 
 namespace AiGMBackEnd.Services.Processors
 {
@@ -24,6 +29,7 @@ namespace AiGMBackEnd.Services.Processors
         private readonly IServiceProvider _serviceProvider;
         private readonly GameNotificationService _notificationService;
         private readonly IInventoryStorageService _inventoryStorageService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public UpdateProcessor(
             StorageService storageService,
@@ -45,75 +51,87 @@ namespace AiGMBackEnd.Services.Processors
             _npcProcessor = npcProcessor;
             _notificationService = notificationService;
             _inventoryStorageService = inventoryStorageService;
+
+            _jsonSerializerOptions = new JsonSerializerOptions
+            {
+                // Ignore null properties during serialization for the update patch
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                IgnoreReadOnlyProperties = false,
+                WriteIndented = true,
+                PropertyNameCaseInsensitive = true // Keep this for flexibility if needed, though less critical for serialization
+            };
         }
 
-        public async Task ProcessUpdatesAsync(JObject updates, string userId)
+        public async Task ProcessUpdatesAsync(List<ICreationHook> newEntities, Dictionary<string, IUpdatePayload> partialUpdates, string userId)
         {
             try
             {
-                _loggingService.LogInfo("Processing updates");
+                _loggingService.LogInfo("Processing updates with strongly-typed data");
                 
-                // Dictionary to track entity creation tasks
                 var entityCreationJobs = new Dictionary<string, string>();
                 
-                // Step 1: Process all new entities first
-                if (updates["newEntities"] is JArray newEntities && newEntities.Any())
+                // Step 1: Process new entities
+                if (newEntities != null && newEntities.Any())
                 {
                     entityCreationJobs = await ProcessNewEntitiesAsync(newEntities, userId);
                 }
                 
-                // Step 2: Process partial updates, waiting for dependencies if needed
-                if (updates["partialUpdates"] is JObject partialUpdates)
+                // Step 2: Process partial updates
+                if (partialUpdates != null && partialUpdates.Any())
                 {
                     await ProcessPartialUpdatesAsync(partialUpdates, userId, entityCreationJobs);
                 }
                 
-                _loggingService.LogInfo("Updates processing complete");
+                _loggingService.LogInfo("Strongly-typed updates processing complete");
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing updates: {ex.Message}");
+                _loggingService.LogError($"Error processing strongly-typed updates: {ex.Message}\\nStackTrace: {ex.StackTrace}");
                 throw;
             }
         }
 
-        private async Task<Dictionary<string, string>> ProcessNewEntitiesAsync(JArray newEntities, string userId)
+        private async Task<Dictionary<string, string>> ProcessNewEntitiesAsync(List<ICreationHook> newEntities, string userId)
         {
             var entityCreationJobs = new Dictionary<string, string>();
             
-            foreach (var entity in newEntities)
+            foreach (var entityHook in newEntities)
             {
-                string entityType = entity["type"]?.ToString()?.ToLower() ?? "";
-                string entityId = entity["id"]?.ToString() ?? "";
+                string entityType = entityHook.Type;
+                string entityId = entityHook.Id;
+                string entityName = entityHook.Name;
+                string entityContext = entityHook.Context;
                 
-                if (string.IsNullOrEmpty(entityId))
+                if (string.IsNullOrEmpty(entityId) || string.IsNullOrEmpty(entityType))
                 {
-                    _loggingService.LogWarning("Skipping entity with missing ID");
+                    _loggingService.LogWarning($"Skipping entity creation with missing ID ('{entityId}') or Type ('{entityType}')");
                     continue;
                 }
                 
-                if (await EntityExistsInWorldAsync(userId, entityType, entityId))
+                if (await EntityExistsInWorldAsync(userId, entityType.ToLower(), entityId))
                 {
                     _loggingService.LogInfo($"Skipping creation of {entityType} entity: {entityId} - already exists");
                     continue;
                 }
                 
-                await RegisterEntityInWorldAsync(userId, entity, entityType, entityId);
+                await RegisterEntityInWorldAsync(userId, entityHook, entityType.ToLower(), entityId, entityName);
                 
-                // Queue entity creation using Hangfire
-                string jobId = ScheduleEntityCreation(entity, entityType, userId);
-                entityCreationJobs.Add(entityId, jobId);
+                string jobId = ScheduleEntityCreation(entityHook, entityType, userId);
+                if (!string.IsNullOrEmpty(jobId))
+                {
+                    entityCreationJobs.Add(entityId, jobId);
+                }
             }
             
             return entityCreationJobs;
         }
 
-        private async Task<bool> EntityExistsInWorldAsync(string userId, string entityType, string entityId)
+        private async Task<bool> EntityExistsInWorldAsync(string userId, string entityTypeLower, string entityId)
         {
             var world = await _storageService.GetWorldAsync(userId);
             if (world == null) return false;
             
-            return entityType switch
+            return entityTypeLower switch
             {
                 "npc" => world.Npcs?.Any(n => n.Id == entityId) ?? false,
                 "location" => world.Locations?.Any(l => l.Id == entityId) ?? false,
@@ -122,75 +140,107 @@ namespace AiGMBackEnd.Services.Processors
             };
         }
 
-        private async Task RegisterEntityInWorldAsync(string userId, JToken entity, string entityType, string entityId)
+        private async Task RegisterEntityInWorldAsync(string userId, ICreationHook entityHook, string entityTypeLower, string entityId, string entityName)
         {
-            string entityDisplayName = entityType == "quest" 
-                ? entity["title"]?.ToString() ?? entity["name"]?.ToString() ?? "New Quest"
-                : entity["name"]?.ToString() ?? "New Entity";
-                
-            await _storageService.AddEntityToWorldAsync(userId, entityId, entityDisplayName, entityType);
+            string entityDisplayName = !string.IsNullOrEmpty(entityName) ? entityName : $"New {entityTypeLower}";
+            
+            await _storageService.AddEntityToWorldAsync(userId, entityId, entityDisplayName, entityTypeLower);
         }
 
-        // Schedule entity creation using Hangfire
-        private string ScheduleEntityCreation(JToken entity, string entityType, string userId)
+        private string ScheduleEntityCreation(ICreationHook entityHook, string entityTypeUpper, string userId)
         {
-            var context = entity["context"]?.ToString() ?? "";
-            var entityId = entity["id"]?.ToString() ?? "";
-            var currentLocation = entity["currentLocationId"]?.ToString() ?? "";
+            string entityId = entityHook.Id;
+            string entityName = entityHook.Name;
+            string context = entityHook.Context;
             
-            string jobId;
-            
-            // Create appropriate job based on entity type
-            switch (entityType)
+            if (string.IsNullOrEmpty(entityId) || string.IsNullOrEmpty(entityName) || string.IsNullOrEmpty(context))
             {
-                case "npc":
-                    var npcName = entity["name"]?.ToString() ?? "New NPC";
-                    jobId = BackgroundJob.Enqueue(() => 
-                        _serviceProvider.GetService<HangfireJobsService>().CreateNpcAsync(userId, entityId, npcName, context, currentLocation));
-                    _loggingService.LogInfo($"Scheduled NPC creation job for {entityId}, job ID: {jobId}");
-                    break;
-                
-                case "location":
-                    var locationName = entity["name"]?.ToString() ?? "New Location";
-                    var locationType = entity["locationType"]?.ToString() ?? "Building";
-                    jobId = BackgroundJob.Enqueue(() => 
-                        _serviceProvider.GetService<HangfireJobsService>().CreateLocationAsync(userId, entityId, locationName, locationType, context));
-                    _loggingService.LogInfo($"Scheduled location creation job for {entityId}, job ID: {jobId}");
-                    break;
-                
-                case "quest":
-                    var questName = entity["name"]?.ToString() ?? "New Quest";
-                    jobId = BackgroundJob.Enqueue(() => 
-                        _serviceProvider.GetService<HangfireJobsService>().CreateQuestAsync(userId, entityId, questName, context));
-                    _loggingService.LogInfo($"Scheduled quest creation job for {entityId}, job ID: {jobId}");
-                    break;
-                
-                default:
-                    _loggingService.LogWarning($"Unknown entity type: {entityType}");
-                    return string.Empty;
+                 _loggingService.LogWarning($"Skipping scheduling for {entityTypeUpper} due to missing id/name/context.");
+                 return string.Empty;
             }
-            
-            // Register this entity creation with status tracking service
-            _statusTrackingService.RegisterEntityCreationAsync(userId, entityId, entityType);
-            
-            return jobId;
+
+            string jobId;
+            string entityTypeLower = entityTypeUpper.ToLower();
+
+            try
+            {
+                switch (entityTypeUpper)
+                {
+                    case "NPC":
+                        if (entityHook is NpcCreationHook npcHook)
+                        {
+                            jobId = BackgroundJob.Enqueue(() =>
+                                _serviceProvider.GetService<HangfireJobsService>().CreateNpcAsync(userId, npcHook.Id, npcHook.Name, npcHook.Context, npcHook.CurrentLocationId));
+                            _loggingService.LogInfo($"Scheduled NPC creation job for {npcHook.Id}, job ID: {jobId}");
+                        }
+                        else { throw new InvalidCastException("Mismatched hook type for NPC"); }
+                        break;
+
+                    case "LOCATION":
+                        if (entityHook is LocationCreationHook locHook)
+                        {
+                            jobId = BackgroundJob.Enqueue(() =>
+                                _serviceProvider.GetService<HangfireJobsService>().CreateLocationAsync(userId, locHook.Id, locHook.Name, locHook.LocationType, locHook.Context));
+                            _loggingService.LogInfo($"Scheduled location creation job for {locHook.Id}, job ID: {jobId}");
+                        }
+                         else { throw new InvalidCastException("Mismatched hook type for LOCATION"); }
+                        break;
+
+                    case "QUEST":
+                         if (entityHook is QuestCreationHook questHook)
+                        {
+                            jobId = BackgroundJob.Enqueue(() =>
+                                _serviceProvider.GetService<HangfireJobsService>().CreateQuestAsync(userId, questHook.Id, questHook.Name, questHook.Context));
+                            _loggingService.LogInfo($"Scheduled quest creation job for {questHook.Id}, job ID: {jobId}");
+                        }
+                         else { throw new InvalidCastException("Mismatched hook type for QUEST"); }
+                        break;
+
+                    default:
+                        _loggingService.LogWarning($"Unknown entity type for scheduling: {entityTypeUpper}");
+                        return string.Empty;
+                }
+
+                _statusTrackingService.RegisterEntityCreationAsync(userId, entityId, entityTypeLower);
+
+                return jobId;
+            }
+            catch (InvalidCastException castEx)
+            {
+                _loggingService.LogError($"Error scheduling entity creation for {entityId}: Hook type mismatch. {castEx.Message}");
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                 _loggingService.LogError($"Error scheduling entity creation job for {entityTypeUpper} {entityId}: {ex.Message}");
+                 return string.Empty;
+            }
         }
 
-        private async Task ProcessPartialUpdatesAsync(JObject partialUpdates, string userId, Dictionary<string, string> entityCreationJobs)
+        private async Task ProcessPartialUpdatesAsync(Dictionary<string, IUpdatePayload> partialUpdates, string userId, Dictionary<string, string> entityCreationJobs)
         {
-            foreach (var property in partialUpdates.Properties())
+            foreach (var kvp in partialUpdates)
             {
-                var entityId = property.Name;
-                if (!(property.Value is JObject updateData))
+                var entityId = kvp.Key;
+                var updateData = kvp.Value;
+                
+                if (updateData == null)
                 {
                     _loggingService.LogWarning($"Invalid update data for entity {entityId}");
                     continue;
                 }
                 
                 // Handle player special case
-                if (entityId.ToLower() == "player")
+                if (updateData.Type.ToLower() == "player")
                 {
-                    await ProcessPlayerUpdateAsync(userId, updateData);
+                    if (updateData is PlayerUpdatePayload playerUpdate)
+                    {
+                        await ProcessPlayerUpdateAsync(userId, playerUpdate);
+                    }
+                    else
+                    {
+                        _loggingService.LogWarning($"Received non-PlayerUpdatePayload for player entity: {updateData.GetType().Name}");
+                    }
                     continue;
                 }
                 
@@ -198,64 +248,63 @@ namespace AiGMBackEnd.Services.Processors
             }
         }
 
-        private async Task ProcessPlayerUpdateAsync(string userId, JObject updateData)
+        private async Task ProcessPlayerUpdateAsync(string userId, PlayerUpdatePayload updateData)
         {
             _loggingService.LogInfo("Processing player update");
             
-            // Check if the player is changing locations
+            // Check if there's a location change
             bool locationChanged = await CheckAndHandleLocationChangeAsync(userId, updateData);
             
             // Check if inventory is being updated
-            bool inventoryChanged = updateData["inventory"] != null;
-            bool currencyChanged = updateData["currencies"] != null;
+            bool inventoryChanged = updateData.Inventory != null && updateData.Inventory.Any();
+            bool currencyChanged = updateData.Currencies != null && updateData.Currencies.Any();
             
             // Handle inventory updates if present
             if (inventoryChanged)
             {
-                await ProcessPlayerInventoryUpdatesAsync(userId, updateData["inventory"] as JArray);
-                updateData.Remove("inventory"); // Remove inventory updates as they're handled separately
+                await ProcessPlayerInventoryUpdatesAsync(userId, updateData.Inventory);
             }
             
             // Handle currency updates if present
             if (currencyChanged)
             {
-                await ProcessPlayerCurrencyUpdatesAsync(userId, updateData["currencies"] as JArray);
-                updateData.Remove("currencies"); // Remove currency updates as they're handled separately
+                await ProcessPlayerCurrencyUpdatesAsync(userId, updateData.Currencies);
             }
             
-            // Apply the remaining updates
-            if (updateData.HasValues)
+            // Convert the update data to JSON for storage update
+            // Only send fields that are actually set (null fields are excluded)
+            string updateJson = System.Text.Json.JsonSerializer.Serialize(updateData, _jsonSerializerOptions);
+            
+            // Only apply the update if there's something to update
+            if (!string.IsNullOrEmpty(updateJson) && updateJson != "{}")
             {
-                await UpdateEntityAsync(userId, "", "player", updateData.ToString());
-                _loggingService.LogInfo("Applied partial update to player");
+                await UpdateEntityAsync(userId, "", "player", updateJson);
             }
             
-            // If inventory was updated, send a notification
+            // Send notification if inventory or currency changed
             if (inventoryChanged || currencyChanged)
             {
                 await NotifyInventoryChangedAsync(userId);
             }
         }
 
-        private async Task<bool> CheckAndHandleLocationChangeAsync(string userId, JObject updateData)
+        private async Task<bool> CheckAndHandleLocationChangeAsync(string userId, PlayerUpdatePayload updateData)
         {
             var previousPlayer = await _storageService.GetPlayerAsync(userId);
-            string previousLocationId = previousPlayer?.CurrentLocationId;
+            if (previousPlayer == null) return false; // Cannot check location if player doesn't exist
             
-            // Check if there's a currentLocationId in the update data
-            string newLocationId = null;
-            var currentLocationProperty = updateData["currentLocationId"];
-            if (currentLocationProperty != null && currentLocationProperty.ToString() != previousLocationId)
-            {
-                newLocationId = currentLocationProperty.ToString();
-            }
+            string previousLocationId = previousPlayer.CurrentLocationId;
+            string newLocationId = updateData.CurrentLocationId;
             
-            // If the player had a previous location and is now moving to a different one,
-            // we should summarize the conversation from the previous location
-            if (!string.IsNullOrEmpty(previousLocationId) && !string.IsNullOrEmpty(newLocationId) && previousLocationId != newLocationId)
+            if (!string.IsNullOrEmpty(newLocationId) && newLocationId != previousLocationId)
             {
-                _loggingService.LogInfo($"Player leaving location {previousLocationId}. Triggering conversation summarization.");
+                _loggingService.LogInfo($"Player location change detected: {previousLocationId} -> {newLocationId}");
+                
+                // When the player leaves a location, trigger conversation summarization
                 await _serviceProvider.GetService<HangfireJobsService>().SummarizeConversationAsync(userId);
+                _loggingService.LogInfo($"Triggered conversation summarization for user {userId} after location change");
+                
+                
                 return true;
             }
             
@@ -275,19 +324,25 @@ namespace AiGMBackEnd.Services.Processors
             }
         }
 
-        private async Task ProcessEntityUpdateAsync(string userId, string entityId, JObject updateData, Dictionary<string, string> entityCreationJobs)
+        private async Task ProcessEntityUpdateAsync(string userId, string entityId, IUpdatePayload updateData, Dictionary<string, string> entityCreationJobs)
         {
             // Get the entity type from the update data
-            var entityType = updateData["type"]?.ToString();
+            string entityType = updateData.Type?.ToLower();
             if (string.IsNullOrEmpty(entityType))
             {
                 _loggingService.LogWarning($"Entity type missing for {entityId}");
                 return;
             }
             
-            // Remove ID and Type from update data to preserve them
-            updateData.Remove("id");
-            updateData.Remove("type");
+            // Enhanced logging
+            _loggingService.LogInfo($"Processing entity update for {entityId} of type {entityType}");
+            
+            // Detailed property logging for NPCs
+            if (entityType == "npc" && updateData is NpcUpdatePayload npcUpdate)
+            {
+                _loggingService.LogInfo($"NPC update details - VisibleToPlayer: '{npcUpdate.VisibleToPlayer}' (type: {npcUpdate.VisibleToPlayer?.GetType().Name ?? "null"})");
+                _loggingService.LogInfo($"NPC update details - KnownToPlayer: '{npcUpdate.KnownToPlayer}' (type: {npcUpdate.KnownToPlayer?.GetType().Name ?? "null"})");
+            }
             
             // Wait for entity creation if needed
             if (entityCreationJobs.ContainsKey(entityId) && !await WaitForEntityCreationAsync(userId, entityId, entityType))
@@ -303,8 +358,62 @@ namespace AiGMBackEnd.Services.Processors
                 return;
             }
             
+            // Serialize the update data to JSON for storage
+            // Explicitly use the concrete type for serialization
+            string updateJson = "{}";
+            try
+            {
+                // Serialize based on the actual runtime type
+                if (updateData is NpcUpdatePayload npcPayload)
+                {
+                    updateJson = System.Text.Json.JsonSerializer.Serialize(npcPayload, _jsonSerializerOptions);
+                }
+                else if (updateData is LocationUpdatePayload locPayload)
+                {
+                    updateJson = System.Text.Json.JsonSerializer.Serialize(locPayload, _jsonSerializerOptions);
+                }
+                else if (updateData is PlayerUpdatePayload playerPayload)
+                {
+                    // Player updates are handled separately, but include for completeness
+                    updateJson = System.Text.Json.JsonSerializer.Serialize(playerPayload, _jsonSerializerOptions);
+                }
+                 else if (updateData is WorldUpdatePayload worldPayload)
+                {
+                    updateJson = System.Text.Json.JsonSerializer.Serialize(worldPayload, _jsonSerializerOptions);
+                }
+                else
+                {
+                    // Fallback for any other IUpdatePayload types (if added later)
+                     _loggingService.LogWarning($"Attempting to serialize unknown IUpdatePayload type: {updateData.GetType().Name}");
+                    updateJson = System.Text.Json.JsonSerializer.Serialize(updateData, _jsonSerializerOptions);
+                }
+            }
+            catch(Exception ex)
+            {
+                _loggingService.LogError($"Error during update JSON serialization for {entityId}: {ex.Message}");
+                updateJson = "{}"; // Prevent applying faulty JSON
+            }
+            
+            // Enhanced logging of the update JSON for debugging
+            _loggingService.LogInfo($"Update JSON for {entityId}: {updateJson}");
+            
             // Apply the update
-            await UpdateEntityAsync(userId, collection, entityId, updateData.ToString());
+            if (!string.IsNullOrEmpty(updateJson) && updateJson != "{}")
+            {
+                await UpdateEntityAsync(userId, collection, entityId, updateJson);
+                
+                // Enhanced verification logging
+                try {
+                    if (entityType == "npc")
+                    {
+                        var npc = await _storageService.LoadAsync<dynamic>(userId, $"{collection}/{entityId}");
+                        _loggingService.LogInfo($"Verified NPC {entityId} after update - visibleToPlayer: {npc?.visibleToPlayer}");
+                    }
+                }
+                catch (Exception ex) {
+                    _loggingService.LogWarning($"Could not verify entity update: {ex.Message}");
+                }
+            }
         }
 
         private async Task<bool> WaitForEntityCreationAsync(string userId, string entityId, string entityType)
@@ -370,36 +479,21 @@ namespace AiGMBackEnd.Services.Processors
             }
         }
 
-        private async Task ProcessPlayerInventoryUpdatesAsync(string userId, JArray inventoryUpdates)
+        private async Task ProcessPlayerInventoryUpdatesAsync(string userId, List<InventoryUpdateItem> inventoryUpdates)
         {
             if (inventoryUpdates == null || !inventoryUpdates.Any())
             {
-                _loggingService.LogInfo("No inventory updates to process");
                 return;
             }
             
             _loggingService.LogInfo($"Processing {inventoryUpdates.Count} inventory updates");
             
-            foreach (JObject itemUpdate in inventoryUpdates)
+            foreach (var itemUpdate in inventoryUpdates)
             {
-                string itemName = itemUpdate["name"]?.ToString();
-                string itemDescription = itemUpdate["description"]?.ToString();
-                string action = itemUpdate["action"]?.ToString()?.ToLower();
-                
-                // Parse quantity (could be string or int in JSON)
-                int quantity = 1;
-                var quantityToken = itemUpdate["quantity"];
-                if (quantityToken != null)
-                {
-                    if (quantityToken.Type == JTokenType.String)
-                    {
-                        int.TryParse(quantityToken.ToString(), out quantity);
-                    }
-                    else if (quantityToken.Type == JTokenType.Integer)
-                    {
-                        quantity = quantityToken.Value<int>();
-                    }
-                }
+                string itemName = itemUpdate.Name;
+                string itemDescription = itemUpdate.Description;
+                UpdateAction action = itemUpdate.Action;
+                int quantity = itemUpdate.Quantity;
                 
                 if (string.IsNullOrEmpty(itemName))
                 {
@@ -407,8 +501,9 @@ namespace AiGMBackEnd.Services.Processors
                     continue;
                 }
                 
-                if (action == "add")
+                if (action == UpdateAction.Add)
                 {
+                    // Convert to an InventoryItem for storage
                     var item = new InventoryItem
                     {
                         Name = itemName,
@@ -417,33 +512,34 @@ namespace AiGMBackEnd.Services.Processors
                     };
                     
                     await _inventoryStorageService.AddItemToPlayerInventoryAsync(userId, item);
+                    _loggingService.LogInfo($"Added {quantity}x {itemName} to player inventory");
                 }
-                else if (action == "remove")
+                else if (action == UpdateAction.Remove)
                 {
                     await _inventoryStorageService.RemoveItemFromPlayerInventoryAsync(userId, itemName, quantity);
+                    _loggingService.LogInfo($"Removed {quantity}x {itemName} from player inventory");
                 }
                 else
                 {
-                    _loggingService.LogWarning($"Unknown inventory action: {action}");
+                    _loggingService.LogWarning($"Unknown inventory action: {action} for item {itemName}");
                 }
             }
         }
-        
-        private async Task ProcessPlayerCurrencyUpdatesAsync(string userId, JArray currencyUpdates)
+
+        private async Task ProcessPlayerCurrencyUpdatesAsync(string userId, List<CurrencyUpdateItem> currencyUpdates)
         {
             if (currencyUpdates == null || !currencyUpdates.Any())
             {
-                _loggingService.LogInfo("No currency updates to process");
                 return;
             }
             
             _loggingService.LogInfo($"Processing {currencyUpdates.Count} currency updates");
             
-            foreach (JObject currencyUpdate in currencyUpdates)
+            foreach (var currencyUpdate in currencyUpdates)
             {
-                string currencyName = currencyUpdate["name"]?.ToString();
-                string action = currencyUpdate["action"]?.ToString()?.ToLower();
-                int amount = currencyUpdate["amount"]?.Value<int>() ?? 0;
+                string currencyName = currencyUpdate.Name;
+                UpdateAction action = currencyUpdate.Action;
+                int amount = currencyUpdate.Amount;
                 
                 if (string.IsNullOrEmpty(currencyName))
                 {
@@ -451,23 +547,19 @@ namespace AiGMBackEnd.Services.Processors
                     continue;
                 }
                 
-                if (amount <= 0)
-                {
-                    _loggingService.LogWarning($"Skipping currency update with invalid amount: {amount}");
-                    continue;
-                }
-                
-                if (action == "add")
+                if (action == UpdateAction.Add)
                 {
                     await _inventoryStorageService.AddCurrencyAmountAsync(userId, currencyName, amount);
+                    _loggingService.LogInfo($"Added {amount} {currencyName} to player");
                 }
-                else if (action == "remove")
+                else if (action == UpdateAction.Remove)
                 {
                     await _inventoryStorageService.RemoveCurrencyAmountAsync(userId, currencyName, amount);
+                    _loggingService.LogInfo($"Removed {amount} {currencyName} from player");
                 }
                 else
                 {
-                    _loggingService.LogWarning($"Unknown currency action: {action}");
+                    _loggingService.LogWarning($"Unknown currency action: {action} for currency {currencyName}");
                 }
             }
         }

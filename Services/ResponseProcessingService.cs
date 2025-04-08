@@ -5,6 +5,9 @@ using AiGMBackEnd.Models;
 using AiGMBackEnd.Services.Processors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using AiGMBackEnd.Models;
 
 namespace AiGMBackEnd.Services
 {
@@ -19,6 +22,7 @@ namespace AiGMBackEnd.Services
         private readonly IPlayerProcessor _playerProcessor;
         private readonly IUpdateProcessor _updateProcessor;
         private readonly ISummarizePromptProcessor _summarizePromptProcessor;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public ResponseProcessingService(
             StorageService storageService,
@@ -40,6 +44,17 @@ namespace AiGMBackEnd.Services
             _npcProcessor = npcProcessor;
             _playerProcessor = playerProcessor;
             _summarizePromptProcessor = summarizePromptProcessor;
+
+            _jsonSerializerOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            // Register custom converters
+            _jsonSerializerOptions.Converters.Add(new CreationHookConverter());
+            _jsonSerializerOptions.Converters.Add(new UpdatePayloadConverter());
+            _jsonSerializerOptions.Converters.Add(new UpdatePayloadDictionaryConverter());
+            _jsonSerializerOptions.Converters.Add(new CreationHookListConverter());
+            _jsonSerializerOptions.Converters.Add(new LlmSafeIntConverter());
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)
@@ -47,28 +62,52 @@ namespace AiGMBackEnd.Services
             try
             {
                 _loggingService.LogInfo($"Processing {promptType} response for user {userId}");
-                
-                // Extract hidden JSON and user-facing text
-                var (userFacingText, hiddenJson) = ExtractHiddenJson(llmResponse);
 
-                // Process any state updates or entity creation based on the hidden JSON
-                if (!string.IsNullOrEmpty(hiddenJson))
+                DmResponse dmResponse = null;
+                try
                 {
-                    await ProcessHiddenJsonAsync(hiddenJson, promptType, userId);
+                    if (string.IsNullOrWhiteSpace(llmResponse))
+                    {
+                        _loggingService.LogWarning($"Received empty or null LLM response for user {userId}.");
+                        return new ProcessedResult { UserFacingText = "Received an empty response.", Success = false, ErrorMessage = "Empty LLM response." };
+                    }
+                    llmResponse = llmResponse.Trim();
+                    dmResponse = System.Text.Json.JsonSerializer.Deserialize<DmResponse>(llmResponse, _jsonSerializerOptions);
+                }
+                catch (System.Text.Json.JsonException jsonEx)
+                {
+                    _loggingService.LogError($"Failed to deserialize DmResponse JSON for user {userId}: {jsonEx.Message}. Raw response: {llmResponse}");
+                    return new ProcessedResult { UserFacingText = "Error processing game state update (Invalid Format).", Success = false, ErrorMessage = $"JSON Deserialization Error: {jsonEx.Message}" };
+                }
+                catch (Exception ex)
+                {
+                    _loggingService.LogError($"Unexpected error during DmResponse deserialization for user {userId}: {ex.Message}. Raw response: {llmResponse}");
+                    return new ProcessedResult { UserFacingText = "Error processing game state update (Internal Error).", Success = false, ErrorMessage = $"Deserialization Error: {ex.Message}" };
+                }
+
+                if (dmResponse == null)
+                {
+                    _loggingService.LogError($"DmResponse deserialization resulted in null for user {userId}. Raw response: {llmResponse}");
+                    return new ProcessedResult { UserFacingText = "Error processing game state update (Null Response).", Success = false, ErrorMessage = "Deserialized DmResponse was null." };
+                }
+
+                if (dmResponse.NewEntities != null || dmResponse.PartialUpdates != null)
+                {
+                    await _updateProcessor.ProcessUpdatesAsync(dmResponse.NewEntities, dmResponse.PartialUpdates, userId);
                 }
                 else
                 {
-                    _loggingService.LogInfo($"No hiddenJson in response for user {userId}");
+                    _loggingService.LogInfo($"No new entities or partial updates in DmResponse for user {userId}");
                 }
 
-                // Add DM's message to conversation log for DM and NPC responses
+                string userFacingText = dmResponse.UserFacingText ?? string.Empty;
                 if (promptType == PromptType.DM)
                 {
-                    await _storageService.AddDmMessageAsync(userId, userFacingText + " " + hiddenJson);
+                    await _storageService.AddDmMessageAsync(userId, userFacingText);
                 }
-                else if (promptType == PromptType.NPC)
+                else if (promptType == PromptType.NPC && npcId != null)
                 {
-                    await _storageService.AddDmMessageToNpcLogAsync(userId, npcId, userFacingText + " " + hiddenJson);
+                    await _storageService.AddDmMessageToNpcLogAsync(userId, npcId, userFacingText);
                 }
 
                 return new ProcessedResult
@@ -80,10 +119,10 @@ namespace AiGMBackEnd.Services
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing response: {ex.Message}");
+                _loggingService.LogError($"Error processing response in HandleResponseAsync for user {userId}: {ex.Message}\nStackTrace: {ex.StackTrace}");
                 return new ProcessedResult
                 {
-                    UserFacingText = "Something went wrong when processing the response.",
+                    UserFacingText = "An unexpected error occurred while processing the game's response.",
                     Success = false,
                     ErrorMessage = ex.Message
                 };
@@ -96,26 +135,18 @@ namespace AiGMBackEnd.Services
             {
                 _loggingService.LogInfo($"Processing create {promptType} response for user {userId}");
                 
-                // Clean up JSON response
                 string jsonContent = CleanJsonResponse(llmResponse);
 
-                // Validate JSON
                 try
                 {
-                    JToken.Parse(jsonContent);
+                    using var jsonDoc = System.Text.Json.JsonDocument.Parse(jsonContent);
                 }
-                catch (JsonException ex)
+                catch (System.Text.Json.JsonException ex)
                 {
-                    _loggingService.LogError($"Invalid JSON in create response: {ex.Message}");
-                    return new ProcessedResult
-                    {
-                        UserFacingText = string.Empty,
-                        Success = false,
-                        ErrorMessage = $"Invalid JSON: {ex.Message}"
-                    };
+                    _loggingService.LogError($"Invalid JSON in create response: {ex.Message}. Raw cleaned content: {jsonContent}");
+                    return new ProcessedResult { UserFacingText = string.Empty, Success = false, ErrorMessage = $"Invalid JSON: {ex.Message}" };
                 }
 
-                // Process the JSON for entity creation
                 await ProcessHiddenJsonAsync(jsonContent, promptType, userId);
 
                 return new ProcessedResult
@@ -127,78 +158,42 @@ namespace AiGMBackEnd.Services
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing create response: {ex.Message}");
-                return new ProcessedResult
-                {
-                    UserFacingText = string.Empty,
-                    Success = false,
-                    ErrorMessage = ex.Message
-                };
+                _loggingService.LogError($"Error processing create response for {promptType}, user {userId}: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                return new ProcessedResult { UserFacingText = string.Empty, Success = false, ErrorMessage = $"Creation Error: {ex.Message}" };
             }
         }
 
         private string CleanJsonResponse(string jsonResponse)
         {
-            // Remove any markdown code block formatting
-            jsonResponse = Regex.Replace(jsonResponse, @"^```json\s*|\s*```$", string.Empty, RegexOptions.Multiline).Trim();
-            
-            // Find the start of the actual JSON content
-            int jsonStartIndex = jsonResponse.IndexOf('{');
-            if (jsonStartIndex == -1)
-                jsonStartIndex = jsonResponse.IndexOf('[');
-
-            if (jsonStartIndex >= 0)
-            {
-                string extractedJson = jsonResponse.Substring(jsonStartIndex).Trim();
-                return FixJsonEscaping(extractedJson);
-            }
-            
-            return FixJsonEscaping(jsonResponse.Trim());
-        }
-
-        /// <summary>
-        /// Fixes common JSON escaping issues, particularly problematic backslashes
-        /// </summary>
-        private string FixJsonEscaping(string json)
-        {
-            if (string.IsNullOrEmpty(json))
-                return json;
-
-            // Fix improperly escaped backslashes in string content
-            // This regex looks for a backslash that isn't followed by a valid escape character
-            json = Regex.Replace(json, @"\\(?![\""/\\bfnrtu])", @"\\");
-
-            // Fix common escaped quotes problems like \"Text\" -> "Text"
-            json = Regex.Replace(json, @"\\""([^""\\]*?)\\""", "\"$1\"");
-
-            return json;
+            if (string.IsNullOrWhiteSpace(jsonResponse)) return string.Empty;
+            var cleaned = Regex.Replace(jsonResponse, @"^```(json)?|```$", "", RegexOptions.Multiline).Trim();
+            return cleaned;
         }
 
         private async Task ProcessHiddenJsonAsync(string jsonContent, PromptType promptType, string userId)
         {
             try
             {
-                // Deserialize JSON content
+                if (promptType == PromptType.DM || promptType == PromptType.NPC)
+                {
+                    _loggingService.LogError($"ProcessHiddenJsonAsync incorrectly called for {promptType}. Should be handled by HandleResponseAsync directly.");
+                    throw new InvalidOperationException($"ProcessHiddenJsonAsync should not be called for {promptType} after refactoring.");
+                }
+
                 JObject jsonObject;
                 try
                 {
                     jsonObject = JObject.Parse(jsonContent);
                 }
-                catch (JsonException)
+                catch (Newtonsoft.Json.JsonException ex)
                 {
-                    // Try to fix common JSON issues like extra newlines
+                    _loggingService.LogError($"Failed to parse JSON in ProcessHiddenJsonAsync (Newtonsoft): {ex.Message}. Content: {jsonContent}");
                     jsonContent = jsonContent.Trim();
                     jsonObject = JObject.Parse(jsonContent);
                 }
 
                 switch (promptType)
                 {
-                    case PromptType.DM:
-                        await _updateProcessor.ProcessUpdatesAsync(jsonObject, userId);
-                        break;
-                    case PromptType.NPC:
-                        await _updateProcessor.ProcessUpdatesAsync(jsonObject, userId);
-                        break;
                     case PromptType.CreateQuest:
                         await _questProcessor.ProcessAsync(jsonObject, userId);
                         break;
@@ -211,70 +206,16 @@ namespace AiGMBackEnd.Services
                     case PromptType.CreatePlayer:
                         await _playerProcessor.ProcessAsync(jsonObject, userId);
                         break;
+                    default:
+                        _loggingService.LogWarning($"Unhandled PromptType in ProcessHiddenJsonAsync: {promptType}");
+                        break;
                 }
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing hidden JSON: {ex.Message}");
+                _loggingService.LogError($"Error processing hidden JSON for {promptType}: {ex.Message}\nStackTrace: {ex.StackTrace}");
                 throw;
             }
-        }
-
-        private (string userFacingText, string hiddenJson) ExtractHiddenJson(string llmResponse)
-        {
-            // Pattern to extract content between <donotshow/> tags
-            llmResponse = Regex.Replace(llmResponse, @"^```json\s*|\s*```$", string.Empty, RegexOptions.Multiline).Trim();
-            var regex = new Regex(@"^(.*?)<donotshow/>(.*)$", RegexOptions.Singleline);
-            var match = regex.Match(llmResponse);
-
-            if (match.Success)
-            {
-                var userFacingText = match.Groups[1].Value.Trim();
-                var jsonContent = match.Groups[2].Value.Trim();
-
-                int jsonStartIndex = jsonContent.IndexOf('{');
-                if (jsonStartIndex == -1)
-                    jsonStartIndex = jsonContent.IndexOf('[');
-
-                if (jsonStartIndex >= 0)
-                {
-                    var jsonCandidate = jsonContent.Substring(jsonStartIndex).Trim();
-                    // Apply JSON escape sequence fixes
-                    jsonCandidate = FixJsonEscaping(jsonCandidate);
-
-                    // Try to find the end of the JSON
-                    try
-                    {
-                        // Validate that this is valid JSON
-                        JToken.Parse(jsonCandidate);
-                        return (userFacingText, jsonCandidate);
-                    }
-                    catch (JsonException ex)
-                    {
-                        _loggingService.LogWarning($"Invalid JSON found in hidden content: {ex.Message}");
-                        
-                        // Try more aggressive fixing for specific known issues
-                        try
-                        {
-                            // Fix backslashes in quoted text like \The Weary Wanderer Inn\
-                            string fixedJson = Regex.Replace(jsonCandidate, @"\\([A-Za-z0-9 ]+)\\", "\"$1\"");
-                            JToken.Parse(fixedJson);
-                            _loggingService.LogInfo("Fixed JSON with additional rules");
-                            return (userFacingText, fixedJson);
-                        }
-                        catch
-                        {
-                            // Return what we have anyway and let the processor handle it
-                            return (userFacingText, jsonCandidate);
-                        }
-                    }
-                }
-
-                return (userFacingText, jsonContent);
-            }
-
-            // No hidden content found
-            return (llmResponse, string.Empty);
         }
 
         /// <summary>
@@ -297,10 +238,8 @@ namespace AiGMBackEnd.Services
                     };
                 }
                 
-                // Clean the response if needed (e.g. remove markdown formatting)
                 string summary = CleanJsonResponse(llmResponse).Trim();
                 
-                // Process the summary using the summarize processor
                 await _summarizePromptProcessor.ProcessSummaryAsync(summary, userId);
                 
                 return new ProcessedResult

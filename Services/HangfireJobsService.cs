@@ -216,11 +216,20 @@ namespace AiGMBackEnd.Services
                 var llmResponse = await _aiService.GetCompletionAsync(prompt);
                 _loggingService.LogInfo($"LLM response received, length: {llmResponse?.Length ?? 0} (Job ID: {jobId})");
                 
+                // Additional logging for DM/NPC responses to debug potential issues
+                if (request.PromptType == PromptType.DM || request.PromptType == PromptType.NPC)
+                {
+                    _loggingService.LogInfo($"Raw LLM response for {request.PromptType}: {llmResponse}");
+                }
+                
                 // 3. Process the response
                 ProcessedResult processedResult;
                 if (request.PromptType == PromptType.DM || request.PromptType == PromptType.NPC)
                 {
                     _loggingService.LogInfo($"Processing {request.PromptType} response (Job ID: {jobId})");
+                    
+                    // The response is now expected to be a complete JSON object that conforms to the DmResponse schema
+                    // HandleResponseAsync will deserialize this JSON directly into a DmResponse object
                     processedResult = await _responseProcessingService.HandleResponseAsync(llmResponse, request.PromptType, request.UserId, request.NpcId);
                 }
                 else

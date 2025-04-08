@@ -21,7 +21,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 await _storageService.AddUserMessageAsync(request.UserId, request.UserInput);
                 // Load DM template files
                 var systemPrompt = await _storageService.GetDmTemplateAsync("System.txt");
-                var outputStructure = await _storageService.GetDmTemplateAsync("OutputStructure.txt");
+                var outputStructure = await _storageService.GetDmTemplateAsync("OutputStructure.json");
                 var exampleResponses = await _storageService.GetDmTemplateAsync("ExampleResponses.txt");
 
                 // Load player and world data
@@ -64,8 +64,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
 
-                // Add output structure
-                PromptSection.AppendSection(systemPromptBuilder, "Detailed information on fields that can be used for partial updates", outputStructure);
+                // Add output structure info to system prompt - REMOVED as schema is passed directly
+                // PromptSection.AppendSection(systemPromptBuilder, "Detailed information on fields that can be used for partial updates", outputStructure);
 
                 // Add example responses
                 systemPromptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");
@@ -118,7 +118,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
                     promptContent: promptContentBuilder.ToString(),
-                    promptType: PromptType.DM
+                    promptType: PromptType.DM,
+                    outputStructureJsonSchema: outputStructure
                 );
             }
             catch (Exception ex)

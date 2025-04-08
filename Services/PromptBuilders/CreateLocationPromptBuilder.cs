@@ -3,6 +3,8 @@ using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
 using System;
+using System.Threading.Tasks;
+using System.IO; // For Path.Combine
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -15,66 +17,69 @@ namespace AiGMBackEnd.Services.PromptBuilders
 
         public override async Task<Prompt> BuildPromptAsync(PromptRequest request)
         {
+            if (string.IsNullOrEmpty(request.LocationType))
+            {
+                throw new ArgumentException("LocationType must be specified in the PromptRequest for location creation.");
+            }
+
+            // Determine the subdirectory based on LocationType
+            string locationTypeSubDir = request.LocationType; // Assuming LocationType matches directory names (Building, Delve, etc.)
+            string templateBasePath = $"Create/Location/{locationTypeSubDir}/"; // Path relative to the root template dir
+
             try
             {
-                _loggingService.LogInfo($"Building location prompt for type: {request.LocationType ?? "Building"}");
-                
-                // Load create location template files
-                var systemPrompt = await _storageService.GetCreateLocationTemplateAsync("System", request.LocationType);
-                var outputStructure = await _storageService.GetCreateLocationTemplateAsync("OutputStructure", request.LocationType);
-                var exampleResponses = await _storageService.GetCreateLocationTemplateAsync("ExampleResponses", request.LocationType);
+                // Load create location template files from the specific type's directory
+                var systemPrompt = await _storageService.GetTemplateAsync(templateBasePath + "System.txt");
+                var outputStructure = await _storageService.GetTemplateAsync(templateBasePath + "OutputStructure.json");
+                var exampleResponses = await _storageService.GetTemplateAsync(templateBasePath + "ExampleResponses.txt");
 
-                // Load world data for context
+                // Load context data
                 var world = await _storageService.GetWorldAsync(request.UserId);
                 var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
-                var player = await _storageService.GetPlayerAsync(request.UserId);
+                // Optional: Load parent location if ID provided?
 
                 // Create the system prompt builder
                 var systemPromptBuilder = new StringBuilder();
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
-                
-                // Add output structure and examples to system prompt
-                new TemplatePromptSection("Output Structure", outputStructure).AppendTo(systemPromptBuilder);
+
+                // Add examples to system prompt
                 new TemplatePromptSection("Example Responses", exampleResponses).AppendTo(systemPromptBuilder);
 
                 // Create the prompt content builder
                 var promptContentBuilder = new StringBuilder();
 
-                // Add game setting and preferences using section helpers
+                // Add game setting and preferences
                 new GameSettingSection(gameSetting, false).AppendTo(promptContentBuilder);
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
+
+                // Add world context
                 new WorldContextSection(world).AppendTo(promptContentBuilder);
 
-                // Add NPC creation details
+                // Add location creation details
                 new CreateLocationSection(
-                    locationType: request.LocationType,
-                    locationId: request.LocationId,
-                    locationName: request.LocationName,
-                    context: request.Context
+                    request.LocationId,
+                    request.LocationName,
+                    request.LocationType,
+                    request.Context
                 ).AppendTo(promptContentBuilder);
 
-                //// Add world context
-                //new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
-
-                // Add player context
-                //new PlayerContextSection(player).AppendTo(promptContentBuilder);
-
-                // Add the user's input
-                //new UserInputSection(request.UserInput, $"{(request.LocationType ?? "Location")} Creation Request").AppendTo(promptContentBuilder);
-
-                var promptType = PromptType.CreateLocation;
-                
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
                     promptContent: promptContentBuilder.ToString(),
-                    promptType: promptType
+                    promptType: PromptType.CreateLocation,
+                    outputStructureJsonSchema: outputStructure // Pass the specific schema
                 );
+            }
+            catch (FileNotFoundException fnfEx)
+            {
+                _loggingService.LogError($"Template file not found for LocationType '{request.LocationType}': {fnfEx.Message}");
+                throw new InvalidOperationException($"Could not load required templates for location type '{request.LocationType}'. Ensure templates exist in PromptTemplates/{templateBasePath}", fnfEx);
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error building create location prompt: {ex.Message}");
+                _loggingService.LogError($"Error building create location prompt ({request.LocationType}): {ex.Message}");
                 throw;
             }
         }

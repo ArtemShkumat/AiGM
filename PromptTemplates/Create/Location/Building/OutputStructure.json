@@ -1,0 +1,79 @@
+{
+  "type": "object",
+  "properties": {
+    "type": { "type": "string", "const": "LOCATION", "description": "Base object type" },
+    "locationType": { "type": "string", "const": "Building", "description": "Specific location type" },
+    "id": { "type": "string", "description": "Unique identifier for the location" },
+    "name": { "type": "string", "description": "Name of the building" },
+    "description": { "type": "string", "description": "Overall description of the building's context or surroundings" },
+    "knownToPlayer": { "type": "boolean", "description": "Whether the player knows of this location" },
+    "connectedLocations": { "type": "array", "items": { "type": "string" }, "description": "IDs of directly connected locations" },
+    "parentLocation": { "type": "string", "description": "ID of the parent location (e.g., Settlement ID if building is inside one)" },
+    "npcs": { "type": "array", "items": { "type": "string" }, "description": "IDs of NPCs currently present in the building (top level)" },
+    "exterior_description": { "type": "string", "description": "Description of the building's exterior appearance" },
+    "purpose": { "type": "string", "description": "The primary function or purpose of the building" },
+    "history": { "type": "string", "description": "The known or relevant history of the building" },
+    "floors": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/floor" }
+    }
+  },
+  "required": [
+    "type", "locationType", "id", "name", "description", "knownToPlayer", 
+    "connectedLocations", "parentLocation", "npcs", 
+    "exterior_description", "purpose", "history", "floors"
+  ],
+  "definitions": {
+    "floor": {
+      "type": "object",
+      "properties": {
+        "floor_name": { "type": "string", "description": "Name of the floor (e.g., Ground Floor, Attic)" },
+        "description": { "type": "string", "description": "General description of the floor" },
+        "rooms": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/room" }
+        }
+      },
+      "required": ["floor_name", "description", "rooms"]
+    },
+    "room": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the room (e.g., Kitchen, Study)" },
+        "type": { "type": "string", "description": "Functional type of the room (e.g., Bedroom, Workshop)" },
+        "description": { "type": "string", "description": "Detailed description of the room's contents and atmosphere" },
+        "points_of_interest": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/pointOfInterest" }
+        },
+        "valuables": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/valuable" }
+        },
+        "npcs": { "type": "array", "items": { "type": "string" }, "description": "IDs of NPCs currently in this specific room" },
+        "connected_rooms": { "type": "array", "items": { "type": "string" }, "description": "Names of other rooms on the same floor this room connects to" }
+      },
+      "required": ["name", "type", "description", "points_of_interest", "valuables", "npcs", "connected_rooms"]
+    },
+    "pointOfInterest": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "hinting_at": { "type": "string", "description": "What secret, plot hook, or information this POI might reveal" }
+      },
+      "required": ["name", "description", "hinting_at"]
+    },
+    "valuable": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "why_its_here": { "type": "string", "description": "Reason for the valuable being in this location" },
+        "description": { "type": "string" },
+        "quantity": { "type": "integer" },
+        "value": { "type": "integer", "description": "Approximate value in primary currency" }
+      },
+      "required": ["name", "why_its_here", "description", "quantity", "value"]
+    }
+  }
+} 

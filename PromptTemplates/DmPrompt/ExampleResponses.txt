@@ -1,7 +1,6 @@
 Examples of interactions with player:
 
-EXAMPLE 1: Player enters a location
-
+EXAMPLE: Player enters a location
 USER: 
  ...
  "player": {
@@ -39,75 +38,56 @@ USER:
     }
   ]
 
-I walk into the tavern and look around.
+Current player prompt: I walk into the tavern and look around.
 
-ASSISTANT:
-You leave John The Baptist behind. The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma of spiced mead. A crackling hearth dominates the far wall, casting dancing shadows across the weathered wooden tables. Several patrons huddle in small groups - sailors sharing tall tales, a pair of merchants haggling over a contract, and a hooded figure sitting alone in the corner, occasionally glancing toward the door.
-
-Behind the bar, a burly man with an impressive red beard polishes a mug with a rag that's seen better days. He notices your entrance and offers a curt nod of acknowledgment. Must be a professional habit, as you've never met him before, or anyone here, for that matter.
-
-<donotshow/>
+RESPONSE:
 {
-    "newEntities": [],
-    "partialUpdates": {
-      "player": {
-        "type": "PLAYER",
-        "currentLocationId": "loc_rustyAnchorTavern"
-      },
-      "npc_johnTheBaptist": {
-        "type": "NPC",
-        "visibleToPlayer": false
-      },
-      "npc_redBeardedBarkeep": {
-        "type": "NPC",
-        "visibleToPlayer": true
-      },
-      "npc_hoodedFigure": {
-        "type": "NPC",
-        "visibleToPlayer": true
-      }
+  "userFacingText": "You leave John The Baptist behind. The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma of spiced mead. A crackling hearth dominates the far wall, casting dancing shadows across the weathered wooden tables. Several patrons huddle in small groups - sailors sharing tall tales, a pair of merchants haggling over a contract, and a hooded figure sitting alone in the corner, occasionally glancing toward the door.",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "currentLocationId": "loc_rustyAnchorTavern"
+    },
+    "npc_johnTheBaptist": {
+      "type": "NPC",
+      "visibleToPlayer": false
+    },
+    "npc_redBeardedBarkeep": {
+      "type": "NPC",
+      "visibleToPlayer": true
+    },
+    "npc_hoodedFigure": {
+      "type": "NPC",
+      "visibleToPlayer": true
     }
+  }
 }
 
 
-EXAMPLE 2: Player looks around, seeking new NPCs in a busy street.
-
-USER: I look around to see if there's anyone else out and about at this time of the day.
-
-ASSISTANT:
-"As you look around the village, you notice a few other villagers going about their business. A pair of children play a simple game of tag near the well, their laughter a momentary spark of joy in the somber atmosphere. An older woman sweeps the stoop of her home, her brow furrowed with worry as she glances toward the mountains. You can also see a few weathered-looking miners trudging back from work. They carry heavy sacks slung over their shoulders and their faces are grim."
-
-<donotshow/>
+EXAMPLE: Player looks around, seeking new NPCs in a busy street.
+USER: Current player prompt: I look around to see if there's anyone else out and about at this time of the day.
+RESPONSE:
 {
-    "newEntities": [],
-    "partialUpdates": []
-  
+  "userFacingText": "As you look around the village, you notice a few other villagers going about their business. A pair of children play a simple game of tag near the well, their laughter a momentary spark of joy in the somber atmosphere. An older woman sweeps the stoop of her home, her brow furrowed with worry as she glances toward the mountains. You can also see a few weathered-looking miners trudging back from work. They carry heavy sacks slung over their shoulders and their faces are grim.",
 }
 
-EXAMPLE 3: Player engages an NPC not present in existing NPC list.
-
-USER: I approach the old woman I see on the street and introduce myself.
-
-ASSISTANT:
-"The older woman looks up at you, her gaze softening slightly. "Elara," she says, her voice raspy but kind. "And you are... new to Emberhold, aren't you? I don't recognize your face." She pauses, then adds with a sigh, "A good day it might have been, before..." She trails off, gesturing vaguely towards the Empty Hearth with her broom. The sounds of the village - the children's laughter, the distant clang of the forge - seem muted, overshadowed by the unspoken dread hanging in the air."
-
-<donotshow/>
+EXAMPLE: Player engages an NPC not present in existing NPC list.
+USER: Current player prompt: I approach the old woman I see on the street and introduce myself.
+RESPONSE:
 {
-    "newEntities": [
+  "userFacingText": "The older woman looks up at you, her gaze softening slightly. "Elara," she says, her voice raspy but kind. "And you are... new to Emberhold, aren't you? I don't recognize your face." She pauses, then adds with a sigh, "A good day it might have been, before..." She trails off, gesturing vaguely towards the Empty Hearth with her broom. The sounds of the village - the children's laughter, the distant clang of the forge - seem muted, overshadowed by the unspoken dread hanging in the air.",
+  "newEntities": [
     {
-    "type": "NPC",
-    "name" "Elara",
-    "id": "npc_elara",
-    "currentLocation": "loc_emberhold",
-    "context": "The player approached a random old lady on the street of village Emberhold. So far he learned that her name is Elara, she appears old, with raspy but kind voice. So far she said she introduced herself and asked if the player is new to Emberhold..."    
+      "type": "NPC",
+      "id": "npc_elara",
+      "name": "Elara",
+      "context": "Elara is an elderly woman living in Emberhold. She's lived in the village her entire life and knows its history well. She appears old but spry, with a raspy voice and keen eyes. She's cautious around strangers but not unfriendly. She might know secrets about the village and surrounding areas.",
+      "currentLocationId": "loc_emberhold"
     }
-    ],
-    "partialUpdates": []
-  
+  ]
 }
 
-EXAMPLE 4: Player meets an NPC and they introduce themselves to each other
-
+EXAMPLE: Player meets an NPC and they introduce themselves to each other
 USER:
 ...
 "player": {
@@ -126,27 +106,21 @@ USER:
   }
 ]
 
-I approach the merchant at his stall. "Good day! I'm Alaric, new to these parts. What's your name?"
+Current player prompt: I approach the merchant at his stall. "Good day! I'm Alaric, new to these parts. What's your name?"
 
-ASSISTANT:
-The merchant looks up from arranging a display of colorful fabrics. He's a middle-aged man with salt-and-pepper hair and weathered hands that speak of years of work. His initially cautious expression softens at your friendly approach.
-
-"Well met, Alaric," he replies with a slight bow of his head. "I am Tomas, purveyor of the finest textiles from across the realm. New to our humble town, you say? What brings you to these parts?" He gestures at his wares with a merchant's practiced flourish. "Perhaps something caught your eye? Or are you simply getting acquainted with the local establishments?"
-
-<donotshow/>
+RESPONSE:
 {
-    "newEntities": [],
-    "partialUpdates": {
-      "npc_merchantTomas": {
-        "type": "NPC",
-        "knownToPlayer": true,
-        "knowsPlayer": true
-      }
+  "userFacingText": "The merchant looks up from arranging a display of colorful fabrics. He's a middle-aged man with salt-and-pepper hair and weathered hands that speak of years of work. His initially cautious expression softens at your friendly approach.",
+  "partialUpdates": {
+    "npc_merchantTomas": {
+      "type": "NPC",
+      "knownToPlayer": true,
+      "knowsPlayer": true
     }
+  }
 }
 
-EXAMPLE 5: Player discovers a new location with connections to existing NPCs and potential quests
-
+EXAMPLE: Player discovers a new location with connections to existing NPCs and potential quests
 USER:
 ...
 "player": {
@@ -165,29 +139,22 @@ USER:
   }
 ]
 
-I ask Tomas, "I've heard rumors of an abandoned mine north of town that might have valuable ore deposits. Do you know anything about it?"
+Current player prompt: I ask Tomas, "I've heard rumors of an abandoned mine north of town that might have valuable ore deposits. Do you know anything about it?"
 
-ASSISTANT:
-Tomas scratches his chin thoughtfully, leaning against his stall. "The old Whispering Depths? Aye, I know of it. Closed down nearly fifteen years ago after a collapse trapped a dozen miners inside." He lowers his voice, glancing around as if checking who might be listening.
-
-"Most folks avoid it now. Some say they hear voices echoing from within at night—the trapped miners, still calling for help." He shivers visibly. "My sister's husband, Gareth, was the mine's foreman before the accident. He survived but was never the same after. Lives in a cottage at the edge of town now, rarely speaks to anyone."
-
-Tomas straightens up and adjusts his wares. "If you're thinking of exploring it, I'd advise caution. Though I suppose if anyone could safely investigate and perhaps put some old ghosts to rest, it might be someone of your... capabilities."
-
-<donotshow/>
+RESPONSE:
 {
-    "newEntities": [
-      {
-        "type": "QUEST", 
-        "name": "Echoes of the Depths",
-        "id": "quest_echoesOfTheDepths",
-        "context": "This is a multi-part quest centered around exploring the abandoned Whispering Depths Mine (loc_whisperingDepthsMine) and uncovering its secrets. The quest would begin when the player speaks with npc_gareth (quest giver) and learns more about the mine's history. The quest should feel somewhat dangerous and mysterious, dealing with themes of grief, guilt, and possibly supernatural elements related to the miners who died in the collapse. It could involve gathering equipment for the exploration, mapping the dangerous mine tunnels, discovering what really caused the collapse, and potentially dealing with either real ghosts or a more mundane explanation for the voices heard in the mine. This quest would be moderately challenging, requiring both combat skills and diplomatic abilities to complete successfully."
-      }
-    ],
-    "partialUpdates": {}
+  "userFacingText": "Tomas scratches his chin thoughtfully, leaning against his stall. "The old Whispering Depths? Aye, I know of it. Closed down nearly fifteen years ago after a collapse trapped a dozen miners inside." He lowers his voice, glancing around as if checking who might be listening.",
+  "newEntities": [
+    {
+      "type": "QUEST", 
+      "name": "Echoes of the Depths",
+      "id": "quest_echoesOfTheDepths",
+      "context": "This is a multi-part quest centered around exploring the abandoned Whispering Depths Mine (loc_whisperingDepthsMine) and uncovering its secrets. The quest would begin when the player speaks with npc_gareth (quest giver) and learns more about the mine's history. The quest should feel somewhat dangerous and mysterious, dealing with themes of grief, guilt, and possibly supernatural elements related to the miners who died in the collapse. It could involve gathering equipment for the exploration, mapping the dangerous mine tunnels, discovering what really caused the collapse, and potentially dealing with either real ghosts or a more mundane explanation for the voices heard in the mine. This quest would be moderately challenging, requiring both combat skills and diplomatic abilities to complete successfully."
+    }
+  ]
 }
 
-EXAMPLE 6: Player asks if there's a tavern in town where it's reasonable to expect one, but you currently don't have it in context.
+EXAMPLE: Player asks if there's a tavern in town where it's reasonable to expect one, but you currently don't have it in context.
 
 USER: 
 ...
@@ -207,49 +174,32 @@ USER:
   }
 ]
 
-Is there a tavern in this town? I could use a drink after a long day of travel.
+Current player prompt: Is there a tavern in this town? I could use a drink after a long day of travel.
 
-ASSISTANT:
-Looking around the market square, you notice a weathered sign hanging from a building down the street - "The Rusty Anchor" it reads, with a faded painting of an anchor below. The building looks well-worn but inviting, with warm light spilling from its windows. You can just make out the sound of laughter and conversation drifting from within. It seems to be a popular spot for locals and travelers alike.
-
-<donotshow/>
+RESPONSE:
 {
-    "newEntities": [
-      {
-        "type": "LOCATION",
-        "name": "The Rusty Anchor",
-        "id": "loc_rustyAnchorTavern",
-        "locationType": "BUILDING",
-        "context": "This is a well-established tavern located near the market square. It's a popular gathering spot for locals and travelers, known for its warm atmosphere and good ale. The tavern has a main common room with a bar, several tables, and a small stage for entertainment. The building should feel welcoming but worn, with nautical decorations and a warm atmosphere. It should be connected to loc_marketSquare and other nearby locations."
-      }
-    ],
-    "partialUpdates": {}
+  "userFacingText": "Looking around the market square, you notice a weathered sign hanging from a building down the street - "The Rusty Anchor" it reads, with a faded painting of an anchor below. The building looks well-worn but inviting, with warm light spilling from its windows. You can just make out the sound of laughter and conversation drifting from within.",
+  "newEntities": [
+    {
+      "type": "LOCATION",
+      "name": "The Rusty Anchor",
+      "id": "loc_rustyAnchorTavern",
+      "locationType": "BUILDING",
+      "context": "This is a well-established tavern located near the market square. It's a popular gathering spot for locals and travelers, known for its warm atmosphere and good ale. The tavern has a main common room with a bar, several tables, and a small stage for entertainment. The building should feel welcoming but worn, with nautical decorations and a warm atmosphere. It should be connected to loc_marketSquare and other nearby locations."
+    }
+  ]
 }
 
-EXAMPLE 7: Player asks about something that wouldn't reasonably exist in the current location.
+EXAMPLE: Player asks about something that wouldn't reasonably exist in the current location.
 
 USER: 
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_marketSquare"
-}
-...
-
-Is there anywhere I can buy some powerful magic items? I'm looking for enchanted weapons or scrolls.
-
-ASSISTANT:
-*chuckles* Sorry bud, but powerful magic items in this tiny village? Not a chance. Looking around the market square, all you see are the basics - Tomas's textile stall, some farmers with their produce, and a few craftsmen selling simple tools. This is the kind of place where finding a copper nail is considered treasure hunting. You'll need to find a proper city if you're looking for enchanted gear.
-
-<donotshow/>
+Current player prompt: Is there anywhere I can buy some powerful magic items? I'm looking for enchanted weapons or scrolls.
+RESPONSE:
 {
-    "newEntities": [],
-    "partialUpdates": {}
+  "userFacingText": "*chuckles* Sorry bud, but powerful magic items in this tiny village? Not a chance. Looking around the market square, all you see are the basics - Tomas's textile stall, some farmers with their produce, and a few craftsmen selling simple tools. This is the kind of place where finding a copper nail is considered treasure hunting. You'll need to find a proper city if you're looking for enchanted gear."
 }
 
-EXAMPLE 8: Player enters a tavern that has no NPCs assigned to it.
-
+EXAMPLE: Player enters a tavern that has no NPCs assigned to it.
 USER:
 ...
 "player": {
@@ -267,102 +217,108 @@ USER:
   }
 ]
 
-I head into the Silver Fox Tavern to get a drink after my long journey.
+Current player prompt: I head into the Silver Fox Tavern to get a drink after my long journey.
 
-ASSISTANT:
-You push open the heavy wooden door of the Silver Fox Tavern, and warmth immediately envelops you. The tavern is lively this evening—the crackling hearth in the corner casting dancing shadows across the room. The air is thick with the aroma of roasted meat, spilled ale, and woodsmoke.
-Behind the bar stands a portly man with a magnificent mustache, expertly filling mugs from a large barrel. He gives you a quick nod as you enter. A young serving girl weaves between tables, balancing a tray of drinks with practiced ease. 
-In the corner, an elderly man strums a lute, playing a cheerful tune that blends with the hum of conversation. Several patrons occupy the tables—a group of laborers still dusty from their day's work, a pair of merchants engaged in hushed conversation, and a weathered traveler nursing a drink alone by the window.
-
-<donotshow/>
+RESPONSE:
 {
-    "newEntities": [
-      {
-        "type": "NPC",
-        "name": "Barton",
-        "id": "npc_bartonInnkeeper",
-        "currentLocationId": "loc_silverFoxTavern",
-        "context": "Barton is the innkeeper and barkeep of the Silver Fox Tavern. He's a portly middle-aged man with a magnificent mustache and a welcoming demeanor. He's been running this establishment for over fifteen years and knows everyone in town. He's a source of local gossip and information, with a friendly but no-nonsense attitude. He takes pride in his tavern and the quality of his ale."
-      },
-      {
-        "type": "NPC",
-        "name": "Lina",
-        "id": "npc_linaBarmaid",
-        "currentLocationId": "loc_silverFoxTavern",
-        "context": "Lina is a young serving girl at the Silver Fox Tavern. She's quick on her feet and good at her job, known for her ability to remember complex orders and navigate the crowded tavern without spilling a drop. She's from a poor family in town and works to help support her younger siblings. She appears cheerful to customers but is actually quite ambitious and saving up to leave town someday."
-      },
-      {
-        "type": "NPC",
-        "name": "Old Tobin",
-        "id": "npc_oldTobin",
-        "currentLocationId": "loc_silverFoxTavern",
-        "context": "Old Tobin is an elderly man who plays music at the Silver Fox Tavern most evenings in exchange for meals and drinks. He was once a traveling bard of some renown but now prefers the comfort of a regular spot. He knows countless songs and tales from across the realm and has a surprisingly sharp memory despite his advanced age. He's a gentle soul but has witnessed much in his travels."
-      }
-    ],
-    "partialUpdates": {
-      "player": {
-        "type": "PLAYER",
-        "currentLocationId": "loc_silverFoxTavern"
-      },
-      "loc_silverFoxTavern":{
-        "npcs": ["npc_bartonInnkeeper", "npc_linaBarmaid", "npc_oldTobin"]
-      }
+  "userFacingText": "You push open the heavy wooden door of the Silver Fox Tavern, and warmth immediately envelops you. The tavern is lively this evening—the crackling hearth in the corner casting dancing shadows across the room. The air is thick with the aroma of roasted meat, spilled ale, and woodsmoke.",
+  "newEntities": [
+    {
+      "type": "NPC",
+      "name": "Barton",
+      "id": "npc_bartonInnkeeper",
+      "currentLocationId": "loc_silverFoxTavern",
+      "context": "Barton is the innkeeper and barkeep of the Silver Fox Tavern. He's a portly middle-aged man with a magnificent mustache and a welcoming demeanor. He's been running this establishment for over fifteen years and knows everyone in town. He's a source of local gossip and information, with a friendly but no-nonsense attitude. He takes pride in his tavern and the quality of his ale."
+    },
+    {
+      "type": "NPC",
+      "name": "Lina",
+      "id": "npc_linaBarmaid",
+      "currentLocationId": "loc_silverFoxTavern",
+      "context": "Lina is a young serving girl at the Silver Fox Tavern. She's quick on her feet and good at her job, known for her ability to remember complex orders and navigate the crowded tavern without spilling a drop. She's from a poor family in town and works to help support her younger siblings. She appears cheerful to customers but is actually quite ambitious and saving up to leave town someday."
+    },
+    {
+      "type": "NPC",
+      "name": "Old Tobin",
+      "id": "npc_oldTobin",
+      "currentLocationId": "loc_silverFoxTavern",
+      "context": "Old Tobin is an elderly man who plays music at the Silver Fox Tavern most evenings in exchange for meals and drinks. He was once a traveling bard of some renown but now prefers the comfort of a regular spot. He knows countless songs and tales from across the realm and has a surprisingly sharp memory despite his advanced age. He's a gentle soul but has witnessed much in his travels."
     }
+  ],
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "currentLocationId": "loc_silverFoxTavern"
+    },
+    "loc_silverFoxTavern":{
+      "npcs": ["npc_bartonInnkeeper", "npc_linaBarmaid", "npc_oldTobin"]
+    }
+  }
 }
 
 
-Example: Selling an Item to a Merchant
-Situation: The player wants to sell a helmet to a trader.
-Player: "I'd like to sell this steel helmet to the merchant. It's in good condition, barely a scratch on it."
-DM: "The merchant examines the helmet carefully, turning it over in his hands. 'Hmm, decent craftsmanship. I can give you 15 gold pieces for it.' He looks up at you expectantly."
-Player: "That sounds fair. I'll take the 15 gold."
-DM: "The merchant nods and counts out 15 gold coins, placing them in your palm. He takes the helmet and places it on a display with his other wares. 'Pleasure doing business with you,' he says with a satisfied smile.{
-    "newEntities": [],
-    "partialUpdates": {
-      "player": {
-        "type": "PLAYER",
-        "inventory": [{
-            "name": "Steel Helmet",
-            "description": "A well-crafted steel helmet offering good protection",
-            "quantity": "1",
-            "action": "add"
-          }],
-        "currencies": [{
-            "name": "Gold",
-            "amount": 15,
-            "action": "add"
-          }],
-      },
-      "npc_villageMerchant": {
-        "inventory": [{
-            "name": "Steel Helmet",
-            "description": "A well-crafted steel helmet offering good protection",
-            "quantity": "1",
-            "action": "add"
-          }]
-      }
+EXAMPLE: Selling an Item to a Merchant
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I'd like to sell this steel helmet to the merchant. It's in good condition, barely a scratch on it."},
+  {"DM to Player": "The merchant examines the helmet carefully, turning it over in his hands. 'Hmm, decent craftsmanship. I can give you 15 gold pieces for it.' He looks up at you expectantly."}
+]
+
+CURRENT PLAYER PROMPT:
+"That sounds fair. I'll take the 15 gold."
+
+RESPONSE:
+{
+  "userFacingText": "The merchant nods and counts out 15 gold coins, placing them in your palm. He takes the helmet and places it on a display with his other wares. 'Pleasure doing business with you,' he says with a satisfied smile.",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "inventory": [{
+          "name": "Steel Helmet",
+          "quantity": 1,
+          "action": "Remove"
+        }],
+      "currencies": [{
+          "name": "Gold",
+          "amount": 15,
+          "action": "Add"
+        }]
+    },
+    "npc_villageMerchant": {
+      "type": "NPC",
+      "inventory": [{
+          "name": "Steel Helmet",
+          "description": "A well-crafted steel helmet offering good protection",
+          "quantity": 1,
+          "action": "Add"
+        }]
     }
-}"
+  }
+}
 
 
 
 
 Example: Using Up an Item
-Situation: The player wants to eat an apple from their inventory.
-Player:"I take out an apple and eat it."
-DM:"Yum! You eat the apple. Keep them doctors away, eh?.{
-    "newEntities": [],
-    "partialUpdates": {
-      "player": {
-        "type": "PLAYER",
-        "inventory": [{
-            "name": "Apple",
-            "quantity": 1,
-            "action": remove
-          }]
-      }
+
+CURRENT PLAYER PROMPT:
+"I take out an apple and eat it."
+
+RESPONSE:
+{
+  "userFacingText": "Yum! You eat the apple. Keep them doctors away, eh?.",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "inventory": [{
+          "name": "Apple",
+          "quantity": 1,
+          "action": "Remove"
+        }]
     }
-}"
+  }
+}
 
 
 
@@ -370,146 +326,432 @@ DM:"Yum! You eat the apple. Keep them doctors away, eh?.{
 Examples of situations requiring rolls and how to handle them:
 
 Example : Climbing a Crumbling Wall
-Situation: The character needs to climb a crumbling stone wall before patrolling guards return.
-Player: “I scramble up the wall to get to the ruined battlements. Time is short!”
-DM: “Base difficulty is 4—the wall is quite unstable. Because the guards are nearly here, I’m adding +1 difficulty for urgency, raising it to 5. That means you need to roll 15 or higher on a d20 for a success.”
-Player: “I have the ‘Street Climber’ tag. Also, I’ll use the vines growing along the wall for extra handholds.”
-DM: “‘Street Climber’ reduces the difficulty from 5 down to 4. Using the vines is a clever environmental advantage, so that reduces it from 4 down to 3. Now you need 9 or higher.”
-Player: “I got a 10!”
-DM: “You succeed. You clamber up the wall just in time, flattening yourself against the parapet as the guards march past below.”
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I scramble up the wall to get to the ruined battlements. Time is short!"},
+  {"DM to Player": "Base difficulty is 4—the wall is quite unstable. Because the guards are nearly here, I'm adding +1 difficulty for urgency, raising it to 5. That means you need to roll 15 or higher on a d20 for a success."},
+  {"Player to DM": "I have the 'Street Climber' tag. Also, I'll use the vines growing along the wall for extra handholds."},
+  {"DM to Player": "Street Climber reduces the difficulty from 5 down to 4. Using the vines is a clever environmental advantage, so that reduces it from 4 down to 3. Now you need 9 or higher."}
+]
+
+CURRENT PLAYER PROMPT:
+"I got a 10!"
+
+RESPONSE:
+{
+  "userFacingText": "You succeed. You clamber up the wall just in time, flattening yourself against the parapet as the guards march past below."
+}
 
 Example : Searching for a Hidden Mechanism (Failure)
-Situation: The character is investigating a dusty chamber for a secret lever.
-Player:“I search the marble statue near the wall, looking for any hidden trigger.”
-DM:“Base difficulty is 3 (9 or higher). But the chamber is dark, so I’m raising it by +1 to 4—you need 12 or higher.”
-Player:“I’ll light a candle.”
-DM:“A normal candle helps a bit, but not enough to fully negate the darkness penalty. I’ll reduce the difficulty by 1 for your candle, going from 4 down to 3. You now need 9 or higher.”
-Player:(Rolls 5)“I got a 5.”
-DM: “You run your hands around the statue’s base but can’t find anything. Time is ticking, and you might have missed something crucial. You’ll have to either search another part of the room or find better lighting or a new approach.”
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I search the marble statue near the wall, looking for any hidden trigger."},
+  {"DM to Player": "Base difficulty is 3 (9 or higher). But the chamber is dark, so I'm raising it by +1 to 4—you need 12 or higher."},
+  {"Player to DM": "I'll light a candle."},
+  {"DM to Player": "A normal candle helps a bit, but not enough to fully negate the darkness penalty. I'll reduce the difficulty by 1 for your candle, going from 4 down to 3. You now need 9 or higher."}
+]
+
+CURRENT PLAYER PROMPT:
+"(Rolls 5) I got a 5."
+
+RESPONSE:
+{
+  "userFacingText": "You run your hands around the statue's base but can't find anything. Time is ticking, and you might have missed something crucial. You'll have to either search another part of the room or find better lighting or a new approach."
+}
 
 Example : Hacking a Corporate Door Lock
-Situation: In a near-future city, the character attempts to bypass a high-tech lock again.
-Player: “I try to hack into the same corporate system from a distant terminal with no direct line.”
-DM:“Base difficulty is 7—remote hacking is significantly tougher. You need 21 or higher. Also, the system’s firewall is on high alert after your last intrusion, adding +1 to 8—that’s 24 or higher.”
-Player: “I’ll try using my ‘Expert Hacker’ tag. That lowers it from 8 to 7, so 21 or higher needed.”
-DM: “Yeah, you can't roll that high.”
-Player:“Well, i guess there's no point in trying then.”
-DM: “Exactly, trying the same thing again is usually harder. Look for a different way to approach this.”
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I try to hack into the same corporate system from a distant terminal with no direct line."},
+  {"DM to Player": "Base difficulty is 7—remote hacking is significantly tougher. You need 21 or higher. Also, the system's firewall is on high alert after your last intrusion, adding +1 to 8—that's 24 or higher."},
+  {"Player to DM": "I'll try using my 'Expert Hacker' tag. That lowers it from 8 to 7, so 21 or higher needed."},
+  {"DM to Player": "Yeah, you can't roll that high."}
+]
+
+CURRENT PLAYER PROMPT:
+"Well, i guess there's no point in trying then."
+
+RESPONSE:
+{
+  "userFacingText": "Exactly, trying the same thing again is usually harder. Look for a different way to approach this."
+}
 
 Example: Negotiating with a Reluctant Witness
-Situation: In a modern-day detective scenario, the character wants crucial information from a frightened eyewitness.
-Player: “I try to calm her down and persuade her to talk. I explain we only want to keep her safe.”
-DM:“Base difficulty 4—she’s rattled. No direct penalty, so that’s 12 or higher needed.”
-Player:“I’ll use my ‘Gentle Demeanor’ tag and also offer her a blanket and a cup of tea from my supply kit.”
-DM:“Gentle Demeanor lowers difficulty from 4 to 3 (9 or higher). The tea is a thoughtful gesture—reduce from 3 to 2 (6 or higher). Roll it.”
-Player:(Rolls 4)“I got a 4. That’s not enough.”
-DM:“She shakes her head, tears welling up. ‘I—I can’t… they’ll hurt me…’ She pulls away, refusing to speak. You’ll need a different tactic—or more time.”
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I try to calm her down and persuade her to talk. I explain we only want to keep her safe."},
+  {"DM to Player": "Base difficulty 4—she's rattled. No direct penalty, so that's 12 or higher needed."},
+  {"Player to DM": "I'll use my 'Gentle Demeanor' tag and also offer her a blanket and a cup of tea from my supply kit."},
+  {"DM to Player": "Gentle Demeanor lowers difficulty from 4 to 3 (9 or higher). The tea is a thoughtful gesture—reduce from 3 to 2 (6 or higher). Roll it."}
+]
+
+CURRENT PLAYER PROMPT:
+"(Rolls 4) I got a 4. That's not enough."
+
+RESPONSE:
+{
+  "userFacingText": "She shakes her head, tears welling up. 'I—I can't… they'll hurt me…' She pulls away, refusing to speak. You'll need a different tactic—or more time."
+}
 
 Example: Trying to Lower Difficulty with a Weak Tag
-Situation: The character attempts to infiltrate a locked apartment building.
-Player:“I pick the lock at the side entrance. I’m using my ‘Good at Crossword Puzzles’ tag—I figure it demonstrates I’m detail-oriented!”
-DM:“Base difficulty is 3 (9 or higher). That tag doesn’t really help with lockpicking. No change; you need a relevant skill or tool.”
-Player:“Alright, guess not. I roll as is.(Rolls 11)”
-DM:“11 is above 9, so you succeed. Despite no relevant tag, you manage to jimmy it open with some trial and error.”
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I pick the lock at the side entrance. I'm using my 'Good at Crossword Puzzles' tag—I figure it demonstrates I'm detail-oriented!"},
+  {"DM to Player": "Base difficulty is 3 (9 or higher). That tag doesn't really help with lockpicking. No change; you need a relevant skill or tool."}
+]
+
+CURRENT PLAYER PROMPT:
+"Alright, guess not. I roll as is.(Rolls 11)"
+
+RESPONSE:
+{
+  "userFacingText": "11 is above 9, so you succeed. Despite no relevant tag, you manage to jimmy it open with some trial and error."
+}
 
 Example: Critical Failure
-Situation: The character tries to override a shuttle’s autopilot mid-flight without the proper codes.
-Player:“I hack the shuttle controls to force a new flight path.”
-DM:“Base difficulty 6 (18+). This is advanced tech. It’s also encrypted by a top-tier corp, adding +1 to total 7 (21+).”
-Player:“I have the ‘Ex-Military Pilot’ tag. Does that help?”
-DM:“That reduces it from 7 to 6—need 18 or higher.”
-Player:(Rolls a 3)“Ouch, a 3.”
-DM:“The override fails so catastrophically that the shuttle’s safety protocols engage. Engines lock up, and the craft starts to lose altitude. You’ll have to make an emergency landing or risk a crash.”
 
-Example: Asking the King for His Crown 
-Situation: A daring (or foolish) request at a medieval king’s court.
-Player:“I politely request that His Majesty grant me the royal crown—for safekeeping, of course.”
-DM:“Base difficulty 10 (TN 30)—this is an absurd request. The king’s guard is watching. That guard’s suspicious nature adds +1, but since difficulty can’t exceed 10, it stays at 10 (30+). You need a 30, which is impossible on a standard d20.”
-Player:“I try anyway. I have ‘Silver Tongue’ and I mention my ‘Honorary Knight’ status.”
-DM:“Are you, like, particularly bad at math or something? Silver Tongue reduces it from 10 to 9 (need 27+). Honorary Knight is somewhat relevant, so it goes from 9 to 8 (24+). I mean...Roll it, if you want.”
-Player:“I rolled a nat 20!”
-DM:“Yeah, nat 20s don't work here. The difficulty was 24, so 20 doesn't cut it. The king barely stifles a laugh. ‘You think you can bear the burden of the crown, subject? Guards—escort this dreamer away.’ You’re led out of the throne room in embarrassment, your request denied outright. <donotshow/>
+CONVERSATION LOG:
+[
+  {"Player to DM": "I hack the shuttle controls to force a new flight path."},
+  {"DM to Player": "Base difficulty 6 (18+). This is advanced tech. It's also encrypted by a top-tier corp, adding +1 to total 7 (21+)."},
+  {"Player to DM": "I have the 'Ex-Military Pilot' tag. Does that help?"},
+  {"DM to Player": "That reduces it from 7 to 6—need 18 or higher."}
+]
+
+CURRENT PLAYER PROMPT:
+"(Rolls a 3) Ouch, a 3."
+
+RESPONSE:
 {
-    "newEntities": [],
-    "partialUpdates": {
-      "player": {
-        "type": "PLAYER",
-        "currentLocationId": "loc_castleThroneRoomWaitingArea"
-      }
-    }
+  "userFacingText": "The override fails so catastrophically that the shuttle's safety protocols engage. Engines lock up, and the craft starts to lose altitude. You'll have to make an emergency landing or risk a crash."
 }
-”
+
+Example: Asking the King for His Crown
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I politely request that His Majesty grant me the royal crown—for safekeeping, of course."},
+  {"DM to Player": "Base difficulty 10 (TN 30)—this is an absurd request. The king's guard is watching. That guard's suspicious nature adds +1, but since difficulty can't exceed 10, it stays at 10 (30+). You need a 30, which is impossible on a standard d20."},
+  {"Player to DM": "I try anyway. I have 'Silver Tongue' and I mention my 'Honorary Knight' status."},
+  {"DM to Player": "Are you, like, particularly bad at math or something? Silver Tongue reduces it from 10 to 9 (need 27+). Honorary Knight is somewhat relevant, so it goes from 9 to 8 (24+). I mean...Roll it, if you want."}
+]
+
+CURRENT PLAYER PROMPT:
+"I rolled a nat 20!"
+
+RESPONSE:
+{
+  "userFacingText": "Yeah, nat 20s don't work here. The difficulty was 24, so 20 doesn't cut it. The king barely stifles a laugh. 'You think you can bear the burden of the crown, subject? Guards—escort this dreamer away.'",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "currentLocationId": "loc_castleThroneRoomWaitingArea"
+    }
+  }
+}
 
 Example: Sensing Deceit
-Situation: A traveling merchant may be lying about the quality of his goods.
-Player:“I watch him closely, looking for nervous tics or inconsistencies in his story. I want to see if he’s lying.”
-DM:“Base difficulty is 3 (needing 9+ on a d20), since reading people is somewhat straightforward. But this merchant’s practiced at deception, so I add +1, making it 4 (12+ required).”
-Player: “I have the tag ‘Seasoned Negotiator’. That should help me pick up on subtle cues. Also, I lean in with casual small talk to get him off-guard.”
-DM: “Alright, ‘Seasoned Negotiator’ reduces difficulty from 4 down to 3 (9+). Small talk is clever, but not enough to reduce it further—he’s still quite cagey. Final difficulty is 3. Roll your d20.”
-Player: “I roll a 12.”
-DM: “That’s a success. While insight is not a lie detector, you do notice that he started gesticulating a lot when you asked about the quality of the products.”
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I watch him closely, looking for nervous tics or inconsistencies in his story. I want to see if he's lying."},
+  {"DM to Player": "Base difficulty is 3 (needing 9+ on a d20), since reading people is somewhat straightforward. But this merchant's practiced at deception, so I add +1, making it 4 (12+ required)."},
+  {"Player to DM": "I have the tag 'Seasoned Negotiator'. That should help me pick up on subtle cues. Also, I lean in with casual small talk to get him off-guard."},
+  {"DM to Player": "Alright, 'Seasoned Negotiator' reduces difficulty from 4 down to 3 (9+). Small talk is clever, but not enough to reduce it further—he's still quite cagey. Final difficulty is 3. Roll your d20."}
+]
+
+CURRENT PLAYER PROMPT:
+"I roll a 12."
+
+RESPONSE:
+{
+  "userFacingText": "That's a success. While insight is not a lie detector, you do notice that he started gesticulating a lot when you asked about the quality of the products."
+}
 
 Example: Skinning a Large Animal
-Situation: The player took out a great elk and wants to preserve its hide.
-Player:“I carefully skin the elk to get a clean, usable pelt.”
-DM:“Base difficulty is 3 (9+). It’s messy work, requiring some skill.”
-Player:“I'm a Huntsman. Also, I’m using a specialized skinning knife from my kit.”
-DM:“Huntsman lowers it from 3 to 2 (6+). Specialized knife is exactly for this purpose, so that’s another reduction down to 1 (3+). Roll it.”
-Player:“I got a 15”
-DM: “Well done!. You skillfully remove the pelt without a single mistake. It's in prime condition{
-    "newEntities": [],
-    "partialUpdates": {
-      "player": {
-        "type": "PLAYER",
-        "inventory": [{
-            "name": "Prime Great Elk Pelt",
-            "description": "A great elk pelt in mint condition",
-            "quantity": "1"
-          }]
-      }
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I carefully skin the elk to get a clean, usable pelt."},
+  {"DM to Player": "Base difficulty is 3 (9+). It's messy work, requiring some skill."},
+  {"Player to DM": "I'm a Huntsman. Also, I'm using a specialized skinning knife from my kit."},
+  {"DM to Player": "Huntsman lowers it from 3 to 2 (6+). Specialized knife is exactly for this purpose, so that's another reduction down to 1 (3+). Roll it."}
+]
+
+CURRENT PLAYER PROMPT:
+"I got a 15"
+
+RESPONSE:
+{
+  "userFacingText": "Well done!. You skillfully remove the pelt without a single mistake. It's in prime condition.",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "inventory": [{
+          "name": "Prime Great Elk Pelt",
+          "description": "A great elk pelt in mint condition",
+          "quantity": 1,
+          "action": "Add"
+        }]
     }
-}”
+  }
+}
 
 
 
 
 Example: Building a Simple Shed
-Situation: The character wants to build a small wooden shed behind their cottage.
-Player: “I gather timber and start framing the walls.”
-DM:“Base difficulty is 4 (12+). It requires decent carpentry knowledge and planning.”
-Player:“I do have ‘Carpenter’s Apprentice’ as a tag, and I’ll lay out a chalk diagram beforehand to ensure stability.”
-DM:“Carpenter’s Apprentice reduces the difficulty from 4 to 3 (9+). The chalk planning is thorough, so that’s another drop to 2 (6+). Roll.”
-Player:“I rolled an 8!”
-DM:“That’s above 6. The framework goes up solidly, and by evening, you have a sturdy shed ready for use.”
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I gather timber and start framing the walls."},
+  {"DM to Player": "Base difficulty is 4 (12+). It requires decent carpentry knowledge and planning."},
+  {"Player to DM": "I do have 'Carpenter's Apprentice' as a tag, and I'll lay out a chalk diagram beforehand to ensure stability."},
+  {"DM to Player": "Carpenter's Apprentice reduces the difficulty from 4 to 3 (9+). The chalk planning is thorough, so that's another drop to 2 (6+). Roll."}
+]
+
+CURRENT PLAYER PROMPT:
+"I rolled an 8!"
+
+RESPONSE:
+{
+  "userFacingText": "That's above 6. The framework goes up solidly, and by evening, you have a sturdy shed ready for use."
+}
 
 Example: Complex roll
-Situation: The player wants to sneak up on a guard and knock them out.
-Player:“I sneak behind the guard and try to knock them out before they can raise an alarm.”
-DM:“That’s actually two rolls. First, a stealth check to approach unnoticed. Then, a knockout attack. The first one is stealth. Base difficulty is 4 (12+). The guard is somewhat vigilant, adding +1, so 5 (15+).
-Do you have any tags or advantages to reduce this difficulty?”
-Player:“I have ‘Stealth Ops’ from my special forces training and I’m wearing ‘Soft-Soled Boots’.”
-DM:“That’s two valid reductions. So from 5 down to 4, and 4 down to 3. Now you need 9 or higher on the d20.”
-Player:“I rolled a 14.”
-DM:“That’s a success. You move silently behind crates until you’re right behind the guard, unseen. You’re now in striking distance, but taking someone out in one go is still tricky. Base difficulty 5 (15+).”
-Player: “I’m trained in ‘Close-Quarters Combat’.”
-DM: “That reduces from 5 to 4 (12+). Roll it.”
-Player:“I got a 17.”
-DM:“Success. You club the guard’s helmet from behind. He crumples to the ground with a groan, unconscious before he can cry out.”
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I sneak behind the guard and try to knock them out before they can raise an alarm."},
+  {"DM to Player": "That's actually two rolls. First, a stealth check to approach unnoticed. Then, a knockout attack. The first one is stealth. Base difficulty is 4 (12+). The guard is somewhat vigilant, adding +1, so 5 (15+). Do you have any tags or advantages to reduce this difficulty?"},
+  {"Player to DM": "I have 'Stealth Ops' from my special forces training and I'm wearing 'Soft-Soled Boots'."},
+  {"DM to Player": "That's two valid reductions. So from 5 down to 4, and 4 down to 3. Now you need 9 or higher on the d20."},
+  {"Player to DM": "I rolled a 14."},
+  {"DM to Player": "That's a success. You move silently behind crates until you're right behind the guard, unseen. You're now in striking distance, but taking someone out in one go is still tricky. Base difficulty 5 (15+)."},
+  {"Player to DM": "I'm trained in 'Close-Quarters Combat'."},
+  {"DM to Player": "That reduces from 5 to 4 (12+). Roll it."}
+]
+
+CURRENT PLAYER PROMPT:
+"I got a 17."
+
+RESPONSE:
+{
+  "userFacingText": "Success. You club the guard's helmet from behind. He crumples to the ground with a groan, unconscious before he can cry out."
+}
 
 Example: Failures lead to consequences
-Situation: The player wants to sneak up on a guard and knock them out.
-Player:“I sneak behind the guard and knock them out in one swift move.”
-DM: “We split this into two checks: stealth first, then the knockout.
-Base difficulty for stealth is 4 (12+). The guard is alert, so +1: difficulty 5 (15+).
-Any tags?”
-Player: “I have ‘Stealth Ops’ but no special gear.”
-DM: “That reduces it from 5 to 4 (12+). Roll.”
-Player:“8”
-DM: “Failure. Your foot scuffs against debris, and the guard whips around, spotting you instantly. He shouts an alarm and draws his weapon. There’s no chance for a surprise knockout now—you’ll have to deal with him head-on or make a run for it.”
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I sneak behind the guard and knock them out in one swift move."},
+  {"DM to Player": "We split this into two checks: stealth first, then the knockout. Base difficulty for stealth is 4 (12+). The guard is alert, so +1: difficulty 5 (15+). Any tags?"},
+  {"Player to DM": "I have 'Stealth Ops' but no special gear."},
+  {"DM to Player": "That reduces it from 5 to 4 (12+). Roll."}
+]
+
+CURRENT PLAYER PROMPT:
+"8"
+
+RESPONSE:
+{
+  "userFacingText": "Failure. Your foot scuffs against debris, and the guard whips around, spotting you instantly. He shouts an alarm and draws his weapon. There's no chance for a surprise knockout now—you'll have to deal with him head-on or make a run for it."
+}
 
 Example: Lying About a Tag
-Situation: The player is trying to talk their way past a suspicious checkpoint guard. Their playerContext:rpgTags[] has a few tags including ‘Forged Papers’.
-Player:“I bluff my way through, tell the guard I’m a licensed courier. I have ‘Forged Papers’ and ‘Expert Deception’, so I should get a big reduction.”
-DM: “Base difficulty is 4 (12+). *DM checks the character’s listed tags*. You do have ‘Forged Papers’, that’s valid. But your other social tag is ‘Charming Bookworm’, not ‘Expert Deception’. You sneaky sneaky player you.  Difficulty drops from 4 to 3 thanks to the forged papers. Target number is 9. Roll it.”
-Player: “Ah, can never fool the all seeing DM. Fine. I rolled a 6.”
-DM: “That’s a failure. The guard frowns, running his thumb along the document seal. ‘Courier, huh? Wait here while I call this in.’ Things are getting tense.”
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I bluff my way through, tell the guard I'm a licensed courier. I have 'Forged Papers' and 'Expert Deception', so I should get a big reduction."},
+  {"DM to Player": "Base difficulty is 4 (12+). *DM checks the character's listed tags*. You do have 'Forged Papers', that's valid. But your other social tag is 'Charming Bookworm', not 'Expert Deception'. You sneaky sneaky player you. Difficulty drops from 4 to 3 thanks to the forged papers. Target number is 9. Roll it."}
+]
+
+CURRENT PLAYER PROMPT:
+"Ah, can never fool the all seeing DM. Fine. I rolled a 6."
+
+RESPONSE:
+{
+  "userFacingText": "That's a failure. The guard frowns, running his thumb along the document seal. 'Courier, huh? Wait here while I call this in.' Things are getting tense."
+}
+
+Example: Haggling with a Merchant
+
+CONVERSATION LOG:
+[
+  {"Player to DM": "I want to try haggling with the merchant for a better price on that silver dagger. It's marked at 15 gold pieces, but I think that's too steep."},
+  {"DM to Player": "Base difficulty is 3 (9+) for basic haggling. However, this merchant is known to be particularly stubborn about his prices, especially for weapons of this quality, so I'm adding +1 difficulty. You need 12 or higher."},
+  {"Player to DM": "I'll use my 'Market Savvy' tag since I've spent years trading at bazaars. And I'll casually mention that I saw a similar dagger at another stall for cheaper."},
+  {"DM to Player": "Your 'Market Savvy' reduces the difficulty from 4 to 3 (9+). The comparison to a competitor is a good tactic—that gives you another reduction to difficulty 2 (6+). Roll your d20."}
+]
+
+CURRENT PLAYER PROMPT:
+"I roll a 10."
+
+RESPONSE:
+{
+  "userFacingText": "Success! The merchant's expression sours slightly, but he nods with grudging respect. 'Hmph. Alright, I can see you know your blades. Twelve gold, and not a copper less.' He wraps the silver dagger in a cloth. 'You're getting a bargain, mark my words.'",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "currencies": [{
+          "name": "Gold",
+          "amount": 12,
+          "action": "Remove"
+        }],
+      "inventory": [{
+          "name": "Silver Dagger",
+          "description": "A finely crafted dagger with a silver blade and ornate hilt",
+          "quantity": 1,
+          "action": "Add"
+        }]
+    }
+  }
+}
+
+EXAMPLES USING NEW RESPONSE FORMAT:
+
+Here are examples showing how to respond using the new structured JSON format. Notice there is no <donotshow/> tag - just a single JSON object with "userFacingText", "newEntities", and "partialUpdates" properties.
+
+
+
+EXAMPLE: Player discovers a new location
+
+USER: I ask the merchant if there's a good place to get a drink around here.
+
+RESPONSE:
+{
+  "userFacingText": "The merchant chuckles, stroking his beard thoughtfully. 'If it's a good drink you're after, you'll want The Golden Barrel,' he says, pointing down the cobbled street. 'Best mead in the province, or so they claim. Their honeyed porter is worth trying too.' He leans in slightly. 'Decent place for gossip as well, if that's what you're really seeking. The innkeeper, Dalla, hears everything that happens in town.'",
+  "newEntities": [
+    {
+      "type": "LOCATION",
+      "id": "loc_goldenBarrelTavern",
+      "name": "The Golden Barrel",
+      "context": "A popular tavern in town known for its excellent mead and honeyed porter. It's a gathering place for locals and travelers alike, and a good spot to hear gossip and news. The innkeeper is a woman named Dalla who knows everything that happens in town.",
+      "locationType": "Building"
+    },
+    {
+      "type": "NPC",
+      "id": "npc_dalla",
+      "name": "Dalla",
+      "context": "Dalla is the innkeeper of The Golden Barrel tavern. She's a middle-aged woman with a sharp mind who keeps track of all the gossip and news in town. She runs her establishment efficiently and is respected by the locals.",
+      "currentLocationId": "loc_goldenBarrelTavern"
+    }
+  ]
+}
+
+EXAMPLE: Player gains an item and some currency
+
+USER: CURRENT PLAYER PROMPT: I sell the silver bracelet I found to the jeweler at whatever price he offers.
+
+RESPONSE:
+{
+  "userFacingText": "The jeweler examines the silver bracelet with a critical eye, turning it over in his hands and inspecting the craftsmanship. 'Interesting piece,' he murmurs. 'Not local work... perhaps from the southern provinces.' After a moment's consideration, he offers you 15 gold pieces for it. You accept, and he counts out the coins into your palm. 'A pleasure doing business with you,' he says with a satisfied nod as he places the bracelet in a velvet-lined display case.",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "inventory": [
+        {
+          "name": "Silver Bracelet",
+          "quantity": 1,
+          "action": "Remove"
+        }
+      ],
+      "currencies": [
+        {
+          "name": "Gold",
+          "amount": 15,
+          "action": "Add"
+        }
+      ]
+    },
+    "npc_jewelerJoe": {
+      "type": "NPC",
+      "inventory": [
+        {
+          "name": "Silver Bracelet",
+          "quantity": 1,
+          "action": "Add"
+        }
+      ]
+    }
+  }
+}
+
+EXAMPLE: Player updates multiple entities
+
+USER: CURRENT PLAYER PROMPT: I give my spare healing potion to the wounded guard and tell him to follow me to the healer's hut.
+
+RESPONSE:
+{
+  "userFacingText": "You hand the healing potion to the wounded guard. With shaking hands, he uncorks it and drinks the swirling red liquid. Almost immediately, color returns to his pale face and he stands a little straighter, though he still favors his injured leg.\n\n'Thank you, stranger,' he says with genuine gratitude. 'That's much better.' He nods at your suggestion. 'Aye, I should see a proper healer. Lead the way, if you'd be so kind.'",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "inventory": [
+        {
+          "name": "Healing Potion",
+          "quantity": 1,
+          "action": "Remove"
+        }
+      ]
+    },
+    "npc_woundedGuard": {
+      "type": "NPC",
+      "currentLocationId": "loc_townSquare",
+      "visualDescription": {
+        "condition": "The guard looks injured but more stable after drinking the healing potion. He's still favoring his wounded leg."
+      },
+      "dispositionTowardsPlayer": "Fond"
+    }
+  }
+}
+
+EXAMPLE: Player completes a quest
+
+USER: CURRENT PLAYER PROMPT: I return to Captain Harlowe and show him the recovered medallion.
+
+RESPONSE:
+{
+  "userFacingText": "Captain Harlowe's eyes widen as you present the recovered medallion. He takes it reverently, turning the ancient bronze disc in his weathered hands. 'By the gods, you actually found it,' he says, voice thick with emotion. 'My father's medallion... I never thought to see it again.'\n\nHe composes himself and reaches for a pouch at his belt. 'You've done me a great service. Here, the reward I promised—fifty gold pieces.' He hands you the heavy pouch. 'And know that you have a friend in the city guard now. Should you need assistance in the future, you need only ask.'",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "inventory": [
+        {
+          "name": "Ancient Bronze Medallion",
+          "quantity": 1,
+          "action": "Remove"
+        }
+      ],
+      "currencies": [
+        {
+          "name": "Gold",
+          "amount": 50,
+          "action": "Add"
+        }
+      ],
+      "activeQuests": [
+        {
+          "questId": "quest_captainsMedallion",
+          "action": "Remove"
+        }
+      ],
+      "rpgTags": [
+        {
+          "name": "Friend of the City Guard",
+          "description": "Captain Harlowe and his guardsmen view you favorably after recovering the Captain's family medallion.",
+          "action": "Add"
+        }
+      ]
+    },
+    "npc_captainHarlowe": {
+      "type": "NPC",
+      "dispositionTowardsPlayer": "Loyal"
+    }
+  }
+}

@@ -1,0 +1,266 @@
+{
+  "type": "object",
+  "properties": {
+    "userFacingText": {
+      "type": "string",
+      "description": "The narrative text, descriptions, and dialogue to be shown directly to the player."
+    },
+    "newEntities": {
+      "type": "array",
+      "description": "List of new NPCs, Locations, or Quests to be created.",
+      "items": {
+        "$ref": "#/definitions/creationHook"
+      }
+    },
+    "partialUpdates": {
+      "type": "object",
+      "description": "An object where each key is an existing entity ID (e.g., 'player', 'npc_john') and the value contains fields to update.",
+      "additionalProperties": {
+          "$ref": "#/definitions/updatePayload"
+      }
+    }
+  },
+  "required": [
+    "userFacingText"
+  ],
+  "definitions": {
+
+    "updateAction": {
+      "type": "string",
+      "enum": ["Add", "Remove"]
+    },
+
+    "visualDescriptionUpdatePayload": {
+      "type": "object",
+      "properties": {
+        "body": { "type": ["string", "null"] },
+        "condition": { "type": ["string", "null"] },
+        "visibleClothing": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+
+    "inventoryUpdateItem": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": ["string", "null"] },
+        "quantity": { "type": "integer" },
+        "action": { "$ref": "#/definitions/updateAction" }
+      },
+      "required": ["name", "quantity", "action"],
+      "additionalProperties": false
+    },
+
+    "currencyUpdateItem": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "amount": { "type": "integer" },
+        "action": { "$ref": "#/definitions/updateAction" }
+      },
+      "required": ["name", "amount", "action"],
+      "additionalProperties": false
+    },
+
+     "statusEffectUpdateItem": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the status effect" },
+        "action": { "$ref": "#/definitions/updateAction" }
+      },
+      "required": ["name", "action"],
+      "additionalProperties": false
+    },
+
+    "rpgTagUpdateItem": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": ["string", "null"], "description": "Needed for adding" },
+        "action": { "$ref": "#/definitions/updateAction" }
+      },
+      "required": ["name", "action"],
+      "additionalProperties": false
+    },
+
+     "activeQuestUpdateItem": {
+       "type": "object",
+       "properties": {
+         "questId": { "type": "string", "description": "ID of the quest" },
+         "action": { "$ref": "#/definitions/updateAction" }
+       },
+       "required": ["questId", "action"],
+       "additionalProperties": false
+     },
+
+    "knownNpcUpdateItem": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name or ID of the known NPC being updated/added/removed" },
+        "levelOfFamiliarity": { "type": ["string", "null"] },
+        "disposition": { "type": ["string", "null"] },
+        "action": { "$ref": "#/definitions/updateAction" }
+      },
+      "required": ["name", "action"],
+      "additionalProperties": false
+    },
+
+    "knownLocationUpdateItem": {
+      "type": "object",
+      "properties": {
+        "locationId": { "type": "string", "description": "ID of the location" },
+        "action": { "$ref": "#/definitions/updateAction" }
+      },
+      "required": ["locationId", "action"],
+      "additionalProperties": false
+    },
+
+    "npcListUpdateItem": {
+      "type": "object",
+      "properties": {
+        "npcId": { "type": "string", "description": "ID of the NPC" },
+        "action": { "$ref": "#/definitions/updateAction" }
+      },
+      "required": ["npcId", "action"],
+      "additionalProperties": false
+    },
+
+    "knownEntitiesUpdatePayload": {
+      "type": "object",
+      "properties": {
+        "npcsKnown": {
+          "type": ["array", "null"],
+          "items": { "$ref": "#/definitions/knownNpcUpdateItem" }
+        },
+        "locationsKnown": {
+          "type": ["array", "null"],
+          "items": { "$ref": "#/definitions/knownLocationUpdateItem" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "playerUpdatePayload": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "PLAYER" },
+        "currentLocationId": { "type": ["string", "null"] },
+        "visualDescription": { "$ref": "#/definitions/visualDescriptionUpdatePayload" },
+        "inventory": { "type": ["array", "null"], "items": { "$ref": "#/definitions/inventoryUpdateItem" } },
+        "currencies": { "type": ["array", "null"], "items": { "$ref": "#/definitions/currencyUpdateItem" } },
+        "statusEffects": { "type": ["array", "null"], "items": { "$ref": "#/definitions/statusEffectUpdateItem" } },
+        "rpgTags": { "type": ["array", "null"], "items": { "$ref": "#/definitions/rpgTagUpdateItem" } },
+        "activeQuests": { "type": ["array", "null"], "items": { "$ref": "#/definitions/activeQuestUpdateItem" } }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+
+    "worldUpdatePayload": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "WORLD" },
+        "gameTime": { "type": ["string", "null"] },
+        "daysSinceStart": { "type": ["integer", "null"] },
+        "worldStateEffects": {
+          "type": ["object", "null"],
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+
+    "npcUpdatePayload": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "NPC" },
+        "currentLocationId": { "type": ["string", "null"] },
+        "knownToPlayer": { "type": ["boolean", "null"] },
+        "knowsPlayer": { "type": ["boolean", "null"] },
+        "visibleToPlayer": { "type": ["boolean", "null"] },
+        "visualDescription": { "$ref": "#/definitions/visualDescriptionUpdatePayload" },
+        "currentGoal": { "type": ["string", "null"] },
+        "dispositionTowardsPlayer": { "type": ["string", "null"] },
+        "knownEntities": { "$ref": "#/definitions/knownEntitiesUpdatePayload" },
+        "inventory": { "type": ["array", "null"], "items": { "$ref": "#/definitions/inventoryUpdateItem" } }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+
+    "locationUpdatePayload": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "LOCATION" },
+        "knownToPlayer": { "type": ["boolean", "null"] },
+        "npcs": { "type": ["array", "null"], "items": { "$ref": "#/definitions/npcListUpdateItem" } },
+         "parentLocation": { "type": ["string", "null"] }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+
+    "updatePayload": {
+       "oneOf": [
+         { "$ref": "#/definitions/playerUpdatePayload" },
+         { "$ref": "#/definitions/worldUpdatePayload" },
+         { "$ref": "#/definitions/npcUpdatePayload" },
+         { "$ref": "#/definitions/locationUpdatePayload" }
+       ],
+       "discriminator": {
+         "propertyName": "type"
+       }
+    },
+
+    "npcCreationHook": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "const": "NPC" },
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "context": { "type": "string" },
+          "currentLocationId": { "type": "string" }
+        },
+        "required": ["type", "id", "name", "context", "currentLocationId"],
+        "additionalProperties": false
+    },
+
+    "locationCreationHook": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "const": "LOCATION" },
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "context": { "type": "string" },
+          "locationType": { "type": "string", "enum": ["Building", "Settlement", "Delve", "Wilds"] }
+        },
+        "required": ["type", "id", "name", "context", "locationType"],
+        "additionalProperties": false
+    },
+
+    "questCreationHook": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "const": "QUEST" },
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "context": { "type": "string" }
+        },
+        "required": ["type", "id", "name", "context"],
+        "additionalProperties": false
+    },
+
+     "creationHook": {
+       "oneOf": [
+         { "$ref": "#/definitions/npcCreationHook" },
+         { "$ref": "#/definitions/locationCreationHook" },
+         { "$ref": "#/definitions/questCreationHook" }
+       ],
+       "discriminator": {
+         "propertyName": "type"
+       }
+     }
+  }
+} 

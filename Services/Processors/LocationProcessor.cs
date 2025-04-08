@@ -1,10 +1,11 @@
+using System;
 using System.Threading.Tasks;
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Locations;
 using AiGMBackEnd.Services;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System;
 
 namespace AiGMBackEnd.Services.Processors
 {
@@ -23,50 +24,39 @@ namespace AiGMBackEnd.Services.Processors
 
         public async Task ProcessAsync(JObject locationData, string userId)
         {
+            string? locationId = locationData["id"]?.ToString();
+            string? locationType = locationData["locationType"]?.ToString();
+
             try
             {
-                _loggingService.LogInfo("Processing location creation");
-                
-                // Extract location details
-                var locationId = locationData["id"]?.ToString();
-                var locationType = locationData["locationType"]?.ToString();
-                
-                if (string.IsNullOrEmpty(locationId))
+                _loggingService.LogInfo($"Processing location creation (Type: {locationType ?? "Unknown"}) for ID: {locationId ?? "Unknown"} using direct deserialization.");
+
+                var location = locationData.ToObject<Location>();
+
+                if (location == null || string.IsNullOrEmpty(location.Id) || string.IsNullOrEmpty(location.LocationType))
                 {
-                    _loggingService.LogError("Location ID is missing");
+                    _loggingService.LogError("Failed to deserialize location data, or ID/LocationType is missing.");
+                    _loggingService.LogWarning($"Attempted location creation for ID: {locationId ?? "Not Found"}, Type: {locationType ?? "Not Found"}");
                     return;
                 }
                 
-                // Create a location based on the type
-                Location location;
-                
-                switch (locationType?.ToLower())
+                if (string.IsNullOrEmpty(location.Type) || location.Type != "LOCATION")
                 {
-                    case "delve":
-                        location = ProcessDelve(locationData);
-                        break;
-                    case "building":
-                        location = ProcessBuilding(locationData);
-                        break;
-                    case "settlement":
-                        location = ProcessSettlement(locationData);
-                        break;
-                    case "wilds":
-                        location = ProcessWilds(locationData);
-                        break;
-                    default:
-                        _loggingService.LogError($"Unknown location type: {locationType}");
-                        return;
+                    _loggingService.LogWarning($"Location base type mismatch or missing for {location.Id}. Setting to 'LOCATION'.");
+                    location.Type = "LOCATION";
                 }
 
-                // Set common properties
+                if (location.GetType().Name != locationType)
+                {
+                    _loggingService.LogWarning($"Deserialized location type '{location.GetType().Name}' does not match JSON locationType '{locationType}' for ID {location.Id}. Proceeding with deserialized type.");
+                }
+
                 location.LocationType = locationType;
                 location.Id = locationId;
                 location.Name = locationData["name"]?.ToString() ?? "Unknown Location";
                 location.Description = locationData["description"]?.ToString();
                 location.KnownToPlayer = locationData["knownToPlayer"]?.Value<bool>() ?? false;
                 
-                // Process connected locations
                 if (locationData["connectedLocations"] is JArray connectedLocations)
                 {
                     foreach (var conn in connectedLocations)
@@ -79,13 +69,11 @@ namespace AiGMBackEnd.Services.Processors
                     }
                 }
                 
-                // Process parent location
                 if (locationData["parentLocation"] != null)
                 {
                     location.ParentLocation = locationData["parentLocation"]?.ToString();
                 }
                 
-                // Process NPCs
                 if (locationData["npcs"] is JArray npcs)
                 {
                     foreach (var npc in npcs)
@@ -98,14 +86,19 @@ namespace AiGMBackEnd.Services.Processors
                     }
                 }
                 
-                // Save the location data
-                await _storageService.SaveAsync(userId, $"locations/{locationId}", location);
-                
-                _loggingService.LogInfo($"Location {locationId} processed and saved successfully");
+                await _storageService.SaveAsync(userId, $"locations/{location.Id}", location);
+                _loggingService.LogInfo($"Successfully processed and saved location: {location.Id} (Type: {location.LocationType})");
+            }
+            catch (JsonSerializationException jsonEx)
+            {
+                _loggingService.LogError($"JSON deserialization error processing location ({locationType ?? "Unknown"}) creation for ID {locationId ?? "Unknown"}: {jsonEx.Message}");
+                _loggingService.LogInfo($"Problematic JSON data: {locationData.ToString()}");
+                throw;
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing location creation: {ex.Message}");
+                _loggingService.LogError($"Error processing location ({locationType ?? "Unknown"}) creation for ID {locationId ?? "Unknown"}: {ex.Message}");
+                _loggingService.LogInfo($"JSON data during error: {locationData.ToString()}");
                 throw;
             }
         }
@@ -118,7 +111,6 @@ namespace AiGMBackEnd.Services.Processors
                 Dangers = locationData["dangers"]?.ToString()
             };
             
-            // Process points of interest
             if (locationData["points_of_interest"] is JArray poisArray)
             {
                 foreach (var poiData in poisArray)
@@ -147,7 +139,6 @@ namespace AiGMBackEnd.Services.Processors
                 Purpose = locationData["purpose"]?.ToString()
             };
             
-            // Process entrance room
             if (locationData["entrance_room"] is JObject entranceRoomObj)
             {
                 delve.EntranceRoom = new EntranceRoom
@@ -162,7 +153,6 @@ namespace AiGMBackEnd.Services.Processors
                 ProcessRoomValuables(entranceRoomObj, delve.EntranceRoom.Valuables);
             }
             
-            // Process puzzle room
             if (locationData["puzzle_room"] is JObject puzzleRoomObj)
             {
                 delve.PuzzleRoom = new PuzzleRoom
@@ -177,7 +167,6 @@ namespace AiGMBackEnd.Services.Processors
                 ProcessRoomValuables(puzzleRoomObj, delve.PuzzleRoom.Valuables);
             }
             
-            // Process setback room
             if (locationData["setback_room"] is JObject setbackRoomObj)
             {
                 delve.SetbackRoom = new SetbackRoom
@@ -192,7 +181,6 @@ namespace AiGMBackEnd.Services.Processors
                 ProcessRoomValuables(setbackRoomObj, delve.SetbackRoom.Valuables);
             }
             
-            // Process climax room
             if (locationData["climax_room"] is JObject climaxRoomObj)
             {
                 delve.ClimaxRoom = new ClimaxRoom
@@ -208,7 +196,6 @@ namespace AiGMBackEnd.Services.Processors
                 ProcessRoomValuables(climaxRoomObj, delve.ClimaxRoom.Valuables);
             }
             
-            // Process reward room
             if (locationData["reward_room"] is JObject rewardRoomObj)
             {
                 delve.RewardRoom = new RewardRoom
@@ -228,7 +215,6 @@ namespace AiGMBackEnd.Services.Processors
         
         private void ProcessRoomValuables(JObject roomObj, List<DelveValuable> valuablesList)
         {
-            // Process valuables
             if (roomObj["valuables"] is JArray valuablesArray)
             {
                 foreach (var valuableData in valuablesArray)
@@ -260,7 +246,6 @@ namespace AiGMBackEnd.Services.Processors
                 ExteriorDescription = locationData["exterior_description"]?.ToString()
             };
             
-            // Process floors
             if (locationData["floors"] is JArray floorsArray)
             {
                 foreach (var floorData in floorsArray)
@@ -273,7 +258,6 @@ namespace AiGMBackEnd.Services.Processors
                             Description = floorObj["description"]?.ToString()
                         };
                         
-                        // Process rooms
                         if (floorObj["rooms"] is JArray roomsArray)
                         {
                             foreach (var roomData in roomsArray)
@@ -287,7 +271,6 @@ namespace AiGMBackEnd.Services.Processors
                                         Description = roomObj["description"]?.ToString()
                                     };
                                     
-                                    // Process points of interest
                                     if (roomObj["points_of_interest"] is JArray poisArray)
                                     {
                                         foreach (var poiData in poisArray)
@@ -306,7 +289,6 @@ namespace AiGMBackEnd.Services.Processors
                                         }
                                     }
                                     
-                                    // Process valuables
                                     if (roomObj["valuables"] is JArray valuablesArray)
                                     {
                                         foreach (var valuableData in valuablesArray)
@@ -324,7 +306,6 @@ namespace AiGMBackEnd.Services.Processors
                                         }
                                     }
                                     
-                                    // Process NPCs
                                     if (roomObj["npcs"] is JArray npcsArray)
                                     {
                                         foreach (var npc in npcsArray)
@@ -337,7 +318,6 @@ namespace AiGMBackEnd.Services.Processors
                                         }
                                     }
                                     
-                                    // Process connected rooms
                                     if (roomObj["connected_rooms"] is JArray connectedRoomsArray)
                                     {
                                         foreach (var connectedRoom in connectedRoomsArray)
@@ -373,7 +353,6 @@ namespace AiGMBackEnd.Services.Processors
                 Population = locationData["population"]?.Value<int>() ?? 0
             };
             
-            // Process districts
             if (locationData["districts"] is JArray districtsArray)
             {
                 foreach (var districtData in districtsArray)
@@ -386,7 +365,6 @@ namespace AiGMBackEnd.Services.Processors
                             Description = districtObj["description"]?.ToString()
                         };
                         
-                        // Process connected districts
                         if (districtObj["connected_districts"] is JArray connectedDistrictsArray)
                         {
                             foreach (var connectedDistrict in connectedDistrictsArray)
@@ -399,7 +377,6 @@ namespace AiGMBackEnd.Services.Processors
                             }
                         }
                         
-                        // Process points of interest
                         if (districtObj["points_of_interest"] is JArray poisArray)
                         {
                             foreach (var poiData in poisArray)
@@ -418,7 +395,6 @@ namespace AiGMBackEnd.Services.Processors
                             }
                         }
                         
-                        // Process NPCs
                         if (districtObj["npcs"] is JArray npcsArray)
                         {
                             foreach (var npc in npcsArray)
@@ -431,7 +407,6 @@ namespace AiGMBackEnd.Services.Processors
                             }
                         }
                         
-                        // Process buildings
                         if (districtObj["buildings"] is JArray buildingsArray)
                         {
                             foreach (var building in buildingsArray)
