@@ -20,9 +20,10 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 await _storageService.AddUserMessageToNpcLogAsync(request.UserId, request.NpcId, request.UserInput);
 
                 // Load NPC template files
-                var systemPrompt = await _storageService.GetNpcTemplateAsync("System");
-                var outputStructure = await _storageService.GetNpcTemplateAsync("OutputStructure");
-                var exampleResponses = await _storageService.GetNpcTemplateAsync("ExampleResponses");
+                var systemPrompt = await _storageService.GetNpcTemplateAsync("System.txt");
+                // Use DM OutputStructure.json to ensure consistent format
+                var outputStructure = await _storageService.GetDmTemplateAsync("OutputStructure.json");
+                var exampleResponses = await _storageService.GetNpcTemplateAsync("ExampleResponses.txt");
 
                 // Load player, world, and specified NPC data
                 var player = await _storageService.GetPlayerAsync(request.UserId);
@@ -37,8 +38,6 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
                 
-                // Add output structure to system prompt
-                PromptSection.AppendSection(systemPromptBuilder, "Detailed information on fields that can be used for partial updates", outputStructure);
 
                 // Add example responses to system prompt
                 PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);
@@ -64,7 +63,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
                     promptContent: promptContentBuilder.ToString(),
-                    promptType: PromptType.NPC
+                    promptType: PromptType.NPC,
+                    outputStructureJsonSchema: outputStructure
                 );
             }
             catch (Exception ex)

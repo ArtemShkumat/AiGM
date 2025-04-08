@@ -29,18 +29,20 @@ namespace AiGMBackEnd.Services.Storage
                     return false;
                 }
 
-                // Check if the item already exists in the inventory
+                // Check if the item already exists in the inventory - only check name, ignore description
                 var existingItem = player.Inventory.FirstOrDefault(i => i.Name.Equals(newItem.Name, StringComparison.OrdinalIgnoreCase));
 
                 if (existingItem != null)
                 {
                     // If the item exists, increase its quantity
                     existingItem.Quantity += newItem.Quantity;
+                    _loggingService.LogInfo($"Updated existing item {newItem.Name}, new quantity: {existingItem.Quantity}");
                 }
                 else
                 {
                     // If the item doesn't exist, add it to the inventory
                     player.Inventory.Add(newItem);
+                    _loggingService.LogInfo($"Added new item {newItem.Name} with quantity {newItem.Quantity}");
                 }
 
                 // Save the updated player

@@ -91,7 +91,7 @@ namespace AiGMBackEnd.Services
                     return new ProcessedResult { UserFacingText = "Error processing game state update (Null Response).", Success = false, ErrorMessage = "Deserialized DmResponse was null." };
                 }
 
-                if (dmResponse.NewEntities != null || dmResponse.PartialUpdates != null)
+                if (dmResponse.NewEntities != null && dmResponse.NewEntities.Count>0 || dmResponse.PartialUpdates != null && dmResponse.PartialUpdates.Count > 0)
                 {
                     await _updateProcessor.ProcessUpdatesAsync(dmResponse.NewEntities, dmResponse.PartialUpdates, userId);
                 }

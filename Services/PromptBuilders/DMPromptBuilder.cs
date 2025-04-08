@@ -63,10 +63,6 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var systemPromptBuilder = new StringBuilder();
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
-
-                // Add output structure info to system prompt - REMOVED as schema is passed directly
-                // PromptSection.AppendSection(systemPromptBuilder, "Detailed information on fields that can be used for partial updates", outputStructure);
-
                 // Add example responses
                 systemPromptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");
                 PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);

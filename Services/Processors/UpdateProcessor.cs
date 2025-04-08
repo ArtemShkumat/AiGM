@@ -400,19 +400,7 @@ namespace AiGMBackEnd.Services.Processors
             // Apply the update
             if (!string.IsNullOrEmpty(updateJson) && updateJson != "{}")
             {
-                await UpdateEntityAsync(userId, collection, entityId, updateJson);
-                
-                // Enhanced verification logging
-                try {
-                    if (entityType == "npc")
-                    {
-                        var npc = await _storageService.LoadAsync<dynamic>(userId, $"{collection}/{entityId}");
-                        _loggingService.LogInfo($"Verified NPC {entityId} after update - visibleToPlayer: {npc?.visibleToPlayer}");
-                    }
-                }
-                catch (Exception ex) {
-                    _loggingService.LogWarning($"Could not verify entity update: {ex.Message}");
-                }
+                await UpdateEntityAsync(userId, collection, entityId, updateJson);                
             }
         }
 
