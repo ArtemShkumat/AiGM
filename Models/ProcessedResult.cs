@@ -12,5 +12,11 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("errorMessage")]
         public string ErrorMessage { get; set; } = string.Empty;
+        
+        [JsonPropertyName("combatInitiated")]
+        public bool CombatInitiated { get; set; } = false;
+
+        [JsonPropertyName("combatPending")]
+        public bool CombatPending { get; set; } = false;
     }
 }

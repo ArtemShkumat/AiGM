@@ -51,6 +51,8 @@ builder.Services.AddSingleton<IWorldSyncService, WorldSyncService>();
 builder.Services.AddSingleton<IGameScenarioService, GameScenarioService>();
 builder.Services.AddSingleton<IConversationLogService, ConversationLogService>();
 builder.Services.AddSingleton<IRecentEventsService, RecentEventsService>();
+builder.Services.AddSingleton<IEnemyStatBlockService, EnemyStatBlockService>();
+builder.Services.AddSingleton<ICombatStateService, CombatStateService>();
 builder.Services.AddSingleton<StorageService>();
 
 // Register notification service
@@ -71,6 +73,14 @@ builder.Services.AddSingleton<IQuestProcessor, QuestProcessor>();
 builder.Services.AddSingleton<IPlayerProcessor, PlayerProcessor>();
 builder.Services.AddSingleton<IUpdateProcessor, UpdateProcessor>();
 builder.Services.AddSingleton<ISummarizePromptProcessor, SummarizePromptProcessor>();
+builder.Services.AddSingleton<IEnemyStatBlockProcessor, EnemyStatBlockProcessor>();
+builder.Services.AddSingleton<ICombatResponseProcessor, CombatResponseProcessor>();
+
+// Register CombatPromptBuilder (if not already there - assuming it exists)
+// If CombatPromptBuilder is not part of a broader registration, add it explicitly
+// We need to check if PromptService handles this registration implicitly
+// Assuming explicit registration is needed for now:
+builder.Services.AddSingleton<AiGMBackEnd.Services.PromptBuilders.CombatPromptBuilder>();
 
 // Register processing services (dependent on other services)
 builder.Services.AddSingleton<ResponseProcessingService>();

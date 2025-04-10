@@ -1,0 +1,114 @@
+```json
+// EXAMPLE 1: Simple Guard NPC
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "gameSetting": {
+    "gameName": "Realms of Eldoria",
+    "settingDescription": "A high-fantasy world recovering from a magical cataclysm. Cities are fortified, wilderness is dangerous.",
+  },
+  "world": {
+    "worldName": "Eldoria",
+    "gameTime": "Day 3, Morning",
+    // Other world details omitted
+  },
+  "npc": {
+    "id": "npc_guard_gregor",
+    "name": "Gregor, Outpost Guard",
+    "currentLocationId": "loc_border_outpost_gate",
+    "visualDescription": { "body": "Sturdy build, weary eyes.", "condition": "Normal", "visibleClothing": "Slightly worn chainmail, outpost insignia." },
+    "personality": { "temperament": "Gruff but dutiful", "motivations": "Protect the outpost, earn his pay." },
+    "backstory": "Served in the border guard for 10 years. Seen minor skirmishes but nothing major.",
+    "currentGoal": "Stand guard at the gate."
+    // Other NPC details omitted
+  },
+  "additionalInstructions": "This guard might get into a fight if provoked by the player trying to sneak past."
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "id": "enemy_guard_gregor",
+  "name": "Gregor, Outpost Guard",
+  "level": 3,
+  "description": "A sturdy border guard in worn chainmail, looking tired but alert. He grips his spear tightly.",
+  "vulnerability": "Can be reasoned with initially, but easily angered by disrespect or perceived threats to his duty. Distracted by official-looking documents or loud commotions elsewhere.",
+  "badStuff": "Overpowers the player, knocks them out briefly, and throws them outside the outpost gate. Confiscates any easily accessible valuables.",
+  "tags": ["Spear Attack", "Chainmail Armor"]
+}
+
+// EXAMPLE 2: Zombie Apocalypse Scavenger Group 
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "gameSetting": {
+    "gameName": "The Rotting City",
+    "settingDescription": "A post-apocalyptic urban environment overrun by zombies ('Rotters'). Resources are scarce, survivors often dangerous."
+  },
+  "world": {
+    "worldName": "Former Metropolis",
+    "gameTime": "Day 15, Afternoon",
+    "worldStateEffects": {"Weather": "Overcast, damp"}
+    // Other world details omitted
+  },
+  "npc": {
+    "id": "npc_desperate_scavengers",
+    "name": "Desperate Scavengers", // Treat group as one entity for combat
+    "currentLocationId": "loc_alleyway_03",
+    "visualDescription": { "body": "Three figures, thin and ragged.", "condition": "Malnourished, tense.", "visibleClothing": "Mix of scavenged clothes, makeshift padding." },
+    "personality": { "temperament": "Aggressive, paranoid", "motivations": "Survival at any cost, finding food/supplies." },
+    "backstory": "Likely strangers thrown together by the apocalypse. Out of food and options.",
+    "currentGoal": "Ambush anyone who looks like they have supplies."
+    // Other NPC details omitted
+  },
+  "additionalInstructions": "This group ambushes the player for their supplies. Treat them as a single combat entity representing the group."
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "id": "enemy_desperate_scavengers",
+  "name": "Desperate Scavengers",
+  "level": 5,
+  "description": "A ragged group of three individuals armed with makeshift melee weapons (pipes, bats) and wearing scavenged gear. They look jumpy and dangerous.",
+  "vulnerability": "Easily distracted by loud noises or sudden opportunities elsewhere (like escaping prey or potential loot). Their coordination breaks easily if one member is targeted or incapacitated.",
+  "badStuff": "They beat the player unconscious, steal their valuable supplies, and leave them bleeding in an alley.",
+  "tags": ["Group Attack", "Makeshift Weapons", "Desperate"]
+}
+
+// EXAMPLE 3: Magical Forest Protector
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "gameSetting": {
+    "gameName": "Whispering Woods",
+    "settingDescription": "An ancient, sentient forest filled with fey creatures and potent, wild magic.",
+    "playerStartingLocation": "loc_edge_of_woods"
+  },
+  "world": {
+    "worldName": "Whispering Woods",
+    "gameTime": "Day 1, Dusk",
+    "worldStateEffects": {"Magic": "Ambient wild magic is strong"}
+    // Other world details omitted
+  },
+  "npc": {
+    "id": "npc_grove_warden",
+    "name": "Grove Warden",
+    "currentLocationId": "loc_sacred_grove",
+    "visualDescription": { "body": "Appears as a tall figure made of woven vines and glowing moss.", "condition": "Ethereal, ancient.", "visibleClothing": "None." },
+    "personality": { "temperament": "Patient but fiercely protective", "motivations": "Guard the grove from intruders and defilers." },
+    "backstory": "An ancient spirit bound to the Sacred Grove, embodying the forest's will.",
+    "currentGoal": "Observe the player; repel them forcefully if they attempt to harm the grove."
+    // Other NPC details omitted
+  },
+  "additionalInstructions": "This entity defends the grove using nature magic. It should be a significant challenge."
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "id": "enemy_grove_warden",
+  "name": "Grove Warden",
+  "level": 7,
+  "description": "A towering protector formed of living vines and pulsating green moss, eyes glowing with faint light. It moves with surprising grace, radiating ancient power.",
+  "vulnerability": "Its connection to the grove is its strength and weakness. Attacks that sever its connection to the ground (e.g., lifting it, destroying roots) or disrupt the grove's ambient magic temporarily weaken it, allowing hits to count.",
+  "badStuff": "The Warden ensnares the player in immobilizing vines, drains some of their life force (imparting a magical fatigue condition), and magically ejects them far from the grove.",
+  "tags": ["Vine Lash", "Entangling Roots", "Nature Spirit", "Magic Resistant (Minor)"]
+}

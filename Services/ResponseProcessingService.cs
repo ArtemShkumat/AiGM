@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AiGMBackEnd.Models;
+using Hangfire;
 
 namespace AiGMBackEnd.Services
 {
@@ -22,7 +22,10 @@ namespace AiGMBackEnd.Services
         private readonly IPlayerProcessor _playerProcessor;
         private readonly IUpdateProcessor _updateProcessor;
         private readonly ISummarizePromptProcessor _summarizePromptProcessor;
+        private readonly IEnemyStatBlockProcessor _enemyStatBlockProcessor;
+        private readonly ICombatResponseProcessor _combatResponseProcessor;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private readonly GameNotificationService _gameNotificationService;
 
         public ResponseProcessingService(
             StorageService storageService,
@@ -33,7 +36,10 @@ namespace AiGMBackEnd.Services
             IQuestProcessor questProcessor,
             INPCProcessor npcProcessor,
             IPlayerProcessor playerProcessor,
-            ISummarizePromptProcessor summarizePromptProcessor)
+            ISummarizePromptProcessor summarizePromptProcessor,
+            IEnemyStatBlockProcessor enemyStatBlockProcessor,
+            ICombatResponseProcessor combatResponseProcessor,
+            GameNotificationService gameNotificationService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -44,6 +50,9 @@ namespace AiGMBackEnd.Services
             _npcProcessor = npcProcessor;
             _playerProcessor = playerProcessor;
             _summarizePromptProcessor = summarizePromptProcessor;
+            _enemyStatBlockProcessor = enemyStatBlockProcessor;
+            _combatResponseProcessor = combatResponseProcessor;
+            _gameNotificationService = gameNotificationService;
 
             _jsonSerializerOptions = new JsonSerializerOptions
             {
@@ -62,6 +71,12 @@ namespace AiGMBackEnd.Services
             try
             {
                 _loggingService.LogInfo($"Processing {promptType} response for user {userId}");
+
+                // For Combat prompts, delegate to the combat processor
+                if (promptType == PromptType.Combat)
+                {
+                    return await HandleCombatResponseAsync(llmResponse, userId);
+                }
 
                 DmResponse dmResponse = null;
                 try
@@ -110,6 +125,25 @@ namespace AiGMBackEnd.Services
                     await _storageService.AddDmMessageToNpcLogAsync(userId, npcId, userFacingText);
                 }
 
+                // Check if combat has been triggered
+                if (dmResponse.CombatTriggered && !string.IsNullOrEmpty(dmResponse.EnemyToEngageId))
+                {
+                    _loggingService.LogInfo($"Combat triggered for user {userId} against enemy {dmResponse.EnemyToEngageId}. Enqueuing preparation job.");
+                    
+                    // Enqueue the Hangfire job to ensure stat block exists and then initiate combat
+                    BackgroundJob.Enqueue<HangfireJobsService>(x => 
+                        x.EnsureEnemyStatBlockAndInitiateCombatAsync(userId, dmResponse.EnemyToEngageId, userFacingText));
+
+                    // Return immediately, indicating combat is pending
+                    return new ProcessedResult
+                    {
+                        UserFacingText = userFacingText, // The text that initiated combat
+                        Success = true,
+                        ErrorMessage = string.Empty,
+                        CombatPending = true // Signal to the frontend that combat prep is happening
+                    };
+                }
+
                 return new ProcessedResult
                 {
                     UserFacingText = userFacingText,
@@ -123,6 +157,27 @@ namespace AiGMBackEnd.Services
                 return new ProcessedResult
                 {
                     UserFacingText = "An unexpected error occurred while processing the game's response.",
+                    Success = false,
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
+
+        /// <summary>
+        /// Handles responses from Combat prompts, using the CombatResponseProcessor
+        /// </summary>
+        private async Task<ProcessedResult> HandleCombatResponseAsync(string llmResponse, string userId)
+        {
+            try
+            {
+                return await _combatResponseProcessor.ProcessCombatResponseAsync(llmResponse, userId);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error in HandleCombatResponseAsync for user {userId}: {ex.Message}");
+                return new ProcessedResult
+                {
+                    UserFacingText = "An error occurred during combat processing.",
                     Success = false,
                     ErrorMessage = ex.Message
                 };
@@ -174,7 +229,7 @@ namespace AiGMBackEnd.Services
         {
             try
             {
-                if (promptType == PromptType.DM || promptType == PromptType.NPC)
+                if (promptType == PromptType.DM || promptType == PromptType.NPC || promptType == PromptType.Combat)
                 {
                     _loggingService.LogError($"ProcessHiddenJsonAsync incorrectly called for {promptType}. Should be handled by HandleResponseAsync directly.");
                     throw new InvalidOperationException($"ProcessHiddenJsonAsync should not be called for {promptType} after refactoring.");
@@ -206,6 +261,13 @@ namespace AiGMBackEnd.Services
                     case PromptType.CreatePlayer:
                         await _playerProcessor.ProcessAsync(jsonObject, userId);
                         break;
+                    case PromptType.CreateEnemyStatBlock:
+                        await _enemyStatBlockProcessor.ProcessAsync(jsonObject, userId);
+                        break;
+                    case PromptType.SummarizeCombat:
+                        // Future: Handle summarizing combat results
+                        _loggingService.LogWarning($"SummarizeCombat handling not yet implemented in ProcessHiddenJsonAsync");
+                        break;
                     default:
                         _loggingService.LogWarning($"Unhandled PromptType in ProcessHiddenJsonAsync: {promptType}");
                         break;
@@ -219,45 +281,60 @@ namespace AiGMBackEnd.Services
         }
 
         /// <summary>
-        /// Handles the response from a summarization prompt
+        /// Handles the response from a GENERAL summarization prompt (e.g., end of session)
         /// </summary>
-        public async Task<ProcessedResult> HandleSummaryResponseAsync(string llmResponse, string userId)
+        public async Task ProcessGeneralSummaryAsync(string llmResponse, string userId)
         {
             try
             {
-                _loggingService.LogInfo($"Processing summarization response for user {userId}");
+                _loggingService.LogInfo($"Processing general summarization response for user {userId}");
                 
                 if (string.IsNullOrEmpty(llmResponse))
                 {
-                    _loggingService.LogWarning("Empty summarization response received");
-                    return new ProcessedResult
-                    {
-                        UserFacingText = string.Empty,
-                        Success = false,
-                        ErrorMessage = "Empty summarization response"
-                    };
+                    _loggingService.LogWarning("Empty general summarization response received");
+                    return; // Or throw? Decide error handling
                 }
                 
                 string summary = CleanJsonResponse(llmResponse).Trim();
                 
+                // Use the injected processor service to handle the summary logic
                 await _summarizePromptProcessor.ProcessSummaryAsync(summary, userId);
-                
-                return new ProcessedResult
-                {
-                    UserFacingText = summary,
-                    Success = true,
-                    ErrorMessage = string.Empty
-                };
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing summarization response: {ex.Message}");
-                return new ProcessedResult
+                _loggingService.LogError($"Error processing general summarization response for {userId}: {ex.Message}");
+                // Decide if we should re-throw or just log
+                throw; 
+            }
+        }
+
+        /// <summary>
+        /// Handles the response from a COMBAT summarization prompt
+        /// </summary>
+        public async Task ProcessCombatSummaryAsync(string llmResponse, string userId, bool playerVictory)
+        {
+             try
+            {
+                _loggingService.LogInfo($"Processing COMBAT summarization response for user {userId}. Victory: {playerVictory}");
+                
+                if (string.IsNullOrEmpty(llmResponse))
                 {
-                    UserFacingText = string.Empty,
-                    Success = false,
-                    ErrorMessage = ex.Message
-                };
+                    _loggingService.LogWarning("Empty combat summarization response received");
+                     return; // Or throw?
+                }
+                
+                string summary = CleanJsonResponse(llmResponse).Trim();
+
+                // Delegate to the specific processor, passing the victory status
+                await _summarizePromptProcessor.ProcessCombatSummaryAsync(summary, userId, playerVictory);
+
+                // No longer need comments about passing victory status, as it's now a parameter.
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing COMBAT summarization response for {userId}: {ex.Message}");
+                // Decide if we should re-throw or just log
+                throw; 
             }
         }
     }

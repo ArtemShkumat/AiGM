@@ -1,0 +1,633 @@
+```json
+// EXAMPLE 1: Combat Turn - Player initiates attack
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": {
+    "combatId": "combat_skel_01",
+    "userId": "user123",
+    "enemyStatBlockId": "enemy_cracked_skeleton",
+    "currentEnemySuccesses": 0,
+    "playerConditions": [],
+    "combatLog": [
+      "As you pass the twisted roots of an old barrow mound, a Skeleton lurches out from the brush, sword already raised. Its empty sockets fix on you, and it attacks without hesitation." 
+    ],
+    "isActive": true
+  },
+  "enemyStatBlock": {
+    "id": "enemy_cracked_skeleton",
+    "name": "Cracked Skeleton",
+    "level": 3,
+    "successesRequired": 2,
+    "description": "A dry-boned humanoid clad in scraps of armor, wielding a chipped longsword. Animated by necromantic energy.",
+    "vulnerability": "Can only be damaged by non-piercing attacks (bludgeoning, slashing, magic, etc.)",
+    "badStuff": "If victorious, the skeleton knocks the player unconscious and leaves them wounded and cursed with necrotic decay",
+    "tags": []
+  },
+  "player": {
+    "id": "player_thalen",
+    "name": "Thalen, Ex-Sellsword",
+    "rpgTags": [
+      { "name": "Veteran Archer", "description": "Skilled with bows." },
+      { "name": "Quick on His Feet", "description": "Adept at dodging and maneuvering." },
+      { "name": "Tattered Cloak", "description": "A worn cloak, surprisingly useful." },
+      { "name": "Old War Blade", "description": "A sturdy, well-used sword." }
+    ]
+    // Other player details omitted for brevity
+  },
+  "playerInput": "I quickly draw my bow and fire at its center mass."
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Okay, you draw your bow to shoot the Cracked Skeleton. This is a direct attack. The Skeleton is Level 3, so the base difficulty is 3 (Target Number 9). Do you want to use any tags to lower the difficulty?",
+  "currentEnemySuccesses": 0,
+  "playerConditions": [],
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 2: Combat Turn - Player declares tags and roll for attack, LLM narrates outcome (ineffective) and enemy counterattack
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after Example 1 response
+    "combatId": "combat_skel_01",
+    "userId": "user123",
+    "enemyStatBlockId": "enemy_cracked_skeleton",
+    "currentEnemySuccesses": 0,
+    "playerConditions": [],
+    "combatLog": [
+       "As you pass the twisted roots of an old barrow mound, a Skeleton lurches out from the brush, sword already raised. Its empty sockets fix on you, and it attacks without hesitation.",
+       "Okay, you draw your bow to shoot the Cracked Skeleton. This is a direct attack. The Skeleton is Level 3, so the base difficulty is 3 (Target Number 9). Do you want to use any tags to lower the difficulty?"
+    ],
+    "isActive": true
+  },
+  "enemyStatBlock": { // Same as above },
+  "player": { // Same as above },
+  "playerInput": "Yes, I'll use 'Veteran Archer'. I rolled a 13." 
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Alright, using 'Veteran Archer' lowers the difficulty from 3 to 2 (Target Number 6). You rolled 13, which is a definite hit! Your arrow flies true, striking the skeleton square in the chest... but it passes harmlessly through its ribcage to thud into the ground behind it. The creature doesn't even flinch! Your piercing arrow failed to affect its brittle form due to its vulnerability. \nThe skeleton, undeterred, closes the distance with surprising speed, raising its chipped longsword for a vicious swing aimed at your side. This is a Level 3 attack, so the base difficulty to defend is 3 (Target Number 9). How do you react, and will you use any tags?",
+  "currentEnemySuccesses": 0, // Still 0, attack was ineffective
+  "playerConditions": [],
+  "combatEnded": false,
+  "playerVictory": false
+}
+
+```
+
+```json
+// EXAMPLE 3: Combat Turn - Player declares tags and roll for defense, LLM narrates outcome (success)
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after Example 2 response
+    "combatId": "combat_skel_01",
+    "userId": "user123",
+    "enemyStatBlockId": "enemy_cracked_skeleton",
+    "currentEnemySuccesses": 0,
+    "playerConditions": [],
+    "combatLog": [
+       // ... previous logs ...
+       "Alright, using 'Veteran Archer' lowers the difficulty from 3 to 2 (Target Number 6). You rolled 13, which is a definite hit! Your arrow flies true, striking the skeleton square in the chest... but it passes harmlessly through its ribcage to thud into the ground behind it. The creature doesn't even flinch! Your piercing arrow failed to affect its brittle form due to its vulnerability. \nThe skeleton, undeterred, closes the distance with surprising speed, raising its chipped longsword for a vicious swing aimed at your side. This is a Level 3 attack, so the base difficulty to defend is 3 (Target Number 9). How do you react, and will you use any tags?",
+       "Okay, switching tactics! You drop the bow and draw your Old War Blade for a slash. That should bypass its piercing vulnerability. The base difficulty is 3 (Target Number 9). Any tags you want to use?"
+    ],
+    "isActive": true
+  },
+  "enemyStatBlock": { // Same as above },
+  "player": { // Same as above },
+  "playerInput": "I dive away using 'Quick on His Feet'. I rolled a 7." 
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Got it, using 'Quick on His Feet' drops the difficulty from 3 to 2 (Target Number 6). You rolled a 7, barely making it! With a burst of speed, you dive sideways just as the skeleton's rusted blade scythes through the air where you were a moment ago. The attack misses cleanly. The skeleton recovers, turning its empty gaze back towards you. What's your next move?",
+  "currentEnemySuccesses": 0,
+  "playerConditions": [],
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 4: Combat Turn - Player initiates effective attack
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after Example 3 response
+    "combatId": "combat_skel_01",
+    "userId": "user123",
+    "enemyStatBlockId": "enemy_cracked_skeleton",
+    "currentEnemySuccesses": 0,
+    "playerConditions": [],
+    "combatLog": [
+      // ... previous logs ...
+      "Got it, using 'Quick on His Feet' drops the difficulty from 3 to 2 (Target Number 6). You rolled a 7, barely making it! With a burst of speed, you dive sideways just as the skeleton's rusted blade scythes through the air where you were a moment ago. The attack misses cleanly. The skeleton recovers, turning its empty gaze back towards you. What's your next move?"
+    ],
+    "isActive": true
+  },
+  "enemyStatBlock": { // Same as above },
+  "player": { // Same as above },
+  "playerInput": "I drop the bow, draw my Old War Blade, and go in for a horizontal slash across its spine." 
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Okay, switching tactics! You drop the bow and draw your Old War Blade for a slash. That should bypass its piercing vulnerability. The base difficulty is 3 (Target Number 9). Any tags you want to use?",
+  "currentEnemySuccesses": 0,
+  "playerConditions": [],
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 5: Combat Turn - Player declares tags and roll for attack, LLM narrates outcome (1st success) and enemy counterattack
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after Example 4 response
+     "combatId": "combat_skel_01",
+    "userId": "user123",
+    "enemyStatBlockId": "enemy_cracked_skeleton",
+    "currentEnemySuccesses": 0,
+    "playerConditions": [],
+    "combatLog": [
+       // ... previous logs ...
+       "Got it, using 'Quick on His Feet' drops the difficulty from 3 to 2 (Target Number 6). You rolled a 7, barely making it! With a burst of speed, you dive sideways just as the skeleton's rusted blade scythes through the air where you were a moment ago. The attack misses cleanly. The skeleton recovers, turning its empty gaze back towards you. What's your next move?",
+       "Okay, switching tactics! You drop the bow and draw your Old War Blade for a slash. That should bypass its piercing vulnerability. The base difficulty is 3 (Target Number 9). Any tags you want to use?"
+    ],
+    "isActive": true
+  },
+  "enemyStatBlock": { // Same as above },
+  "player": { // Same as above },
+  "playerInput": "I'll use 'Old War Blade'. I rolled 17." 
+  // Player could also mention trying other tags like 'Quick on His Feet', and the LLM would adjudicate if it applies here.
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Using 'Old War Blade' brings the difficulty down to 2 (Target Number 6). You rolled 17 - a solid hit! You step in close, bringing the sword around in a powerful horizontal slash. The blade connects with a harsh scraping sound, biting deep into the ancient, brittle bone. A visible crack appears, and the skeleton momentarily staggers! That counts as a success! (1 of 2 needed). \nIt recovers quickly, retaliating by raising its sword high for a heavy downward chop. Base difficulty to defend is 3 (TN 9). How do you defend, and any tags?",
+  "currentEnemySuccesses": 1, // SUCCESS!
+  "playerConditions": [],
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 6: Combat Turn - Player declares tags and roll for defense, LLM narrates outcome (success)
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after Example 5 response
+    "combatId": "combat_skel_01",
+    "userId": "user123",
+    "enemyStatBlockId": "enemy_cracked_skeleton",
+    "currentEnemySuccesses": 1,
+    "playerConditions": [],
+    "combatLog": [
+      // ... previous logs ...
+       "Using 'Old War Blade' brings the difficulty down to 2 (Target Number 6). You rolled 17 - a solid hit! You step in close, bringing the sword around in a powerful horizontal slash. The blade connects with a harsh scraping sound, biting deep into the ancient, brittle bone. A visible crack appears, and the skeleton momentarily staggers! That counts as a success! (1 of 2 needed). \nIt recovers quickly, retaliating by raising its sword high for a heavy downward chop. Base difficulty to defend is 3 (TN 9). How do you defend, and any tags?"
+    ],
+    "isActive": true
+  },
+  "enemyStatBlock": { // Same as above },
+  "player": { // Same as above },
+  "playerInput": "Using 'Quick on His Feet' again to dodge. Rolled a 10."
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Alright, 'Quick on His Feet' reduces the difficulty to 2 (Target Number 6). Your roll of 10 is enough! You duck sharply as the skeleton's sword descends. The heavy blade smashes into a nearby rock with a clang, sending sparks flying. You avoided the blow cleanly. The skeleton pauses, preparing its next move. What do you do?",
+  "currentEnemySuccesses": 1, 
+  "playerConditions": [],
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 7: Combat Turn - Player initiates creative attack
+
+// CONTEXT PROVIDED TO LLM:
+{
+   "combatState": { // As after Example 6 response
+    "combatId": "combat_skel_01",
+    "userId": "user123",
+    "enemyStatBlockId": "enemy_cracked_skeleton",
+    "currentEnemySuccesses": 1,
+    "playerConditions": [],
+    "combatLog": [
+      // ... previous logs ...
+       "Alright, 'Quick on His Feet' reduces the difficulty to 2 (Target Number 6). Your roll of 10 is enough! You duck sharply as the skeleton's rusted blade scythes through the air where you were a moment ago. The attack misses cleanly. The skeleton recovers, turning its empty gaze back towards you. What's your next move?"
+    ],
+    "isActive": true
+  },
+  "enemyStatBlock": { // Same as above },
+  "player": { // Same as above },
+  "playerInput": "I rip my Tattered Cloak free and fling it in its face, then follow up with another heavy slash."
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Creative! Using the cloak to obscure its vision is a good idea. That definitely helps. Base difficulty is 3 (TN 9). Which tags are you applying to this attack?",
+  "currentEnemySuccesses": 1, 
+  "playerConditions": [],
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 8: Combat Turn - Player declares tags and roll for attack, LLM narrates outcome (VICTORY)
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after Example 7 response
+     "combatId": "combat_skel_01",
+    "userId": "user123",
+    "enemyStatBlockId": "enemy_cracked_skeleton",
+    "currentEnemySuccesses": 1,
+    "playerConditions": [],
+    "combatLog": [
+       // ... previous logs ...
+       "Alright, 'Quick on His Feet' reduces the difficulty to 2 (Target Number 6). Your roll of 10 is enough! You duck sharply as the skeleton's rusted blade scythes through the air where you were a moment ago. The attack misses cleanly. The skeleton recovers, turning its empty gaze back towards you. What's your next move?",
+       "Creative! Using the cloak to obscure its vision is a good idea. That definitely helps. Base difficulty is 3 (TN 9). Which tags are you applying to this attack?"
+    ],
+    "isActive": true
+  },
+  "enemyStatBlock": { // Same as above },
+  "player": { // Same as above },
+  "playerInput": "I'll use 'Old War Blade' and 'Tattered Cloak'. I rolled an 8."
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Okay, using 'Old War Blade' brings it to difficulty 2. Adding the 'Tattered Cloak' for the distraction brings it down to difficulty 1 (Target Number 3). You rolled an 8! As the cloak flutters over its face, you seize the opening, bringing your 'Old War Blade' down hard. The slash connects solidly with the creature's skull, shearing through the bone with a final, decisive CRACK. Fragments fly through the air as the skeleton's form collapses into a heap of inanimate remains on the path. The necromantic energy dissipates. You have defeated the Cracked Skeleton!",
+  "currentEnemySuccesses": 2, // FINAL SUCCESS!
+  "playerConditions": [],
+  "combatEnded": true,       // Combat Ends
+  "playerVictory": true      // Player Wins
+}
+```
+
+```json
+// EXAMPLE SET 2: Zombie Apocalypse - Player vs. Bandit Group (Player Defeat)
+
+// --- Enemy & Player Context ---
+// Enemy Stat Block:
+//   Name: Desperate Scavengers (Bandit Group)
+//   Level: 5
+//   Successes Required: 3 
+//   Description: A ragged group of three individuals armed with makeshift melee weapons (pipes, bats) and wearing scavenged gear. They look jumpy and dangerous.
+//   Vulnerability: Easily distracted by loud noises or sudden opportunities elsewhere. Their coordination breaks easily.
+//   Bad Stuff: They beat the player unconscious, steal their valuable supplies, and leave them bleeding in an alley.
+
+// Player Character:
+//   Name: Alex
+//   Tags: ["Resourceful Scavenger", "Wary Survivor", "Crowbar Master", "First Aid Kit"]
+
+// -----------------------------
+
+// EXAMPLE 2.1: Combat Turn - Player initiates attack
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": {
+    "combatId": "combat_bandits_01",
+    "userId": "user456",
+    "enemyStatBlockId": "enemy_desperate_scavengers",
+    "currentEnemySuccesses": 0,
+    "playerConditions": [],
+    "combatLog": [
+      "Rounding a corner piled high with debris, you nearly collide with three figures rifling through overturned bins. They turn instantly, weapons raised – pipes and makeshift clubs. 'Hold it right there! Drop the bag, nice and slow,' the apparent leader snarls."
+    ],
+    "isActive": true
+  },
+  "enemyStatBlock": {
+    "id": "enemy_desperate_scavengers",
+    "name": "Desperate Scavengers",
+    "level": 5,
+    "successesRequired": 3,
+    "description": "A ragged group of three individuals armed with makeshift melee weapons (pipes, bats) and wearing scavenged gear. They look jumpy and dangerous.",
+    "vulnerability": "Easily distracted by loud noises or sudden opportunities elsewhere. Their coordination breaks easily.",
+    "badStuff": "They beat the player unconscious, steal their valuable supplies, and leave them bleeding in an alley.",
+    "tags": []
+  },
+  "player": {
+    "id": "player_alex",
+    "name": "Alex",
+    "rpgTags": [
+      { "name": "Resourceful Scavenger", "description": "Knows how to find and use things." },
+      { "name": "Wary Survivor", "description": "Cautious and aware of danger." },
+      { "name": "Crowbar Master", "description": "It's not a tool, it's a weapon in your hands." },
+      { "name": "First Aid Kit", "description": "Basic medical supplies." }
+    ]
+    // Other player details omitted
+  },
+  "playerInput": "No way I'm dropping my bag. I grip my crowbar and swing at the leader's legs!"
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "You tighten your grip on the crowbar, refusing to back down. A direct swing at the leader of these Desperate Scavengers. They are Level 5, so the base difficulty is 5 (Target Number 15). Which of your tags will you use to try and make this hit count?",
+  "currentEnemySuccesses": 0,
+  "playerConditions": [],
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 2.2: Player attacks (misses), Bandits counterattack
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after 2.1 response
+    "combatId": "combat_bandits_01",
+    "userId": "user456",
+    "enemyStatBlockId": "enemy_desperate_scavengers",
+    "currentEnemySuccesses": 0,
+    "playerConditions": [],
+    "combatLog": [
+       "Rounding a corner piled high with debris, you nearly collide with three figures rifling through overturned bins. They turn instantly, weapons raised – pipes and makeshift clubs. 'Hold it right there! Drop the bag, nice and slow,' the apparent leader snarls.",
+       "You tighten your grip on the crowbar, refusing to back down. A direct swing at the leader of these Desperate Scavengers. They are Level 5, so the base difficulty is 5 (Target Number 15). Which of your tags will you use to try and make this hit count?"
+    ],
+    "isActive": true
+  },
+  "enemyStatBlock": { // Same as above },
+  "player": { // Same as above },
+  "playerInput": "Just my 'Crowbar Master' tag. I rolled an 11." 
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Okay, applying the 'Crowbar Master' tag reduces the difficulty to 4 (Target Number 12). You rolled 11, just shy of what you needed! Your swing goes wide as the leader sidesteps, sneering. 'Should've just given us the bag!' \nHe signals the other two, and they converge, swinging their crude weapons! This is a coordinated attack from a Level 5 group. Base difficulty to defend is 5 (TN 15). How do you avoid this beating, and what tags apply?",
+  "currentEnemySuccesses": 0, // Miss
+  "playerConditions": [],
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 2.3: Player fails defense -> Minor Condition (Corrected Flow)
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after 2.2 response
+     "combatId": "combat_bandits_01",
+     "userId": "user456",
+     "enemyStatBlockId": "enemy_desperate_scavengers",
+     "currentEnemySuccesses": 0,
+     "playerConditions": [],
+     "combatLog": [
+        // ... previous logs ...
+        "Okay, applying the 'Crowbar Master' tag reduces the difficulty to 4 (Target Number 12). You rolled 11, just shy of what you needed! Your swing goes wide as the leader sidesteps, sneering. 'Should've just given us the bag!' \nHe signals the other two, and they converge, swinging their crude weapons! This is a coordinated attack from a Level 5 group. Base difficulty to defend is 5 (TN 15). How do you avoid this beating, and what tags apply?"
+     ],
+     "isActive": true
+  },
+  "enemyStatBlock": { /* ... */ },
+  "player": { /* ... */ },
+  "playerInput": "I'll use 'Wary Survivor' to try and anticipate their moves! Rolled a 9."
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Using 'Wary Survivor' lowers the defense difficulty to 4 (Target Number 12). You rolled a 9, not quite enough! You anticipate the leader's swing but misjudge the one coming from your flank. A heavy pipe connects solidly with your ribs, knocking the wind out of you and sending a jolt of pain through your side. You've gained a condition: [Minor: Bruised Ribs]. \nThe scavengers press their advantage, seeing you stumble. What do you do now?", // **Prompt for player's next action**
+  "currentEnemySuccesses": 0, 
+  "playerConditions": ["Minor: Bruised Ribs"], // First condition added
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 2.4: Player attempts another attack
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after 2.3 response
+     "combatId": "combat_bandits_01",
+     "userId": "user456",
+     "enemyStatBlockId": "enemy_desperate_scavengers",
+     "currentEnemySuccesses": 0,
+     "playerConditions": ["Minor: Bruised Ribs"], // Has one condition
+     "combatLog": [
+        // ... previous logs ...
+        "Using 'Wary Survivor' lowers the defense difficulty to 4 (Target Number 12). You rolled a 9, not quite enough! You anticipate the leader's swing but misjudge the one coming from your flank. A heavy pipe connects solidly with your ribs, knocking the wind out of you and sending a jolt of pain through your side. You've gained a condition: [Minor: Bruised Ribs]. \nThe scavengers press their advantage, seeing you stumble. What do you do now?"
+     ],
+     "isActive": true
+  },
+  "enemyStatBlock": { /* ... */ },
+  "player": { /* ... */ },
+  "playerInput": "Damn it! I ignore the pain and swing my crowbar again, aiming for the knees!" 
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Gritting your teeth against the pain in your side, you swing the crowbar low. Base difficulty is 5 (TN 15) due to the bandits' level. Your [Minor: Bruised Ribs] condition might make this harder. Which tags are you using?", // LLM acknowledges condition, sets base difficulty, asks for tags.
+  "currentEnemySuccesses": 0, 
+  "playerConditions": ["Minor: Bruised Ribs"], 
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 2.5: Player attacks (misses again), Bandits counterattack
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after 2.4 response
+     "combatId": "combat_bandits_01",
+     "userId": "user456",
+     "enemyStatBlockId": "enemy_desperate_scavengers",
+     "currentEnemySuccesses": 0,
+     "playerConditions": ["Minor: Bruised Ribs"], 
+     "combatLog": [
+        // ... previous logs ...
+        "Gritting your teeth against the pain in your side, you swing the crowbar low. Base difficulty is 5 (TN 15) due to the bandits' level. Your [Minor: Bruised Ribs] condition might make this harder. Which tags are you using?"
+     ],
+     "isActive": true
+  },
+  "enemyStatBlock": { /* ... */ },
+  "player": { /* ... */ },
+  "playerInput": "Using 'Crowbar Master'. I rolled a 6." 
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Okay, 'Crowbar Master' lowers the difficulty to 4 (TN 12). The bruised ribs make the swing a little awkward, but we'll stick with difficulty 4. You rolled a 6, which unfortunately misses again. The bandits easily avoid your pained swing. \n'Getting tired?' one mocks. They press the attack simultaneously! Base difficulty 5 (TN 15) to defend. How do you react? Any tags?",
+  "currentEnemySuccesses": 0, // Still 0
+  "playerConditions": ["Minor: Bruised Ribs"], 
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 2.6: Player fails defense -> Moderate Condition
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after 2.5 response
+     "combatId": "combat_bandits_01",
+     "userId": "user456",
+     "enemyStatBlockId": "enemy_desperate_scavengers",
+     "currentEnemySuccesses": 0,
+     "playerConditions": ["Minor: Bruised Ribs"], 
+     "combatLog": [
+        // ... previous logs ...
+         "Okay, 'Crowbar Master' lowers the difficulty to 4 (TN 12). The bruised ribs make the swing a little awkward, but we'll stick with difficulty 4. You rolled a 6, which unfortunately misses again. The bandits easily avoid your pained swing. \n'Getting tired?' one mocks. They press the attack simultaneously! Base difficulty 5 (TN 15) to defend. How do you react? Any tags?"
+     ],
+     "isActive": true
+  },
+  "enemyStatBlock": { /* ... */ },
+  "player": { /* ... */ },
+  "playerInput": "I try to block with my 'Crowbar Master' tag! Rolled a 5."
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Using 'Crowbar Master' defensively lowers the difficulty to 4 (TN 12). But you only rolled a 5! You manage to parry one blow with the crowbar, but another scavenger swings low, catching your arm with a rusted pipe. You feel a sharp pain and see blood welling up. Your bruised ribs scream in protest as you stagger back. You now have a [Moderate: Bleeding Arm] condition, in addition to your bruised ribs. \n'Just give it up!' one of them yells, their eyes gleaming. What is your next action?", // **Prompt for player's next action**
+  "currentEnemySuccesses": 0, 
+  "playerConditions": ["Minor: Bruised Ribs", "Moderate: Bleeding Arm"], // Second condition added
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 2.7: Player attempts action (e.g., distract)
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after 2.6 response
+     "combatId": "combat_bandits_01",
+     "userId": "user456",
+     "enemyStatBlockId": "enemy_desperate_scavengers",
+     "currentEnemySuccesses": 0,
+     "playerConditions": ["Minor: Bruised Ribs", "Moderate: Bleeding Arm"], 
+     "combatLog": [
+        // ... previous logs ...
+         "Using 'Crowbar Master' defensively lowers the difficulty to 4 (TN 12). But you only rolled a 5! You manage to parry one blow with the crowbar, but another scavenger swings low, catching your arm with a rusted pipe. You feel a sharp pain and see blood welling up. Your bruised ribs scream in protest as you stagger back. You now have a [Moderate: Bleeding Arm] condition, in addition to your bruised ribs. \n'Just give it up!' one of them yells, their eyes gleaming. What is your next action?"
+     ],
+     "isActive": true
+  },
+  "enemyStatBlock": { /* ... */ },
+  "player": { /* ... */ },
+  "playerInput": "Okay, okay! I kick over a stack of rattling cans nearby, hoping to distract them or exploit their vulnerability!" 
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "A desperate move! You lash out with your foot, sending a pile of empty cans clattering loudly across the alley pavement. This targets their vulnerability (distraction by noise). Base difficulty is 5 (TN 15). Are you using any tags, like 'Resourceful Scavenger'?",
+  "currentEnemySuccesses": 0, 
+  "playerConditions": ["Minor: Bruised Ribs", "Moderate: Bleeding Arm"], 
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 2.8: Player succeeds on vulnerability attack (1st success), but fails defense -> Severe Condition
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after 2.7 response
+     "combatId": "combat_bandits_01",
+     "userId": "user456",
+     "enemyStatBlockId": "enemy_desperate_scavengers",
+     "currentEnemySuccesses": 0, 
+     "playerConditions": ["Minor: Bruised Ribs", "Moderate: Bleeding Arm"], 
+     "combatLog": [
+        // ... previous logs ...
+         "A desperate move! You lash out with your foot, sending a pile of empty cans clattering loudly across the alley pavement. This targets their vulnerability (distraction by noise). Base difficulty is 5 (TN 15). Are you using any tags, like 'Resourceful Scavenger'?"
+     ],
+     "isActive": true
+  },
+  "enemyStatBlock": { /* ... */ },
+  "player": { /* ... */ },
+  "playerInput": "Yes, 'Resourceful Scavenger'! I rolled a 13."
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "Using 'Resourceful Scavenger' drops the difficulty to 4 (TN 12). Your roll of 13 is a success! The sudden racket makes two of the bandits jump and look towards the source of the noise, breaking their focus. That counts as a success against their vulnerability! (1 of 3 needed). \nHowever, the leader wasn't fooled. While the others were distracted, he lunges forward, slamming his pipe hard against your temple before you can fully react. Stars explode behind your eyes, vision blurring. The impact leaves you dazed. You've gained a [Severe: Concussed] condition. \nThrough the ringing in your ears, you sense them regrouping. What do you do?", // Prompt for player action
+  "currentEnemySuccesses": 1, // First success!
+  "playerConditions": ["Minor: Bruised Ribs", "Moderate: Bleeding Arm", "Severe: Concussed"], // Third condition added
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 2.9: Player attempts final defense
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after 2.8 response
+     "combatId": "combat_bandits_01",
+     "userId": "user456",
+     "enemyStatBlockId": "enemy_desperate_scavengers",
+     "currentEnemySuccesses": 1, 
+     "playerConditions": ["Minor: Bruised Ribs", "Moderate: Bleeding Arm", "Severe: Concussed"],
+     "combatLog": [
+        // ... previous logs ...
+        "Using 'Resourceful Scavenger' drops the difficulty to 4 (TN 12). Your roll of 13 is a success! The sudden racket makes two of the bandits jump and look towards the source of the noise, breaking their focus. That counts as a success against their vulnerability! (1 of 3 needed). \nHowever, the leader wasn't fooled. While the others were distracted, he lunges forward, slamming his pipe hard against your temple before you can fully react. Stars explode behind your eyes, vision blurring. The impact leaves you dazed. You've gained a [Severe: Concussed] condition. \nThrough the ringing in your ears, you sense them regrouping. What do you do?"
+     ],
+     "isActive": true
+  },
+  "enemyStatBlock": { /* ... */ },
+  "player": { /* ... */ },
+  "playerInput": "I feebly try to raise my crowbar..." 
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "You struggle to lift the crowbar, your head swimming and vision blurry from the concussion. They're attacking again as a group! Base difficulty is 5 (TN 15). Can you use any tags for this last defense?", // Ask for tags/roll for the defense
+  "currentEnemySuccesses": 1, 
+  "playerConditions": ["Minor: Bruised Ribs", "Moderate: Bleeding Arm", "Severe: Concussed"], 
+  "combatEnded": false,
+  "playerVictory": false
+}
+```
+
+```json
+// EXAMPLE 2.10: Player fails defense fourth time -> DEFEAT & Bad Stuff
+
+// CONTEXT PROVIDED TO LLM:
+{
+  "combatState": { // As after 2.9 response
+     "combatId": "combat_bandits_01",
+     "userId": "user456",
+     "enemyStatBlockId": "enemy_desperate_scavengers",
+     "currentEnemySuccesses": 1, 
+     "playerConditions": ["Minor: Bruised Ribs", "Moderate: Bleeding Arm", "Severe: Concussed"], 
+     "combatLog": [
+        // ... previous logs ...
+        "You struggle to lift the crowbar, your head swimming and vision blurry from the concussion. They're attacking again as a group! Base difficulty is 5 (TN 15). Can you use any tags for this last defense?"
+     ],
+     "isActive": true
+  },
+  "enemyStatBlock": { /* ... */ },
+  "player": { /* ... */ },
+  "playerInput": "No tags. Rolled a 2." // Player confirms no tags and roll
+}
+
+// EXPECTED LLM RESPONSE:
+{
+  "userFacingText": "No tags means the difficulty stays at 5 (TN 15). Your roll of 2 is nowhere near enough while concussed and injured. Your feeble attempt to raise the crowbar is easily brushed aside. Another blow crashes down, maybe to your head, maybe your chest – you barely register it before darkness takes you. This is your fourth failed defense, you are defeated. \n... \nYou come to sometime later, lying on the cold, damp concrete of the alley. Your head throbs, your arm is sticky with dried blood, and your ribs ache with every breath. Your bag is gone, along with anything valuable you had on you. The scavengers beat you, robbed you, and left you for dead or worse.",
+  "currentEnemySuccesses": 1, // Enemy didn't need successes, player was defeated
+  "playerConditions": ["Minor: Bruised Ribs", "Moderate: Bleeding Arm", "Severe: Concussed"], // State before final blow
+  "combatEnded": true,       // Combat Ends
+  "playerVictory": false     // Player Defeated (Bad Stuff triggered)
+}
+```

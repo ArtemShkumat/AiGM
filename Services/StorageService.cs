@@ -22,6 +22,8 @@ namespace AiGMBackEnd.Services
         private readonly IConversationLogService _conversationLogService;
         private readonly IWorldSyncService _worldSyncService;
         private readonly IRecentEventsService _recentEventsService;
+        private readonly IEnemyStatBlockService _enemyStatBlockService;
+        private readonly ICombatStateService _combatStateService;
         private readonly LoggingService _loggingService;
 
         public StorageService(
@@ -33,6 +35,8 @@ namespace AiGMBackEnd.Services
             IConversationLogService conversationLogService,
             IWorldSyncService worldSyncService,
             IRecentEventsService recentEventsService,
+            IEnemyStatBlockService enemyStatBlockService,
+            ICombatStateService combatStateService,
             LoggingService loggingService)
         {
             _baseStorageService = baseStorageService;
@@ -43,6 +47,8 @@ namespace AiGMBackEnd.Services
             _conversationLogService = conversationLogService;
             _worldSyncService = worldSyncService;
             _recentEventsService = recentEventsService;
+            _enemyStatBlockService = enemyStatBlockService;
+            _combatStateService = combatStateService;
             _loggingService = loggingService;
         }
 
@@ -222,6 +228,63 @@ namespace AiGMBackEnd.Services
         // but it's better handled by the processor via the service.
         // public async Task AddSummaryToRecentEventsAsync(string userId, string summary) =>
         //     await _recentEventsService.AddSummaryToRecentEventsAsync(userId, summary);
+
+        #endregion
+
+        #region Enemy Stat Block Operations
+
+        /// <summary>
+        /// Loads an EnemyStatBlock from its JSON file.
+        /// </summary>
+        /// <param name="userId">The user/game ID.</param>
+        /// <param name="enemyId">The ID of the enemy (e.g., "npc_goblin1" or "enemy_goblin1").</param>
+        /// <returns>The EnemyStatBlock object, or null if not found or on error.</returns>
+        public async Task<EnemyStatBlock?> LoadEnemyStatBlockAsync(string userId, string enemyId) =>
+            await _enemyStatBlockService.LoadEnemyStatBlockAsync(userId, enemyId);
+
+        /// <summary>
+        /// Saves an EnemyStatBlock to its JSON file, calculating SuccessesRequired.
+        /// </summary>
+        /// <param name="userId">The user/game ID.</param>
+        /// <param name="statBlock">The EnemyStatBlock object to save. Its ID will be used for the filename.</param>
+        public async Task SaveEnemyStatBlockAsync(string userId, EnemyStatBlock statBlock) =>
+            await _enemyStatBlockService.SaveEnemyStatBlockAsync(userId, statBlock);
+
+        /// <summary>
+        /// Checks if an EnemyStatBlock file exists.
+        /// </summary>
+        /// <param name="userId">The user/game ID.</param>
+        /// <param name="enemyId">The ID of the enemy (e.g., "npc_goblin1" or "enemy_goblin1").</param>
+        /// <returns>True if the file exists, false otherwise.</returns>
+        public Task<bool> CheckIfStatBlockExistsAsync(string userId, string enemyId) =>
+            _enemyStatBlockService.CheckIfStatBlockExistsAsync(userId, enemyId);
+
+        #endregion
+
+        #region Combat Operations
+
+        /// <summary>
+        /// Saves a CombatState to a JSON file.
+        /// </summary>
+        /// <param name="userId">The user/game ID.</param>
+        /// <param name="combatState">The CombatState object to save.</param>
+        public async Task SaveCombatStateAsync(string userId, CombatState combatState) =>
+            await _combatStateService.SaveCombatStateAsync(userId, combatState);
+
+        /// <summary>
+        /// Loads the active CombatState for a user.
+        /// </summary>
+        /// <param name="userId">The user/game ID.</param>
+        /// <returns>The CombatState object, or null if not found or on error.</returns>
+        public async Task<CombatState?> LoadCombatStateAsync(string userId) =>
+            await _combatStateService.LoadCombatStateAsync(userId);
+
+        /// <summary>
+        /// Deletes the CombatState file for a user.
+        /// </summary>
+        /// <param name="userId">The user/game ID.</param>
+        public async Task DeleteCombatStateAsync(string userId) =>
+            await _combatStateService.DeleteCombatStateAsync(userId);
 
         #endregion
     }

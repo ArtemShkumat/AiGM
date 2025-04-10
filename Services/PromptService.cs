@@ -11,11 +11,14 @@ namespace AiGMBackEnd.Services
     {
         DM,
         NPC,
+        CreateLocation,
         CreateQuest,
         CreateNPC,
-        CreateLocation,
         CreatePlayer,
-        Summarize
+        Summarize,
+        Combat,
+        CreateEnemyStatBlock,
+        SummarizeCombat
     }
 
     public class PromptService
@@ -40,7 +43,10 @@ namespace AiGMBackEnd.Services
                 { PromptType.CreateNPC, new CreateNPCPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateLocation, new CreateLocationPromptBuilder(storageService, loggingService) },
                 { PromptType.CreatePlayer, new CreatePlayerPromptBuilder(storageService, loggingService) },
-                { PromptType.Summarize, new SummarizePromptBuilder(storageService, loggingService) }
+                { PromptType.Summarize, new SummarizePromptBuilder(storageService, loggingService) },
+                { PromptType.CreateEnemyStatBlock, new CreateEnemyStatBlockPromptBuilder(storageService, loggingService) },
+                { PromptType.Combat, new CombatPromptBuilder(storageService, loggingService) },
+                { PromptType.SummarizeCombat, new SummarizeCombatPromptBuilder(storageService, loggingService) }
             };
         }
 

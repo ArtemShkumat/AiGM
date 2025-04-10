@@ -26,6 +26,7 @@ namespace AiGMBackEnd.Services
         private readonly INPCProcessor _npcProcessor;
         private readonly ILocationProcessor _locationProcessor;
         private readonly IQuestProcessor _questProcessor;
+        private readonly GameNotificationService _gameNotificationService;
 
         public HangfireJobsService(
             LoggingService loggingService,
@@ -36,7 +37,8 @@ namespace AiGMBackEnd.Services
             StorageService storageService,
             INPCProcessor npcProcessor,
             ILocationProcessor locationProcessor,
-            IQuestProcessor questProcessor)
+            IQuestProcessor questProcessor,
+            GameNotificationService gameNotificationService)
         {
             _loggingService = loggingService;
             _promptService = promptService;
@@ -47,6 +49,7 @@ namespace AiGMBackEnd.Services
             _npcProcessor = npcProcessor;
             _locationProcessor = locationProcessor;
             _questProcessor = questProcessor;
+            _gameNotificationService = gameNotificationService;
         }
 
         /// <summary>
@@ -170,34 +173,180 @@ namespace AiGMBackEnd.Services
         }
         
         /// <summary>
-        /// Background job to process summarization
+        /// Background job to process summarization (both general and combat)
         /// </summary>
         public async Task ProcessSummarizationJobAsync(PromptRequest request)
         {
             try
             {
-                _loggingService.LogInfo($"Processing summarization job for user {request.UserId}");
+                _loggingService.LogInfo($"Processing summarization job ({request.PromptType}) for user {request.UserId}");
                 
-                // 1. Build the summarization prompt
+                // 1. Build the summarization prompt (builder handles context based on type)
                 var prompt = await _promptService.BuildPromptAsync(request);
-                _loggingService.LogInfo($"Built summarization prompt for user {request.UserId}");
+                _loggingService.LogInfo($"Built {request.PromptType} prompt for user {request.UserId}");
                 
                 // 2. Call LLM to generate summary
                 var llmResponse = await _aiService.GetCompletionAsync(prompt);
-                _loggingService.LogInfo($"LLM response received for summarization, length: {llmResponse?.Length ?? 0}");
+                _loggingService.LogInfo($"LLM response received for {request.PromptType}, length: {llmResponse?.Length ?? 0}");
                 
-                // 3. Process the summary response
-                await _responseProcessingService.HandleSummaryResponseAsync(llmResponse, request.UserId);
-                
-                _loggingService.LogInfo($"Successfully processed summarization for user {request.UserId}");
+                // 3. Process the summary response using the appropriate processor method
+                if (request.PromptType == PromptType.SummarizeCombat)
+                {
+                    // Extract victory status from the request context
+                    bool playerVictory = false;
+                    if (!string.IsNullOrEmpty(request.Context))
+                    {
+                        bool.TryParse(request.Context, out playerVictory);
+                    }
+
+                    // Pass victory status to the processing method
+                    await _responseProcessingService.ProcessCombatSummaryAsync(llmResponse, request.UserId, playerVictory);
+                    _loggingService.LogInfo($"Successfully processed combat summary for user {request.UserId}");
+                    
+                    // Clean up combat state AFTER summary is processed
+                    await _storageService.DeleteCombatStateAsync(request.UserId);
+                    _loggingService.LogInfo($"Deleted combat state for user {request.UserId} after summarization.");
+                }
+                else // Assume PromptType.Summarize
+                {
+                    // Need a corresponding method in ResponseProcessingService
+                    await _responseProcessingService.ProcessGeneralSummaryAsync(llmResponse, request.UserId);
+                    _loggingService.LogInfo($"Successfully processed general summary for user {request.UserId}");
+                }
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing summarization job: {ex.Message}");
+                _loggingService.LogError($"Error processing summarization job ({request.PromptType}) for {request.UserId}: {ex.Message}");
+                // Should we delete combat state on error? Maybe not, allow retry?
                 throw;
             }
         }
         
+        /// <summary>
+        /// Ensures an enemy stat block exists and then initiates combat.
+        /// Uses Hangfire continuations.
+        /// </summary>
+        public async Task EnsureEnemyStatBlockAndInitiateCombatAsync(string userId, string enemyId, string initialCombatText)
+        {
+            _loggingService.LogInfo($"Ensuring stat block exists for enemy {enemyId} before initiating combat for user {userId}");
+            
+            string creationJobId = null;
+            bool exists = await _storageService.CheckIfStatBlockExistsAsync(userId, enemyId);
+            
+            if (!exists)
+            {
+                _loggingService.LogInfo($"Stat block for enemy {enemyId} does not exist. Enqueuing creation job.");
+                // TODO: Need a way to get the NPC/Enemy details (name, context) to pass to CreateEnemyStatBlockAsync
+                // This likely requires loading the NPC model based on enemyId
+                var npc = await _storageService.GetNpcAsync(userId, enemyId);
+                if (npc == null)
+                {
+                    _loggingService.LogError($"Cannot create stat block. NPC with ID {enemyId} not found for user {userId}.");
+                    // How to handle this? Maybe notify user combat can't start?
+                    // For now, just log and don't proceed.
+                    return; 
+                }
+                
+                // Enqueue the creation job
+                creationJobId = BackgroundJob.Enqueue(() => CreateEnemyStatBlockAsync(userId, enemyId, npc.Name, npc.Backstory)); // Assuming context is backstory for now
+                _loggingService.LogInfo($"Enqueued stat block creation job {creationJobId} for enemy {enemyId}");
+            }
+            else
+            {
+                _loggingService.LogInfo($"Stat block for enemy {enemyId} already exists.");
+            }
+
+            // Schedule the InitiateCombatAsync job to run AFTER the creation job (if one was needed)
+            if (!string.IsNullOrEmpty(creationJobId))
+            {
+                BackgroundJob.ContinueJobWith(creationJobId, 
+                    () => InitiateCombatAsync(userId, enemyId, initialCombatText), 
+                    JobContinuationOptions.OnAnyFinishedState); // Run even if creation fails? Decide policy.
+                _loggingService.LogInfo($"Scheduled combat initiation to continue after job {creationJobId}.");
+            }
+            else
+            {
+                // Stat block already existed, schedule combat initiation immediately
+                BackgroundJob.Enqueue(() => InitiateCombatAsync(userId, enemyId, initialCombatText));
+                _loggingService.LogInfo($"Scheduling combat initiation immediately for enemy {enemyId}.");
+            }
+        }
+
+        /// <summary>
+        /// Creates an Enemy Stat Block entity.
+        /// </summary>
+        public async Task CreateEnemyStatBlockAsync(string userId, string enemyId, string enemyName, string context)
+        {
+            var request = new PromptRequest
+            {
+                PromptType = PromptType.CreateEnemyStatBlock,
+                UserId = userId,
+                NpcId = enemyId, // Using NpcId field to pass the enemy ID
+                NpcName = enemyName,
+                Context = context // Pass context for LLM
+            };
+            
+            // Use the existing CreateEntityAsync but specify the type as "enemy"
+            await CreateEntityAsync(userId, enemyId, "enemy", request);
+        }
+
+        /// <summary>
+        /// Initiates combat by creating the CombatState and notifying the frontend.
+        /// This is intended to be run as a Hangfire job, often as a continuation.
+        /// </summary>
+        public async Task InitiateCombatAsync(string userId, string enemyId, string initialCombatText)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Initiating combat for user {userId} against enemy {enemyId}.");
+
+                // Double-check stat block exists now (might have failed creation)
+                var enemyStatBlock = await _storageService.LoadEnemyStatBlockAsync(userId, enemyId);
+                if (enemyStatBlock == null)
+                {
+                    _loggingService.LogError($"Failed to initiate combat: Stat block for enemy {enemyId} still not found after check.");
+                    // Notify user? Send specific error SignalR message?
+                    // For now, just log and exit.
+                    return;
+                }
+
+                // Create and save the CombatState
+                var combatState = new CombatState
+                {
+                    CombatId = Guid.NewGuid().ToString(),
+                    UserId = userId,
+                    EnemyStatBlockId = enemyId,
+                    CurrentEnemySuccesses = 0,
+                    PlayerConditions = new List<string>(),
+                    CombatLog = new List<string> { initialCombatText }, // Use the text from the triggering response
+                    IsActive = true
+                };
+                await _storageService.SaveCombatStateAsync(userId, combatState);
+
+                // Create the CombatStartInfo DTO
+                var combatStartInfo = new CombatStartInfo
+                {
+                    CombatId = combatState.CombatId,
+                    EnemyId = enemyStatBlock.Id,
+                    EnemyName = enemyStatBlock.Name,
+                    EnemyDescription = enemyStatBlock.Description,
+                    EnemyLevel = enemyStatBlock.Level,
+                    SuccessesRequired = enemyStatBlock.SuccessesRequired,
+                    PlayerConditions = combatState.PlayerConditions
+                };
+
+                // Notify the frontend
+                await _gameNotificationService.NotifyCombatStartedAsync(userId, combatStartInfo);
+                _loggingService.LogInfo($"Successfully initiated combat {combatState.CombatId} and notified user {userId}.");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error during InitiateCombatAsync for user {userId}, enemy {enemyId}: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                // Consider sending an error notification to the user via SignalR
+                throw; // Rethrow for Hangfire failure tracking
+            }
+        }
+
         /// <summary>
         /// Processes a normal user input (DM or NPC response). Accepts PerformContext for Job ID access.
         /// </summary>
@@ -224,35 +373,37 @@ namespace AiGMBackEnd.Services
                 
                 // 3. Process the response
                 ProcessedResult processedResult;
-                if (request.PromptType == PromptType.DM || request.PromptType == PromptType.NPC)
+                if (request.PromptType == PromptType.DM || request.PromptType == PromptType.NPC || request.PromptType == PromptType.Combat)
                 {
-                    _loggingService.LogInfo($"Processing {request.PromptType} response (Job ID: {jobId})");
-                    
-                    // The response is now expected to be a complete JSON object that conforms to the DmResponse schema
-                    // HandleResponseAsync will deserialize this JSON directly into a DmResponse object
+                    _loggingService.LogInfo($"Processing interactive response ({request.PromptType}) (Job ID: {jobId})");
                     processedResult = await _responseProcessingService.HandleResponseAsync(llmResponse, request.PromptType, request.UserId, request.NpcId);
                 }
-                else
+                else // Assume it's a creation prompt
                 {
-                    _loggingService.LogInfo($"Processing creation response for {request.PromptType} (Job ID: {jobId})");
+                     _loggingService.LogInfo($"Processing creation response ({request.PromptType}) (Job ID: {jobId})");
                     processedResult = await _responseProcessingService.HandleCreateResponseAsync(llmResponse, request.PromptType, request.UserId);
                 }
                 
-                // 4. Sync world with entities
-                await _storageService.SyncWorldWithEntitiesAsync(request.UserId);
+                // 4. Sync world with entities if needed (HandleResponseAsync doesn't do this anymore for combat trigger)
+                if (!processedResult.CombatInitiated && !processedResult.CombatPending) 
+                {
+                    await _storageService.SyncWorldWithEntitiesAsync(request.UserId);
+                }
                 
                 // Store the result in our dictionary using the Job ID as the key
                 string key = $"job_result:{jobId}"; // Key is now based on Job ID
-                _jobResults[key] = processedResult.UserFacingText;
+                _jobResults[key] = JsonConvert.SerializeObject(processedResult); // Store the whole result object
                 
                 _loggingService.LogInfo($"Successfully processed user input for {request.PromptType}, stored result with key {key} (Job ID: {jobId})");
-                return processedResult.UserFacingText;
+                return processedResult.UserFacingText; // Return ONLY the user-facing text
             }
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error processing user input: {ex.Message}");
-                // Optionally store error state if needed
-                return $"Error processing your request: {ex.Message}";
+                var errorResult = new ProcessedResult { Success = false, ErrorMessage = ex.Message, UserFacingText = "An error occurred processing your request." };
+                string key = $"job_result:{context.BackgroundJob.Id}"; 
+                _jobResults[key] = JsonConvert.SerializeObject(errorResult); // Store error details
+                return errorResult.UserFacingText; // Return ONLY the user-facing error text
             }
         }
         
@@ -262,61 +413,61 @@ namespace AiGMBackEnd.Services
         /// </summary>
         public async Task<string> GetProcessedResultAsync(string jobId, string userId)
         {
-            try
+             string key = $"job_result:{jobId}";
+            
+            if (_jobResults.TryGetValue(key, out string resultJson))
             {
-                _loggingService.LogInfo($"Getting processed result for job {jobId}");
-                
-                // Try to get the result from our dictionary using the Job ID
-                string key = $"job_result:{jobId}";
-                if (_jobResults.TryRemove(key, out string result))
+                // Attempt to deserialize. If it fails, return the raw JSON.
+                try
                 {
-                    _loggingService.LogInfo($"Found and removed stored result for Job ID: {jobId}");
-                    return result;
+                    var result = JsonConvert.DeserializeObject<ProcessedResult>(resultJson);
+                    _loggingService.LogInfo($"Retrieved stored result for Job ID: {jobId}");
+                    
+                    // Check if there are pending entities after retrieving the result
+                    bool hasPendingEntities = await _statusTrackingService.HasPendingEntitiesAsync(userId);
+                    
+                    if(hasPendingEntities)
+                    {
+                        _loggingService.LogInfo($"User {userId} has pending entity creations after job {jobId}.");
+                        // Optionally modify result or add information here if needed
+                    }
+                    
+                    // Remove the result once retrieved to prevent memory leak
+                    _jobResults.TryRemove(key, out _);
+                    
+                    return result.UserFacingText; // Return just the text
                 }
-                
-                _loggingService.LogWarning($"Could not find stored result for Job ID: {jobId}");
-
-                // Fallback: Check Hangfire job status
-                var jobState = GetHangfireJobState(jobId);
-                if (jobState == "Failed")
+                catch (JsonException ex)
                 {
-                    // Optionally retrieve error details from Hangfire if needed
-                    return "Error processing your request. Please try again later.";
-                }
-
-                // Fallback: Check if there are pending entities for the user
-                bool hasPendingEntities = await _statusTrackingService.HasPendingEntitiesAsync(userId);
-                if (hasPendingEntities)
-                {
-                    return "Your request was processed, but some entities are still being created in the background.";
-                }
-                else
-                {
-                    return "Your request was processed successfully, but the specific result is no longer available.";
+                    _loggingService.LogError($"Failed to deserialize stored result for Job ID {jobId}: {ex.Message}. Returning raw JSON.");
+                    _jobResults.TryRemove(key, out _);
+                    // If deserialization fails, maybe return the raw JSON or a generic error?
+                    // Returning the raw JSON might expose internal state. Let's return an error message.
+                    return "Error retrieving result details."; 
                 }
             }
-            catch (Exception ex)
+            else
             {
-                _loggingService.LogError($"Error getting processed result for job {jobId}: {ex.Message}");
-                return "There was an error retrieving the processed result.";
+                _loggingService.LogWarning($"No stored result found for Job ID: {jobId}");
+                // Check the actual Hangfire job status as a fallback
+                var jobState = GetHangfireJobState(jobId);
+                 var errorResult = new ProcessedResult { Success = false, ErrorMessage = $"Job result not found. Job State: {jobState}", UserFacingText = "Could not retrieve the result of your action." };
+                 return errorResult.UserFacingText; // Return error text
             }
         }
 
-        // Helper method to get job state (you might already have this)
         private string GetHangfireJobState(string jobId)
         {
             try
             {
-                using (var connection = JobStorage.Current.GetConnection())
-                {
-                    var jobData = connection.GetJobData(jobId);
-                    return jobData?.State;
-                }
+                var connection = JobStorage.Current.GetConnection();
+                var jobData = connection.GetJobData(jobId);
+                return jobData?.State ?? "Unknown";
             }
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error getting Hangfire job state for {jobId}: {ex.Message}");
-                return null;
+                return "ErrorFetchingState";
             }
         }
     }

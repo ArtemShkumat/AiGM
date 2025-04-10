@@ -12,43 +12,94 @@ namespace AiGMBackEnd.Services.Processors
         private readonly IRecentEventsService _recentEventsService;
         private readonly LoggingService _loggingService;
         private readonly IConversationLogService _conversationLogService;
+        private readonly StorageService _storageService;
 
         public SummarizePromptProcessor(
             IRecentEventsService recentEventsService,
             LoggingService loggingService,
-            IConversationLogService conversationLogService)
+            IConversationLogService conversationLogService,
+            StorageService storageService)
         {
             _recentEventsService = recentEventsService;
             _loggingService = loggingService;
             _conversationLogService = conversationLogService;
+            _storageService = storageService;
         }
 
+        /// <summary>
+        /// Process a general summary and add it to recent events
+        /// </summary>
         public async Task ProcessSummaryAsync(string summary, string userId)
         {
+            if (string.IsNullOrWhiteSpace(summary))
+            {
+                _loggingService.LogWarning($"Empty summary text received for user {userId}");
+                return;
+            }
+            
             try
             {
-                _loggingService.LogInfo($"Processing summary for user {userId}");
-                
-                if (string.IsNullOrEmpty(summary))
-                {
-                    _loggingService.LogWarning("Empty summary received");
-                    return;
-                }
-
-                // Clean the summary text - remove any extra formatting or quotation marks
+                // Clean the summary text
                 summary = CleanSummaryText(summary);
                 
-                // Add the summary to the RecentEvents using the service
+                // Add the summary through the RecentEventsService
                 await _recentEventsService.AddSummaryToRecentEventsAsync(userId, summary);
                 
-                // Wipe the conversation log, keeping only the last message
-                await _conversationLogService.WipeLogAsync(userId);
+                // Also add to the DM conversation log
+                await _conversationLogService.AddDmMessageAsync(userId, summary);
                 
-                _loggingService.LogInfo($"Successfully processed summary and wiped log for user {userId}");
+                _loggingService.LogInfo($"Added summary to recent events for user {userId}");
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing summary: {ex.Message}");
+                _loggingService.LogError($"Error processing summary for user {userId}: {ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Process a combat summary after combat has ended
+        /// </summary>
+        public async Task ProcessCombatSummaryAsync(string summary, string userId, bool playerVictory)
+        {
+            if (string.IsNullOrWhiteSpace(summary))
+            {
+                _loggingService.LogWarning($"Empty combat summary text received for user {userId}");
+                return;
+            }
+            
+            try
+            {
+                // Get the combat state if it still exists (it might have been deleted)
+                var combatState = await _storageService.LoadCombatStateAsync(userId);
+                string enemyName = "the enemy";
+                
+                if (combatState != null)
+                {
+                    // Get the enemy name from the stat block if available
+                    var enemyStatBlock = await _storageService.LoadEnemyStatBlockAsync(userId, combatState.EnemyStatBlockId);
+                    if (enemyStatBlock != null)
+                    {
+                        enemyName = enemyStatBlock.Name;
+                    }
+                    
+                    // Now that we have a summary, we can safely delete the combat state
+                    await _storageService.DeleteCombatStateAsync(userId);
+                }
+                
+                // Format the summary with a prefix indicating the outcome
+                string prefixedSummary = playerVictory 
+                    ? $"[VICTORY AGAINST {enemyName.ToUpper()}] {summary}" 
+                    : $"[DEFEAT BY {enemyName.ToUpper()}] {summary}";
+                
+                // Add the summary to recent events
+                await ProcessSummaryAsync(prefixedSummary, userId);
+                
+                _loggingService.LogInfo($"Processed combat summary for user {userId} - Player victory: {playerVictory}");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing combat summary for user {userId}: {ex.Message}");
                 throw;
             }
         }

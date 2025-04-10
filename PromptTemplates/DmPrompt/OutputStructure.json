@@ -18,6 +18,14 @@
       "additionalProperties": {
           "$ref": "#/definitions/updatePayload"
       }
+    },
+    "combatTriggered": {
+      "type": "boolean",
+      "description": "Set to true when combat should be initiated based on narrative events or player actions."
+    },
+    "enemyToEngageId": {
+      "type": "string",
+      "description": "The ID of the NPC or entity that the player will be fighting in combat."
     }
   },
   "required": [

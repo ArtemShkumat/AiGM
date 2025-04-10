@@ -54,4 +54,31 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("context")]
         public string Context { get; set; }
     }
+    
+    public class EnemyStatBlockCreationHook : ICreationHook
+    {
+        [JsonPropertyName("type")]
+        public string Type => "ENEMY_STAT_BLOCK";
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        [JsonPropertyName("context")]
+        public string Context { get; set; }
+        
+        [JsonPropertyName("level")]
+        public int Level { get; set; } = 1;
+        
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = string.Empty;
+        
+        [JsonPropertyName("vulnerability")]
+        public string Vulnerability { get; set; } = string.Empty;
+        
+        [JsonPropertyName("badStuff")]
+        public string BadStuff { get; set; } = string.Empty;
+        
+        [JsonPropertyName("tags")]
+        public List<string> Tags { get; set; } = new List<string>();
+    }
 } 

@@ -755,3 +755,93 @@ RESPONSE:
     }
   }
 }
+
+EXAMPLE: Player explicitly attacks an NPC
+USER:
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_forestPath"
+},
+"npcs": [
+  {
+    "id": "npc_banditLeader",
+    "name": "Rolf",
+    "currentLocationId": "loc_forestPath",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true
+  }
+]
+
+Current player prompt: I've had enough of Rolf's threats. I draw my sword and lunge at him!
+
+RESPONSE:
+{
+  "userFacingText": "Your patience snaps like a dry twig. In one fluid motion, you draw your blade, the steel catching the dappled sunlight filtering through the forest canopy. Rolf's eyes widen in surprise, then narrow with predatory focus. He barks a command and his hand drops to the hilt of his own weapon. \"Wrong move, traveler,\" he snarls, unsheathing a notched but lethal-looking sword. The other bandits spread out around you, blocking the path forward and back.",
+  "combatTriggered": true,
+  "enemyToEngageId": "npc_banditLeader"
+}
+
+EXAMPLE: Player is ambushed by monsters
+USER:
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_abandonedMine"
+}
+
+Current player prompt: I venture deeper into the dark tunnel, holding my torch ahead of me.
+
+RESPONSE:
+{
+  "userFacingText": "The tunnel narrows, the rough-hewn walls pressing in from both sides. Your torch casts long, dancing shadows that play tricks on your eyes. The air grows stale and thick with dust. Suddenly, a blood-curdling screech echoes from the darkness ahead! Before you can react, a pale, emaciated figure lunges from a side passage – its skin stretched taut over an almost skeletal frame, eyes gleaming with hunger in the torchlight. The mine crawler has found its prey!",
+  "newEntities": [
+    {
+      "type": "NPC",
+      "id": "npc_mineCrawler",
+      "name": "Mine Crawler",
+      "context": "A dangerous predator that has adapted to life in the abandoned mine. It resembles a humanoid but with elongated limbs, sharp claws, and pale skin from living in darkness. It hunts by sound and is extremely aggressive. The creature is territorial and attacks anyone who ventures into its domain.",
+      "currentLocationId": "loc_abandonedMine"
+    }
+  ],
+  "partialUpdates": {
+    "npc_mineCrawler": {
+      "type": "NPC",
+      "visibleToPlayer": true,
+      "knownToPlayer": true
+    }
+  },
+  "combatTriggered": true,
+  "enemyToEngageId": "npc_mineCrawler"
+}
+
+EXAMPLE: Player fails a skill check that results in combat
+USER:
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_cityGuardpost"
+},
+"npcs": [
+  {
+    "id": "npc_guardCaptain",
+    "name": "Captain Voss",
+    "currentLocationId": "loc_cityGuardpost",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true
+  }
+]
+
+Current player prompt: I try to sneak past the sleeping guard to get the key hanging on the wall.
+
+RESPONSE:
+{
+  "userFacingText": "You attempt to creep silently across the guardpost. The floorboards are old and the night is quiet – perhaps too quiet. As you reach for the key ring, your boot catches on a loose nail. The resulting CREAK seems to echo through the chamber like thunder. Captain Voss's eyes snap open instantly, years of training evident in how quickly he's on his feet with sword drawn. \"Thief!\" he bellows, his face reddening with anger. \"I knew you couldn't be trusted!\" He advances on you with clear intent – talking your way out of this one doesn't seem likely.",
+  "combatTriggered": true,
+  "enemyToEngageId": "npc_guardCaptain"
+}
