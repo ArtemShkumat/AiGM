@@ -55,6 +55,12 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("conversationLog")]
         public List<Dictionary<string, string>> ConversationLog { get; set; } = new List<Dictionary<string, string>>();
+
+        [JsonPropertyName("isDeceased")]
+        public bool IsDeceased { get; set; } = false;
+
+        [JsonPropertyName("statBlockId")]
+        public string? StatBlockId { get; set; } // Nullable string
     }
 
     public class Personality

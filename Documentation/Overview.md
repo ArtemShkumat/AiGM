@@ -64,7 +64,7 @@ If the user runs a local 7B model, they might experience slow generation times. 
 Conversation Log Summarization
 Currently, the system can wipe or summarize logs on location change to keep context short. Long-term, advanced summarization techniques might be introduced.
 Combat & Mechanics
-Future expansions could add structured combat prompts or specialized sub-systems (like skill checks, dice rolling).
+Future expansions could add structured combat prompts or specialized sub-systems (like skill checks, dice rolling). The system now includes a narrative puzzle combat system triggered by DM/NPC interactions, focusing on enemy vulnerabilities and player conditions.
 Multiplayer
 The system is designed for single-user sessions right now. Adding concurrency or multi-player support would require further design.
 7. High-Level Technologies & Data
@@ -93,4 +93,5 @@ DM vs. NPC prompts for flexible roleplay
 Single source of truth via JSON files
 Job queue for concurrency control
 Structured LLM responses for robust game state updates
+Integrated Narrative Puzzle Combat: A unique combat system triggered by narrative events, focusing on enemy vulnerabilities and player conditions rather than HP.
 Players get a robust, evolving narrative that never "forgets" important details, bridging the gap between AI-driven creativity and consistent, long-term RPG play.

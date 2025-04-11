@@ -31,7 +31,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // 1. Get System Prompt Template
                 string templateFolder = "CreateEnemyStatBlock";
                 string systemPromptTemplate = await _storageService.GetTemplateAsync(Path.Combine(templateFolder, templateName));
+                string exampleResponses = await _storageService.GetTemplateAsync(Path.Combine(templateFolder, "ExampleResponses.txt"));
                 promptBuilder.AppendLine(systemPromptTemplate);
+                promptBuilder.AppendLine(exampleResponses);
                 promptBuilder.AppendLine("\n--- CONTEXT ---");
 
                 // 2. Load Context Data

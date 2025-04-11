@@ -64,9 +64,11 @@ Methods:
 Load<T>(string fileId) → T
 Save<T>(string fileId, T entity)
 ApplyPartialUpdate(string fileId, JObject patchData)
-*   Load specific entity types (e.g., `LoadNPCAsync`, `LoadLocationAsync`).
-*   Save specific entity types (e.g., `SaveNPCAsync`, `SaveLocationAsync`).
+*   Load specific entity types (e.g., `LoadNPCAsync`, `LoadLocationAsync`, `LoadPlayerAsync`).
+*   Save specific entity types (e.g., `SaveNPCAsync`, `SaveLocationAsync`, `SavePlayerAsync`).
 *   Add messages to conversation logs (e.g., `AddDmMessageAsync`, `AddDmMessageToNpcLogAsync`).
+*   **Load/Save `EnemyStatBlock`** (e.g., `LoadEnemyStatBlockAsync`, `SaveEnemyStatBlockAsync`, `CheckIfStatBlockExistsAsync`).
+*   **Load/Save/Delete `CombatState`** (e.g., `LoadCombatStateAsync`, `SaveCombatStateAsync`, `DeleteCombatStateAsync`).
 
 2.7. LoggingService
 Role: Provide centralized logs for prompt requests, errors, time taken, etc.
@@ -77,6 +79,9 @@ Role: Sends real-time notifications to connected clients (UI) using SignalR via 
 Uses `Microsoft.AspNetCore.SignalR`.
 Methods:
 NotifyInventoryChangedAsync(string gameId): Sends an "InventoryChanged" message to clients connected to the specified `gameId` group, indicating the player's inventory has been updated and the UI should refetch it. (Currently the only notification implemented).
+*   **`NotifyCombatStartedAsync(string userId, CombatStartInfo initialState)`**: Signals the UI to enter combat mode, providing initial enemy and player state.
+*   **`NotifyCombatEndedAsync(string userId, bool playerVictory)`**: Signals the UI that combat is over and whether the player won.
+*   **`NotifyCombatTurnUpdateAsync(string userId, CombatTurnInfo currentState)`**: (Optional) Sends turn-by-turn updates to the UI.
 
 2.9. Models
 Where: RPGGame/Models/
@@ -94,22 +99,27 @@ Role: Construct the specific prompt string and associated metadata for different
 Components:
 `IPromptBuilder`: Interface defining `BuildPromptAsync(PromptRequest)`.
 Implementations (e.g., `DMPromptBuilder`, `NPCPromptBuilder`, `CreateQuestPromptBuilder`, etc.): Concrete classes implementing `IPromptBuilder`, each responsible for gathering necessary data (from `StorageService`) and formatting the prompt for a specific scenario.
+*   **`CreateEnemyStatBlockPromptBuilder`**: Gathers NPC/context data to request JSON for enemy combat stats.
+*   **`CombatPromptBuilder`**: Loads `CombatState`, `EnemyStatBlock`, `Player` data for combat turns.
 `BasePromptBuilder`: Optional base class for common functionality.
 
 2.12. Processors (`Services/Processors/`)
 Role: Handle the domain logic associated with processing LLM responses related to specific entities or applying general updates.
 Components:
-`IEntityProcessor`: Interface defining `ProcessAsync(List<ICreationHook> creationHooks, string userId)`.
-Implementations (e.g., `LocationProcessor`, `QuestProcessor`, `NPCProcessor`, `PlayerProcessor`): Concrete classes implementing `IEntityProcessor`, responsible for validating and saving new entities defined in the `creationHooks`.
+`IEntityProcessor`: Interface defining `ProcessAsync(List<ICreationHook> creationHooks, string userId)`. Implemented by specific processors like `NPCProcessor`.
+Implementations (e.g., `LocationProcessor`, `QuestProcessor`, `NPCProcessor`, `PlayerProcessor`, **`EnemyStatBlockProcessor`**): Concrete classes implementing `IEntityProcessor`, responsible for validating and saving new entities defined in the `creationHooks`.
 `UpdateProcessor`: Handles applying partial updates. Defines `ProcessUpdatesAsync(Dictionary<string, IUpdatePayload> updateData, string userId)`. Responsible for parsing the `updateData` dictionary and calling `StorageService` to apply changes to existing entities.
-            -> StorageService (Save updates)
-      -> StorageService (Save logs)
-   -> GameNotificationService (Called by processors/storage when needed)
-      -> IHubContext<GameHub> (SignalR)
+**`ICombatResponseProcessor`**: Interface defining `ProcessCombatResponseAsync(string llmResponse, string userId)`.
+**`CombatResponseProcessor`**: Concrete implementation for handling combat turn JSON responses, updating `CombatState`, and checking for combat end conditions.
+**`ISummarizePromptProcessor`**: Interface defining methods for processing summary requests.
+**`SummarizePromptProcessor`**: Concrete implementation handling both general summaries and combat summaries (using `ProcessSummaryAsync` and `ProcessCombatSummaryAsync`).
 
- (All services potentially use LoggingService)
- (StorageService interacts with JSON files)
-
+2.13. Controllers (`Controllers/`)
+Role: Expose API endpoints for frontend interaction.
+Components:
+`InteractionController`: Handles general user input (`/api/interaction/input`) and character creation.
+**`CombatController`**: Handles combat-specific actions (`/api/combat/start`, `/api/combat/action`, `/api/combat/end`, `/api/combat/{gameId}`).
+`EntityStatusController`: Handles checking status of background entity creation jobs.
 
 3. Data & File Structure
 Data Folder:
@@ -124,21 +134,25 @@ Edit
 |   |-- ...
 |-- locations/
 |   |-- loc_001.json
+|-- enemies/            <-- Added
+|   |-- enemy_001.json
 |-- quests/
 |   |-- quest_001.json
-|-- lore/
-|   |-- ...
+|-- logs/
+|   |-- conversation_log.json
+|   |-- recent_events.json
+|-- active_combat.json  <-- Added
 PromptTemplates Folder:
 swift
 Copy
 Edit
 /RPGGame/PromptTemplates/DM/
-  |-- SystemDM.txt
-  |-- ResponseInstructions.txt
-  |-- ExampleResponses.txt
 /RPGGame/PromptTemplates/NPC/
-  ...
-All final data (like NPC changes, quest states) get persisted in these JSON files by StorageService.
+/RPGGame/PromptTemplates/CreateQuest/
+/RPGGame/PromptTemplates/CreateEnemyStatBlock/ <-- Added
+/RPGGame/PromptTemplates/Combat/               <-- Added
+/RPGGame/PromptTemplates/SummarizeCombat/      <-- Added
+All final data (like NPC changes, quest states, **enemy stats, combat state**) get persisted in these JSON files by StorageService.
 
 4. Data Flow (Sequence)
 4.1. Standard "DM" Prompt Example
@@ -155,113 +169,158 @@ HangfireJobsService (Worker):
   `ResponseProcessingService`:
     Deserializes `llmResponse` into a `DmResponse` object using custom converters.
     Extracts `userFacingText`, `newEntities`, and `partialUpdates`.
-    Calls relevant `IEntityProcessor` implementations for any `newEntities`.
-    Calls `UpdateProcessor.ProcessUpdatesAsync(partialUpdates, userId)`.
-    `UpdateProcessor` iterates through the `partialUpdates` dictionary, calling `StorageService` to save changes for each entity ID.
-    Adds DM message to log via `StorageService`.
-    Returns `ProcessedResult` (containing user-facing text) back up the chain.
-Hangfire completes the job and returns the final user-facing text.
-PresenterService polls and returns user-facing text to the front-end.
+    **Checks for `CombatTriggered == true`**. If true, initiates **Combat Initiation Flow (See 4.3)** and returns `CombatPending = true`.
+    If `CombatTriggered` is false:
+      Calls relevant `IEntityProcessor` implementations for any `newEntities`.
+      Calls `UpdateProcessor.ProcessUpdatesAsync(partialUpdates, userId)`.
+      `UpdateProcessor` iterates through the `partialUpdates` dictionary, calling `StorageService` to save changes for each entity ID.
+      Adds DM message to log via `StorageService`.
+      Returns `ProcessedResult` (containing `userFacingText`).
+Hangfire completes the job.
+PresenterService polls and returns `userFacingText` or status (e.g., Combat Pending) to the front-end.
 
-4.2. Large Quest Generation Example
-User triggers "Get a job from the barkeep." (This might first be a standard NPC interaction).
-The NPC interaction response's JSON might contain `newEntities` for a `QuestCreationHook`, processed by `ResponseProcessingService`.
-`ResponseProcessingService` calls the `QuestProcessor` (or similar) with the `QuestCreationHook`.
-The `QuestProcessor` might determine that a full quest generation prompt is needed and could enqueue a *new* Hangfire job with `PromptType.CreateQuest`.
-PresenterService enqueues the "Create Quest" job via Hangfire.
+4.2. Enemy Stat Block Creation Flow (On-Demand)
+(This flow is triggered by the Combat Initiation Flow if needed)
+Trigger: `HangfireJobsService.EnsureEnemyStatBlockAndInitiateCombatAsync` detects missing stat block.
+Hangfire Enqueues: `HangfireJobsService.CreateEnemyStatBlockAsync(userId, enemyId, enemyName, context)`.
 HangfireJobsService (Worker):
-  Processes the `PromptRequest`.
-  Calls `PromptService.BuildPromptAsync(request)` -> `CreateQuestPromptBuilder` selected.
-  `CreateQuestPromptBuilder` builds the prompt for quest generation.
-  Calls `AiService.GetCompletionAsync(prompt)` -> gets LLM response (expected to be JSON containing the full quest details).
-  Calls `ResponseProcessingService.HandleCreateResponseAsync(llmResponse, PromptType.CreateQuest, userId)`.
-  `ResponseProcessingService`:
-    Deserializes the `llmResponse` JSON into appropriate models (likely involving `ICreationHook` for the quest itself and potentially nested NPCs/locations).
-    Calls `QuestProcessor.ProcessAsync(newEntities, userId)`.
-    `QuestProcessor` validates the quest data, potentially generates IDs, interacts with `StorageService` to save the new `quest_xyz.json`, and possibly related new NPCs/Locations if included (or triggers *further* creation prompts via `HangfireJobsService`).
-    Returns `ProcessedResult` (likely empty user-facing text for pure creation).
-Hangfire completes the job with a confirmation message or status.
-A subsequent DM prompt might be needed to inform the user: "The barkeep reveals a dangerous mission..."
+  Processes the `CreateEnemyStatBlockAsync` job.
+  Constructs `PromptRequest` (Type: `CreateEnemyStatBlock`, providing `npcId`, `npcName`, `context`).
+  Calls `CreateEntityAsync` helper.
+  `CreateEntityAsync` calls `PromptService.BuildPromptAsync` -> `CreateEnemyStatBlockPromptBuilder` selected.
+  `CreateEnemyStatBlockPromptBuilder` loads NPC data, context, uses templates.
+  Calls `AiService.GetCompletionAsync` -> gets LLM response (JSON for `EnemyStatBlock`).
+  Calls `ResponseProcessingService.HandleCreateResponseAsync`.
+  `ResponseProcessingService` deserializes JSON into `EnemyStatBlock` (via hook/processor).
+  Calls `EnemyStatBlockProcessor.ProcessAsync` (or similar logic).
+  `EnemyStatBlockProcessor` validates and calls `StorageService.SaveEnemyStatBlockAsync`.
+Completion: Hangfire marks the creation job complete. The **Combat Initiation Flow** continuation can now proceed.
+
+4.3. Combat Initiation Flow
+Trigger: `ResponseProcessingService.HandleResponseAsync` detects `CombatTriggered == true`.
+Hangfire Enqueues: `HangfireJobsService.EnsureEnemyStatBlockAndInitiateCombatAsync(userId, enemyId, initialCombatText)`.
+HangfireJobsService (Worker - `Ensure...`):
+  Calls `StorageService.CheckIfStatBlockExistsAsync`.
+  If **False**: Enqueues `CreateEnemyStatBlockAsync` (Flow 4.2) and sets `InitiateCombatAsync` as its continuation.
+  If **True**: Enqueues `InitiateCombatAsync` directly.
+HangfireJobsService (Worker - `InitiateCombatAsync`):
+  Loads `EnemyStatBlock` (should exist now).
+  Creates new `CombatState` object.
+  Calls `StorageService.SaveCombatStateAsync`.
+  Calls `GameNotificationService.NotifyCombatStartedAsync` (SignalR).
+Completion: Combat state is saved, frontend notified.
+
+4.4. Combat Turn Flow
+Input: User submits action via combat UI to `/api/combat/action`.
+CombatController (`SubmitCombatAction`):
+  Receives `CombatActionRequest`.
+  Creates `PromptRequest` (Type: `Combat`, `userInput`).
+  Calls `PresenterService.HandleUserInputAsync`.
+PresenterService:
+  Enqueues job: `HangfireJobsService.ProcessUserInputAsync(request)`.
+HangfireJobsService (Worker - `ProcessUserInputAsync`):
+  Calls `PromptService.BuildPromptAsync` -> `CombatPromptBuilder` selected.
+  `CombatPromptBuilder` loads `CombatState`, `EnemyStatBlock`, `Player` data.
+  Calls `AiService.GetCompletionAsync` -> gets LLM response (JSON for combat turn).
+  Calls `ResponseProcessingService.HandleResponseAsync`.
+ResponseProcessingService (`HandleResponseAsync` detects `PromptType.Combat`):
+  Delegates to `HandleCombatResponseAsync`.
+ResponseProcessingService (`HandleCombatResponseAsync`):
+  Calls `_combatResponseProcessor.ProcessCombatResponseAsync`.
+CombatResponseProcessor (`ProcessCombatResponseAsync`):
+  Deserializes combat turn JSON.
+  Validates state changes.
+  Updates `CombatState.CombatLog`.
+  Checks end conditions (successes required, player conditions).
+  If **Ending**: Sets `CombatState.IsActive = false`, saves state, calls `NotifyCombatEndedAsync`, enqueues summarization job (Flow 4.5).
+  If **Continuing**: Saves updated `CombatState`, calls `NotifyCombatTurnUpdateAsync` (optional).
+  Returns `ProcessedResult` with `userFacingText` (if continuing).
+Completion: Hangfire job finishes. Frontend receives `userFacingText` via polling the job result.
+
+4.5. Combat Resolution Flow
+Trigger: `CombatResponseProcessor` enqueues summarization job after setting `CombatState.IsActive = false`.
+Hangfire Enqueues: `HangfireJobsService.ProcessSummarizationJobAsync(request)` (with `PromptType.SummarizeCombat`, `Context` indicating victory).
+HangfireJobsService (Worker - `ProcessSummarizationJobAsync`):
+  Parses victory status from `request.Context`.
+  Calls `PromptService.BuildPromptAsync` -> `SummarizeCombatPromptBuilder`.
+  `SummarizeCombatPromptBuilder` loads final `CombatState` (including log).
+  Calls `AiService.GetCompletionAsync` -> gets summary text.
+  Calls `_responseProcessingService.ProcessCombatSummaryAsync(summary, userId, playerVictory)`.
+ResponseProcessingService (`ProcessCombatSummaryAsync`):
+  Calls `_summarizePromptProcessor.ProcessCombatSummaryAsync(summary, userId, playerVictory)`.
+SummarizePromptProcessor (`ProcessCombatSummaryAsync`):
+  Formats summary (e.g., adds prefix).
+  Calls `_recentEventsService.AddSummaryToRecentEventsAsync`.
+  Calls `_conversationLogService.AddDmMessageAsync`.
+HangfireJobsService (Worker - `ProcessSummarizationJobAsync`):
+  **After successful processing**: Calls `StorageService.DeleteCombatStateAsync`.
+Completion: Summary logged, combat state deleted.
 
 5. Handling Concurrency with Hangfire
-Hangfire provides a robust job processing framework with a queue system and multiple worker threads to process jobs efficiently. This ensures sequential access to resources like the LLM and prevents race conditions during data updates triggered by response processing. Hangfire also provides retry mechanisms, dashboards for monitoring, and persistent storage options.
+Hangfire provides a robust job processing framework...
+(Rest of section remains the same)
 
 6. Class Diagram (Textual)
-Here's a simplified "who calls whom / uses what":
-
+(Update with new components)
  PresenterService
    -> Hangfire (Enqueues background jobs to HangfireJobsService)
 
+ CombatController
+   -> PresenterService
+
  HangfireJobsService (Processes jobs)
    -> PromptService
-      -> IPromptBuilder (Implementations: DMPromptBuilder, etc.)
+      -> IPromptBuilder (Implementations: DMPromptBuilder, NPCPromptBuilder, Create..., **CombatPromptBuilder**, **SummarizeCombatPromptBuilder**)
          -> StorageService (Load data)
    -> AiService
       -> AIProviderFactory
-         -> IAIProvider (Implementations: OpenAIProvider, etc.)
+         -> IAIProvider
             -> (External LLM API)
    -> ResponseProcessingService
       -> (Uses appropriate processor based on PromptType)
-         -> IEntityProcessor (Implementations: QuestProcessor, etc.) -> Takes `List<ICreationHook>`
-            -> StorageService (Save new entities)
-         -> UpdateProcessor -> Takes `Dictionary<string, IUpdatePayload>`
-            -> StorageService (Save updates)
-      -> StorageService (Save logs)
-   -> GameNotificationService (Called by processors/storage when needed)
+         -> IEntityProcessor (Implementations: ..., **EnemyStatBlockProcessor**)
+         -> UpdateProcessor
+         -> **ICombatResponseProcessor**
+         -> **ISummarizePromptProcessor**
+         -> StorageService (Save entities/updates)
+   -> GameNotificationService
       -> IHubContext<GameHub> (SignalR)
+   -> StorageService (SyncWorld, DeleteCombatState)
 
  (All services potentially use LoggingService)
- (StorageService interacts with JSON files)
-
+ (StorageService interacts with JSON files: world, player, npcs, locations, quests, **enemies, active_combat**, logs)
 
 7. Implementation Tips
-Prompt Templates: Keep them modifiable text files. Load them in the relevant `IPromptBuilder` implementations. Include clear instructions and examples for the required JSON output structure.
-Partial Updates: The `UpdateProcessor` receives a strongly-typed dictionary (`Dictionary<string, IUpdatePayload>`). Ensure its logic correctly handles different payload types and applies updates via `StorageService`.
-Entity Creation: `IEntityProcessor` implementations receive a `List<ICreationHook>`. Ensure they perform validation, handle different hook types, manage ID generation, and save via `StorageService`. Consider how to handle creation of multiple related entities (e.g., a quest hook referencing new NPC/location IDs). This might involve the processor enqueuing further `CreateNPC`/`CreateLocation` jobs.
-JSON Handling: Leverage `System.Text.Json` and the custom converters (`Models/Converters.cs`) for reliable serialization/deserialization. Ensure `JsonSerializerOptions` are configured consistently (e.g., property naming policy, handling default values, registering converters).
-Configuration: Use `appsettings.json` for AI provider keys, default provider choice, model names, etc. Access via `IConfiguration` injected into services like `AiService`.
-Dependency Injection: Configure DI in `Program.cs` to register services, factories, converters, and potentially the dictionaries of builders/processors if not created inline.
-Error Handling: Implement robust try-catch blocks, especially around LLM calls and JSON deserialization/processing in `ResponseProcessingService` and processors. Log errors using `LoggingService`.
-Async/Await: Use `async`/`await` correctly throughout the call chain, especially for I/O operations (file access in `StorageService`, LLM calls in `IAIProvider`).
+...
+(Add notes about combat)
+*   **Combat State:** Ensure `active_combat.json` is reliably created at the start and deleted *only after* successful summarization.
+*   **Stat Block Creation:** Handle potential failures during on-demand stat block creation gracefully (e.g., notify user combat cannot start).
+*   **Combat Processor Validation:** `CombatResponseProcessor` should rigorously validate LLM state updates (success counts, condition application) against game rules.
+...
+(Rest of section remains largely the same)
 
 8. Development Roadmap
-Set Up Folder Structure (Existing)
-StorageService (Refine?)
-  *   Ensure methods for loading/saving specific entities and logs are present.
-AI Providers (`Services/AIProviders/`)
-  *   Implement `IAIProvider` interface.
-  *   Implement concrete providers (e.g., `OpenAIProvider`).
-  *   Implement `AIProviderFactory`.
-Prompt Builders (`Services/PromptBuilders/`)
-  *   Implement `IPromptBuilder` interface and `BasePromptBuilder` (optional).
-  *   Implement concrete builders for each `PromptType` (DM, NPC, Create...).
+...
+(Update Processors and Expand Features)
 Processors (`Services/Processors/`)
   *   Implement `IEntityProcessor` interface.
-  *   Implement concrete entity processors (Quest, NPC, Location...).
+  *   Implement concrete entity processors (Quest, NPC, Location, **EnemyStatBlock**).
   *   Implement `UpdateProcessor`.
+  *   Implement `ICombatResponseProcessor` and `CombatResponseProcessor`.
+  *   Implement `ISummarizePromptProcessor` and `SummarizePromptProcessor`.
 Core Services Refactoring
-  *   Update `PromptService` to use builders.
-  *   Update `AiService` to use providers/factory.
-  *   Update `ResponseProcessingService` to use processors.
+...
 Hangfire Integration
-  *   Configure Hangfire in Program.cs.
-  *   Implement the HangfireJobsService with job processing methods.
+...
 PresenterService
-  *   Update to create `PromptRequest` and call appropriate Hangfire job methods.
+...
 LoggingService (Existing)
 Configure Dependency Injection (`Program.cs`)
 Testing
   *   Unit tests for builders, processors, providers.
-  *   Integration tests for the flow through Hangfire.
-Expand Features (Quest steps, Combat, etc.)
+  *   Integration tests for the flow through Hangfire, **including combat initiation and turns**.
+Expand Features (Quest steps, **Advanced Combat Options**, etc.)
 
 Conclusion
-This technical architecture ensures:
-
-Modularity (each service/builder/processor has a focused responsibility).
-Persistence (JSON for game data, no LLM memory reliance).
-Scalability (Hangfire to prevent GPU overload and manage sequential processing).
-Flexibility (Easy to add new AI providers, prompt types, or entity types by adding new implementations).
-**Robustness (Structured JSON and strong typing improve reliability).**
-Ease of extension (adding new prompt types or new domain entities involves creating new builder/processor classes).
-By following this document, a developer can start coding each service method, hooking them up in a clean, layered manner. The result is a robust, flexible text-based RPG framework that harnesses LLM creativity while maintaining consistent, fair gameplay.
+...
+(Remains the same)
