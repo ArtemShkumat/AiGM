@@ -9,13 +9,16 @@ namespace AiGMBackEnd.Services.Storage
     {
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;
+        private readonly GameNotificationService _gameNotificationService;
 
         public InventoryStorageService(
             StorageService storageService,
-            LoggingService loggingService)
+            LoggingService loggingService,
+            GameNotificationService gameNotificationService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
+            _gameNotificationService = gameNotificationService;
         }
 
         public async Task<bool> AddItemToPlayerInventoryAsync(string userId, InventoryItem newItem)
@@ -37,12 +40,22 @@ namespace AiGMBackEnd.Services.Storage
                     // If the item exists, increase its quantity
                     existingItem.Quantity += newItem.Quantity;
                     _loggingService.LogInfo($"Updated existing item {newItem.Name}, new quantity: {existingItem.Quantity}");
+                    await _gameNotificationService.NotifyGenericAsync(userId, $"Updated {newItem.Name} quantity to {existingItem.Quantity}");
                 }
                 else
                 {
-                    // If the item doesn't exist, add it to the inventory
-                    player.Inventory.Add(newItem);
+                    // If the item doesn't exist, create a clean new item and add it to the inventory
+                    // This ensures we don't accidentally store any extra properties like "action"
+                    var cleanItem = new InventoryItem
+                    {
+                        Name = newItem.Name,
+                        Description = newItem.Description,
+                        Quantity = newItem.Quantity
+                    };
+                    
+                    player.Inventory.Add(cleanItem);
                     _loggingService.LogInfo($"Added new item {newItem.Name} with quantity {newItem.Quantity}");
+                    await _gameNotificationService.NotifyGenericAsync(userId, $"Added {newItem.Quantity} {newItem.Name} to your inventory");
                 }
 
                 // Save the updated player
@@ -54,6 +67,7 @@ namespace AiGMBackEnd.Services.Storage
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error adding item to player inventory: {ex.Message}");
+                await _gameNotificationService.NotifyErrorAsync(userId, $"Error adding item to inventory: {ex.Message}");
                 return false;
             }
         }
@@ -75,6 +89,7 @@ namespace AiGMBackEnd.Services.Storage
                 if (existingItem == null)
                 {
                     _loggingService.LogWarning($"Failed to remove item: {itemName} not found in player inventory for {userId}");
+                    await _gameNotificationService.NotifyErrorAsync(userId, $"Item {itemName} not found in your inventory");
                     return false;
                 }
 
@@ -83,12 +98,14 @@ namespace AiGMBackEnd.Services.Storage
                     // If we're removing all or more than available, remove the item completely
                     player.Inventory.Remove(existingItem);
                     _loggingService.LogInfo($"Removed item {itemName} completely from player inventory for {userId}");
+                    await _gameNotificationService.NotifyGenericAsync(userId, $"Removed all {itemName} from your inventory");
                 }
                 else
                 {
                     // Otherwise, decrease the quantity
                     existingItem.Quantity -= quantity;
                     _loggingService.LogInfo($"Removed {quantity} {itemName} from player inventory for {userId}");
+                    await _gameNotificationService.NotifyGenericAsync(userId, $"Removed {quantity} {itemName} from your inventory");
                 }
 
                 // Save the updated player
@@ -98,6 +115,7 @@ namespace AiGMBackEnd.Services.Storage
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error removing item from player inventory: {ex.Message}");
+                await _gameNotificationService.NotifyErrorAsync(userId, $"Error removing item from inventory: {ex.Message}");
                 return false;
             }
         }
@@ -120,6 +138,7 @@ namespace AiGMBackEnd.Services.Storage
                 {
                     // If the currency exists, increase its amount
                     existingCurrency.Amount += amount;
+                    await _gameNotificationService.NotifyGenericAsync(userId, $"Added {amount} {currencyName}, now have {existingCurrency.Amount}");
                 }
                 else
                 {
@@ -129,6 +148,7 @@ namespace AiGMBackEnd.Services.Storage
                         Name = currencyName,
                         Amount = amount
                     });
+                    await _gameNotificationService.NotifyGenericAsync(userId, $"Added {amount} {currencyName} to your wallet");
                 }
 
                 // Save the updated player
@@ -140,6 +160,7 @@ namespace AiGMBackEnd.Services.Storage
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error adding currency to player: {ex.Message}");
+                await _gameNotificationService.NotifyErrorAsync(userId, $"Error adding currency: {ex.Message}");
                 return false;
             }
         }
@@ -161,12 +182,14 @@ namespace AiGMBackEnd.Services.Storage
                 if (existingCurrency == null)
                 {
                     _loggingService.LogWarning($"Failed to remove currency: {currencyName} not found for player {userId}");
+                    await _gameNotificationService.NotifyErrorAsync(userId, $"{currencyName} not found in your wallet");
                     return false;
                 }
 
                 if (existingCurrency.Amount < amount)
                 {
                     _loggingService.LogWarning($"Not enough {currencyName} to remove {amount} for player {userId}");
+                    await _gameNotificationService.NotifyErrorAsync(userId, $"Not enough {currencyName} to remove {amount}");
                     return false;
                 }
 
@@ -176,6 +199,10 @@ namespace AiGMBackEnd.Services.Storage
                 if (existingCurrency.Amount == 0)
                 {
                     player.Currencies.Remove(existingCurrency);
+                    await _gameNotificationService.NotifyGenericAsync(userId, $"Removed all {currencyName} from your wallet");
+                }
+                else {
+                    await _gameNotificationService.NotifyGenericAsync(userId, $"Removed {amount} {currencyName}, {existingCurrency.Amount} remaining");
                 }
 
                 // Save the updated player
@@ -187,6 +214,7 @@ namespace AiGMBackEnd.Services.Storage
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error removing currency from player: {ex.Message}");
+                await _gameNotificationService.NotifyErrorAsync(userId, $"Error removing currency: {ex.Message}");
                 return false;
             }
         }

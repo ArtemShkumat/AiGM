@@ -30,28 +30,29 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
                 var location = await _storageService.GetLocationAsync(request.UserId, player.CurrentLocationId);
-                
+
+                var promptContentBuilder = new StringBuilder();
                 var connectedLocations = new List<Location>();
-                foreach (var cl in location.ConnectedLocations)
+                if (location!=null)
                 {
-                    connectedLocations.Add(await _storageService.GetLocationAsync(request.UserId, cl));
-                }
+                    foreach (var cl in location.ConnectedLocations)
+                    {
+                        connectedLocations.Add(await _storageService.GetLocationAsync(request.UserId, cl));
+                    }
+                    if (location.ParentLocation != null)
+                    {
+                        var parentLocation = await _storageService.GetLocationAsync(request.UserId, location.ParentLocation);
+                        if (!string.IsNullOrEmpty(location.ParentLocation))
+                        {
+                            promptContentBuilder.AppendLine("parentLocation: ");
+                            new LocationContextSection(parentLocation).AppendTo(promptContentBuilder);
+                        }
+                    }
+                }                
                 var npcsInCurrentLocation = await _storageService.GetNpcsInLocationAsync(request.UserId, player.CurrentLocationId);
                 var activeQuests = await _storageService.GetActiveQuestsAsync(request.UserId, player.ActiveQuests);
                 var recentEvents = await _storageService.GetRecentEventsAsync(request.UserId);
                 var conversationLog = await _storageService.GetConversationLogAsync(request.UserId);
-
-                var promptContentBuilder = new StringBuilder();
-
-                if (location.ParentLocation!=null)
-                {
-                    var parentLocation = await _storageService.GetLocationAsync(request.UserId, location.ParentLocation);
-                    if (!string.IsNullOrEmpty(location.ParentLocation))
-                    {
-                        promptContentBuilder.AppendLine("parentLocation: ");
-                        new LocationContextSection(parentLocation).AppendTo(promptContentBuilder);
-                    }
-                }                
 
                 new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);

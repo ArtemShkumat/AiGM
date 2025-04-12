@@ -13,13 +13,16 @@ namespace AiGMBackEnd.Services.Processors
     {
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;
+        private readonly GameNotificationService _gameNotificationService;
 
         public LocationProcessor(
             StorageService storageService,
-            LoggingService loggingService)
+            LoggingService loggingService,
+            GameNotificationService gameNotificationService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
+            _gameNotificationService = gameNotificationService;
         }
 
         public async Task ProcessAsync(JObject locationData, string userId)
@@ -50,7 +53,8 @@ namespace AiGMBackEnd.Services.Processors
                         break;
                     default:
                         _loggingService.LogError($"Unknown or unsupported location type: {locationType}");
-                        throw new JsonException($"Unknown or unsupported location type: {locationType}");
+                        await _gameNotificationService.NotifyErrorAsync(userId, $"Unknown or unsupported location type: {locationType}");
+                        return; // Return early without processing further
                 }
 
                 // Set common properties immediately after type-specific deserialization
@@ -73,6 +77,7 @@ namespace AiGMBackEnd.Services.Processors
                 {
                     _loggingService.LogError("Failed to create location data, or ID/LocationType is missing.");
                     _loggingService.LogWarning($"Attempted location creation for ID: {locationId ?? "Not Found"}, Type: {locationType ?? "Not Found"}");
+                    await _gameNotificationService.NotifyErrorAsync(userId, "Failed to create location: missing required information.");
                     return;
                 }
                 
@@ -112,12 +117,14 @@ namespace AiGMBackEnd.Services.Processors
             {
                 _loggingService.LogError($"JSON deserialization error processing location ({locationType ?? "Unknown"}) creation for ID {locationId ?? "Unknown"}: {jsonEx.Message}");
                 _loggingService.LogInfo($"Problematic JSON data: {locationData.ToString()}");
+                await _gameNotificationService.NotifyErrorAsync(userId, $"Error creating location: {jsonEx.Message}");
                 throw;
             }
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error processing location ({locationType ?? "Unknown"}) creation for ID {locationId ?? "Unknown"}: {ex.Message}");
                 _loggingService.LogInfo($"JSON data during error: {locationData.ToString()}");
+                await _gameNotificationService.NotifyErrorAsync(userId, $"Error creating location: {ex.Message}");
                 throw;
             }
         }

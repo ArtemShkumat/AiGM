@@ -174,21 +174,6 @@ USER:
   }
 ]
 
-Current player prompt: Is there a tavern in this town? I could use a drink after a long day of travel.
-
-RESPONSE:
-{
-  "userFacingText": "Looking around the market square, you notice a weathered sign hanging from a building down the street - "The Rusty Anchor" it reads, with a faded painting of an anchor below. The building looks well-worn but inviting, with warm light spilling from its windows. You can just make out the sound of laughter and conversation drifting from within.",
-  "newEntities": [
-    {
-      "type": "LOCATION",
-      "name": "The Rusty Anchor",
-      "id": "loc_rustyAnchorTavern",
-      "locationType": "BUILDING",
-      "context": "This is a well-established tavern located near the market square. It's a popular gathering spot for locals and travelers, known for its warm atmosphere and good ale. The tavern has a main common room with a bar, several tables, and a small stage for entertainment. The building should feel welcoming but worn, with nautical decorations and a warm atmosphere. It should be connected to loc_marketSquare and other nearby locations."
-    }
-  ]
-}
 
 EXAMPLE: Player asks about something that wouldn't reasonably exist in the current location.
 
@@ -618,10 +603,27 @@ EXAMPLES USING NEW RESPONSE FORMAT:
 Here are examples showing how to respond using the new structured JSON format. Notice there is no <donotshow/> tag - just a single JSON object with "userFacingText", "newEntities", and "partialUpdates" properties.
 
 
-
 EXAMPLE: Player discovers a new location
 
-USER: I ask the merchant if there's a good place to get a drink around here.
+USER:
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_springvale"
+},
+"npcs": [
+  {
+    "id": "npc_merchantTomas",
+    "name": "Tomas",
+    "currentLocationId": "loc_springvale",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true
+  }
+]
+
+Current player prompt: I ask the merchant if there's a good place to get a drink around here.
 
 RESPONSE:
 {
@@ -631,15 +633,113 @@ RESPONSE:
       "type": "LOCATION",
       "id": "loc_goldenBarrelTavern",
       "name": "The Golden Barrel",
-      "context": "A popular tavern in town known for its excellent mead and honeyed porter. It's a gathering place for locals and travelers alike, and a good spot to hear gossip and news. The innkeeper is a woman named Dalla who knows everything that happens in town.",
+      "context": "A popular tavern in town known for its excellent mead and honeyed porter. It's a gathering place for locals and travelers alike, and a good spot to hear gossip and news. The innkeeper is a woman named Dalla (npc_dalla) who knows everything that happens in town. Its parentLocationId must be the current location: loc_springvale.",
       "locationType": "Building"
     },
     {
       "type": "NPC",
       "id": "npc_dalla",
       "name": "Dalla",
-      "context": "Dalla is the innkeeper of The Golden Barrel tavern. She's a middle-aged woman with a sharp mind who keeps track of all the gossip and news in town. She runs her establishment efficiently and is respected by the locals.",
+      "context": "Dalla is the innkeeper of The Golden Barrel tavern (loc_goldenBarrelTavern). She's a middle-aged woman with a sharp mind who keeps track of all the gossip and news in town. She runs her establishment efficiently and is respected by the locals.",
       "currentLocationId": "loc_goldenBarrelTavern"
+    }
+  ]
+}
+
+EXAMPLE: Player discovers a nearby "Wilds" location
+
+USER:
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_springvale"
+},
+"npcs": [
+  {
+    "id": "npc_guardCaptain",
+    "name": "Captain Voss",
+    "currentLocationId": "loc_springvale",
+    "visibleToPlayer": true
+  }
+]
+
+Current player prompt: I ask Captain Voss about the woods north of town. Are they safe to travel through?
+
+RESPONSE:
+{
+  "userFacingText": "Captain Voss frowns, leaning against the gatehouse wall. 'The Whispering Woods to the north? Safe is a strong word, traveler. It's old forest, tangled and dark in places. Mostly used by hunters and foragers from the village, but there are whispers of... stranger things deeper in. Lost ruins, territorial beasts, that sort of thing. It's easy enough to get turned around if you stray too far from the main paths. Why do you ask? Planning a trip?'",
+  "newEntities": [
+    {
+      "type": "LOCATION",
+      "id": "loc_whisperingWoods",
+      "name": "Whispering Woods",
+      "context": "An old, somewhat dangerous forest located north of Springvale. Contains hunting trails, possibly lost ruins, and potentially hostile creatures. This location is outside the settlement walls and should be connected to loc_springvale. It represents a transitional area leading away from the settlement into the wilderness.",
+      "locationType": "Wilds"
+    }
+  ]
+}
+
+EXAMPLE: Player discovers a "Delve" within "Wilds"
+
+USER:
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Alaric",
+  "currentLocationId": "loc_whisperingWoods"
+},
+"currentLocation": {
+    "id": "loc_whisperingWoods",
+    "name": "Whispering Woods",
+    "locationType": "Wilds",
+    "description": "An old, somewhat dangerous forest located north of Springvale. Contains hunting trails, possibly lost ruins, and potentially hostile creatures."
+}
+
+Current player prompt: I push deeper into the Whispering Woods, trying to find the source of those strange carvings I saw earlier.
+
+RESPONSE:
+{
+  "userFacingText": "You forge ahead, pushing aside thick, thorny vines and ducking under low-hanging branches. The air grows heavy and still, the sounds of the forest seeming to hush around you. After nearly an hour of difficult progress, you stumble into a small clearing. In the center, choked by roots and moss, stand the unmistakable ruins of an ancient structure. Crumbling stone walls, half-buried under centuries of forest debris, hint at a forgotten temple or shrine. Dark, uninviting doorways lead into the structure's shadowed interior. The carvings you saw earlier are more prominent here, depicting unsettling, serpentine figures.",
+  "newEntities": [
+    {
+      "type": "LOCATION",
+      "id": "loc_ruinedSerpentTemple",
+      "name": "Ruined Serpent Temple",
+      "context": "An ancient, crumbling temple discovered deep within the Whispering Woods. Likely dangerous, filled with traps, puzzles, or hostile guardians related to the serpentine carvings. This is a potential adventure site. Its parentLocationId must be: loc_whisperingWoods.",
+      "locationType": "Delve"
+    }
+  ]
+}
+
+EXAMPLE: Player learns about a "Settlement" from a text
+
+USER:
+...
+"player": {
+  "type": "PLAYER",
+  "name": "Elara",
+  "currentLocationId": "loc_oldLibrary"
+},
+"currentLocation": {
+    "id": "loc_oldLibrary",
+    "name": "Old Library",
+    "locationType": "Building",
+    "description": "A dusty repository of forgotten lore."
+}
+
+Current player prompt: I found this weathered journal. I carefully open it and read the last few entries.
+
+RESPONSE:
+{
+  "userFacingText": "The journal's pages are brittle with age. The final entries, written in a looping, hurried script, speak of a hidden community deep in the southern swamps called \"Havenwood\". The writer describes it as a small, isolated hamlet founded by refugees escaping some past conflict. They mention unique customs, reliance on swamp resources, and a general distrust of outsiders. The last legible sentence reads: '...must reach Havenwood before the marsh claims me... my final hope...'. The rest is smeared and unreadable.",
+  "newEntities": [
+    {
+      "type": "LOCATION",
+      "id": "loc_havenwoodHamlet",
+      "name": "Havenwood",
+      "context": "An isolated hamlet located deep within the southern swamps, mentioned in an old journal. It was founded by refugees and is likely difficult to find and potentially distrustful of strangers. Its exact location is unknown beyond being in the southern swamps. It is a small, self-sufficient community.",
+      "locationType": "Settlement"
     }
   ]
 }
@@ -755,6 +855,26 @@ RESPONSE:
     }
   }
 }
+
+EXAMPLE: Player departs a location and begins travel (Simple Transition)
+USER:
+Current player prompt: I leave the village and head west towards the Sunken Forest.
+
+RESPONSE:
+{
+  "userFacingText": "You wave farewell to the last of the village guards and turn your steps towards the west. The well-trodden path soon gives way to a narrower trail as the sounds of the village fade behind you. The air grows cooler and damper as the trees of the Sunken Forest loom ahead, their gnarled branches interlocking overhead like skeletal fingers, casting the path in perpetual twilight.\n\nAfter walking for about an hour, the trees press in even closer, and the silence is broken only by the crunch of your boots on the damp earth and the occasional drip of moisture from the canopy. The path ahead seems to split. One way leads slightly downhill into an area choked with thick, thorny bushes, while the other climbs gently towards a ridge where the trees thin out slightly. Which way do you proceed?"
+}
+
+
+EXAMPLE: Player departs a location and begins travel (Leading to Encounter/Challenge - based on user provided scenario)
+USER:
+Current player prompt: I leave the forge and head south towards Whispering Pass.
+
+RESPONSE:
+{
+  "userFacingText": "You gather your belongings, sling your dark sword across your back, and prepare to depart the Ancient Forge. Smith Runa barely acknowledges your departure beyond a curt nod, her focus already returned to the unyielding metal on her anvil. Leaving the forge, you step out into the crisp mountain air. The village of Emberhold spreads out below you in the valley, smoke curling lazily from chimneys, looking deceptively peaceful from this height.\n\nThe path leads southward, gradually ascending towards the imposing peaks of the Ember Mountains. As the afternoon wears on, the sun begins its descent, painting the sky in hues of orange and purple. The entrance to Whispering Pass looms before you – a stark, shadowed cleft in the mountainside. A palpable wind whistles through the gap, carrying an unsettling, mournful sound. The air grows colder as you step into the pass proper. The path narrows, flanked by steep, rocky walls, and loose scree shifts underfoot, making the going treacherous. Looking ahead, the pass seems to twist out of sight around a rocky outcrop. The wind howls more fiercely here, echoing strangely off the stone. Do you press forward cautiously, mindful of the unstable footing, or try to move quickly through this exposed section?"
+}
+
 
 EXAMPLE: Player explicitly attacks an NPC
 USER:

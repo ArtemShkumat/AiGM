@@ -6,7 +6,7 @@ User Prompt: Create a location using this info:
     "id": "loc_old_sparrows_shop",
     "locationType": "Building"
     "name": "Old Sparrow's Shop",
-    "context": "The player is location loc_village_square, and asked for a general store to do some trading. An NPC advised the player that there is one shop called Old Sparrow's Shop."
+    "context": "The player is in location loc_village_hollowbrook, and asked for a general store to do some trading. An NPC advised the player that there is one shop called Old Sparrow's Shop."
 }
 
 Your Response:
@@ -18,10 +18,8 @@ Your Response:
   "name": "Old Sparrow's Shop",
   "description": "A general store providing staples and odd trinkets to local villagers.",
   "knownToPlayer": true,
-  "connectedLocations": [
-    "loc_inn_backyard"
-  ],
-  "parentLocation": "loc_village_square",
+  "connectedLocations": [],
+  "parentLocation": "loc_village_hollowbrook",
   "npcs": [
     "npc_OldSparrow"
   ],
@@ -88,105 +86,99 @@ User Prompt:
 
 creationRequestDetails:
 {
-  "locationType": "BUILDING",
+  "locationType": "Building",
   "id": "loc_oakheaven_trading_post",
-  "name": "oakheaven trading post",
-  "context": "This is automatically created request to produce Location.This reference was found in Quest 'Salvage the Forge' with ID quest_secureDecliningGoods. Find where in this Quest context is the quest_secureDecliningGoods and create it in such a way that it would be relevant to this Quest.\
-\
-Here is the full content of the source entity:\
-\
-{\r\
-  "Type": "QUEST",\r\
-  "Id": "quest_secureDecliningGoods",\r\
-  "Title": "Salvage the Forge",\r\
-  "CoreObjective": "Safely transport the remaining valuable, though rapidly declining, goods from Emberhold's forge to a neutral trading post outside the village.",\r\
-  "Overview": "With the Ember Crystal stolen and the mountain winds biting harder each day, the quality of Emberhold's renowned forged goods is rapidly deteriorating. Merchant Thorin, desperate to salvage what he can, hires adventurers to transport the remaining valuables to the trading post of Oakhaven, hoping to minimize losses before the items become worthless. Success depends on speed and the player's ability to navigate the increasingly dangerous mountain passes.",\r\
-  "Npcs": [\r\
-    {\r\
-      "Id": "npc_merchantThorin",\r\
-      "Name": "Thorin",\r\
-      "Role": "Merchant (Quest Giver)",\r\
-      "Motivation": "Prevent financial ruin and maintain his reputation as a shrewd trader in the face of disaster.",\r\
-      "Fears": "Bankruptcy, becoming an outcast in Emberhold due to his losses",\r\
-      "Secrets": "He knows more about the Ember Crystal's weaknesses than he lets on, information he withheld to exploit the forge's power."\r\
-    }\r\
-  ],\r\
-  "RumorsAndLeads": [\r\
-    {\r\
-      "Rumor": "The mountain passes are unusually active with monstrous activity. Something has driven creatures down from their lairs.",\r\
-      "SourceNPC": "Villager",\r\
-      "SourceLocation": "loc_emberhold"\r\
-    },\r\
-    {\r\
-      "Rumor": "Mercenaries have been spotted heading towards Oakhaven. They are likely looking for work following Emberhold decline",\r\
-      "SourceNPC": "Traveling Merchant",\r\
-      "SourceLocation": "loc_emberhold"\r\
-    }\r\
-  ],\r\
-  "LocationsInvolved": [\r\
-    {\r\
-      "Id": "loc_emberhold",\r\
-      "Name": "Emberhold",\r\
-      "Type": "settlement"\r\
-    },\r\
-    {\r\
-      "Id": "loc_oakheaven_trading_post",\r\
-      "Name": "Oakhaven Trading Post",\r\
-      "Type": "settlement"\r\
-    },\r\
-    {\r\
-      "Id": "loc_mountain_pass",\r\
-      "Name": "Mountain Pass",\r\
-      "Type": "wilds"\r\
-    }\r\
-  ],\r\
-  "OpposingForces": [\r\
-    {\r\
-      "Name": "Mountain Drakes",\r\
-      "Role": "Primary",\r\
-      "Motivation": "Driven from their higher altitude habitats by the increasingly harsh conditions, they are seeking new territory and prey.",\r\
-      "Description": "Territorial predators that attack anyone venturing through their hunting grounds. They are drawn to the scent of worked metal and will aggressively defend their claimed areas."\r\
-    },\r\
-    {\r\
-      "Name": "Bandits",\r\
-      "Role": "Secondary",\r\
-      "Motivation": "Opportunistic scavengers preying on the chaos and desperation surrounding Emberhold's decline.",\r\
-      "Description": "A small band of brigands hoping to steal the valuable goods being transported."\r\
-    }\r\
-  ],\r\
-  "Challenges": [\r\
-    "The forged goods are heavy and require careful handling to prevent further damage.",\r\
-    "Navigating treacherous mountain passes, complicated by worsening weather and potential ambushes.",\r\
-    "Defending against opportunistic bandits or territorial creatures seeking to steal the cargo.",\r\
-    "Making timely deliveries to Oakhaven before the quality of the goods deteriorates too much further."\r\
-  ],\r\
-  "EmotionalBeats": [\r\
-    "Witnessing the despair and decline of craftsmanship in Emberhold's once-proud forge.",\r\
-    "Moral dilemma: Should the player inform Thorin about everything they know about Ember Crystal for a larger reward?",\r\
-    "Encountering desperate villagers attempting to flee Emberhold with nothing.",\r\
-    "The player needs to decide if he helps villages or makes sure the goods are transported as soon as possible."\r\
-  ],\r\
-  "Rewards": [\r\
-    "A sum of coins depending on the quality of goods delivered to Oakhaven.",\r\
-    "Increased reputation with Merchant Thorin.",\r\
-    "Potential for future trading opportunities with Oakhaven's merchants.",\r\
-    "Access to information how to find Ember Crystal"\r\
-  ]\r\
-}"
+  "name": "Oakhaven Trading Post",
+  "context": {
+    "Type": "QUEST",
+    "Id": "quest_secureDecliningGoods",
+    "Title": "Salvage the Forge",
+    "CoreObjective": "Safely transport the remaining valuable, though rapidly declining, goods from Emberhold's forge to a neutral trading post outside the village.",
+    "Overview": "With the Ember Crystal stolen and the mountain winds biting harder each day, the quality of Emberhold's renowned forged goods is rapidly deteriorating. Merchant Thorin, desperate to salvage what he can, hires adventurers to transport the remaining valuables to the trading post of Oakhaven, hoping to minimize losses before the items become worthless. Success depends on speed and the player's ability to navigate the increasingly dangerous mountain passes.",
+    "Npcs": [
+      {
+        "Id": "npc_merchantThorin",
+        "Name": "Thorin",
+        "Role": "Merchant (Quest Giver)",
+        "Motivation": "Prevent financial ruin and maintain his reputation as a shrewd trader in the face of disaster.",
+        "Fears": "Bankruptcy, becoming an outcast in Emberhold due to his losses",
+        "Secrets": "He knows more about the Ember Crystal's weaknesses than he lets on, information he withheld to exploit the forge's power."
+      }
+    ],
+    "RumorsAndLeads": [
+      {
+        "Rumor": "The mountain passes are unusually active with monstrous activity. Something has driven creatures down from their lairs.",
+        "SourceNPC": "Villager",
+        "SourceLocation": "loc_emberhold"
+      },
+      {
+        "Rumor": "Mercenaries have been spotted heading towards Oakhaven. They are likely looking for work following Emberhold decline",
+        "SourceNPC": "Traveling Merchant",
+        "SourceLocation": "loc_emberhold"
+      }
+    ],
+    "LocationsInvolved": [
+      {
+        "Id": "loc_emberhold",
+        "Name": "Emberhold",
+        "Type": "settlement"
+      },
+      {
+        "Id": "loc_oakheaven_trading_post",
+        "Name": "Oakhaven Trading Post",
+        "Type": "settlement"
+      },
+      {
+        "Id": "loc_mountain_pass",
+        "Name": "Mountain Pass",
+        "Type": "wilds"
+      }
+    ],
+    "OpposingForces": [
+      {
+        "Name": "Mountain Drakes",
+        "Role": "Primary",
+        "Motivation": "Driven from their higher altitude habitats by the increasingly harsh conditions, they are seeking new territory and prey.",
+        "Description": "Territorial predators that attack anyone venturing through their hunting grounds. They are drawn to the scent of worked metal and will aggressively defend their claimed areas."
+      },
+      {
+        "Name": "Bandits",
+        "Role": "Secondary",
+        "Motivation": "Opportunistic scavengers preying on the chaos and desperation surrounding Emberhold's decline.",
+        "Description": "A small band of brigands hoping to steal the valuable goods being transported."
+      }
+    ],
+    "Challenges": [
+      "The forged goods are heavy and require careful handling to prevent further damage.",
+      "Navigating treacherous mountain passes, complicated by worsening weather and potential ambushes.",
+      "Defending against opportunistic bandits or territorial creatures seeking to steal the cargo.",
+      "Making timely deliveries to Oakhaven before the quality of the goods deteriorates too much further."
+    ],
+    "EmotionalBeats": [
+      "Witnessing the despair and decline of craftsmanship in Emberhold's once-proud forge.",
+      "Moral dilemma: Should the player inform Thorin about everything they know about Ember Crystal for a larger reward?",
+      "Encountering desperate villagers attempting to flee Emberhold with nothing.",
+      "The player needs to decide if he helps villages or makes sure the goods are transported as soon as possible."
+    ],
+    "Rewards": [
+      "A sum of coins depending on the quality of goods delivered to Oakhaven.",
+      "Increased reputation with Merchant Thorin.",
+      "Potential for future trading opportunities with Oakhaven's merchants.",
+      "Access to information how to find Ember Crystal"
+    ]
+  }
 }
 
 Your response:
 
 {
   "type": "LOCATION",
-  "locationType": "BUILDING",
+  "locationType": "Building",
   "id": "loc_oakheaven_trading_post",
   "name": "Oakhaven Trading Post",
   "description": "A bustling hub for merchants and travelers, Oakhaven Trading Post provides essential services and acts as a neutral ground for trade in the region.",
   "knownToPlayer": false,
-  "connectedLocations": [
-    "loc_mountain_pass"
-  ],
+  "connectedLocations": [],
   "parentLocation": "loc_mountain_pass",
   "npcs": [],
   "exterior_description": "A sturdy, two-story building constructed of rough-hewn timber and stone. A wide porch wraps around the front, offering shelter from the elements. The sound of bartering and the smell of roasted meat fill the air.",
@@ -339,6 +331,221 @@ Your response:
           "navigation": {
             "connected_rooms": [
               "Upstairs Landing"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+
+EXAMPLE 3
+
+User Prompt:
+
+creationRequestDetails:
+{
+  "locationType": "Building",
+  "id": "loc_goldenBarrelTavern",
+  "name": "The Golden Barrel",
+  "context": "A popular tavern in town known for its excellent mead and honeyed porter. It's a gathering place for locals and travelers alike, and a good spot to hear gossip and news. The innkeeper is a woman named Dalla (npc_dalla) who knows everything that happens in town. Its parentLocationId must be the current location: loc_springvale."
+}
+
+Your response:
+
+{
+  "type": "LOCATION",
+  "locationType": "Building",
+  "id": "loc_goldenBarrelTavern",
+  "name": "The Golden Barrel",
+  "description": "A popular tavern renowned for its excellent mead and honeyed porter, serving as the social heart of Springvale.",
+  "knownToPlayer": true,
+  "connectedLocations": [],
+  "parentLocation": "loc_springvale",
+  "npcs": [
+    "npc_dalla"
+  ],
+  "exterior_description": "A two-story timber-framed building with a painted golden barrel hanging above the door. Warm light spills from its windows, and the sounds of laughter and music can be heard from within.",
+  "purpose": "A tavern providing food, drink, entertainment, and lodging to locals and travelers passing through Springvale.",
+  "history": "Originally built as a meadery fifty years ago, The Golden Barrel has grown from a simple tasting room to the town's premier gathering place under the ownership of three generations of Dalla's family.",
+  "floors": [
+    {
+      "floor_name": "Ground Floor",
+      "description": "The main tavern area with polished wooden floors, a long bar, and several round tables. A large hearth dominates one wall.",
+      "rooms": [
+        {
+          "name": "Main Tavern Hall",
+          "type": "Common Room",
+          "description": "A spacious room filled with the aroma of honeyed mead and roasted meat. Wooden tables and chairs are arranged around a central area where performers occasionally play. The walls are decorated with agricultural tools and hunting trophies.",
+          "points_of_interest": [
+            {
+              "description": "A large barrel tap system behind the bar, crafted from polished oak with brass fittings.",
+              "hinting_at": "The tavern's pride in their house-brewed mead and porter."
+            },
+            {
+              "description": "A notice board covered with job postings, announcements, and requests.",
+              "hinting_at": "The tavern serves as an informal center for local news and opportunities."
+            }
+          ],
+          "valuables": [
+            {
+              "name": "Premium Golden Mead",
+              "why_its_here": "The tavern's signature brew, kept in a special cask.",
+              "description": "A rare honey mead with hints of apple and cinnamon.",
+              "quantity": 1,
+              "value": 25
+            }
+          ],
+          "npcs": [
+            "npc_dalla"
+          ],
+          "navigation": {
+            "connected_rooms": [
+              "Kitchen",
+              "Private Dining Room"
+            ]
+          }
+        },
+        {
+          "name": "Kitchen",
+          "type": "Service Area",
+          "description": "A warm, busy kitchen with several cooking fires and preparation tables. Herbs hang from the ceiling beams, and the smell of fresh bread fills the air.",
+          "points_of_interest": [
+            {
+              "description": "A recipe book bound in leather, open to a page detailing the secret spices for the tavern's famous honeyed porter.",
+              "hinting_at": "The closely guarded brewing secrets passed down through Dalla's family."
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Main Tavern Hall",
+              "Storage Cellar"
+            ]
+          }
+        },
+        {
+          "name": "Private Dining Room",
+          "type": "Private Room",
+          "description": "A smaller, more intimate room with a single large table and comfortable chairs. A small hearth provides warmth, and the walls are lined with shelves of books and curios.",
+          "points_of_interest": [
+            {
+              "description": "A collection of maps showing trade routes through the region, with notes scribbled in the margins.",
+              "hinting_at": "Dalla's network of informants and her knowledge of merchant activities."
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Main Tavern Hall"
+            ]
+          }
+        },
+        {
+          "name": "Storage Cellar",
+          "type": "Storage",
+          "description": "A cool, dry cellar filled with barrels of mead and porter, sacks of grain, and preserved foods.",
+          "points_of_interest": [
+            {
+              "description": "A small locked chest hidden behind several barrels.",
+              "hinting_at": "Dalla's private collection of valuable information or treasures."
+            }
+          ],
+          "valuables": [
+            {
+              "name": "Aged Honey Wine",
+              "why_its_here": "Special reserve kept for important guests.",
+              "description": "A dusty bottle of golden liquor that catches the light beautifully.",
+              "quantity": 3,
+              "value": 15
+            }
+          ],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Kitchen"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "floor_name": "Second Floor",
+      "description": "A hallway with several guest rooms available for rent.",
+      "rooms": [
+        {
+          "name": "Upstairs Hallway",
+          "type": "Hallway",
+          "description": "A narrow corridor with doors leading to guest rooms. Soft rugs muffle footsteps, and small lanterns provide warm light.",
+          "points_of_interest": [],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Traveler's Room",
+              "Merchant's Suite",
+              "Dalla's Quarters"
+            ]
+          }
+        },
+        {
+          "name": "Traveler's Room",
+          "type": "Guest Room",
+          "description": "A simple but comfortable room with a bed, small table, and chest for personal belongings. A window overlooks the town square.",
+          "points_of_interest": [],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Upstairs Hallway"
+            ]
+          }
+        },
+        {
+          "name": "Merchant's Suite",
+          "type": "Guest Room",
+          "description": "A more spacious room with a large bed, writing desk, and private washbasin. Intended for wealthy merchants or important visitors.",
+          "points_of_interest": [
+            {
+              "description": "A ledger left open on the desk, showing trade calculations.",
+              "hinting_at": "The room's current occupant may be a merchant planning a major transaction."
+            }
+          ],
+          "valuables": [],
+          "npcs": [],
+          "navigation": {
+            "connected_rooms": [
+              "Upstairs Hallway"
+            ]
+          }
+        },
+        {
+          "name": "Dalla's Quarters",
+          "type": "Private Room",
+          "description": "The innkeeper's personal quarters, tidy and practical with a bed, desk, and shelves of personal items.",
+          "points_of_interest": [
+            {
+              "description": "A collection of small notebooks filled with tidy handwriting, documenting years of observations and secrets heard in the tavern.",
+              "hinting_at": "Dalla's extensive knowledge of local affairs and her role as an information gatherer."
+            }
+          ],
+          "valuables": [
+            {
+              "name": "Family Heirloom Pendant",
+              "why_its_here": "Dalla's personal treasure and good luck charm.",
+              "description": "A golden pendant shaped like a honeycomb with a small amber stone in the center.",
+              "quantity": 1,
+              "value": 50
+            }
+          ],
+          "npcs": [
+            "npc_dalla"
+          ],
+          "navigation": {
+            "connected_rooms": [
+              "Upstairs Hallway"
             ]
           }
         }

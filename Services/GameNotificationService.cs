@@ -87,5 +87,41 @@ namespace AiGMBackEnd.Services
                 _loggingService.LogError($"Error sending combat turn update: {ex.Message}");
             }
         }
+        
+        /// <summary>
+        /// Send a generic notification to clients with a custom message
+        /// </summary>
+        /// <param name="gameId">The game ID</param>
+        /// <param name="message">The message to send to clients</param>
+        public async Task NotifyGenericAsync(string gameId, string message)
+        {
+            try
+            {
+                await _hubContext.Clients.Group(gameId).SendAsync("GenericNotification", new { message });
+                _loggingService.LogInfo($"Sent generic notification for game {gameId}: {message}");
+            }
+            catch (System.Exception ex)
+            {
+                _loggingService.LogError($"Error sending generic notification: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Send an error notification to clients with an error message
+        /// </summary>
+        /// <param name="gameId">The game ID</param>
+        /// <param name="errorMessage">The error message to send to clients</param>
+        public async Task NotifyErrorAsync(string gameId, string errorMessage)
+        {
+            try
+            {
+                await _hubContext.Clients.Group(gameId).SendAsync("ErrorNotification", new { errorMessage });
+                _loggingService.LogInfo($"Sent error notification for game {gameId}: {errorMessage}");
+            }
+            catch (System.Exception ex)
+            {
+                _loggingService.LogError($"Error sending error notification: {ex.Message}");
+            }
+        }
     }
 } 

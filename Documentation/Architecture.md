@@ -146,10 +146,12 @@ Implementation can be very simple or use a robust library.
 Role: Sends real-time notifications to connected clients (UI) using SignalR via the `GameHub`. This is used to inform the UI about specific state changes that require a refresh without a full page reload or explicit user action.
 Uses `Microsoft.AspNetCore.SignalR`.
 Methods:
-NotifyInventoryChangedAsync(string gameId): Sends an "InventoryChanged" message to clients connected to the specified `gameId` group, indicating the player's inventory has been updated and the UI should refetch it. (Currently the only notification implemented).
-*   **`NotifyCombatStartedAsync(string userId, CombatStartInfo initialState)`**: Signals the UI to enter combat mode, providing initial enemy and player state.
-*   **`NotifyCombatEndedAsync(string userId, bool playerVictory)`**: Signals the UI that combat is over and whether the player won.
-*   **`NotifyCombatTurnUpdateAsync(string userId, CombatTurnInfo currentState)`**: (Optional) Sends turn-by-turn updates to the UI.
+*   **`NotifyInventoryChangedAsync(string gameId)`**: Sends an "InventoryChanged" message to clients connected to the specified `gameId` group, indicating the player's inventory has been updated and the UI should refetch it.
+*   **`NotifyCombatStartedAsync(string gameId, CombatStartInfo initialState)`**: Signals the UI to enter combat mode, providing initial enemy and player state.
+*   **`NotifyCombatEndedAsync(string gameId, bool playerVictory)`**: Signals the UI that combat is over and whether the player won.
+*   **`NotifyCombatTurnUpdateAsync(string gameId, CombatTurnInfo currentState)`**: Sends turn-by-turn updates to the UI during combat.
+*   **`NotifyGenericAsync(string gameId, string message)`**: Sends a generic notification with a custom message to clients.
+*   **`NotifyErrorAsync(string gameId, string errorMessage)`**: Sends an error notification with an error message to clients.
 
 2.9. Models
 Where: RPGGame/Models/
