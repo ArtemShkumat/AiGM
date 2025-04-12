@@ -77,7 +77,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                     promptContentBuilder.AppendLine("connectedLocations: ");
                     foreach (var item in connectedLocations)
                     {
-                        new LocationContextSection(item).AppendTo(promptContentBuilder);
+                        new LocationContextSection(item).AppendTo(systemPromptBuilder);
                     }
                 }                
 

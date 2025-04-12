@@ -364,12 +364,7 @@ namespace AiGMBackEnd.Services
                 // 2. Call LLM
                 var llmResponse = await _aiService.GetCompletionAsync(prompt);
                 _loggingService.LogInfo($"LLM response received, length: {llmResponse?.Length ?? 0} (Job ID: {jobId})");
-                
-                // Additional logging for DM/NPC responses to debug potential issues
-                if (request.PromptType == PromptType.DM || request.PromptType == PromptType.NPC)
-                {
-                    _loggingService.LogInfo($"Raw LLM response for {request.PromptType}: {llmResponse}");
-                }
+               
                 
                 // 3. Process the response
                 ProcessedResult processedResult;

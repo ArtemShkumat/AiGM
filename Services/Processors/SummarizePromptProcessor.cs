@@ -45,8 +45,8 @@ namespace AiGMBackEnd.Services.Processors
                 // Add the summary through the RecentEventsService
                 await _recentEventsService.AddSummaryToRecentEventsAsync(userId, summary);
                 
-                // Also add to the DM conversation log
-                await _conversationLogService.AddDmMessageAsync(userId, summary);
+                // Clear the conversation log, keeping only the latest entry
+                await _conversationLogService.WipeLogAsync(userId);
                 
                 _loggingService.LogInfo($"Added summary to recent events for user {userId}");
             }

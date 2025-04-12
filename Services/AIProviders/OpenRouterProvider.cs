@@ -60,9 +60,7 @@ namespace AiGMBackEnd.Services.AIProviders
 
                 object requestPayload;
                 if (!string.IsNullOrEmpty(prompt.OutputStructureJsonSchema))
-                {
-                    // If schema is provided, use structured output format
-                    _loggingService.LogInfo("Detected OutputStructureJsonSchema. Using structured output config.");
+                {                    
                     requestPayload = new
                     {
                         model = _modelName,
@@ -101,7 +99,7 @@ namespace AiGMBackEnd.Services.AIProviders
                 // Preprocess the JSON for better logging readability
                 //var prettyJson = PreprocessJsonForLogging(json);
                 //_loggingService.LogFormattedInfo("request", prettyJson);
-                _loggingService.LogFormattedInfo("request", prompt.PromptContent);
+                //_loggingService.LogFormattedInfo("request", prompt.PromptContent);
 
                 var response = await _httpClient.PostAsync("chat/completions", requestContent);
                 response.EnsureSuccessStatusCode();

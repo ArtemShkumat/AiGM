@@ -31,31 +31,50 @@ namespace AiGMBackEnd.Services.Processors
             {
                 _loggingService.LogInfo($"Processing location creation (Type: {locationType ?? "Unknown"}) for ID: {locationId ?? "Unknown"} using direct deserialization.");
 
-                var location = locationData.ToObject<Location>();
+                // Instead of trying to deserialize to abstract Location class, use type-specific deserialization
+                Location location;
+                
+                switch (locationType?.ToLower())
+                {
+                    case "building":
+                        location = ProcessBuilding(locationData);
+                        break;
+                    case "delve":
+                        location = ProcessDelve(locationData);
+                        break;
+                    case "settlement":
+                        location = ProcessSettlement(locationData);
+                        break;
+                    case "wilds":
+                        location = ProcessWilds(locationData);
+                        break;
+                    default:
+                        _loggingService.LogError($"Unknown or unsupported location type: {locationType}");
+                        throw new JsonException($"Unknown or unsupported location type: {locationType}");
+                }
+
+                // Set common properties immediately after type-specific deserialization
+                if (location != null)
+                {
+                    location.LocationType = locationType;
+                    location.Id = locationId;
+                    location.Name = locationData["name"]?.ToString() ?? "Unknown Location";
+                    location.Description = locationData["description"]?.ToString();
+                    location.KnownToPlayer = locationData["knownToPlayer"]?.Value<bool>() ?? false;
+                    
+                    if (string.IsNullOrEmpty(location.Type) || location.Type != "LOCATION")
+                    {
+                        _loggingService.LogWarning($"Location base type mismatch or missing for {location.Id}. Setting to 'LOCATION'.");
+                        location.Type = "LOCATION";
+                    }
+                }
 
                 if (location == null || string.IsNullOrEmpty(location.Id) || string.IsNullOrEmpty(location.LocationType))
                 {
-                    _loggingService.LogError("Failed to deserialize location data, or ID/LocationType is missing.");
+                    _loggingService.LogError("Failed to create location data, or ID/LocationType is missing.");
                     _loggingService.LogWarning($"Attempted location creation for ID: {locationId ?? "Not Found"}, Type: {locationType ?? "Not Found"}");
                     return;
                 }
-                
-                if (string.IsNullOrEmpty(location.Type) || location.Type != "LOCATION")
-                {
-                    _loggingService.LogWarning($"Location base type mismatch or missing for {location.Id}. Setting to 'LOCATION'.");
-                    location.Type = "LOCATION";
-                }
-
-                if (location.GetType().Name != locationType)
-                {
-                    _loggingService.LogWarning($"Deserialized location type '{location.GetType().Name}' does not match JSON locationType '{locationType}' for ID {location.Id}. Proceeding with deserialized type.");
-                }
-
-                location.LocationType = locationType;
-                location.Id = locationId;
-                location.Name = locationData["name"]?.ToString() ?? "Unknown Location";
-                location.Description = locationData["description"]?.ToString();
-                location.KnownToPlayer = locationData["knownToPlayer"]?.Value<bool>() ?? false;
                 
                 if (locationData["connectedLocations"] is JArray connectedLocations)
                 {

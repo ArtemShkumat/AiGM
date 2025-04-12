@@ -92,14 +92,6 @@ namespace AiGMBackEnd.Services.Storage
                 // Read the existing JSON file
                 var existingJson = await File.ReadAllTextAsync(filePath);
                 
-                // Enhanced logging - show existing content for NPC files
-                bool isNpcUpdate = fileId.StartsWith("npcs/");
-                if (isNpcUpdate)
-                {
-                    _loggingService.LogInfo($"Existing NPC JSON ({fileId}): {existingJson}");
-                    _loggingService.LogInfo($"Applying patch: {jsonPatch}");
-                }
-                
                 // Parse existing JSON and the patch
                 var existingObject = JObject.Parse(existingJson);
                 var patchObject = JObject.Parse(jsonPatch);
@@ -112,11 +104,7 @@ namespace AiGMBackEnd.Services.Storage
                 });
                 
                 // Enhanced logging - show merged result for NPC files
-                string resultJson = existingObject.ToString(Formatting.Indented);
-                if (isNpcUpdate)
-                {
-                    _loggingService.LogInfo($"Merged NPC JSON result ({fileId}): {resultJson}");
-                }
+                string resultJson = existingObject.ToString(Formatting.Indented);                
                 
                 // Save the updated JSON back to the file
                 await File.WriteAllTextAsync(filePath, resultJson);
