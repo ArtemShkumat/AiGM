@@ -60,15 +60,82 @@ HandleCreateResponseAsync(llmResponse, promptType, userId): Handles responses th
 Role: Load / Save game data in JSON.
 One subfolder per user or campaign.
 Possibly merges partial updates.
-Methods:
-Load<T>(string fileId) → T
-Save<T>(string fileId, T entity)
-ApplyPartialUpdate(string fileId, JObject patchData)
-*   Load specific entity types (e.g., `LoadNPCAsync`, `LoadLocationAsync`, `LoadPlayerAsync`).
-*   Save specific entity types (e.g., `SaveNPCAsync`, `SaveLocationAsync`, `SavePlayerAsync`).
-*   Add messages to conversation logs (e.g., `AddDmMessageAsync`, `AddDmMessageToNpcLogAsync`).
-*   **Load/Save `EnemyStatBlock`** (e.g., `LoadEnemyStatBlockAsync`, `SaveEnemyStatBlockAsync`, `CheckIfStatBlockExistsAsync`).
-*   **Load/Save/Delete `CombatState`** (e.g., `LoadCombatStateAsync`, `SaveCombatStateAsync`, `DeleteCombatStateAsync`).
+
+Storage services include:
+
+**BaseStorageService**:
+- `LoadAsync<T>(userId, fileId)` → Task<T>: Load object from JSON file.
+- `SaveAsync<T>(userId, fileId, entity)` → Task: Save entity to JSON file.
+- `ApplyPartialUpdateAsync(userId, fileId, jsonPatch)` → Task: Apply partial updates to existing JSON.
+- `GetFilePath(userId, fileId)` → string: Get the full path to a file.
+- `CopyDirectory(sourceDir, destinationDir)` → void: Copy directory and its contents.
+
+**EntityStorageService**:
+- `GetPlayerAsync(userId)` → Task<Player>: Get player entity.
+- `GetWorldAsync(userId)` → Task<World>: Get world entity.
+- `GetGameSettingAsync(userId)` → Task<GameSetting>: Get game settings.
+- `GetGamePreferencesAsync(userId)` → Task<GamePreferences>: Get game preferences.
+- `GetLocationAsync(userId, locationId)` → Task<Location>: Get location entity.
+- `GetNpcAsync(userId, npcId)` → Task<Npc>: Get NPC entity.
+- `GetQuestAsync(userId, questId)` → Task<Quest>: Get quest entity.
+- `GetNpcsInLocationAsync(userId, locationId)` → Task<List<Npc>>: Get all NPCs in a location.
+- `GetAllNpcsAsync(gameId)` → Task<List<Npc>>: Get all NPCs in a game.
+- `GetAllVisibleNpcsAsync(gameId)` → Task<List<Npc>>: Get all visible NPCs.
+- `GetVisibleNpcsInLocationAsync(gameId, locationId)` → Task<List<NpcInfo>>: Get visible NPCs in location.
+- `GetAllQuestsAsync(gameId)` → Task<List<Quest>>: Get all quests.
+- `GetActiveQuestsAsync(userId, activeQuestIds)` → Task<List<Quest>>: Get active quests.
+- `AddEntityToWorldAsync(userId, entityId, entityName, entityType)` → Task: Add entity to world.
+
+**ConversationLogService**:
+- `GetConversationLogAsync(userId)` → Task<ConversationLog>: Get conversation log.
+- `AddUserMessageAsync(userId, content)` → Task: Add player message to log.
+- `AddDmMessageAsync(userId, content)` → Task: Add DM message to log.
+- `AddUserMessageToNpcLogAsync(userId, npcId, content)` → Task: Add player message to NPC log.
+- `AddDmMessageToNpcLogAsync(userId, npcId, content)` → Task: Add DM message to NPC log.
+- `WipeLogAsync(userId)` → Task: Wipe log keeping only last message.
+
+**EnemyStatBlockService**:
+- `LoadEnemyStatBlockAsync(userId, enemyId)` → Task<EnemyStatBlock?>: Load enemy stats.
+- `SaveEnemyStatBlockAsync(userId, statBlock)` → Task: Save enemy stats.
+- `CheckIfStatBlockExistsAsync(userId, enemyId)` → Task<bool>: Check if stats exist.
+
+**CombatStateService**:
+- `SaveCombatStateAsync(userId, combatState)` → Task: Save combat state.
+- `LoadCombatStateAsync(userId)` → Task<CombatState?>: Load combat state.
+- `DeleteCombatStateAsync(userId)` → Task: Delete combat state.
+
+**InventoryStorageService**:
+- `AddItemToPlayerInventoryAsync(userId, newItem)` → Task<bool>: Add item to inventory.
+- `RemoveItemFromPlayerInventoryAsync(userId, itemName, quantity)` → Task<bool>: Remove item.
+- `AddCurrencyAmountAsync(userId, currencyName, amount)` → Task<bool>: Add currency.
+- `RemoveCurrencyAmountAsync(userId, currencyName, amount)` → Task<bool>: Remove currency.
+
+**GameScenarioService**:
+- `GetScenarioIds()` → List<string>: Get all scenario IDs.
+- `LoadScenarioSettingAsync<T>(scenarioId, fileId)` → Task<T>: Load scenario setting.
+- `CreateGameFromScenarioAsync(scenarioId, preferences)` → Task<string>: Create new game.
+- `GetGameIds()` → List<string>: Get all game IDs.
+
+**RecentEventsService**:
+- `GetRecentEventsAsync(userId)` → Task<RecentEvents>: Get recent events.
+- `AddSummaryToRecentEventsAsync(userId, summary)` → Task: Add summary to events.
+
+**TemplateService**:
+- `GetTemplateAsync(templatePath)` → Task<string>: Get template content.
+- `GetDmTemplateAsync(templateName)` → Task<string>: Get DM template.
+- `GetNpcTemplateAsync(templateName)` → Task<string>: Get NPC template.
+- `GetCreateQuestTemplateAsync(templateName)` → Task<string>: Get quest creation template.
+- `GetCreateNpcTemplateAsync(templateName)` → Task<string>: Get NPC creation template.
+- `GetCreateLocationTemplateAsync(templateName, locationType)` → Task<string>: Get location template.
+- `GetCreatePlayerTemplateAsync(templateName)` → Task<string>: Get player creation template.
+- `GetSummarizeTemplateAsync(templateName)` → Task<string>: Get summarize template.
+
+**ValidationService**:
+- `FindDanglingReferencesAsync(userId)` → Task<List<DanglingReferenceInfo>>: Find dangling references.
+
+**WorldSyncService**:
+- `SyncWorldWithEntitiesAsync(userId)` → Task: Sync world with all entities.
+- `SyncNpcLocationsAsync(gameId)` → Task<(int, List<object>)>: Sync NPCs with locations.
 
 2.7. LoggingService
 Role: Provide centralized logs for prompt requests, errors, time taken, etc.
