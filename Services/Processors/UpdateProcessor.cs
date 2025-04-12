@@ -304,6 +304,12 @@ namespace AiGMBackEnd.Services.Processors
                 await _serviceProvider.GetService<HangfireJobsService>().SummarizeConversationAsync(userId);
                 _loggingService.LogInfo($"Triggered conversation summarization for user {userId} after location change");
                 
+                // Hide all NPCs in the previous location by setting VisibleToPlayer to false
+                if (!string.IsNullOrEmpty(previousLocationId))
+                {
+                    int updatedCount = await _storageService.HideNpcsInLocationAsync(userId, previousLocationId);
+                    _loggingService.LogInfo($"Updated visibility for {updatedCount} NPCs in previous location {previousLocationId}");
+                }
                 
                 return true;
             }

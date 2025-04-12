@@ -136,6 +136,7 @@ Storage services include:
 **WorldSyncService**:
 - `SyncWorldWithEntitiesAsync(userId)` → Task: Sync world with all entities.
 - `SyncNpcLocationsAsync(gameId)` → Task<(int, List<object>)>: Sync NPCs with locations.
+- `HideNpcsInLocationAsync(userId, locationId)` → Task<int>: Set VisibleToPlayer to false for all NPCs in a specific location after player leaves.
 
 2.7. LoggingService
 Role: Provide centralized logs for prompt requests, errors, time taken, etc.
@@ -241,6 +242,9 @@ HangfireJobsService (Worker):
       Calls relevant `IEntityProcessor` implementations for any `newEntities`.
       Calls `UpdateProcessor.ProcessUpdatesAsync(partialUpdates, userId)`.
       `UpdateProcessor` iterates through the `partialUpdates` dictionary, calling `StorageService` to save changes for each entity ID.
+      When a location change is detected in the player updates, `UpdateProcessor` calls:
+        - Triggers conversation summarization via `SummarizeConversationAsync`
+        - Calls `HideNpcsInLocationAsync` to set all NPCs in the previous location to not visible
       Adds DM message to log via `StorageService`.
       Returns `ProcessedResult` (containing `userFacingText`).
 Hangfire completes the job.
@@ -363,6 +367,9 @@ Hangfire provides a robust job processing framework...
 *   **Combat State:** Ensure `active_combat.json` is reliably created at the start and deleted *only after* successful summarization.
 *   **Stat Block Creation:** Handle potential failures during on-demand stat block creation gracefully (e.g., notify user combat cannot start).
 *   **Combat Processor Validation:** `CombatResponseProcessor` should rigorously validate LLM state updates (success counts, condition application) against game rules.
+
+*   **NPC Visibility Management:** When a player changes location, all NPCs in the previous location should have their `VisibleToPlayer` property set to `false`. This is automatically handled via the `WorldSyncService.HideNpcsInLocationAsync` method called from the `UpdateProcessor` after conversation summarization. This ensures NPCs are not automatically visible when the player returns later.
+
 ...
 (Rest of section remains largely the same)
 

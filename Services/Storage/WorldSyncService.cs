@@ -262,5 +262,55 @@ namespace AiGMBackEnd.Services.Storage
                 throw;
             }
         }
+
+        /// <summary>
+        /// Updates all NPCs in a specific location to set their VisibleToPlayer property to false
+        /// This is typically called after a player leaves a location and a conversation is summarized
+        /// </summary>
+        /// <param name="userId">The user/game ID</param>
+        /// <param name="locationId">The location ID to process</param>
+        /// <returns>The number of NPCs that were updated</returns>
+        public async Task<int> HideNpcsInLocationAsync(string userId, string locationId)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Hiding NPCs in location {locationId} for user {userId}");
+                
+                // Get all NPCs in the specified location
+                var npcsInLocation = await _entityStorageService.GetNpcsInLocationAsync(userId, locationId);
+                
+                if (npcsInLocation == null || !npcsInLocation.Any())
+                {
+                    _loggingService.LogInfo($"No NPCs found in location {locationId}");
+                    return 0;
+                }
+                
+                int updatedCount = 0;
+                
+                // Process each NPC in the location
+                foreach (var npc in npcsInLocation)
+                {
+                    if (npc.VisibleToPlayer)
+                    {
+                        // Update the NPC's visibility
+                        npc.VisibleToPlayer = false;
+                        
+                        // Save the updated NPC
+                        await _baseStorageService.SaveAsync(userId, $"npcs/{npc.Id}", npc);
+                        
+                        updatedCount++;
+                        _loggingService.LogInfo($"Set NPC {npc.Id} ({npc.Name}) to not visible to player");
+                    }
+                }
+                
+                _loggingService.LogInfo($"Updated visibility for {updatedCount} NPCs in location {locationId}");
+                return updatedCount;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error updating NPC visibility in location {locationId}: {ex.Message}");
+                throw;
+            }
+        }
     }
 } 

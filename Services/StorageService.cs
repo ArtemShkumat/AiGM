@@ -214,6 +214,15 @@ namespace AiGMBackEnd.Services
         /// <returns>Task representing the asynchronous operation</returns>
         public async Task SyncWorldWithEntitiesAsync(string userId) => 
             await _worldSyncService.SyncWorldWithEntitiesAsync(userId);
+            
+        /// <summary>
+        /// Updates all NPCs in a specific location to set their VisibleToPlayer property to false
+        /// </summary>
+        /// <param name="userId">The user/game ID</param>
+        /// <param name="locationId">The location ID to process</param>
+        /// <returns>The number of NPCs that were updated</returns>
+        public async Task<int> HideNpcsInLocationAsync(string userId, string locationId) =>
+            await _worldSyncService.HideNpcsInLocationAsync(userId, locationId);
 
         #endregion
 
