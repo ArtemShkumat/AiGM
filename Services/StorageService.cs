@@ -126,6 +126,9 @@ namespace AiGMBackEnd.Services
         public async Task<List<Quest>> GetActiveQuestsAsync(string userId, List<string> activeQuestIds) => 
             await _entityStorageService.GetActiveQuestsAsync(userId, activeQuestIds);
 
+        public async Task<List<Quest>> GetAllQuestsAsync(string gameId) => 
+            await _entityStorageService.GetAllQuestsAsync(gameId);
+
         public async Task AddEntityToWorldAsync(string userId, string entityId, string entityName, string entityType) => 
             await _entityStorageService.AddEntityToWorldAsync(userId, entityId, entityName, entityType);
 

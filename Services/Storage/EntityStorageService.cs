@@ -216,6 +216,42 @@ namespace AiGMBackEnd.Services.Storage
             }
         }
         
+        // Method to get all quests in a game
+        public async Task<List<Quest>> GetAllQuestsAsync(string gameId)
+        {
+            try
+            {
+                var allQuests = new List<Quest>();
+                var questsPath = Path.Combine(_dataPath, "userData", gameId, "quests");
+                
+                if (!Directory.Exists(questsPath))
+                {
+                    return allQuests;
+                }
+                
+                foreach (var questFile in Directory.GetFiles(questsPath, "*.json"))
+                {
+                    try
+                    {
+                        var questJson = await File.ReadAllTextAsync(questFile);
+                        var quest = System.Text.Json.JsonSerializer.Deserialize<Quest>(questJson);
+                        allQuests.Add(quest);
+                    }
+                    catch (Exception ex)
+                    {
+                        _loggingService.LogWarning($"Error reading quest file {questFile}: {ex.Message}");
+                    }
+                }
+                
+                return allQuests;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting all quests: {ex.Message}");
+                throw;
+            }
+        }
+        
         // Method to get all active quests for a player
         public async Task<List<Quest>> GetActiveQuestsAsync(string userId, List<string> activeQuestIds)
         {

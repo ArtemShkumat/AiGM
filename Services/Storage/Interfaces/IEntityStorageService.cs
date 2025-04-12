@@ -19,6 +19,7 @@ namespace AiGMBackEnd.Services.Storage
         Task<List<Npc>> GetAllVisibleNpcsAsync(string gameId);
         Task<List<StorageService.NpcInfo>> GetVisibleNpcsInLocationAsync(string gameId, string locationId);
         Task<List<Quest>> GetActiveQuestsAsync(string userId, List<string> activeQuestIds);
+        Task<List<Quest>> GetAllQuestsAsync(string userId);
         Task AddEntityToWorldAsync(string userId, string entityId, string entityName, string entityType);
     }
 } 

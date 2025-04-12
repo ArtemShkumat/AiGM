@@ -5,6 +5,7 @@ using AiGMBackEnd.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace AiGMBackEnd.Controllers
 {
@@ -180,6 +181,153 @@ namespace AiGMBackEnd.Controllers
             {
                 _loggingService.LogError($"Error getting currencies for game {gameId}: {ex.Message}");
                 return StatusCode(500, $"Error retrieving currencies: {ex.Message}");
+            }
+        }
+
+        [HttpGet("allQuests")]
+        public async Task<IActionResult> GetAllQuests(string gameId)
+        {
+            if (string.IsNullOrEmpty(gameId))
+            {
+                return BadRequest("GameId is required");
+            }
+            
+            try
+            {
+                var allQuests = await _storageService.GetAllQuestsAsync(gameId);
+                var simplifiedQuests = allQuests.Select(q => new
+                {
+                    Id = q.Id,
+                    Title = q.Title,
+                    Objective = q.CoreObjective
+                }).ToList();
+                
+                return Ok(simplifiedQuests);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting all quests for game {gameId}: {ex.Message}");
+                return StatusCode(500, $"Error retrieving quests: {ex.Message}");
+            }
+        }
+
+        [HttpGet("activeQuests")]
+        public async Task<IActionResult> GetActiveQuests(string gameId)
+        {
+            if (string.IsNullOrEmpty(gameId))
+            {
+                return BadRequest("GameId is required");
+            }
+            
+            try
+            {
+                var player = await _storageService.GetPlayerAsync(gameId);
+                
+                if (player == null)
+                {
+                    return BadRequest("Player data not found. Character may not have been created yet.");
+                }
+                
+                var activeQuests = await _storageService.GetActiveQuestsAsync(gameId, player.ActiveQuests);
+                var simplifiedQuests = activeQuests.Select(q => new
+                {
+                    Id = q.Id,
+                    Title = q.Title,
+                    Objective = q.CoreObjective
+                }).ToList();
+                
+                return Ok(simplifiedQuests);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting active quests for game {gameId}: {ex.Message}");
+                return StatusCode(500, $"Error retrieving active quests: {ex.Message}");
+            }
+        }
+
+        [HttpPost("activateQuest")]
+        public async Task<IActionResult> ActivateQuest(string gameId, string questId)
+        {
+            if (string.IsNullOrEmpty(gameId) || string.IsNullOrEmpty(questId))
+            {
+                return BadRequest("GameId and QuestId are required");
+            }
+            
+            try
+            {
+                var player = await _storageService.GetPlayerAsync(gameId);
+                
+                if (player == null)
+                {
+                    return BadRequest("Player data not found. Character may not have been created yet.");
+                }
+                
+                // Check if the quest exists
+                var quest = await _storageService.GetQuestAsync(gameId, questId);
+                if (quest == null)
+                {
+                    return BadRequest($"Quest with ID {questId} not found");
+                }
+                
+                // Check if the quest is already active
+                if (player.ActiveQuests == null)
+                {
+                    player.ActiveQuests = new List<string>();
+                }
+                
+                if (!player.ActiveQuests.Contains(questId))
+                {
+                    player.ActiveQuests.Add(questId);
+                    await _storageService.SaveAsync(gameId, "player", player);
+                    
+                    return Ok(new { Message = $"Quest {questId} activated successfully" });
+                }
+                else
+                {
+                    return Ok(new { Message = $"Quest {questId} is already active" });
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error activating quest {questId} for game {gameId}: {ex.Message}");
+                return StatusCode(500, $"Error activating quest: {ex.Message}");
+            }
+        }
+
+        [HttpPost("deactivateQuest")]
+        public async Task<IActionResult> DeactivateQuest(string gameId, string questId)
+        {
+            if (string.IsNullOrEmpty(gameId) || string.IsNullOrEmpty(questId))
+            {
+                return BadRequest("GameId and QuestId are required");
+            }
+            
+            try
+            {
+                var player = await _storageService.GetPlayerAsync(gameId);
+                
+                if (player == null)
+                {
+                    return BadRequest("Player data not found. Character may not have been created yet.");
+                }
+                
+                // Check if the quest is active
+                if (player.ActiveQuests != null && player.ActiveQuests.Contains(questId))
+                {
+                    player.ActiveQuests.Remove(questId);
+                    await _storageService.SaveAsync(gameId, "player", player);
+                    
+                    return Ok(new { Message = $"Quest {questId} deactivated successfully" });
+                }
+                else
+                {
+                    return Ok(new { Message = $"Quest {questId} is not active" });
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error deactivating quest {questId} for game {gameId}: {ex.Message}");
+                return StatusCode(500, $"Error deactivating quest: {ex.Message}");
             }
         }
     }
