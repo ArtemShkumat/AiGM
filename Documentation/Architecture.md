@@ -150,6 +150,7 @@ Methods:
 *   **`NotifyCombatStartedAsync(string gameId, CombatStartInfo initialState)`**: Signals the UI to enter combat mode, providing initial enemy and player state.
 *   **`NotifyCombatEndedAsync(string gameId, bool playerVictory)`**: Signals the UI that combat is over and whether the player won.
 *   **`NotifyCombatTurnUpdateAsync(string gameId, CombatTurnInfo currentState)`**: Sends turn-by-turn updates to the UI during combat.
+*   **`NotifyLocationChangedAsync(string gameId)`**: Notifies clients that the player's location has changed. Sent after all entity updates are processed to ensure UI consistency.
 *   **`NotifyGenericAsync(string gameId, string message)`**: Sends a generic notification with a custom message to clients.
 *   **`NotifyErrorAsync(string gameId, string errorMessage)`**: Sends an error notification with an error message to clients.
 
