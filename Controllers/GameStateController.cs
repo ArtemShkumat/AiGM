@@ -330,5 +330,31 @@ namespace AiGMBackEnd.Controllers
                 return StatusCode(500, $"Error deactivating quest: {ex.Message}");
             }
         }
+
+        [HttpGet("npcConversationLog")]
+        public async Task<IActionResult> GetNpcConversationLog(string gameId, string npcId)
+        {
+            if (string.IsNullOrEmpty(gameId) || string.IsNullOrEmpty(npcId))
+            {
+                return BadRequest("GameId and NpcId are required");
+            }
+            
+            try
+            {
+                var npc = await _storageService.GetNpcAsync(gameId, npcId);
+                
+                if (npc == null)
+                {
+                    return BadRequest($"NPC with ID {npcId} not found");
+                }
+                
+                return Ok(npc.ConversationLog);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error getting conversation log for NPC {npcId} in game {gameId}: {ex.Message}");
+                return StatusCode(500, $"Error retrieving conversation log: {ex.Message}");
+            }
+        }
     }
 } 

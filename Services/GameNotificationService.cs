@@ -123,5 +123,22 @@ namespace AiGMBackEnd.Services
                 _loggingService.LogError($"Error sending error notification: {ex.Message}");
             }
         }
+        
+        /// <summary>
+        /// Notify clients that the player's location has changed and they should update accordingly
+        /// </summary>
+        /// <param name="gameId">The game ID</param>
+        public async Task NotifyLocationChangedAsync(string gameId)
+        {
+            try
+            {
+                await _hubContext.Clients.Group(gameId).SendAsync("LocationChanged", gameId);
+                _loggingService.LogInfo($"Sent location change notification for game {gameId}: LocationChanged");
+            }
+            catch (System.Exception ex)
+            {
+                _loggingService.LogError($"Error sending location change notification: {ex.Message}");
+            }
+        }
     }
 } 

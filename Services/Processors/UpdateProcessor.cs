@@ -219,6 +219,8 @@ namespace AiGMBackEnd.Services.Processors
 
         private async Task ProcessPartialUpdatesAsync(Dictionary<string, IUpdatePayload> partialUpdates, string userId, Dictionary<string, string> entityCreationJobs)
         {
+            bool locationChanged = false;
+            
             foreach (var kvp in partialUpdates)
             {
                 var entityId = kvp.Key;
@@ -235,7 +237,7 @@ namespace AiGMBackEnd.Services.Processors
                 {
                     if (updateData is PlayerUpdatePayload playerUpdate)
                     {
-                        await ProcessPlayerUpdateAsync(userId, playerUpdate);
+                        locationChanged = await ProcessPlayerUpdateAsync(userId, playerUpdate);
                     }
                     else
                     {
@@ -246,9 +248,15 @@ namespace AiGMBackEnd.Services.Processors
                 
                 await ProcessEntityUpdateAsync(userId, entityId, updateData, entityCreationJobs);
             }
+            
+            // Send location change notification after all updates are processed
+            if (locationChanged)
+            {
+                await _notificationService.NotifyLocationChangedAsync(userId);
+            }
         }
 
-        private async Task ProcessPlayerUpdateAsync(string userId, PlayerUpdatePayload updateData)
+        private async Task<bool> ProcessPlayerUpdateAsync(string userId, PlayerUpdatePayload updateData)
         {
             _loggingService.LogInfo("Processing player update");
             
@@ -284,8 +292,11 @@ namespace AiGMBackEnd.Services.Processors
             // Send notification if inventory or currency changed
             if (inventoryChanged || currencyChanged)
             {
-                await NotifyInventoryChangedAsync(userId);
+                await _notificationService.NotifyInventoryChangedAsync(userId);
             }
+
+            // Return whether the location changed instead of immediately sending notification
+            return locationChanged;
         }
 
         private async Task<bool> CheckAndHandleLocationChangeAsync(string userId, PlayerUpdatePayload updateData)
@@ -315,20 +326,7 @@ namespace AiGMBackEnd.Services.Processors
             }
             
             return false;
-        }
-
-        private async Task NotifyInventoryChangedAsync(string userId)
-        {
-            try
-            {
-                await _notificationService.NotifyInventoryChangedAsync(userId);
-                _loggingService.LogInfo($"Sent inventory change notification for game {userId}");
-            }
-            catch (Exception ex)
-            {
-                _loggingService.LogError($"Failed to send inventory notification: {ex.Message}");
-            }
-        }
+        }       
 
         private async Task ProcessEntityUpdateAsync(string userId, string entityId, IUpdatePayload updateData, Dictionary<string, string> entityCreationJobs)
         {
