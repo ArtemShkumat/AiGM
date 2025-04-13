@@ -343,13 +343,13 @@ namespace AiGMBackEnd.Services.Processors
             // Enhanced logging
             _loggingService.LogInfo($"Processing entity update for {entityId} of type {entityType}");
             
-            // Detailed property logging for NPCs
+            // Handle NPC special case
             if (entityType == "npc" && updateData is NpcUpdatePayload npcUpdate)
             {
-                _loggingService.LogInfo($"NPC update details - VisibleToPlayer: '{npcUpdate.VisibleToPlayer}' (type: {npcUpdate.VisibleToPlayer?.GetType().Name ?? "null"})");
-                _loggingService.LogInfo($"NPC update details - KnownToPlayer: '{npcUpdate.KnownToPlayer}' (type: {npcUpdate.KnownToPlayer?.GetType().Name ?? "null"})");
+                await ProcessNpcUpdateAsync(userId, entityId, npcUpdate);
+                return;
             }
-            
+           
             // Wait for entity creation if needed
             if (entityCreationJobs.ContainsKey(entityId) && !await WaitForEntityCreationAsync(userId, entityId, entityType))
             {
@@ -482,8 +482,12 @@ namespace AiGMBackEnd.Services.Processors
             
             _loggingService.LogInfo($"Processing {inventoryUpdates.Count} inventory updates");
             
-            foreach (var itemUpdate in inventoryUpdates)
+            // Keep track of indices to remove after processing
+            var indicesToRemove = new List<int>();
+            
+            for (int i = 0; i < inventoryUpdates.Count; i++)
             {
+                var itemUpdate = inventoryUpdates[i];
                 string itemName = itemUpdate.Name;
                 string itemDescription = itemUpdate.Description;
                 UpdateAction action = itemUpdate.Action;
@@ -507,6 +511,9 @@ namespace AiGMBackEnd.Services.Processors
                     
                     await _inventoryStorageService.AddItemToPlayerInventoryAsync(userId, item);
                     _loggingService.LogInfo($"Added {quantity}x {itemName} to player inventory");
+                    
+                    // Mark this item for removal to prevent double-processing
+                    indicesToRemove.Add(i);
                 }
                 else if (action == UpdateAction.Remove)
                 {
@@ -517,6 +524,13 @@ namespace AiGMBackEnd.Services.Processors
                 {
                     _loggingService.LogWarning($"Unknown inventory action: {action} for item {itemName}");
                 }
+            }
+            
+            // Remove processed items in reverse order to maintain correct indices
+            for (int i = indicesToRemove.Count - 1; i >= 0; i--)
+            {
+                int indexToRemove = indicesToRemove[i];
+                inventoryUpdates.RemoveAt(indexToRemove);
             }
         }
 
@@ -529,8 +543,12 @@ namespace AiGMBackEnd.Services.Processors
             
             _loggingService.LogInfo($"Processing {currencyUpdates.Count} currency updates");
             
-            foreach (var currencyUpdate in currencyUpdates)
+            // Keep track of indices to remove after processing
+            var indicesToRemove = new List<int>();
+            
+            for (int i = 0; i < currencyUpdates.Count; i++)
             {
+                var currencyUpdate = currencyUpdates[i];
                 string currencyName = currencyUpdate.Name;
                 UpdateAction action = currencyUpdate.Action;
                 int amount = currencyUpdate.Amount;
@@ -545,16 +563,156 @@ namespace AiGMBackEnd.Services.Processors
                 {
                     await _inventoryStorageService.AddCurrencyAmountAsync(userId, currencyName, amount);
                     _loggingService.LogInfo($"Added {amount} {currencyName} to player");
+                    
+                    // Mark this item for removal to prevent double-processing
+                    indicesToRemove.Add(i);
                 }
                 else if (action == UpdateAction.Remove)
                 {
                     await _inventoryStorageService.RemoveCurrencyAmountAsync(userId, currencyName, amount);
                     _loggingService.LogInfo($"Removed {amount} {currencyName} from player");
+                    
+                    // Also mark Remove actions for removal to prevent them staying in the update
+                    indicesToRemove.Add(i);
                 }
                 else
                 {
                     _loggingService.LogWarning($"Unknown currency action: {action} for currency {currencyName}");
                 }
+            }
+            
+            // Remove processed items in reverse order to maintain correct indices
+            for (int i = indicesToRemove.Count - 1; i >= 0; i--)
+            {
+                int indexToRemove = indicesToRemove[i];
+                currencyUpdates.RemoveAt(indexToRemove);
+            }
+        }
+
+        private async Task ProcessNpcUpdateAsync(string userId, string npcId, NpcUpdatePayload updateData)
+        {
+            _loggingService.LogInfo($"Processing NPC update for {npcId}");
+            
+            // Check if inventory is being updated
+            bool inventoryChanged = updateData.Inventory != null && updateData.Inventory.Any();
+            
+            // Handle inventory updates if present
+            if (inventoryChanged)
+            {
+                await ProcessNpcInventoryUpdatesAsync(userId, npcId, updateData.Inventory);
+            }
+            
+            // Convert the update data to JSON for storage update
+            string updateJson = System.Text.Json.JsonSerializer.Serialize(updateData, _jsonSerializerOptions);
+            
+            // Only apply the update if there's something to update
+            if (!string.IsNullOrEmpty(updateJson) && updateJson != "{}")
+            {
+                await UpdateEntityAsync(userId, "npcs", npcId, updateJson);
+            }
+        }
+        
+        private async Task ProcessNpcInventoryUpdatesAsync(string userId, string npcId, List<InventoryUpdateItem> inventoryUpdates)
+        {
+            if (inventoryUpdates == null || !inventoryUpdates.Any())
+            {
+                return;
+            }
+            
+            _loggingService.LogInfo($"Processing {inventoryUpdates.Count} inventory updates for NPC {npcId}");
+            
+            // Keep track of indices to remove after processing
+            var indicesToRemove = new List<int>();
+            
+            // Get current NPC data to process inventory updates
+            var npc = await _storageService.GetNpcAsync(userId, npcId);
+            if (npc == null)
+            {
+                _loggingService.LogWarning($"Cannot process inventory for non-existent NPC: {npcId}");
+                return;
+            }
+            
+            // Initialize inventory if it doesn't exist
+            if (npc.Inventory == null)
+            {
+                npc.Inventory = new List<InventoryItem>();
+            }
+            
+            for (int i = 0; i < inventoryUpdates.Count; i++)
+            {
+                var itemUpdate = inventoryUpdates[i];
+                string itemName = itemUpdate.Name;
+                string itemDescription = itemUpdate.Description;
+                UpdateAction action = itemUpdate.Action;
+                int quantity = itemUpdate.Quantity;
+                
+                if (string.IsNullOrEmpty(itemName))
+                {
+                    _loggingService.LogWarning("Skipping NPC inventory update with missing item name");
+                    continue;
+                }
+                
+                // Process the update
+                if (action == UpdateAction.Add)
+                {
+                    // Add item directly to NPC's inventory
+                    var existingItem = npc.Inventory.FirstOrDefault(item => item.Name == itemName);
+                    if (existingItem != null)
+                    {
+                        existingItem.Quantity += quantity;
+                    }
+                    else
+                    {
+                        npc.Inventory.Add(new InventoryItem
+                        {
+                            Name = itemName,
+                            Description = itemDescription ?? $"A {itemName}",
+                            Quantity = quantity
+                        });
+                    }
+                    
+                    _loggingService.LogInfo($"Added {quantity}x {itemName} to NPC {npcId} inventory");
+                }
+                else if (action == UpdateAction.Remove)
+                {
+                    // Remove item from NPC's inventory
+                    var existingItem = npc.Inventory.FirstOrDefault(item => item.Name == itemName);
+                    if (existingItem != null)
+                    {
+                        if (existingItem.Quantity <= quantity)
+                        {
+                            npc.Inventory.Remove(existingItem);
+                        }
+                        else
+                        {
+                            existingItem.Quantity -= quantity;
+                        }
+                        
+                        _loggingService.LogInfo($"Removed {quantity}x {itemName} from NPC {npcId} inventory");
+                    }
+                    else
+                    {
+                        _loggingService.LogWarning($"Could not remove {itemName} from NPC {npcId} inventory - item not found");
+                    }
+                }
+                else
+                {
+                    _loggingService.LogWarning($"Unknown inventory action: {action} for item {itemName}");
+                    continue;
+                }
+                
+                // Mark this item for removal from the update list
+                indicesToRemove.Add(i);
+            }
+            
+            // Save the updated NPC
+            await _storageService.SaveAsync(userId, $"npcs/{npc.Id}", npc);
+            
+            // Remove processed items from the update list
+            for (int i = indicesToRemove.Count - 1; i >= 0; i--)
+            {
+                int indexToRemove = indicesToRemove[i];
+                inventoryUpdates.RemoveAt(indexToRemove);
             }
         }
     }
