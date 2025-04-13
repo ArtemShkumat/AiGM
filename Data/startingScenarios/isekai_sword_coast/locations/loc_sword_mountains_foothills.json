@@ -1,0 +1,41 @@
+{
+  "type": "LOCATION",
+  "locationType": "Wilds",
+  "id": "loc_sword_mountains_foothills",
+  "name": "Foothills of the Sword Mountains",
+  "description": "Rugged, rocky terrain at the base of the imposing Sword Mountains. Sparse pine forests cluster in the valleys between rolling hills of exposed granite. Small streams cascade down from the snowcapped peaks above, forming clear pools before continuing their journey toward the distant Sea of Swords. The air is crisp and carries the scent of pine and wild herbs. Weather-worn paths wind through the landscape, some appearing to be game trails while others show signs of occasional humanoid traffic. To the east, the terrain gradually slopes into more hospitable lowlands, while the forbidding mountains loom to the west. In the distance to the northeast, a thin column of smoke hints at possible civilization.",
+  "knownToPlayer": true,
+  "connectedLocations": [],
+  "parentLocation": null,
+  "npcs": [],
+  "terrain": "Mountainous foothills with scattered pine forests and rocky outcroppings",
+  "dangers": "The area is known to harbor goblin scouts from the mountains, as well as the occasional predator such as mountain lions and winter wolves. Rockslides are common after rainfall, and the weather can change rapidly with cold winds sweeping down from the peaks.",
+  "danger_level": 2,
+  "points_of_interest": [
+    {
+      "name": "Traveler's Overlook",
+      "description": "A flat-topped rock formation providing a panoramic view of the surrounding landscape. From here, one can spot the distant sparkle of the Sea of Swords to the west, and on a clear day, perhaps glimpse the faint outline of Neverwinter's walls far to the northeast.",
+      "hinting_at": "The strategic importance of this overlook suggests it may have been used as a watchpoint in times past, perhaps explaining the remnants of ancient stonework half-buried in the soil nearby."
+    },
+    {
+      "name": "Abandoned Campsite",
+      "description": "The cold remains of a small campfire ringed by stones, with signs that someone stayed here recently—perhaps within the last day or two. A discarded waterskin lies nearby, along with a crude map scratched into a piece of bark, showing what might be a path through the mountains.",
+      "hinting_at": "Whoever camped here was heading into the mountains rather than away from them, suggesting they were seeking something rather than fleeing."
+    },
+    {
+      "name": "Weathered Standing Stone",
+      "description": "A solitary monolith of pale gray stone stands about seven feet tall, covered in faded carvings that appear to be in an archaic form of Dwarvish. The stone doesn't match the local granite and must have been brought from elsewhere.",
+      "hinting_at": "The carvings speak of a 'path beneath the teeth of stone' and 'halls of ancient making,' possibly referring to a long-forgotten dwarven stronghold in the mountains."
+    },
+    {
+      "name": "Crystal Pool",
+      "description": "A small, perfectly circular pool fed by a mountain spring. The water is crystal clear and surprisingly warm to the touch. Small, luminescent blue flowers grow around its perimeter, their petals giving off a faint glow in shadowed areas.",
+      "hinting_at": "The unnatural warmth and perfect circular shape suggest this pool may be connected to magical ley lines or could be artificial in origin, despite its natural appearance."
+    },
+    {
+      "name": "Sword-Shaped Cliff",
+      "description": "A tall, narrow cliff face that, when viewed from the right angle, resembles the silhouette of a massive sword thrust into the ground. Local legend claims this is where the Sword Mountains got their name.",
+      "hinting_at": "At certain times of day, particularly dawn and dusk, the shadow cast by this formation points in specific directions that change with the seasons, possibly serving as some kind of calendar or directional marker."
+    }
+  ]
+} 

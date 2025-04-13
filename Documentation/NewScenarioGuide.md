@@ -37,7 +37,7 @@ The following JSON files are essential for a complete starting scenario:
 *   `player.json`: Defines the player character's initial state.
 *   `gameSetting.json`: Defines the genre, theme, description, and starting location for the scenario.
 *   `gamePreferences.json`: Defines game mechanic preferences specific to the scenario.
-*   `conversationLog.json`: Initially empty, will store conversation history during gameplay.
+*   `conversationLog.json`: Initially contains an empty messages array, will store conversation history during gameplay.
 *   `recentEvents.json`: Initially empty, will store recent game events during gameplay.
 *   Location files in the `locations/` subfolder (e.g., `locations/loc_emberhold.json`): Define all locations in the world.
 *   NPC files in the `npcs/` subfolder (e.g., `npcs/npc_elderVarric.json`): Define all NPCs in the world.
@@ -269,10 +269,12 @@ This file defines the genre, theme, and overall setting for the scenario:
 {
   "genre": "fantasy", 
   "theme": "adventure",
-  "description": "A fantasy setting centered around the highland village of Emberhold, famous for its master blacksmiths and the mystical Ember Crystal that once kept the harsh mountain winters at bay.",
+  "description": "A detailed description of your scenario's setting. This field should contain rich background information about the world, including any unique aspects of the setting, historical events, factions, key locations, timeline information, and magical reality. Group related information under headings like TIMELINE, KEY LOCATIONS, MAJOR FACTIONS, etc.",
   "startingLocation": "loc_emberhold",
   "gameName": "The Emberhold",
-  "setting": "medieval"
+  "setting": "medieval",
+  "currencies": ["Copper", "Silver", "Gold"],
+  "economy": "Currency conversion: 1 Gold = 10 Silver = 100 Copper\n\nTypical costs:\n- Simple meal at tavern: 3 Silver\n- Ale, mug: 4 Copper\n- Inn stay (modest): 5 Silver per night\n- Basic dagger: 2 Gold\n\nTypical incomes:\n- Village (poor): 5-10 Gold monthly\n- Town (modest): 30-60 Gold monthly\n- City (wealthy): 200+ Gold monthly"
 }
 ```
 
@@ -280,10 +282,12 @@ This file defines the genre, theme, and overall setting for the scenario:
 
 *   `genre`: The broad genre classification (e.g., "fantasy", "sci-fi", "post-apocalyptic").
 *   `theme`: The thematic focus (e.g., "adventure", "mystery", "horror").
-*   `description`: A detailed description of the scenario setting.
+*   `description`: A comprehensive description of the scenario setting. This field should contain all essential background information about the world, its history, key locations, and factions.
 *   `startingLocation`: **Critically important.** Must match the `id` of the location where the player starts.
 *   `gameName`: The display name for the scenario.
 *   `setting`: The time period or technological level (e.g., "medieval", "modern", "futuristic").
+*   `currencies`: List of currency types used in the game world.
+*   `economy`: Detailed information about the economic system, including currency conversion rates, typical costs for common items and services, and average income levels for different social classes in various settlement sizes.
 
 ### 3.6. `gamePreferences.json`
 
@@ -299,8 +303,9 @@ This file defines game mechanic preferences specific to the scenario:
 
 **Key Points:**
 
-*   These preferences can be customized based on the specific needs of your scenario.
-*   They help inform the AI game master about how to run the game.
+*   `tone`: Describes the general tone of the scenario (e.g., "atmospheric", "light-hearted", "gritty", "immersive", "neutral").
+*   `complexity`: Indicates the complexity level of the game mechanics (e.g., "low", "medium", "high").
+*   `ageAppropriateness`: Specifies the intended age range (e.g., "child", "teen", "adult").
 
 ## 4. Linking Entities and Consistency
 
@@ -344,4 +349,26 @@ When a user starts a new game:
 6. The game begins with the player at the starting location specified in `gameSetting.json`.
 
 This copying mechanism ensures that the original scenario remains unchanged and can be used to start multiple different games. Each user's game state evolves independently in their own game folder.
+
+## 8. Empty File Templates
+
+### 8.1 `conversationLog.json`
+
+The conversationLog.json file should have the following structure:
+
+```json
+{
+  "messages": []
+}
+```
+
+This file will store the history of conversations during gameplay. It must start with an empty messages array.
+
+### 8.2 `recentEvents.json`
+
+The recentEvents.json file should initially be an empty array:
+
+```json
+[]
+```
 

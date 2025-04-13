@@ -1,0 +1,20 @@
+{
+  "type": "WORLD",
+  "gameTime": "1486-03-20T08:15:00Z",
+  "daysSinceStart": 1,
+  "currentPlayer": "",
+  "worldStateEffects": {
+    "weather": "clear",
+    "season": "spring",
+    "timeOfDay": "morning"
+  },
+  "lore": [],
+  "locations": [
+    {
+      "id": "loc_sword_mountains_foothills",
+      "name": "Foothills of the Sword Mountains"
+    }
+  ],
+  "npcs": [],
+  "quests": []
+} 

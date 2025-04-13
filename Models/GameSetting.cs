@@ -25,5 +25,7 @@ namespace AiGMBackEnd.Models
 
         [JsonPropertyName("currencies")]
         public List<string> Currencies { get; set; } = new List<string>();
+        [JsonPropertyName("economy")]
+        public string Economy { get; set; }
     }
 } 
