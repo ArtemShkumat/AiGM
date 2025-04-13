@@ -64,6 +64,7 @@ namespace AiGMBackEnd.Services
             _jsonSerializerOptions.Converters.Add(new UpdatePayloadDictionaryConverter());
             _jsonSerializerOptions.Converters.Add(new CreationHookListConverter());
             _jsonSerializerOptions.Converters.Add(new LlmSafeIntConverter());
+            _jsonSerializerOptions.Converters.Add(new NpcListConverter());
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)

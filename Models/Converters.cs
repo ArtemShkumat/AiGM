@@ -273,6 +273,86 @@ namespace AiGMBackEnd.Models
         }
     }
 
+    // --- NPC List Converter for Location Update Payload ---
+    public class NpcListConverter : JsonConverter<List<NpcListUpdateItem>>
+    {
+        public override List<NpcListUpdateItem> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            // Check if we're at the start of an array
+            if (reader.TokenType != JsonTokenType.StartArray)
+            {
+                throw new JsonException("Expected StartArray token for NpcList.");
+            }
+
+            var result = new List<NpcListUpdateItem>();
+            
+            // Skip the StartArray token
+            reader.Read();
+            
+            while (reader.TokenType != JsonTokenType.EndArray)
+            {
+                if (reader.TokenType == JsonTokenType.String)
+                {
+                    // Simple string format - convert to NpcListUpdateItem with Add action
+                    string npcId = reader.GetString();
+                    if (!string.IsNullOrEmpty(npcId))
+                    {
+                        result.Add(new NpcListUpdateItem { 
+                            NpcId = npcId, 
+                            Action = UpdateAction.Add 
+                        });
+                    }
+                    reader.Read(); // Move to next token
+                }
+                else if (reader.TokenType == JsonTokenType.StartObject)
+                {
+                    // Object format - deserialize as NpcListUpdateItem
+                    var itemOptions = new JsonSerializerOptions(options);
+                    var existingConverter = itemOptions.Converters.FirstOrDefault(c => c.GetType() == typeof(NpcListConverter));
+                    if (existingConverter != null)
+                    {
+                        itemOptions.Converters.Remove(existingConverter);
+                    }
+                    
+                    var item = JsonSerializer.Deserialize<NpcListUpdateItem>(ref reader, itemOptions);
+                    if (item != null)
+                    {
+                        result.Add(item);
+                    }
+                }
+                else
+                {
+                    // Skip other tokens
+                    reader.Skip();
+                }
+            }
+            
+            return result;
+        }
+
+        public override void Write(Utf8JsonWriter writer, List<NpcListUpdateItem> value, JsonSerializerOptions options)
+        {
+            writer.WriteStartArray();
+            
+            if (value != null)
+            {
+                var itemOptions = new JsonSerializerOptions(options);
+                var existingConverter = itemOptions.Converters.FirstOrDefault(c => c.GetType() == typeof(NpcListConverter));
+                if (existingConverter != null)
+                {
+                    itemOptions.Converters.Remove(existingConverter);
+                }
+                
+                foreach (var item in value)
+                {
+                    JsonSerializer.Serialize(writer, item, itemOptions);
+                }
+            }
+            
+            writer.WriteEndArray();
+        }
+    }
+
     // --- List Converter for Creation Hooks ---
 
     // --- LLM-Safe Integer Converter ---

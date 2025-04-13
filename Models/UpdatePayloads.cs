@@ -234,6 +234,7 @@ namespace AiGMBackEnd.Models
 
         [JsonPropertyName("npcs")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonConverter(typeof(NpcListConverter))]
         public List<NpcListUpdateItem>? Npcs { get; set; } // List of NPCs to add/remove from the location
 
          [JsonPropertyName("parentLocation")]

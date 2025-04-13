@@ -31,7 +31,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var npc = await _storageService.GetNpcAsync(request.UserId, request.NpcId);
                 var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
-                var location = await _storageService.GetLocationAsync(request.UserId, player.CurrentLocationId);               
+                var location = await _storageService.GetLocationAsync(request.UserId, player.CurrentLocationId);   
+                var conversationLog = await _storageService.GetConversationLogAsync(request.UserId);            
                
                 // Create system prompt builder
                 var systemPromptBuilder = new StringBuilder();
@@ -52,6 +53,9 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 promptContentBuilder.Append("currentLocation:");
                 new LocationContextSection(location).AppendTo(promptContentBuilder);
                 new PlayerContextSection(player, false).AppendTo(promptContentBuilder);
+
+                promptContentBuilder.AppendLine("#This is the conversation log in the scene between the Game Master and the Player. Consider only the parts that are relevant to you, especially if the player started a conversation with you by interacting with the DM.");
+                new ConversationLogSection(conversationLog).AppendTo(promptContentBuilder);
 
                 // Add NPC context
                 promptContentBuilder.AppendLine("#This is context about your character:");
