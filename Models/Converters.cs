@@ -248,10 +248,30 @@ namespace AiGMBackEnd.Models
                 }
 
                 string propertyName = reader.GetString();
-                reader.Read(); // Move to the value (StartObject)
+                reader.Read(); // Move to the value
 
-                var payload = payloadConverter.Read(ref reader, typeof(IUpdatePayload), options);
-                dictionary.Add(propertyName, payload);
+                // Handle special cases for arrays: npcEntries and locationEntries
+                if (propertyName == "npcEntries" || propertyName == "locationEntries")
+                {
+                    if (reader.TokenType == JsonTokenType.StartArray)
+                    {
+                        // Skip the array - we'll handle these separately
+                        reader.Skip();
+                        continue;
+                    }
+                }
+
+                // Only try to deserialize as IUpdatePayload if we're at a StartObject
+                if (reader.TokenType == JsonTokenType.StartObject)
+                {
+                    var payload = payloadConverter.Read(ref reader, typeof(IUpdatePayload), options);
+                    dictionary.Add(propertyName, payload);
+                }
+                else
+                {
+                    // Skip other types that aren't objects
+                    reader.Skip();
+                }
             }
 
             throw new JsonException("Unexpected end of JSON data.");
@@ -377,6 +397,202 @@ namespace AiGMBackEnd.Models
         public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options)
         {
             writer.WriteNumberValue(value);
+        }
+    }
+
+    // --- New Converter for Partial Updates --- 
+    public class PartialUpdatesConverter : JsonConverter<PartialUpdates>
+    {
+        public override PartialUpdates Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.StartObject)
+            {
+                throw new JsonException("Expected StartObject token for PartialUpdates.");
+            }
+
+            var result = new PartialUpdates
+            {
+                Player = null,
+                World = null,
+                NpcEntries = new List<NpcUpdatePayload>(),
+                LocationEntries = new List<LocationUpdatePayload>()
+            };
+
+            // Get the specific converter for IUpdatePayload
+            var payloadConverter = options.GetConverter(typeof(IUpdatePayload)) as UpdatePayloadConverter
+                ?? throw new InvalidOperationException("UpdatePayloadConverter not registered or found in options.");
+
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject)
+                {
+                    return result;
+                }
+
+                if (reader.TokenType != JsonTokenType.PropertyName)
+                {
+                    throw new JsonException("Expected PropertyName token in PartialUpdates.");
+                }
+
+                string propertyName = reader.GetString();
+                reader.Read(); // Move to the value
+
+                switch (propertyName)
+                {
+                    case "player":
+                        if (reader.TokenType == JsonTokenType.StartObject)
+                        {
+                            result.Player = (PlayerUpdatePayload)payloadConverter.Read(ref reader, typeof(IUpdatePayload), options);
+                        }
+                        else
+                        {
+                            reader.Skip();
+                        }
+                        break;
+
+                    case "world":
+                        if (reader.TokenType == JsonTokenType.StartObject)
+                        {
+                            result.World = (WorldUpdatePayload)payloadConverter.Read(ref reader, typeof(IUpdatePayload), options);
+                        }
+                        else
+                        {
+                            reader.Skip();
+                        }
+                        break;
+
+                    case "npcEntries":
+                        if (reader.TokenType == JsonTokenType.StartArray)
+                        {
+                            result.NpcEntries = ReadNpcEntries(ref reader, options);
+                        }
+                        else
+                        {
+                            reader.Skip();
+                        }
+                        break;
+
+                    case "locationEntries":
+                        if (reader.TokenType == JsonTokenType.StartArray)
+                        {
+                            result.LocationEntries = ReadLocationEntries(ref reader, options);
+                        }
+                        else
+                        {
+                            reader.Skip();
+                        }
+                        break;
+
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            throw new JsonException("Unexpected end of JSON data in PartialUpdates.");
+        }
+
+        private List<NpcUpdatePayload> ReadNpcEntries(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            var entries = new List<NpcUpdatePayload>();
+            
+            // Remove this converter from options to avoid recursion
+            var newOptions = JsonConverterHelper.GetOptionsWithoutConverter(options, this);
+            
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndArray)
+                {
+                    return entries;
+                }
+
+                if (reader.TokenType == JsonTokenType.StartObject)
+                {
+                    var entry = JsonSerializer.Deserialize<NpcUpdatePayload>(ref reader, newOptions);
+                    if (entry != null)
+                    {
+                        entries.Add(entry);
+                    }
+                }
+                else
+                {
+                    reader.Skip();
+                }
+            }
+
+            throw new JsonException("Unexpected end of JSON array in npcEntries.");
+        }
+
+        private List<LocationUpdatePayload> ReadLocationEntries(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            var entries = new List<LocationUpdatePayload>();
+            
+            // Remove this converter from options to avoid recursion
+            var newOptions = JsonConverterHelper.GetOptionsWithoutConverter(options, this);
+            
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndArray)
+                {
+                    return entries;
+                }
+
+                if (reader.TokenType == JsonTokenType.StartObject)
+                {
+                    var entry = JsonSerializer.Deserialize<LocationUpdatePayload>(ref reader, newOptions);
+                    if (entry != null)
+                    {
+                        entries.Add(entry);
+                    }
+                }
+                else
+                {
+                    reader.Skip();
+                }
+            }
+
+            throw new JsonException("Unexpected end of JSON array in locationEntries.");
+        }
+
+        public override void Write(Utf8JsonWriter writer, PartialUpdates value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+
+            if (value.Player != null)
+            {
+                writer.WritePropertyName("player");
+                JsonSerializer.Serialize(writer, value.Player, options);
+            }
+
+            if (value.World != null)
+            {
+                writer.WritePropertyName("world");
+                JsonSerializer.Serialize(writer, value.World, options);
+            }
+
+            if (value.NpcEntries != null && value.NpcEntries.Count > 0)
+            {
+                writer.WritePropertyName("npcEntries");
+                writer.WriteStartArray();
+                foreach (var entry in value.NpcEntries)
+                {
+                    JsonSerializer.Serialize(writer, entry, options);
+                }
+                writer.WriteEndArray();
+            }
+
+            if (value.LocationEntries != null && value.LocationEntries.Count > 0)
+            {
+                writer.WritePropertyName("locationEntries");
+                writer.WriteStartArray();
+                foreach (var entry in value.LocationEntries)
+                {
+                    JsonSerializer.Serialize(writer, entry, options);
+                }
+                writer.WriteEndArray();
+            }
+
+            writer.WriteEndObject();
         }
     }
 } 

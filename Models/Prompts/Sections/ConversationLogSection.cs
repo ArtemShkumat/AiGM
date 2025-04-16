@@ -31,7 +31,7 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                 Messages = recentMessages
             };
 
-            builder.AppendLine("conversationLog: ");
+            builder.AppendLine("Current Conversation Log: ");
             builder.AppendLine(JsonSerializer.Serialize(conversationLogToSerialize, options));
             builder.AppendLine();
         }

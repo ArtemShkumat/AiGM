@@ -44,7 +44,7 @@ namespace AiGMBackEnd.Services.Storage
             // Create the message in the new format
             var message = new Dictionary<string, string>
             {
-                { "Player to DM", content }
+                { "Player to GM", content }
             };
             
             log.Messages.Add(message);
@@ -59,7 +59,7 @@ namespace AiGMBackEnd.Services.Storage
             // Create the message in the new format
             var message = new Dictionary<string, string>
             {
-                { "DM to Player", content }
+                { "GM to Player", content }
             };
             
             log.Messages.Add(message);
@@ -134,13 +134,13 @@ namespace AiGMBackEnd.Services.Storage
             await _baseStorageService.SaveAsync(userId, $"npcs/{npcId}", npc);
 
             // Also add to the main DM log
-            var dmLog = await GetConversationLogAsync(userId);
-            var messageEntryDm = new Dictionary<string, string>
-            {
-                { messageKey, content }
-            };
-            dmLog.Messages.Add(messageEntryDm);
-            await _baseStorageService.SaveAsync(userId, "conversationLog", dmLog);
+            //var dmLog = await GetConversationLogAsync(userId);
+            //var messageEntryDm = new Dictionary<string, string>
+            //{
+               // { messageKey, content }
+            //};
+            //dmLog.Messages.Add(messageEntryDm);
+            //await _baseStorageService.SaveAsync(userId, "conversationLog", dmLog);
         }
 
         /// <summary>

@@ -190,6 +190,10 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("type")]
         public string Type => "NPC";
 
+        [JsonPropertyName("id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Id { get; set; }
+
         [JsonPropertyName("currentLocationId")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? CurrentLocationId { get; set; }
@@ -228,6 +232,10 @@ namespace AiGMBackEnd.Models
     {
         [JsonPropertyName("type")]
         public string Type => "LOCATION"; // Base type for identification
+
+        [JsonPropertyName("id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Id { get; set; }
 
         [JsonPropertyName("knownToPlayer")]
         public bool? KnownToPlayer { get; set; }

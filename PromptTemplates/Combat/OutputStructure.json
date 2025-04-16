@@ -1,37 +1,32 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Combat Response",
   "description": "JSON schema for responses from Combat prompts",
   "type": "object",
   "required": ["userFacingText", "currentEnemySuccesses", "playerConditions"],
+  "propertyOrdering": ["userFacingText", "currentEnemySuccesses", "playerConditions", "combatEnded", "playerVictory"],
   "properties": {
     "userFacingText": {
       "type": "string",
-      "description": "Narrative description of the turn events to be shown to the player",
-      "minLength": 1
+      "description": "Narrative description of the turn events to be shown to the player"
     },
     "currentEnemySuccesses": {
       "type": "integer",
-      "description": "Current number of successful hits on the enemy",
-      "minimum": 0
+      "description": "Current number of successful hits on the enemy"
     },
     "playerConditions": {
       "type": "array",
       "description": "List of all current player conditions",
       "items": {
-        "type": "string",
-        "pattern": "^(Minor|Moderate|Severe):.+"
+        "type": "string"
       }
     },
     "combatEnded": {
       "type": "boolean",
-      "description": "Indicates if the combat has concluded",
-      "default": false
+      "description": "Indicates if the combat has concluded"
     },
     "playerVictory": {
       "type": "boolean",
-      "description": "Indicates if the player won (true) or was defeated (false)",
-      "default": false
+      "description": "Indicates if the player won (true) or was defeated (false)"
     }
   }
 } 

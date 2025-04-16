@@ -56,7 +56,10 @@ namespace AiGMBackEnd.Services
 
             _jsonSerializerOptions = new JsonSerializerOptions
             {
-                PropertyNameCaseInsensitive = true
+                PropertyNameCaseInsensitive = true,
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                AllowTrailingCommas = true
             };
             // Register custom converters
             _jsonSerializerOptions.Converters.Add(new CreationHookConverter());
@@ -65,6 +68,7 @@ namespace AiGMBackEnd.Services
             _jsonSerializerOptions.Converters.Add(new CreationHookListConverter());
             _jsonSerializerOptions.Converters.Add(new LlmSafeIntConverter());
             _jsonSerializerOptions.Converters.Add(new NpcListConverter());
+            _jsonSerializerOptions.Converters.Add(new PartialUpdatesConverter());
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)
@@ -88,16 +92,20 @@ namespace AiGMBackEnd.Services
                         return new ProcessedResult { UserFacingText = "Received an empty response.", Success = false, ErrorMessage = "Empty LLM response." };
                     }
                     llmResponse = llmResponse.Trim();
+                    _loggingService.LogInfo($"Attempting to deserialize DmResponse for user {userId}. Response length: {llmResponse.Length}");
                     dmResponse = System.Text.Json.JsonSerializer.Deserialize<DmResponse>(llmResponse, _jsonSerializerOptions);
+                    _loggingService.LogInfo($"Successfully deserialized DmResponse for user {userId}. HasPartialUpdates: {dmResponse.PartialUpdates != null}, HasNewEntities: {dmResponse.NewEntities != null && dmResponse.NewEntities.Count > 0}");
                 }
                 catch (System.Text.Json.JsonException jsonEx)
                 {
-                    _loggingService.LogError($"Failed to deserialize DmResponse JSON for user {userId}: {jsonEx.Message}. Raw response: {llmResponse}");
+                    _loggingService.LogError($"Failed to deserialize DmResponse JSON for user {userId}: {jsonEx.Message}. Inner exception: {jsonEx.InnerException?.Message}. Raw response: {llmResponse}");
+                    _loggingService.LogError($"JSON exception stack trace: {jsonEx.StackTrace}");
                     return new ProcessedResult { UserFacingText = "Error processing game state update (Invalid Format).", Success = false, ErrorMessage = $"JSON Deserialization Error: {jsonEx.Message}" };
                 }
                 catch (Exception ex)
                 {
-                    _loggingService.LogError($"Unexpected error during DmResponse deserialization for user {userId}: {ex.Message}. Raw response: {llmResponse}");
+                    _loggingService.LogError($"Unexpected error during DmResponse deserialization for user {userId}: {ex.Message}. Inner exception: {ex.InnerException?.Message}. Raw response: {llmResponse}");
+                    _loggingService.LogError($"Exception stack trace: {ex.StackTrace}");
                     return new ProcessedResult { UserFacingText = "Error processing game state update (Internal Error).", Success = false, ErrorMessage = $"Deserialization Error: {ex.Message}" };
                 }
 
@@ -107,7 +115,16 @@ namespace AiGMBackEnd.Services
                     return new ProcessedResult { UserFacingText = "Error processing game state update (Null Response).", Success = false, ErrorMessage = "Deserialized DmResponse was null." };
                 }
 
-                if (dmResponse.NewEntities != null && dmResponse.NewEntities.Count>0 || dmResponse.PartialUpdates != null && dmResponse.PartialUpdates.Count > 0)
+                bool hasUpdates = 
+                    (dmResponse.NewEntities != null && dmResponse.NewEntities.Count > 0) || 
+                    (dmResponse.PartialUpdates != null && (
+                        dmResponse.PartialUpdates.Player != null ||
+                        dmResponse.PartialUpdates.World != null ||
+                        (dmResponse.PartialUpdates.NpcEntries != null && dmResponse.PartialUpdates.NpcEntries.Count > 0) ||
+                        (dmResponse.PartialUpdates.LocationEntries != null && dmResponse.PartialUpdates.LocationEntries.Count > 0)
+                    ));
+
+                if (hasUpdates)
                 {
                     await _updateProcessor.ProcessUpdatesAsync(dmResponse.NewEntities, dmResponse.PartialUpdates, userId);
                 }

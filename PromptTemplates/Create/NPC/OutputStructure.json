@@ -1,7 +1,7 @@
 {
   "type": "object",
   "properties": {
-    "type": { "type": "string", "const": "NPC", "description": "Object type, always 'NPC'" },
+    "type": { "type": "string", "enum": ["NPC"], "description": "Object type, always 'NPC'" },
     "id": { "type": "string", "description": "Unique identifier for the NPC" },
     "name": { "type": "string", "description": "NPC's name" },
     "currentLocationId": { "type": "string", "description": "ID of the NPC's current location" },
@@ -57,15 +57,25 @@
     "inventory": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/inventoryItem" 
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "quantity": { "type": "integer" }
+        },
+        "required": ["name", "description", "quantity"]
       }
     },
     "conversationLog": {
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": { "type": "string" },
-        "description": "Log of conversations, typically key-value pairs like { 'speaker': 'message' }"
+        "properties": {
+          "speaker": { "type": "string", "description": "Who is speaking" },
+          "message": { "type": "string", "description": "What was said" }
+        },
+        "required": ["speaker", "message"],
+        "description": "Log of conversations with speaker and message"
       }
     }
   },
@@ -73,16 +83,5 @@
     "type", "id", "name", "currentLocationId", "knownToPlayer", "knowsPlayer", "visibleToPlayer", 
     "visualDescription", "personality", "backstory", "currentGoal", "age", "dispositionTowardsPlayer", 
     "knownEntities", "questInvolvement", "inventory", "conversationLog"
-  ],
-  "definitions": {
-    "inventoryItem": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "description": { "type": "string" },
-        "quantity": { "type": "integer" }
-      },
-      "required": ["name", "description", "quantity"]
-    }
-  }
+  ]
 }

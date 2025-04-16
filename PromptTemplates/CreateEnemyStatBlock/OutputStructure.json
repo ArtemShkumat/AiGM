@@ -1,40 +1,30 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Enemy Stat Block",
-  "description": "JSON schema for enemy stat block creation responses",
   "type": "object",
   "required": ["id", "name", "level", "description", "vulnerability", "badStuff"],
   "properties": {
     "id": {
       "type": "string",
-      "description": "Unique identifier for the enemy stat block, must start with enemy_",
-      "pattern": "^enemy_"
+      "description": "Unique identifier for the enemy stat block, must start with enemy_"
     },
     "name": {
       "type": "string",
-      "description": "The display name of the enemy",
-      "minLength": 1
+      "description": "The display name of the enemy"
     },
     "level": {
       "type": "integer",
-      "description": "Enemy level (1-10), determining base difficulty to hit",
-      "minimum": 1,
-      "maximum": 10
+      "description": "Enemy level (1-10), determining base difficulty to hit"
     },
     "description": {
       "type": "string",
-      "description": "Narrative flavor text and visual description of the enemy",
-      "minLength": 1
+      "description": "Narrative flavor text and visual description of the enemy"
     },
     "vulnerability": {
       "type": "string",
-      "description": "Narrative description of the condition or method required for player hits to count as successes",
-      "minLength": 1
+      "description": "Narrative description of the condition or method required for player hits to count as successes"
     },
     "badStuff": {
       "type": "string",
-      "description": "Narrative description of what happens if the enemy defeats the player",
-      "minLength": 1
+      "description": "Narrative description of what happens if the enemy defeats the player"
     },
     "tags": {
       "type": "array",

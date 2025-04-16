@@ -6,6 +6,6 @@ namespace AiGMBackEnd.Services.Processors
 {
     public interface IUpdateProcessor
     {
-        Task ProcessUpdatesAsync(List<ICreationHook> newEntities, Dictionary<string, IUpdatePayload> partialUpdates, string userId);
+        Task ProcessUpdatesAsync(List<ICreationHook> newEntities, PartialUpdates partialUpdates, string userId);
     }
 } 

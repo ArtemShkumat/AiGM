@@ -1,8 +1,8 @@
 {
   "type": "object",
   "properties": {
-    "type": { "type": "string", "const": "LOCATION", "description": "Base object type" },
-    "locationType": { "type": "string", "const": "Wilds", "description": "Specific location type" },
+    "type": { "type": "string", "enum": ["LOCATION"], "description": "Base object type" },
+    "locationType": { "type": "string", "enum": ["Wilds"], "description": "Specific location type" },
     "id": { "type": "string", "description": "Unique identifier for the location" },
     "name": { "type": "string", "description": "Name of the wilderness area (e.g., Shadowfen Mire, Frostpeak Mountains)" },
     "description": { "type": "string", "description": "Overall description of the area's environment, climate, and general atmosphere" },
@@ -15,23 +15,20 @@
     "danger_level": { "type": "integer", "description": "Subjective danger level (e.g., 1-5 scale)" },
     "points_of_interest": {
       "type": "array",
-      "items": { "$ref": "#/definitions/pointOfInterest" }
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "hinting_at": { "type": "string", "description": "What secret, plot hook, or information this POI might reveal" }
+        },
+        "required": ["name", "description", "hinting_at"]
+      }
     }
   },
   "required": [
     "type", "locationType", "id", "name", "description", "knownToPlayer", 
     "connectedLocations", "parentLocation", "npcs", 
     "terrain", "dangers", "danger_level", "points_of_interest"
-  ],
-  "definitions": {
-    "pointOfInterest": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "description": { "type": "string" },
-        "hinting_at": { "type": "string", "description": "What secret, plot hook, or information this POI might reveal" }
-      },
-      "required": ["name", "description", "hinting_at"]
-    }
-  }
+  ]
 } 

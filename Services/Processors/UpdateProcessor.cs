@@ -18,6 +18,27 @@ using AiGMBackEnd.Services.Processors; // This will use IUpdateProcessor from Se
 
 namespace AiGMBackEnd.Services.Processors
 {
+    // Define the NpcEntriesPayload class for the new format
+    public class NpcEntriesPayload : IUpdatePayload
+    {
+        public string Type { get; set; } = "npcEntries";
+        public List<NpcUpdatePayload> Entries { get; set; } = new List<NpcUpdatePayload>();
+    }
+
+    // Define the LocationEntriesPayload class for the new format
+    public class LocationEntriesPayload : IUpdatePayload
+    {
+        public string Type { get; set; } = "locationEntries";
+        public List<LocationUpdatePayload> Entries { get; set; } = new List<LocationUpdatePayload>();
+    }
+    
+    // Define RpgTagUpdateItem class for handling RPG tag updates
+    public class RpgTagUpdateItem
+    {
+        public string Name { get; set; }
+        public UpdateAction Action { get; set; }
+    }
+    
     public class UpdateProcessor : IUpdateProcessor
     {
         private readonly StorageService _storageService;
@@ -58,35 +79,38 @@ namespace AiGMBackEnd.Services.Processors
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 IgnoreReadOnlyProperties = false,
                 WriteIndented = true,
-                PropertyNameCaseInsensitive = true // Keep this for flexibility if needed, though less critical for serialization
+                PropertyNameCaseInsensitive = true,
             };
+            _jsonSerializerOptions.Converters.Add(new LlmSafeIntConverter());
+            _jsonSerializerOptions.Converters.Add(new PartialUpdatesConverter());
         }
 
-        public async Task ProcessUpdatesAsync(List<ICreationHook> newEntities, Dictionary<string, IUpdatePayload> partialUpdates, string userId)
+        public async Task ProcessUpdatesAsync(List<ICreationHook> newEntities, PartialUpdates partialUpdates, string userId)
         {
             try
             {
-                _loggingService.LogInfo("Processing updates with strongly-typed data");
-                
+                _loggingService.LogInfo($"Processing updates for user {userId}");
+
+                if ((newEntities == null || !newEntities.Any()) && (partialUpdates == null))
+                {
+                    _loggingService.LogInfo("No updates to process - both newEntities and partialUpdates are null or empty");
+                    return;
+                }
+
                 var entityCreationJobs = new Dictionary<string, string>();
-                
-                // Step 1: Process new entities
                 if (newEntities != null && newEntities.Any())
                 {
                     entityCreationJobs = await ProcessNewEntitiesAsync(newEntities, userId);
                 }
-                
-                // Step 2: Process partial updates
-                if (partialUpdates != null && partialUpdates.Any())
+
+                if (partialUpdates != null)
                 {
                     await ProcessPartialUpdatesAsync(partialUpdates, userId, entityCreationJobs);
                 }
-                
-                _loggingService.LogInfo("Strongly-typed updates processing complete");
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing strongly-typed updates: {ex.Message}\\nStackTrace: {ex.StackTrace}");
+                _loggingService.LogError($"Error in ProcessUpdatesAsync: {ex.Message}\nStackTrace: {ex.StackTrace}");
                 throw;
             }
         }
@@ -217,42 +241,76 @@ namespace AiGMBackEnd.Services.Processors
             }
         }
 
-        private async Task ProcessPartialUpdatesAsync(Dictionary<string, IUpdatePayload> partialUpdates, string userId, Dictionary<string, string> entityCreationJobs)
+        private async Task ProcessPartialUpdatesAsync(PartialUpdates partialUpdates, string userId, Dictionary<string, string> entityCreationJobs)
         {
-            bool locationChanged = false;
+            _loggingService.LogInfo($"Starting to process partial updates for user {userId}");
             
-            foreach (var kvp in partialUpdates)
-            {
-                var entityId = kvp.Key;
-                var updateData = kvp.Value;
+            try {
+                bool locationChanged = false;
                 
-                if (updateData == null)
+                // Process player update if present
+                if (partialUpdates.Player != null)
                 {
-                    _loggingService.LogWarning($"Invalid update data for entity {entityId}");
-                    continue;
+                    _loggingService.LogInfo($"Processing player updates for user {userId}");
+                    locationChanged = await ProcessPlayerUpdateAsync(userId, partialUpdates.Player);
                 }
                 
-                // Handle player special case
-                if (updateData.Type.ToLower() == "player")
+                // Process world update if present
+                if (partialUpdates.World != null)
                 {
-                    if (updateData is PlayerUpdatePayload playerUpdate)
-                    {
-                        locationChanged = await ProcessPlayerUpdateAsync(userId, playerUpdate);
-                    }
-                    else
-                    {
-                        _loggingService.LogWarning($"Received non-PlayerUpdatePayload for player entity: {updateData.GetType().Name}");
-                    }
-                    continue;
+                    _loggingService.LogInfo($"Processing world updates for user {userId}");
+                    string updateJson = System.Text.Json.JsonSerializer.Serialize(partialUpdates.World, _jsonSerializerOptions);
+                    await UpdateEntityAsync(userId, "", "world", updateJson);
                 }
                 
-                await ProcessEntityUpdateAsync(userId, entityId, updateData, entityCreationJobs);
+                // Process NPC entries
+                if (partialUpdates.NpcEntries != null && partialUpdates.NpcEntries.Count > 0)
+                {
+                    _loggingService.LogInfo($"Processing {partialUpdates.NpcEntries.Count} NPC entries for user {userId}");
+                    foreach (var npcUpdate in partialUpdates.NpcEntries)
+                    {
+                        if (string.IsNullOrEmpty(npcUpdate.Id))
+                        {
+                            _loggingService.LogWarning("Skipping NPC update with missing ID");
+                            continue;
+                        }
+                        
+                        _loggingService.LogInfo($"Processing NPC update for {npcUpdate.Id}");
+                        await ProcessNpcUpdateAsync(userId, npcUpdate.Id, npcUpdate);
+                    }
+                }
+                
+                // Process location entries
+                if (partialUpdates.LocationEntries != null && partialUpdates.LocationEntries.Count > 0)
+                {
+                    _loggingService.LogInfo($"Processing {partialUpdates.LocationEntries.Count} location entries for user {userId}");
+                    foreach (var locationUpdate in partialUpdates.LocationEntries)
+                    {
+                        if (string.IsNullOrEmpty(locationUpdate.Id))
+                        {
+                            _loggingService.LogWarning("Skipping location update with missing ID");
+                            continue;
+                        }
+                        
+                        _loggingService.LogInfo($"Processing location update for {locationUpdate.Id}");
+                        await ProcessEntityUpdateAsync(userId, locationUpdate.Id, locationUpdate, entityCreationJobs);
+                    }
+                }
+                
+                // Send location change notification after all updates are processed
+                if (locationChanged)
+                {
+                    _loggingService.LogInfo($"Location changed for user {userId}, sending notification");
+                    await _notificationService.NotifyLocationChangedAsync(userId);
+                }
+                
+                _loggingService.LogInfo($"Completed processing all partial updates for user {userId}");
             }
-            
-            // Send location change notification after all updates are processed
-            if (locationChanged)
+            catch (Exception ex)
             {
-                await _notificationService.NotifyLocationChangedAsync(userId);
+                _loggingService.LogError($"Error processing partial updates for user {userId}: {ex.Message}");
+                _loggingService.LogError($"Exception stack trace: {ex.StackTrace}");
+                throw; // Re-throw to allow calling code to handle
             }
         }
 
@@ -266,6 +324,8 @@ namespace AiGMBackEnd.Services.Processors
             // Check if inventory is being updated
             bool inventoryChanged = updateData.Inventory != null && updateData.Inventory.Any();
             bool currencyChanged = updateData.Currencies != null && updateData.Currencies.Any();
+            bool statusEffectsChanged = updateData.StatusEffects != null && updateData.StatusEffects.Any();
+            bool rpgTagsChanged = updateData.RpgTags != null && updateData.RpgTags.Any();
             
             // Handle inventory updates if present
             if (inventoryChanged)
@@ -277,6 +337,18 @@ namespace AiGMBackEnd.Services.Processors
             if (currencyChanged)
             {
                 await ProcessPlayerCurrencyUpdatesAsync(userId, updateData.Currencies);
+            }
+
+            // Handle status effects updates if present
+            if (statusEffectsChanged)
+            {
+                await ProcessPlayerStatusEffectsAsync(userId, updateData.StatusEffects);
+            }
+            
+            // Handle RPG tags updates if present
+            if (rpgTagsChanged)
+            {
+                await ProcessPlayerRpgTagsAsync(userId, updateData.RpgTags);
             }
             
             // Convert the update data to JSON for storage update
@@ -587,6 +659,169 @@ namespace AiGMBackEnd.Services.Processors
             }
         }
 
+        private async Task ProcessPlayerStatusEffectsAsync(string userId, List<StatusEffectUpdateItem> statusEffectUpdates)
+        {
+            if (statusEffectUpdates == null || !statusEffectUpdates.Any())
+            {
+                return;
+            }
+            
+            _loggingService.LogInfo($"Processing {statusEffectUpdates.Count} status effect updates");
+            
+            // Get current player to update status effects directly
+            var player = await _storageService.GetPlayerAsync(userId);
+            if (player == null)
+            {
+                _loggingService.LogError($"Failed to load player for status effect updates for user {userId}");
+                return;
+            }
+            
+            // Initialize the list if it's null
+            if (player.StatusEffects == null)
+            {
+                player.StatusEffects = new List<string>();
+            }
+            
+            // Keep track of indices to remove after processing
+            var indicesToRemove = new List<int>();
+            
+            for (int i = 0; i < statusEffectUpdates.Count; i++)
+            {
+                var effectUpdate = statusEffectUpdates[i];
+                string effectName = effectUpdate.Name;
+                UpdateAction action = effectUpdate.Action;
+                
+                if (string.IsNullOrEmpty(effectName))
+                {
+                    _loggingService.LogWarning("Skipping status effect update with missing effect name");
+                    continue;
+                }
+                
+                if (action == UpdateAction.Add)
+                {
+                    // Don't add duplicates
+                    if (!player.StatusEffects.Contains(effectName))
+                    {
+                        player.StatusEffects.Add(effectName);
+                        _loggingService.LogInfo($"Added status effect '{effectName}' to player");
+                        
+                        // Send notification about the new status effect
+                        await _notificationService.NotifyGenericAsync(userId, $"Added status effect: {effectName}");
+                    }
+                    // Mark this item for removal to prevent double-processing
+                    indicesToRemove.Add(i);
+                }
+                else if (action == UpdateAction.Remove)
+                {
+                    if (player.StatusEffects.Contains(effectName))
+                    {
+                        player.StatusEffects.Remove(effectName);
+                        _loggingService.LogInfo($"Removed status effect '{effectName}' from player");
+                        
+                        // Send notification about the removed status effect
+                        await _notificationService.NotifyGenericAsync(userId, $"Removed status effect: {effectName}");
+                    }
+                    // Mark this item for removal to prevent double-processing
+                    indicesToRemove.Add(i);
+                }
+                else
+                {
+                    _loggingService.LogWarning($"Unknown status effect action: {action} for effect {effectName}");
+                }
+            }
+            
+            // Save the updated player with modified status effects
+            await _storageService.SaveAsync(userId, "player", player);
+            
+            // Remove processed items in reverse order to maintain correct indices
+            for (int i = indicesToRemove.Count - 1; i >= 0; i--)
+            {
+                int indexToRemove = indicesToRemove[i];
+                statusEffectUpdates.RemoveAt(indexToRemove);
+            }
+        }
+
+        private async Task ProcessPlayerRpgTagsAsync(string userId, List<Models.RpgTagUpdateItem> rpgTagUpdates)
+        {
+            if (rpgTagUpdates == null || !rpgTagUpdates.Any())
+            {
+                return;
+            }
+            
+            _loggingService.LogInfo($"Processing {rpgTagUpdates.Count} RPG tag updates");
+            
+            // Get current player to update RPG tags directly
+            var player = await _storageService.GetPlayerAsync(userId);
+            if (player == null)
+            {
+                _loggingService.LogError($"Failed to load player for RPG tag updates for user {userId}");
+                return;
+            }
+            
+            // Initialize the list if it's null
+            if (player.RpgTags == null)
+            {
+                player.RpgTags = new List<Models.RpgTag>();
+            }
+            
+            // Keep track of indices to remove after processing
+            var indicesToRemove = new List<int>();
+            
+            for (int i = 0; i < rpgTagUpdates.Count; i++)
+            {
+                var tagUpdate = rpgTagUpdates[i];
+                string tagName = tagUpdate.Name;
+                UpdateAction action = tagUpdate.Action;
+                
+                if (string.IsNullOrEmpty(tagName))
+                {
+                    _loggingService.LogWarning("Skipping RPG tag update with missing tag name");
+                    continue;
+                }
+                
+                if (action == UpdateAction.Add)
+                {
+                    // Don't add duplicates
+                    if (!player.RpgTags.Any(tag => tag.Name == tagName))
+                    {
+                        player.RpgTags.Add(new Models.RpgTag 
+                        { 
+                            Name = tagName,
+                            Description = tagUpdate.Description ?? $"Tag: {tagName}"
+                        });
+                        _loggingService.LogInfo($"Added RPG tag '{tagName}' to player");
+                    }
+                    // Mark this item for removal to prevent double-processing
+                    indicesToRemove.Add(i);
+                }
+                else if (action == UpdateAction.Remove)
+                {
+                    var existingTag = player.RpgTags.FirstOrDefault(tag => tag.Name == tagName);
+                    if (existingTag != null)
+                    {
+                        player.RpgTags.Remove(existingTag);
+                        _loggingService.LogInfo($"Removed RPG tag '{tagName}' from player");
+                    }
+                    // Mark this item for removal to prevent double-processing
+                    indicesToRemove.Add(i);
+                }
+                else
+                {
+                    _loggingService.LogWarning($"Unknown RPG tag action: {action} for tag {tagName}");
+                }
+            }
+            
+            // Save the updated player with modified RPG tags
+            await _storageService.SaveAsync(userId, "player", player);
+            
+            // Remove processed items in reverse order to maintain correct indices
+            for (int i = indicesToRemove.Count - 1; i >= 0; i--)
+            {
+                int indexToRemove = indicesToRemove[i];
+                rpgTagUpdates.RemoveAt(indexToRemove);
+            }
+        }
+
         private async Task ProcessNpcUpdateAsync(string userId, string npcId, NpcUpdatePayload updateData)
         {
             _loggingService.LogInfo($"Processing NPC update for {npcId}");
@@ -714,4 +949,5 @@ namespace AiGMBackEnd.Services.Processors
             }
         }
     }
-} 
+}
+   

@@ -2,8 +2,10 @@ using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
-using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using AiGMBackEnd.Models.Locations;
+using System.Collections.Generic;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -31,90 +33,107 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
                 var location = await _storageService.GetLocationAsync(request.UserId, player.CurrentLocationId);
 
-                var promptContentBuilder = new StringBuilder();
+                // Create ordered dictionary for prompt content
+                var recentEvents = await _storageService.GetRecentEventsAsync(request.UserId);
+                var conversationLog = await _storageService.GetConversationLogAsync(request.UserId);
+                var userInput = request.UserInput;
+
+                // Create dictionary for prompt content (main content first)
+                var promptContentDict = new Dictionary<string, object>
+                {
+                    ["gameSetting"] = gameSetting,
+                    ["gamePreferences"] = gamePreferences,
+                    ["worldContext"] = world,
+                    ["playerContext"] = player,
+                    ["currentLocationDetails"] = location
+                };
+
+                // Process connected locations
                 var connectedLocations = new List<Location>();
-                if (location!=null)
+                if (location != null)
                 {
                     foreach (var cl in location.ConnectedLocations)
                     {
-                        connectedLocations.Add(await _storageService.GetLocationAsync(request.UserId, cl));
-                    }
-                    if (location.ParentLocation != null)
-                    {
-                        var parentLocation = await _storageService.GetLocationAsync(request.UserId, location.ParentLocation);
-                        if (!string.IsNullOrEmpty(location.ParentLocation))
+                        var connectedLocation = await _storageService.GetLocationAsync(request.UserId, cl);
+                        if (connectedLocation != null)
                         {
-                            promptContentBuilder.AppendLine("parentLocation: ");
-                            new LocationContextSection(parentLocation).AppendTo(promptContentBuilder);
+                            connectedLocations.Add(connectedLocation);
                         }
                     }
-                }                
-                var npcsInCurrentLocation = await _storageService.GetNpcsInLocationAsync(request.UserId, player.CurrentLocationId);
-                var activeQuests = await _storageService.GetActiveQuestsAsync(request.UserId, player.ActiveQuests);
-                var recentEvents = await _storageService.GetRecentEventsAsync(request.UserId);
-                var conversationLog = await _storageService.GetConversationLogAsync(request.UserId);
+                    
+                    // Get parent location if it exists
+                    if (!string.IsNullOrEmpty(location.ParentLocation))
+                    {
+                        var parentLocation = await _storageService.GetLocationAsync(request.UserId, location.ParentLocation);
+                        if (parentLocation != null)
+                        {
+                            promptContentDict["parentLocation"] = parentLocation;
+                        }
+                    }
+                    
+                    if (connectedLocations.Count > 0)
+                    {
+                        promptContentDict["connectedLocations"] = connectedLocations;
+                    }
+                }
 
-                new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
-                new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
-                new WorldContextSection(world, includeEntityLists: true).AppendTo(promptContentBuilder);
-                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
-                new PlayerContextSection(player).AppendTo(promptContentBuilder);
+                // Get NPCs in current location
+                var npcsInCurrentLocation = await _storageService.GetNpcsInLocationAsync(request.UserId, player.CurrentLocationId);
+                if (npcsInCurrentLocation != null && npcsInCurrentLocation.Count > 0)
+                {
+                    promptContentDict["npcsPresentInThisLocation"] = npcsInCurrentLocation;
+                }
+
+                // Get active quests
+                var activeQuests = await _storageService.GetActiveQuestsAsync(request.UserId, player.ActiveQuests);
+                if (activeQuests != null && activeQuests.Count > 0)
+                {
+                    promptContentDict["activeQuests"] = activeQuests;
+                }
+
+                // Add the items in the specific order required (recentEvents, conversationLog, playerInput)
+                if (recentEvents != null)
+                {
+                    promptContentDict["recentEvents"] = recentEvents;
+                }
+
+                if (conversationLog != null)
+                {
+                    promptContentDict["conversationLog"] = conversationLog;
+                }
+
+                // Always add playerInput last
+                promptContentDict["playerInput"] = userInput;
 
                 // Build the system prompt with response instructions and examples
                 var systemPromptBuilder = new StringBuilder();
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
+                
                 // Add example responses
                 systemPromptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");
                 PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);
 
-                // Add location context using the location section
-                promptContentBuilder.AppendLine("currentLocation: ");
-                new LocationContextSection(location).AppendTo(promptContentBuilder);
+                // Use a custom JsonSerializerOptions to preserve property order
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    PropertyNamingPolicy = null
+                };
                 
-
-                if (connectedLocations!=null && connectedLocations.Count>0)
+                // Create a JsonObject to maintain property order in serialization
+                var jsonObject = new JsonObject();
+                foreach (var kvp in promptContentDict)
                 {
-                    promptContentBuilder.AppendLine("connectedLocations: ");
-                    foreach (var item in connectedLocations)
-                    {
-                        new LocationContextSection(item).AppendTo(systemPromptBuilder);
-                    }
-                }                
-
-                // Add NPCs present at this location and all the information about them
-                if (npcsInCurrentLocation != null && npcsInCurrentLocation.Count > 0)
-                {
-                    promptContentBuilder.AppendLine("npcsPresentInThisLocation:");
-                    foreach (var npc in npcsInCurrentLocation)
-                    {
-                        new NPCSection(npc, false).AppendTo(promptContentBuilder);
-                    }
+                    jsonObject.Add(kvp.Key, JsonSerializer.SerializeToNode(kvp.Value, options));
                 }
-
-                // Add all active quests and all their information
-                if (activeQuests != null && activeQuests.Count > 0)
-                {
-                    promptContentBuilder.AppendLine("activeQuests:");
-                    foreach (var quest in activeQuests)
-                    {
-                        new QuestSection(quest).AppendTo(promptContentBuilder);
-                    }
-                }
-
-                new RecentEventsSection(recentEvents).AppendTo(promptContentBuilder);
-
-                // Add conversation history
-                new ConversationLogSection(conversationLog).AppendTo(promptContentBuilder);
                 
-                // Add the user's input
-                new UserInputSection(request.UserInput, "Current player prompt", false).AppendTo(promptContentBuilder);
-                
+                string serializedPromptContent = jsonObject.ToJsonString(options);
 
                 // Create the prompt object
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
-                    promptContent: promptContentBuilder.ToString(),
+                    promptContent: serializedPromptContent,
                     promptType: PromptType.DM,
                     outputStructureJsonSchema: outputStructure
                 );

@@ -23,12 +23,13 @@ namespace AiGMBackEnd.Models
         public List<ICreationHook>? NewEntities { get; set; }
 
         /// <summary>
-        /// Optional dictionary of partial updates to apply to existing entities.
-        /// Key is the entity ID (e.g., "npc_goblin1", "loc_tavern"), Value contains the update payload.
+        /// Optional structure for partial updates to apply to existing entities.
+        /// Includes player, world, and arrays of NPC and location updates.
         /// </summary>
         [JsonPropertyName("partialUpdates")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Dictionary<string, IUpdatePayload>? PartialUpdates { get; set; }
+        [JsonConverter(typeof(PartialUpdatesConverter))]
+        public PartialUpdates? PartialUpdates { get; set; }
 
         /// <summary>
         /// Optional flag indicating that combat should be initiated. Defaults to false.

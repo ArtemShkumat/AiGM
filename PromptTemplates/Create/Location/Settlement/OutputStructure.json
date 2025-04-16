@@ -1,8 +1,8 @@
 {
   "type": "object",
   "properties": {
-    "type": { "type": "string", "const": "LOCATION", "description": "Base object type" },
-    "locationType": { "type": "string", "const": "Settlement", "description": "Specific location type" },
+    "type": { "type": "string", "enum": ["LOCATION"], "description": "Base object type" },
+    "locationType": { "type": "string", "enum": ["Settlement"], "description": "Specific location type" },
     "id": { "type": "string", "description": "Unique identifier for the location" },
     "name": { "type": "string", "description": "Name of the settlement (e.g., Havenwood, Port Azure)" },
     "description": { "type": "string", "description": "Overall description of the settlement's character, atmosphere, and setting" },
@@ -16,38 +16,34 @@
     "population": { "type": "integer", "description": "Approximate number of inhabitants" },
     "districts": {
       "type": "array",
-      "items": { "$ref": "#/definitions/district" }
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Name of the district (e.g., Market Square, Old Town, Docks)" },
+          "description": { "type": "string", "description": "Description of the district's character, typical activities, and appearance" },
+          "connected_districts": { "type": "array", "items": { "type": "string" }, "description": "Names of adjacent districts within the settlement" },
+          "points_of_interest": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "description": { "type": "string" },
+                "hinting_at": { "type": "string", "description": "What secret, plot hook, or information this POI might reveal" }
+              },
+              "required": ["name", "description", "hinting_at"]
+            }
+          },
+          "npcs": { "type": "array", "items": { "type": "string" }, "description": "IDs of NPCs primarily associated with or found in this district" },
+          "buildings": { "type": "array", "items": { "type": "string" }, "description": "IDs of significant buildings located within this district" }
+        },
+        "required": ["name", "description", "connected_districts", "points_of_interest", "npcs", "buildings"]
+      }
     }
   },
   "required": [
     "type", "locationType", "id", "name", "description", "knownToPlayer", 
     "connectedLocations", "parentLocation", "npcs", 
     "purpose", "history", "size", "population", "districts"
-  ],
-  "definitions": {
-    "district": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string", "description": "Name of the district (e.g., Market Square, Old Town, Docks)" },
-        "description": { "type": "string", "description": "Description of the district's character, typical activities, and appearance" },
-        "connected_districts": { "type": "array", "items": { "type": "string" }, "description": "Names of adjacent districts within the settlement" },
-        "points_of_interest": {
-          "type": "array",
-          "items": { "$ref": "#/definitions/pointOfInterest" }
-        },
-        "npcs": { "type": "array", "items": { "type": "string" }, "description": "IDs of NPCs primarily associated with or found in this district" },
-        "buildings": { "type": "array", "items": { "type": "string" }, "description": "IDs of significant buildings located within this district" }
-      },
-      "required": ["name", "description", "connected_districts", "points_of_interest", "npcs", "buildings"]
-    },
-    "pointOfInterest": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "description": { "type": "string" },
-        "hinting_at": { "type": "string", "description": "What secret, plot hook, or information this POI might reveal" }
-      },
-      "required": ["name", "description", "hinting_at"]
-    }
-  }
+  ]
 } 

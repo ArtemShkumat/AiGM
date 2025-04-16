@@ -2,7 +2,9 @@ using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Models.Prompts.Sections;
 using System.Text;
-using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Collections.Generic;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
@@ -32,41 +34,56 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
                 var location = await _storageService.GetLocationAsync(request.UserId, player.CurrentLocationId);   
-                var conversationLog = await _storageService.GetConversationLogAsync(request.UserId);            
+                //var conversationLog = await _storageService.GetConversationLogAsync(request.UserId);
+                var userInput = request.UserInput;
                
                 // Create system prompt builder
                 var systemPromptBuilder = new StringBuilder();
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
                 
-
                 // Add example responses to system prompt
                 PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);
 
-                // Create prompt content builder
-                var promptContentBuilder = new StringBuilder();
+                // Create dictionary for prompt content (main content first)
+                var promptContentDict = new Dictionary<string, object>
+                {
+                    ["gameSetting"] = gameSetting,
+                    ["gamePreferences"] = gamePreferences,
+                    ["worldContext"] = world,
+                    ["playerContext"] = player,
+                    ["currentLocationDetails"] = location,
+                    ["npcContext"] = npc
+                };
 
-                // Add game setting and preferences using our helper classes
-                new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
-                new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
-                new WorldContextSection(world, includeEntityLists: true).AppendTo(promptContentBuilder);
-                promptContentBuilder.Append("currentLocation:");
-                new LocationContextSection(location).AppendTo(promptContentBuilder);
-                new PlayerContextSection(player, false).AppendTo(promptContentBuilder);
+                // Add the items in the specific order required (conversationLog, playerInput)
+                //if (conversationLog != null)
+                //{
+                //    promptContentDict["conversationLog"] = conversationLog;
+                //}
 
-                promptContentBuilder.AppendLine("#This is the conversation log in the scene between the Game Master and the Player. Consider only the parts that are relevant to you, especially if the player started a conversation with you by interacting with the DM.");
-                new ConversationLogSection(conversationLog).AppendTo(promptContentBuilder);
+                // Always add playerInput last
+                promptContentDict["playerInput"] = userInput;
 
-                // Add NPC context
-                promptContentBuilder.AppendLine("#This is context about your character:");
-                new NPCSection(npc, true).AppendTo(promptContentBuilder);
-
-                // Add the user's input
-                new UserInputSection(request.UserInput, "User Input", false).AppendTo(promptContentBuilder);
+                // Use a custom JsonSerializerOptions to preserve property order
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    PropertyNamingPolicy = null
+                };
+                
+                // Create a JsonObject to maintain property order in serialization
+                var jsonObject = new JsonObject();
+                foreach (var kvp in promptContentDict)
+                {
+                    jsonObject.Add(kvp.Key, JsonSerializer.SerializeToNode(kvp.Value, options));
+                }
+                
+                string serializedPromptContent = jsonObject.ToJsonString(options);
 
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
-                    promptContent: promptContentBuilder.ToString(),
+                    promptContent: serializedPromptContent,
                     promptType: PromptType.NPC,
                     outputStructureJsonSchema: outputStructure
                 );

@@ -1,26 +1,62 @@
 {
   "type": "object",
   "properties": {
-    "type": { "type": "string", "const": "QUEST", "description": "Object type, always 'QUEST'" },
+    "type": { "type": "string", "enum": ["QUEST"], "description": "Object type, always 'QUEST'" },
     "id": { "type": "string", "description": "Unique identifier for the quest" },
     "title": { "type": "string", "description": "Short, memorable quest name" },
     "coreObjective": { "type": "string", "description": "Primary statement of what must be accomplished" },
     "overview": { "type": "string", "description": "Brief synopsis describing nature, tone, and stakes" },
     "npcs": {
       "type": "array",
-      "items": { "$ref": "#/definitions/questNpc" }
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "role": { "type": "string", "description": "Quest Giver, Missing Person, Villager, etc." },
+          "motivation": { "type": "string", "description": "Why they do what they do" },
+          "fears": { "type": "string", "description": "What they dread could happen" },
+          "secrets": { "type": "string", "description": "Hidden truths that can be revealed" } 
+        },
+        "required": ["id", "name", "role", "motivation", "fears", "secrets"]
+      }
     },
     "rumorsAndLeads": {
       "type": "array",
-      "items": { "$ref": "#/definitions/rumorAndLead" }
+      "items": {
+        "type": "object",
+        "properties": {
+          "rumor": { "type": "string", "description": "Hint or partial information" },
+          "sourceNPC": { "type": "string", "description": "NPC providing this rumor (ID or Name)" },
+          "sourceLocation": { "type": "string", "description": "Location ID where rumor can be heard" }
+        },
+        "required": ["rumor", "sourceNPC", "sourceLocation"]
+      }
     },
     "locationsInvolved": {
       "type": "array",
-      "items": { "$ref": "#/definitions/questLocation" }
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "type": { "type": "string", "enum": ["Building", "Settlement", "Delve", "Wilds"] }
+        },
+        "required": ["id", "name", "type"]
+      }
     },
     "opposingForces": {
       "type": "array",
-      "items": { "$ref": "#/definitions/opposingForce" }
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "role": { "type": "string", "enum": ["Primary", "Secondary"] },
+          "motivation": { "type": "string", "description": "Why they oppose the player" },
+          "description": { "type": "string", "description": "Behavior, threat level, notable traits" }
+        },
+        "required": ["name", "role", "motivation", "description"]
+      }
     },
     "challenges": {
       "type": "array",
@@ -41,47 +77,5 @@
   "required": [
     "type", "id", "title", "coreObjective", "overview", "npcs", "rumorsAndLeads", 
     "locationsInvolved", "opposingForces", "challenges", "emotionalBeats", "rewards"
-  ],
-  "definitions": {
-    "questNpc": {
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "role": { "type": "string", "description": "Quest Giver, Missing Person, Villager, etc." },
-        "motivation": { "type": "string", "description": "Why they do what they do" },
-        "fears": { "type": "string", "description": "What they dread could happen" },
-        "secrets": { "type": "string", "description": "Hidden truths that can be revealed" } 
-      },
-      "required": ["id", "name", "role", "motivation", "fears", "secrets"]
-    },
-    "rumorAndLead": {
-      "type": "object",
-      "properties": {
-        "rumor": { "type": "string", "description": "Hint or partial information" },
-        "sourceNPC": { "type": "string", "description": "NPC providing this rumor (ID or Name)" },
-        "sourceLocation": { "type": "string", "description": "Location ID where rumor can be heard" }
-      },
-      "required": ["rumor", "sourceNPC", "sourceLocation"]
-    },
-    "questLocation": {
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "type": { "type": "string", "enum": ["Building", "Settlement", "Delve", "Wilds"] }
-      },
-      "required": ["id", "name", "type"]
-    },
-    "opposingForce": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "role": { "type": "string", "enum": ["Primary", "Secondary"] },
-        "motivation": { "type": "string", "description": "Why they oppose the player" },
-        "description": { "type": "string", "description": "Behavior, threat level, notable traits" }
-      },
-      "required": ["name", "role", "motivation", "description"]
-    }
-  }
+  ]
 } 

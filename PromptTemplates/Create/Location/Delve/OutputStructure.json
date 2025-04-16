@@ -1,8 +1,8 @@
 {
   "type": "object",
   "properties": {
-    "type": { "type": "string", "const": "LOCATION", "description": "Base object type" },
-    "locationType": { "type": "string", "const": "Delve", "description": "Specific location type" },
+    "type": { "type": "string", "enum": ["LOCATION"], "description": "Base object type" },
+    "locationType": { "type": "string", "enum": ["Delve"], "description": "Specific location type" },
     "id": { "type": "string", "description": "Unique identifier for the location" },
     "name": { "type": "string", "description": "Name of the delve (e.g., Abandoned Mine, Sunken Temple)" },
     "description": { "type": "string", "description": "Overall description of the delve's theme, atmosphere, and history" },
@@ -11,89 +11,141 @@
     "parentLocation": { "type": "string", "description": "ID of the parent location (e.g., Wilds ID if delve is found there)" },
     "npcs": { "type": "array", "items": { "type": "string" }, "description": "IDs of NPCs present in the delve (top level, potentially guardians or quest givers outside)" },
     "purpose": { "type": "string", "description": "The original purpose or reason this delve exists" },
-    "entrance_room": { "$ref": "#/definitions/entranceRoom" },
-    "puzzle_room": { "$ref": "#/definitions/puzzleRoom" },
-    "setback_room": { "$ref": "#/definitions/setbackRoom" },
-    "climax_room": { "$ref": "#/definitions/climaxRoom" },
-    "reward_room": { "$ref": "#/definitions/rewardRoom" }
+    "entrance_room": {
+      "type": "object",
+      "properties": {
+        "room_number": { "type": "integer", "description": "Sequential room number (1)" },
+        "name": { "type": "string", "description": "Specific name for this room" },
+        "description": { "type": "string", "description": "Detailed description of the room's appearance and contents" },
+        "role": { "type": "string", "enum": ["Entrance"], "description": "The 5-room dungeon role" },
+        "hazard_or_guardian": { "type": "string", "description": "Initial threat or obstacle guarding the entrance" },
+        "valuables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "why_its_here": { "type": "string", "description": "Reason this valuable is in this specific room" },
+              "description": { "type": "string" },
+              "quantity": { "type": "integer" },
+              "value": { "type": "integer", "description": "Approximate value" },
+              "where_exactly": { "type": "string", "description": "Precise location within the room (e.g., chest, altar, corpse)" }
+            },
+            "required": ["name", "why_its_here", "description", "quantity", "value", "where_exactly"]
+          }
+        }
+      },
+      "required": ["room_number", "name", "description", "role", "valuables", "hazard_or_guardian"]
+    },
+    "puzzle_room": {
+      "type": "object",
+      "properties": {
+        "room_number": { "type": "integer", "description": "Sequential room number (2)" },
+        "name": { "type": "string", "description": "Specific name for this room" },
+        "description": { "type": "string", "description": "Detailed description of the room's appearance and contents" },
+        "role": { "type": "string", "enum": ["Puzzle"], "description": "The 5-room dungeon role" },
+        "puzzle_or_roleplay_challenge": { "type": "string", "description": "The puzzle, trap, or social encounter in this room" },
+        "valuables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "why_its_here": { "type": "string", "description": "Reason this valuable is in this specific room" },
+              "description": { "type": "string" },
+              "quantity": { "type": "integer" },
+              "value": { "type": "integer", "description": "Approximate value" },
+              "where_exactly": { "type": "string", "description": "Precise location within the room (e.g., chest, altar, corpse)" }
+            },
+            "required": ["name", "why_its_here", "description", "quantity", "value", "where_exactly"]
+          }
+        }
+      },
+      "required": ["room_number", "name", "description", "role", "valuables", "puzzle_or_roleplay_challenge"]
+    },
+    "setback_room": {
+      "type": "object",
+      "properties": {
+        "room_number": { "type": "integer", "description": "Sequential room number (3)" },
+        "name": { "type": "string", "description": "Specific name for this room" },
+        "description": { "type": "string", "description": "Detailed description of the room's appearance and contents" },
+        "role": { "type": "string", "enum": ["Setback"], "description": "The 5-room dungeon role" },
+        "trick_or_setback": { "type": "string", "description": "A trap, trick, or event that complicates the players' progress" },
+        "valuables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "why_its_here": { "type": "string", "description": "Reason this valuable is in this specific room" },
+              "description": { "type": "string" },
+              "quantity": { "type": "integer" },
+              "value": { "type": "integer", "description": "Approximate value" },
+              "where_exactly": { "type": "string", "description": "Precise location within the room (e.g., chest, altar, corpse)" }
+            },
+            "required": ["name", "why_its_here", "description", "quantity", "value", "where_exactly"]
+          }
+        }
+      },
+      "required": ["room_number", "name", "description", "role", "valuables", "trick_or_setback"]
+    },
+    "climax_room": {
+      "type": "object",
+      "properties": {
+        "room_number": { "type": "integer", "description": "Sequential room number (4)" },
+        "name": { "type": "string", "description": "Specific name for this room" },
+        "description": { "type": "string", "description": "Detailed description of the room's appearance and contents" },
+        "role": { "type": "string", "enum": ["Climax"], "description": "The 5-room dungeon role" },
+        "climax_conflict": { "type": "string", "description": "The main boss fight or major confrontation" },
+        "hazard_or_guardian": { "type": "string", "description": "The primary antagonist or major hazard in the room" },
+        "valuables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "why_its_here": { "type": "string", "description": "Reason this valuable is in this specific room" },
+              "description": { "type": "string" },
+              "quantity": { "type": "integer" },
+              "value": { "type": "integer", "description": "Approximate value" },
+              "where_exactly": { "type": "string", "description": "Precise location within the room (e.g., chest, altar, corpse)" }
+            },
+            "required": ["name", "why_its_here", "description", "quantity", "value", "where_exactly"]
+          }
+        }
+      },
+      "required": ["room_number", "name", "description", "role", "valuables", "climax_conflict", "hazard_or_guardian"]
+    },
+    "reward_room": {
+      "type": "object",
+      "properties": {
+        "room_number": { "type": "integer", "description": "Sequential room number (5)" },
+        "name": { "type": "string", "description": "Specific name for this room" },
+        "description": { "type": "string", "description": "Detailed description of the room's appearance and contents" },
+        "role": { "type": "string", "enum": ["Reward"], "description": "The 5-room dungeon role" },
+        "reward_or_revelation": { "type": "string", "description": "The final reward, treasure, plot revelation, or exit" },
+        "valuables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "why_its_here": { "type": "string", "description": "Reason this valuable is in this specific room" },
+              "description": { "type": "string" },
+              "quantity": { "type": "integer" },
+              "value": { "type": "integer", "description": "Approximate value" },
+              "where_exactly": { "type": "string", "description": "Precise location within the room (e.g., chest, altar, corpse)" }
+            },
+            "required": ["name", "why_its_here", "description", "quantity", "value", "where_exactly"]
+          }
+        }
+      },
+      "required": ["room_number", "name", "description", "role", "valuables", "reward_or_revelation"]
+    }
   },
   "required": [
     "type", "locationType", "id", "name", "description", "knownToPlayer", 
     "connectedLocations", "parentLocation", "npcs", 
     "purpose", "entrance_room", "puzzle_room", "setback_room", "climax_room", "reward_room"
-  ],
-  "definitions": {
-    "delveRoomBase": {
-      "type": "object",
-      "properties": {
-        "room_number": { "type": "integer", "description": "Sequential room number (1-5)" },
-        "name": { "type": "string", "description": "Specific name for this room" },
-        "description": { "type": "string", "description": "Detailed description of the room's appearance and contents" },
-        "role": { "type": "string", "description": "The 5-room dungeon role (Entrance, Puzzle, Setback, Climax, Reward)" },
-        "valuables": {
-          "type": "array",
-          "items": { "$ref": "#/definitions/delveValuable" }
-        }
-      },
-      "required": ["room_number", "name", "description", "role", "valuables"]
-    },
-    "entranceRoom": {
-      "allOf": [ { "$ref": "#/definitions/delveRoomBase" } ],
-      "properties": {
-        "role": { "const": "Entrance" },
-        "room_number": { "const": 1 },
-        "hazard_or_guardian": { "type": "string", "description": "Initial threat or obstacle guarding the entrance" }
-      },
-      "required": ["hazard_or_guardian"]
-    },
-    "puzzleRoom": {
-      "allOf": [ { "$ref": "#/definitions/delveRoomBase" } ],
-      "properties": {
-        "role": { "const": "Puzzle" },
-        "room_number": { "const": 2 },
-        "puzzle_or_roleplay_challenge": { "type": "string", "description": "The puzzle, trap, or social encounter in this room" }
-      },
-      "required": ["puzzle_or_roleplay_challenge"]
-    },
-    "setbackRoom": {
-      "allOf": [ { "$ref": "#/definitions/delveRoomBase" } ],
-      "properties": {
-        "role": { "const": "Setback" },
-        "room_number": { "const": 3 },
-        "trick_or_setback": { "type": "string", "description": "A trap, trick, or event that complicates the players' progress" }
-      },
-      "required": ["trick_or_setback"]
-    },
-    "climaxRoom": {
-      "allOf": [ { "$ref": "#/definitions/delveRoomBase" } ],
-      "properties": {
-        "role": { "const": "Climax" },
-        "room_number": { "const": 4 },
-        "climax_conflict": { "type": "string", "description": "The main boss fight or major confrontation" },
-        "hazard_or_guardian": { "type": "string", "description": "The primary antagonist or major hazard in the room" }
-      },
-      "required": ["climax_conflict", "hazard_or_guardian"]
-    },
-    "rewardRoom": {
-      "allOf": [ { "$ref": "#/definitions/delveRoomBase" } ],
-      "properties": {
-        "role": { "const": "Reward" },
-        "room_number": { "const": 5 },
-        "reward_or_revelation": { "type": "string", "description": "The final reward, treasure, plot revelation, or exit" }
-      },
-      "required": ["reward_or_revelation"]
-    },
-    "delveValuable": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "why_its_here": { "type": "string", "description": "Reason this valuable is in this specific room" },
-        "description": { "type": "string" },
-        "quantity": { "type": "integer" },
-        "value": { "type": "integer", "description": "Approximate value" },
-        "where_exactly": { "type": "string", "description": "Precise location within the room (e.g., chest, altar, corpse)" }
-      },
-      "required": ["name", "why_its_here", "description", "quantity", "value", "where_exactly"]
-    }
-  }
+  ]
 } 

@@ -1,44 +1,41 @@
-Examples of interactions with player:
-
-EXAMPLE: Player enters a location
-USER: 
- ...
- "player": {
-        "type": "PLAYER",
-        "currentLocationId": "loc_mainStreet"
-      }
-  "connectedLocations":
-  [ ...
-    "loc_rustyAnchorTavern"{
-      ...
+---
+# EXAMPLE: Player enters a location
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "currentLocationId": "loc_mainStreet"
+  },
+  "connectedLocations": [
+    {
+      "id": "loc_rustyAnchorTavern",
       "npcs": [
-      {
-        "id": "npc_redBeardedBarkeep",
-        "currentLocationId": "loc_rustyAnchorTavern",
-        "visibleToPlayer": false,
-        "knownToPlayer": false,
-        "knowsPlayer": false
-      },
-      {
-        "id": "npc_hoodedFigure",
-        "currentLocationId": "loc_rustyAnchorTavern",
-        "visibleToPlayer": false,
-        "knownToPlayer": false,
-        "knowsPlayer": false
-      }
-  ]
-      ...
+        {
+          "id": "npc_redBeardedBarkeep",
+          "currentLocationId": "loc_rustyAnchorTavern",
+          "visibleToPlayer": false,
+          "knownToPlayer": false,
+          "knowsPlayer": false
+        },
+        {
+          "id": "npc_hoodedFigure",
+          "currentLocationId": "loc_rustyAnchorTavern",
+          "visibleToPlayer": false,
+          "knownToPlayer": false,
+          "knowsPlayer": false
+        }
+      ]
     }
-    ...]
-  "npcs": [
+  ],
+  "npcsPresentInThisLocation": [
     {
       "id": "npc_johnTheBaptist",
       "currentLocationId": "loc_mainStreet",
       "visibleToPlayer": true
     }
-  ]
-
-Current player prompt: I walk into the tavern and look around.
+  ],
+  "playerInput": "I walk into the tavern and look around."
+}
 
 RESPONSE:
 {
@@ -48,34 +45,46 @@ RESPONSE:
       "type": "PLAYER",
       "currentLocationId": "loc_rustyAnchorTavern"
     },
-    "npc_johnTheBaptist": {
-      "type": "NPC",
-      "visibleToPlayer": false
-    },
-    "npc_redBeardedBarkeep": {
-      "type": "NPC",
-      "visibleToPlayer": true
-    },
-    "npc_hoodedFigure": {
-      "type": "NPC",
-      "visibleToPlayer": true
-    }
+    "npcEntries": [
+      {
+        "id": "npc_johnTheBaptist",
+        "type": "NPC",
+        "visibleToPlayer": false
+      },
+      {
+        "id": "npc_redBeardedBarkeep",
+        "type": "NPC",
+        "visibleToPlayer": true
+      },
+      {
+        "id": "npc_hoodedFigure",
+        "type": "NPC",
+        "visibleToPlayer": true
+      }
+    ]
   }
 }
-
-
-EXAMPLE: Player looks around, seeking new NPCs in a busy street.
-USER: Current player prompt: I look around to see if there's anyone else out and about at this time of the day.
-RESPONSE:
+---
+# EXAMPLE: Player looks around, seeking new NPCs in a busy street.
+USER:
 {
-  "userFacingText": "As you look around the village, you notice a few other villagers going about their business. A pair of children play a simple game of tag near the well, their laughter a momentary spark of joy in the somber atmosphere. An older woman sweeps the stoop of her home, her brow furrowed with worry as she glances toward the mountains. You can also see a few weathered-looking miners trudging back from work. They carry heavy sacks slung over their shoulders and their faces are grim.",
+  "playerInput": "I look around to see if there's anyone else out and about at this time of the day."
 }
 
-EXAMPLE: Player engages an NPC not present in existing NPC list.
-USER: Current player prompt: I approach the old woman I see on the street and introduce myself.
 RESPONSE:
 {
-  "userFacingText": "The older woman looks up at you, her gaze softening slightly. "Elara," she says, her voice raspy but kind. "And you are... new to Emberhold, aren't you? I don't recognize your face." She pauses, then adds with a sigh, "A good day it might have been, before..." She trails off, gesturing vaguely towards the Empty Hearth with her broom. The sounds of the village - the children's laughter, the distant clang of the forge - seem muted, overshadowed by the unspoken dread hanging in the air.",
+  "userFacingText": "As you look around the village, you notice a few other villagers going about their business. A pair of children play a simple game of tag near the well, their laughter a momentary spark of joy in the somber atmosphere. An older woman sweeps the stoop of her home, her brow furrowed with worry as she glances toward the mountains. You can also see a few weathered-looking miners trudging back from work. They carry heavy sacks slung over their shoulders and their faces are grim."
+}
+---
+# EXAMPLE: Player engages an NPC not present in existing NPC list.
+USER:
+{
+  "playerInput": "I approach the old woman I see on the street and introduce myself."
+}
+
+RESPONSE:
+{
+  "userFacingText": "The older woman looks up at you, her gaze softening slightly. \"Elara,\" she says, her voice raspy but kind. \"And you are... new to Emberhold, aren't you? I don't recognize your face.\" She pauses, then adds with a sigh, \"A good day it might have been, before...\" She trails off, gesturing vaguely towards the Empty Hearth with her broom. The sounds of the village - the children's laughter, the distant clang of the forge - seem muted, overshadowed by the unspoken dread hanging in the air.",
   "newEntities": [
     {
       "type": "NPC",
@@ -86,127 +95,111 @@ RESPONSE:
     }
   ]
 }
-
-EXAMPLE: Player meets an NPC and they introduce themselves to each other
+---
+# EXAMPLE: Player meets an NPC and they introduce themselves to each other
 USER:
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_marketSquare"
-},
-"npcs": [
-  {
-    "id": "npc_merchantTomas",
-    "name": "Tomas",
-    "currentLocationId": "loc_marketSquare",
-    "visibleToPlayer": true,
-    "knownToPlayer": false,
-    "knowsPlayer": false
-  }
-]
-
-Current player prompt: I approach the merchant at his stall. "Good day! I'm Alaric, new to these parts. What's your name?"
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_marketSquare"
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_merchantTomas",
+      "name": "Tomas",
+      "currentLocationId": "loc_marketSquare",
+      "visibleToPlayer": true,
+      "knownToPlayer": false,
+      "knowsPlayer": false
+    }
+  ],
+  "playerInput": "I approach the merchant at his stall. \"Good day! I'm Alaric, new to these parts. What's your name?\""
+}
 
 RESPONSE:
 {
-  "userFacingText": "The merchant looks up from arranging a display of colorful fabrics. He's a middle-aged man with salt-and-pepper hair and weathered hands that speak of years of work. His initially cautious expression softens at your friendly approach.",
+  "userFacingText": "The merchant looks up from arranging a display of colorful fabrics. He's a middle-aged man with salt-and-pepper hair and weathered hands that speak of years of work. His initially cautious expression softens at your friendly approach.\nThe merchant replies, 'Tomas is the name. Welcome to our town, Alaric. Always good to see a new face, though times are... difficult. What brings you here?'",
   "partialUpdates": {
-    "npc_merchantTomas": {
-      "type": "NPC",
+    "npcEntries": [
+      {
+        "id": "npc_merchantTomas",
+        "type": "NPC",
+        "knownToPlayer": true,
+        "knowsPlayer": true
+      }
+    ]
+  }
+}
+---
+# EXAMPLE: Player discovers a new location with connections to existing NPCs and potential quests
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_marketSquare"
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_merchantTomas",
+      "name": "Tomas",
+      "currentLocationId": "loc_marketSquare",
+      "visibleToPlayer": true,
       "knownToPlayer": true,
       "knowsPlayer": true
     }
-  }
+  ],
+  "playerInput": "I ask Tomas, \"I've heard rumors of an abandoned mine north of town that might have valuable ore deposits. Do you know anything about it?\""
 }
-
-EXAMPLE: Player discovers a new location with connections to existing NPCs and potential quests
-USER:
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_marketSquare"
-},
-"npcs": [
-  {
-    "id": "npc_merchantTomas",
-    "name": "Tomas",
-    "currentLocationId": "loc_marketSquare",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true
-  }
-]
-
-Current player prompt: I ask Tomas, "I've heard rumors of an abandoned mine north of town that might have valuable ore deposits. Do you know anything about it?"
 
 RESPONSE:
 {
-  "userFacingText": "Tomas scratches his chin thoughtfully, leaning against his stall. "The old Whispering Depths? Aye, I know of it. Closed down nearly fifteen years ago after a collapse trapped a dozen miners inside." He lowers his voice, glancing around as if checking who might be listening.",
+  "userFacingText": "Tomas scratches his chin thoughtfully, leaning against his stall. \"The old Whispering Depths? Aye, I know of it. Closed down nearly fifteen years ago after a collapse trapped a dozen miners inside.\" He lowers his voice, glancing around as if checking who might be listening. \"They say you can still hear voices echoing from the shafts on quiet nights. Some call it haunted. No one's dared venture in there since. There might be ore left, sure, but is it worth disturbing the dead?\"",
   "newEntities": [
     {
-      "type": "QUEST", 
+      "type": "QUEST",
       "name": "Echoes of the Depths",
       "id": "quest_echoesOfTheDepths",
       "context": "This is a multi-part quest centered around exploring the abandoned Whispering Depths Mine (loc_whisperingDepthsMine) and uncovering its secrets. The quest would begin when the player speaks with npc_gareth (quest giver) and learns more about the mine's history. The quest should feel somewhat dangerous and mysterious, dealing with themes of grief, guilt, and possibly supernatural elements related to the miners who died in the collapse. It could involve gathering equipment for the exploration, mapping the dangerous mine tunnels, discovering what really caused the collapse, and potentially dealing with either real ghosts or a more mundane explanation for the voices heard in the mine. This quest would be moderately challenging, requiring both combat skills and diplomatic abilities to complete successfully."
     }
   ]
 }
+---
+# EXAMPLE: Player asks about something that wouldn't reasonably exist in the current location.
+USER:
+{
+  "playerInput": "Is there anywhere I can buy some powerful magic items? I'm looking for enchanted weapons or scrolls."
+}
 
-EXAMPLE: Player asks if there's a tavern in town where it's reasonable to expect one, but you currently don't have it in context.
-
-USER: 
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_marketSquare"
-},
-"npcs": [
-  {
-    "id": "npc_merchantTomas",
-    "name": "Tomas",
-    "currentLocationId": "loc_marketSquare",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true
-  }
-]
-
-
-EXAMPLE: Player asks about something that wouldn't reasonably exist in the current location.
-
-USER: 
-Current player prompt: Is there anywhere I can buy some powerful magic items? I'm looking for enchanted weapons or scrolls.
 RESPONSE:
 {
   "userFacingText": "*chuckles* Sorry bud, but powerful magic items in this tiny village? Not a chance. Looking around the market square, all you see are the basics - Tomas's textile stall, some farmers with their produce, and a few craftsmen selling simple tools. This is the kind of place where finding a copper nail is considered treasure hunting. You'll need to find a proper city if you're looking for enchanted gear."
 }
-
-EXAMPLE: Player enters a tavern that has no NPCs assigned to it.
+---
+# EXAMPLE: Player enters a tavern that has no NPCs assigned to it.
 USER:
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_northGate"
-},
-"connectedLocations": [
-  {
-    "id": "loc_silverFoxTavern",
-    "name": "Silver Fox Tavern",
-    "locationType": "BUILDING",
-    "description": "A popular tavern located near the northern edge of town, known for its hearty meals and warm atmosphere.",
-    "npcs": []
-  }
-]
-
-Current player prompt: I head into the Silver Fox Tavern to get a drink after my long journey.
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_northGate"
+  },
+  "connectedLocations": [
+    {
+      "id": "loc_silverFoxTavern",
+      "name": "Silver Fox Tavern",
+      "locationType": "BUILDING",
+      "description": "A popular tavern located near the northern edge of town, known for its hearty meals and warm atmosphere.",
+      "npcs": []
+    }
+  ],
+  "playerInput": "I head into the Silver Fox Tavern to get a drink after my long journey."
+}
 
 RESPONSE:
 {
-  "userFacingText": "You push open the heavy wooden door of the Silver Fox Tavern, and warmth immediately envelops you. The tavern is lively this evening—the crackling hearth in the corner casting dancing shadows across the room. The air is thick with the aroma of roasted meat, spilled ale, and woodsmoke.",
+  "userFacingText": "You push open the heavy wooden door of the Silver Fox Tavern, and warmth immediately envelops you. The tavern is lively this evening—the crackling hearth in the corner casting dancing shadows across the room. The air is thick with the aroma of roasted meat, spilled ale, and woodsmoke. Behind the long wooden bar, a portly man with a magnificent mustache polishes a mug (the innkeeper, Barton). A young woman (Lina, the barmaid) deftly navigates the tables carrying a tray laden with drinks. In a quieter corner, an elderly man (Old Tobin) gently strums a lute, providing a pleasant background melody.",
   "newEntities": [
     {
       "type": "NPC",
@@ -235,556 +228,72 @@ RESPONSE:
       "type": "PLAYER",
       "currentLocationId": "loc_silverFoxTavern"
     },
-    "loc_silverFoxTavern":{
-      "npcs": ["npc_bartonInnkeeper", "npc_linaBarmaid", "npc_oldTobin"]
-    }
+    "locationEntries": [
+      {
+        "id": "loc_silverFoxTavern",
+        "type": "LOCATION",
+        "npcs": [
+          {
+            "npcId": "npc_bartonInnkeeper",
+            "action": "Add"
+          },
+          {
+            "npcId": "npc_linaBarmaid",
+            "action": "Add"
+          },
+          {
+            "npcId": "npc_oldTobin",
+            "action": "Add"
+          }
+        ]
+      }
+    ],
+    "npcEntries": [
+       {
+        "id": "npc_bartonInnkeeper",
+        "type": "NPC",
+        "visibleToPlayer": true
+      },
+      {
+        "id": "npc_linaBarmaid",
+        "type": "NPC",
+        "visibleToPlayer": true
+      },
+      {
+        "id": "npc_oldTobin",
+        "type": "NPC",
+        "visibleToPlayer": true
+      }
+    ]
   }
 }
 
-
-EXAMPLE: Selling an Item to a Merchant
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I'd like to sell this steel helmet to the merchant. It's in good condition, barely a scratch on it."},
-  {"DM to Player": "The merchant examines the helmet carefully, turning it over in his hands. 'Hmm, decent craftsmanship. I can give you 15 gold pieces for it.' He looks up at you expectantly."}
-]
-
-CURRENT PLAYER PROMPT:
-"That sounds fair. I'll take the 15 gold."
-
-RESPONSE:
-{
-  "userFacingText": "The merchant nods and counts out 15 gold coins, placing them in your palm. He takes the helmet and places it on a display with his other wares. 'Pleasure doing business with you,' he says with a satisfied smile.",
-  "partialUpdates": {
-    "player": {
-      "type": "PLAYER",
-      "inventory": [{
-          "name": "Steel Helmet",
-          "quantity": 1,
-          "action": "Remove"
-        }],
-      "currencies": [{
-          "name": "Gold",
-          "amount": 15,
-          "action": "Add"
-        }]
-    },
-    "npc_villageMerchant": {
-      "type": "NPC",
-      "inventory": [{
-          "name": "Steel Helmet",
-          "description": "A well-crafted steel helmet offering good protection",
-          "quantity": 1,
-          "action": "Add"
-        }]
-    }
-  }
-}
-
-
-
-
-Example: Using Up an Item
-
-CURRENT PLAYER PROMPT:
-"I take out an apple and eat it."
-
-RESPONSE:
-{
-  "userFacingText": "Yum! You eat the apple. Keep them doctors away, eh?.",
-  "partialUpdates": {
-    "player": {
-      "type": "PLAYER",
-      "inventory": [{
-          "name": "Apple",
-          "quantity": 1,
-          "action": "Remove"
-        }]
-    }
-  }
-}
-
-
-
-
-Examples of situations requiring rolls and how to handle them:
-
-Example : Climbing a Crumbling Wall
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I scramble up the wall to get to the ruined battlements. Time is short!"},
-  {"DM to Player": "Base difficulty is 4—the wall is quite unstable. Because the guards are nearly here, I'm adding +1 difficulty for urgency, raising it to 5. That means you need to roll 15 or higher on a d20 for a success."},
-  {"Player to DM": "I have the 'Street Climber' tag. Also, I'll use the vines growing along the wall for extra handholds."},
-  {"DM to Player": "Street Climber reduces the difficulty from 5 down to 4. Using the vines is a clever environmental advantage, so that reduces it from 4 down to 3. Now you need 9 or higher."}
-]
-
-CURRENT PLAYER PROMPT:
-"I got a 10!"
-
-RESPONSE:
-{
-  "userFacingText": "You succeed. You clamber up the wall just in time, flattening yourself against the parapet as the guards march past below."
-}
-
-Example : Searching for a Hidden Mechanism (Failure)
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I search the marble statue near the wall, looking for any hidden trigger."},
-  {"DM to Player": "Base difficulty is 3 (9 or higher). But the chamber is dark, so I'm raising it by +1 to 4—you need 12 or higher."},
-  {"Player to DM": "I'll light a candle."},
-  {"DM to Player": "A normal candle helps a bit, but not enough to fully negate the darkness penalty. I'll reduce the difficulty by 1 for your candle, going from 4 down to 3. You now need 9 or higher."}
-]
-
-CURRENT PLAYER PROMPT:
-"(Rolls 5) I got a 5."
-
-RESPONSE:
-{
-  "userFacingText": "You run your hands around the statue's base but can't find anything. Time is ticking, and you might have missed something crucial. You'll have to either search another part of the room or find better lighting or a new approach."
-}
-
-Example : Hacking a Corporate Door Lock
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I try to hack into the same corporate system from a distant terminal with no direct line."},
-  {"DM to Player": "Base difficulty is 7—remote hacking is significantly tougher. You need 21 or higher. Also, the system's firewall is on high alert after your last intrusion, adding +1 to 8—that's 24 or higher."},
-  {"Player to DM": "I'll try using my 'Expert Hacker' tag. That lowers it from 8 to 7, so 21 or higher needed."},
-  {"DM to Player": "Yeah, you can't roll that high."}
-]
-
-CURRENT PLAYER PROMPT:
-"Well, i guess there's no point in trying then."
-
-RESPONSE:
-{
-  "userFacingText": "Exactly, trying the same thing again is usually harder. Look for a different way to approach this."
-}
-
-Example: Negotiating with a Reluctant Witness
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I try to calm her down and persuade her to talk. I explain we only want to keep her safe."},
-  {"DM to Player": "Base difficulty 4—she's rattled. No direct penalty, so that's 12 or higher needed."},
-  {"Player to DM": "I'll use my 'Gentle Demeanor' tag and also offer her a blanket and a cup of tea from my supply kit."},
-  {"DM to Player": "Gentle Demeanor lowers difficulty from 4 to 3 (9 or higher). The tea is a thoughtful gesture—reduce from 3 to 2 (6 or higher). Roll it."}
-]
-
-CURRENT PLAYER PROMPT:
-"(Rolls 4) I got a 4. That's not enough."
-
-RESPONSE:
-{
-  "userFacingText": "She shakes her head, tears welling up. 'I—I can't… they'll hurt me…' She pulls away, refusing to speak. You'll need a different tactic—or more time."
-}
-
-Example: Trying to Lower Difficulty with a Weak Tag
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I pick the lock at the side entrance. I'm using my 'Good at Crossword Puzzles' tag—I figure it demonstrates I'm detail-oriented!"},
-  {"DM to Player": "Base difficulty is 3 (9 or higher). That tag doesn't really help with lockpicking. No change; you need a relevant skill or tool."}
-]
-
-CURRENT PLAYER PROMPT:
-"Alright, guess not. I roll as is.(Rolls 11)"
-
-RESPONSE:
-{
-  "userFacingText": "11 is above 9, so you succeed. Despite no relevant tag, you manage to jimmy it open with some trial and error."
-}
-
-Example: Critical Failure
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I hack the shuttle controls to force a new flight path."},
-  {"DM to Player": "Base difficulty 6 (18+). This is advanced tech. It's also encrypted by a top-tier corp, adding +1 to total 7 (21+)."},
-  {"Player to DM": "I have the 'Ex-Military Pilot' tag. Does that help?"},
-  {"DM to Player": "That reduces it from 7 to 6—need 18 or higher."}
-]
-
-CURRENT PLAYER PROMPT:
-"(Rolls a 3) Ouch, a 3."
-
-RESPONSE:
-{
-  "userFacingText": "The override fails so catastrophically that the shuttle's safety protocols engage. Engines lock up, and the craft starts to lose altitude. You'll have to make an emergency landing or risk a crash."
-}
-
-Example: Asking the King for His Crown
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I politely request that His Majesty grant me the royal crown—for safekeeping, of course."},
-  {"DM to Player": "Base difficulty 10 (TN 30)—this is an absurd request. The king's guard is watching. That guard's suspicious nature adds +1, but since difficulty can't exceed 10, it stays at 10 (30+). You need a 30, which is impossible on a standard d20."},
-  {"Player to DM": "I try anyway. I have 'Silver Tongue' and I mention my 'Honorary Knight' status."},
-  {"DM to Player": "Are you, like, particularly bad at math or something? Silver Tongue reduces it from 10 to 9 (need 27+). Honorary Knight is somewhat relevant, so it goes from 9 to 8 (24+). I mean...Roll it, if you want."}
-]
-
-CURRENT PLAYER PROMPT:
-"I rolled a nat 20!"
-
-RESPONSE:
-{
-  "userFacingText": "Yeah, nat 20s don't work here. The difficulty was 24, so 20 doesn't cut it. The king barely stifles a laugh. 'You think you can bear the burden of the crown, subject? Guards—escort this dreamer away.'",
-  "partialUpdates": {
-    "player": {
-      "type": "PLAYER",
-      "currentLocationId": "loc_castleThroneRoomWaitingArea"
-    }
-  }
-}
-
-Example: Sensing Deceit
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I watch him closely, looking for nervous tics or inconsistencies in his story. I want to see if he's lying."},
-  {"DM to Player": "Base difficulty is 3 (needing 9+ on a d20), since reading people is somewhat straightforward. But this merchant's practiced at deception, so I add +1, making it 4 (12+ required)."},
-  {"Player to DM": "I have the tag 'Seasoned Negotiator'. That should help me pick up on subtle cues. Also, I lean in with casual small talk to get him off-guard."},
-  {"DM to Player": "Alright, 'Seasoned Negotiator' reduces difficulty from 4 down to 3 (9+). Small talk is clever, but not enough to reduce it further—he's still quite cagey. Final difficulty is 3. Roll your d20."}
-]
-
-CURRENT PLAYER PROMPT:
-"I roll a 12."
-
-RESPONSE:
-{
-  "userFacingText": "That's a success. While insight is not a lie detector, you do notice that he started gesticulating a lot when you asked about the quality of the products."
-}
-
-Example: Skinning a Large Animal
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I carefully skin the elk to get a clean, usable pelt."},
-  {"DM to Player": "Base difficulty is 3 (9+). It's messy work, requiring some skill."},
-  {"Player to DM": "I'm a Huntsman. Also, I'm using a specialized skinning knife from my kit."},
-  {"DM to Player": "Huntsman lowers it from 3 to 2 (6+). Specialized knife is exactly for this purpose, so that's another reduction down to 1 (3+). Roll it."}
-]
-
-CURRENT PLAYER PROMPT:
-"I got a 15"
-
-RESPONSE:
-{
-  "userFacingText": "Well done!. You skillfully remove the pelt without a single mistake. It's in prime condition.",
-  "partialUpdates": {
-    "player": {
-      "type": "PLAYER",
-      "inventory": [{
-          "name": "Prime Great Elk Pelt",
-          "description": "A great elk pelt in mint condition",
-          "quantity": 1,
-          "action": "Add"
-        }]
-    }
-  }
-}
-
-
-
-
-Example: Building a Simple Shed
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I gather timber and start framing the walls."},
-  {"DM to Player": "Base difficulty is 4 (12+). It requires decent carpentry knowledge and planning."},
-  {"Player to DM": "I do have 'Carpenter's Apprentice' as a tag, and I'll lay out a chalk diagram beforehand to ensure stability."},
-  {"DM to Player": "Carpenter's Apprentice reduces the difficulty from 4 to 3 (9+). The chalk planning is thorough, so that's another drop to 2 (6+). Roll."}
-]
-
-CURRENT PLAYER PROMPT:
-"I rolled an 8!"
-
-RESPONSE:
-{
-  "userFacingText": "That's above 6. The framework goes up solidly, and by evening, you have a sturdy shed ready for use."
-}
-
-Example: Complex roll
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I sneak behind the guard and try to knock them out before they can raise an alarm."},
-  {"DM to Player": "That's actually two rolls. First, a stealth check to approach unnoticed. Then, a knockout attack. The first one is stealth. Base difficulty is 4 (12+). The guard is somewhat vigilant, adding +1, so 5 (15+). Do you have any tags or advantages to reduce this difficulty?"},
-  {"Player to DM": "I have 'Stealth Ops' from my special forces training and I'm wearing 'Soft-Soled Boots'."},
-  {"DM to Player": "That's two valid reductions. So from 5 down to 4, and 4 down to 3. Now you need 9 or higher on the d20."},
-  {"Player to DM": "I rolled a 14."},
-  {"DM to Player": "That's a success. You move silently behind crates until you're right behind the guard, unseen. You're now in striking distance, but taking someone out in one go is still tricky. Base difficulty 5 (15+)."},
-  {"Player to DM": "I'm trained in 'Close-Quarters Combat'."},
-  {"DM to Player": "That reduces from 5 to 4 (12+). Roll it."}
-]
-
-CURRENT PLAYER PROMPT:
-"I got a 17."
-
-RESPONSE:
-{
-  "userFacingText": "Success. You club the guard's helmet from behind. He crumples to the ground with a groan, unconscious before he can cry out."
-}
-
-Example: Failures lead to consequences
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I sneak behind the guard and knock them out in one swift move."},
-  {"DM to Player": "We split this into two checks: stealth first, then the knockout. Base difficulty for stealth is 4 (12+). The guard is alert, so +1: difficulty 5 (15+). Any tags?"},
-  {"Player to DM": "I have 'Stealth Ops' but no special gear."},
-  {"DM to Player": "That reduces it from 5 to 4 (12+). Roll."}
-]
-
-CURRENT PLAYER PROMPT:
-"8"
-
-RESPONSE:
-{
-  "userFacingText": "Failure. Your foot scuffs against debris, and the guard whips around, spotting you instantly. He shouts an alarm and draws his weapon. There's no chance for a surprise knockout now—you'll have to deal with him head-on or make a run for it."
-}
-
-Example: Lying About a Tag
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I bluff my way through, tell the guard I'm a licensed courier. I have 'Forged Papers' and 'Expert Deception', so I should get a big reduction."},
-  {"DM to Player": "Base difficulty is 4 (12+). *DM checks the character's listed tags*. You do have 'Forged Papers', that's valid. But your other social tag is 'Charming Bookworm', not 'Expert Deception'. You sneaky sneaky player you. Difficulty drops from 4 to 3 thanks to the forged papers. Target number is 9. Roll it."}
-]
-
-CURRENT PLAYER PROMPT:
-"Ah, can never fool the all seeing DM. Fine. I rolled a 6."
-
-RESPONSE:
-{
-  "userFacingText": "That's a failure. The guard frowns, running his thumb along the document seal. 'Courier, huh? Wait here while I call this in.' Things are getting tense."
-}
-
-Example: Haggling with a Merchant
-
-CONVERSATION LOG:
-[
-  {"Player to DM": "I want to try haggling with the merchant for a better price on that silver dagger. It's marked at 15 gold pieces, but I think that's too steep."},
-  {"DM to Player": "Base difficulty is 3 (9+) for basic haggling. However, this merchant is known to be particularly stubborn about his prices, especially for weapons of this quality, so I'm adding +1 difficulty. You need 12 or higher."},
-  {"Player to DM": "I'll use my 'Market Savvy' tag since I've spent years trading at bazaars. And I'll casually mention that I saw a similar dagger at another stall for cheaper."},
-  {"DM to Player": "Your 'Market Savvy' reduces the difficulty from 4 to 3 (9+). The comparison to a competitor is a good tactic—that gives you another reduction to difficulty 2 (6+). Roll your d20."}
-]
-
-CURRENT PLAYER PROMPT:
-"I roll a 10."
-
-RESPONSE:
-{
-  "userFacingText": "Success! The merchant's expression sours slightly, but he nods with grudging respect. 'Hmph. Alright, I can see you know your blades. Twelve gold, and not a copper less.' He wraps the silver dagger in a cloth. 'You're getting a bargain, mark my words.'",
-  "partialUpdates": {
-    "player": {
-      "type": "PLAYER",
-      "currencies": [{
-          "name": "Gold",
-          "amount": 12,
-          "action": "Remove"
-        }],
-      "inventory": [{
-          "name": "Silver Dagger",
-          "description": "A finely crafted dagger with a silver blade and ornate hilt",
-          "quantity": 1,
-          "action": "Add"
-        }]
-    }
-  }
-}
-
-EXAMPLES USING NEW RESPONSE FORMAT:
-
-Here are examples showing how to respond using the new structured JSON format. Notice there is no <donotshow/> tag - just a single JSON object with "userFacingText", "newEntities", and "partialUpdates" properties.
-
-
-EXAMPLE: Player discovers a new location
-
+# EXAMPLE: Player updates multiple entities
 USER:
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_springvale"
-},
-"npcs": [
-  {
-    "id": "npc_merchantTomas",
-    "name": "Tomas",
-    "currentLocationId": "loc_springvale",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true
-  }
-]
-
-Current player prompt: I ask the merchant if there's a good place to get a drink around here.
-
-RESPONSE:
 {
-  "userFacingText": "The merchant chuckles, stroking his beard thoughtfully. 'If it's a good drink you're after, you'll want The Golden Barrel,' he says, pointing down the cobbled street. 'Best mead in the province, or so they claim. Their honeyed porter is worth trying too.' He leans in slightly. 'Decent place for gossip as well, if that's what you're really seeking. The innkeeper, Dalla, hears everything that happens in town.'",
-  "newEntities": [
+  "playerContext": {
+    "type": "PLAYER",
+    "inventory": [
+      {
+        "name": "Healing Potion",
+        "quantity": 1
+      }
+    ]
+  },
+  "npcsPresentInThisLocation": [
     {
-      "type": "LOCATION",
-      "id": "loc_goldenBarrelTavern",
-      "name": "The Golden Barrel",
-      "context": "A popular tavern in town known for its excellent mead and honeyed porter. It's a gathering place for locals and travelers alike, and a good spot to hear gossip and news. The innkeeper is a woman named Dalla (npc_dalla) who knows everything that happens in town. Its parentLocationId must be the current location: loc_springvale.",
-      "locationType": "Building"
-    },
-    {
-      "type": "NPC",
-      "id": "npc_dalla",
-      "name": "Dalla",
-      "context": "Dalla is the innkeeper of The Golden Barrel tavern (loc_goldenBarrelTavern). She's a middle-aged woman with a sharp mind who keeps track of all the gossip and news in town. She runs her establishment efficiently and is respected by the locals.",
-      "currentLocationId": "loc_goldenBarrelTavern"
+      "id": "npc_woundedGuard",
+      "name": "Wounded Guard",
+      "currentLocationId": "loc_townSquare",
+      "visibleToPlayer": true,
+      "knownToPlayer": true,
+      "visualDescription": {
+        "condition": "The guard is badly injured and struggling to stand."
+      }
     }
-  ]
+  ],
+  "playerInput": "I give my spare healing potion to the wounded guard and tell him to follow me to the healer's hut."
 }
-
-EXAMPLE: Player discovers a nearby "Wilds" location
-
-USER:
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_springvale"
-},
-"npcs": [
-  {
-    "id": "npc_guardCaptain",
-    "name": "Captain Voss",
-    "currentLocationId": "loc_springvale",
-    "visibleToPlayer": true
-  }
-]
-
-Current player prompt: I ask Captain Voss about the woods north of town. Are they safe to travel through?
-
-RESPONSE:
-{
-  "userFacingText": "Captain Voss frowns, leaning against the gatehouse wall. 'The Whispering Woods to the north? Safe is a strong word, traveler. It's old forest, tangled and dark in places. Mostly used by hunters and foragers from the village, but there are whispers of... stranger things deeper in. Lost ruins, territorial beasts, that sort of thing. It's easy enough to get turned around if you stray too far from the main paths. Why do you ask? Planning a trip?'",
-  "newEntities": [
-    {
-      "type": "LOCATION",
-      "id": "loc_whisperingWoods",
-      "name": "Whispering Woods",
-      "context": "An old, somewhat dangerous forest located north of Springvale. Contains hunting trails, possibly lost ruins, and potentially hostile creatures. This location is outside the settlement walls and should be connected to loc_springvale. It represents a transitional area leading away from the settlement into the wilderness.",
-      "locationType": "Wilds"
-    }
-  ]
-}
-
-EXAMPLE: Player discovers a "Delve" within "Wilds"
-
-USER:
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_whisperingWoods"
-},
-"currentLocation": {
-    "id": "loc_whisperingWoods",
-    "name": "Whispering Woods",
-    "locationType": "Wilds",
-    "description": "An old, somewhat dangerous forest located north of Springvale. Contains hunting trails, possibly lost ruins, and potentially hostile creatures."
-}
-
-Current player prompt: I push deeper into the Whispering Woods, trying to find the source of those strange carvings I saw earlier.
-
-RESPONSE:
-{
-  "userFacingText": "You forge ahead, pushing aside thick, thorny vines and ducking under low-hanging branches. The air grows heavy and still, the sounds of the forest seeming to hush around you. After nearly an hour of difficult progress, you stumble into a small clearing. In the center, choked by roots and moss, stand the unmistakable ruins of an ancient structure. Crumbling stone walls, half-buried under centuries of forest debris, hint at a forgotten temple or shrine. Dark, uninviting doorways lead into the structure's shadowed interior. The carvings you saw earlier are more prominent here, depicting unsettling, serpentine figures.",
-  "newEntities": [
-    {
-      "type": "LOCATION",
-      "id": "loc_ruinedSerpentTemple",
-      "name": "Ruined Serpent Temple",
-      "context": "An ancient, crumbling temple discovered deep within the Whispering Woods. Likely dangerous, filled with traps, puzzles, or hostile guardians related to the serpentine carvings. This is a potential adventure site. Its parentLocationId must be: loc_whisperingWoods.",
-      "locationType": "Delve"
-    }
-  ]
-}
-
-EXAMPLE: Player learns about a "Settlement" from a text
-
-USER:
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Elara",
-  "currentLocationId": "loc_oldLibrary"
-},
-"currentLocation": {
-    "id": "loc_oldLibrary",
-    "name": "Old Library",
-    "locationType": "Building",
-    "description": "A dusty repository of forgotten lore."
-}
-
-Current player prompt: I found this weathered journal. I carefully open it and read the last few entries.
-
-RESPONSE:
-{
-  "userFacingText": "The journal's pages are brittle with age. The final entries, written in a looping, hurried script, speak of a hidden community deep in the southern swamps called \"Havenwood\". The writer describes it as a small, isolated hamlet founded by refugees escaping some past conflict. They mention unique customs, reliance on swamp resources, and a general distrust of outsiders. The last legible sentence reads: '...must reach Havenwood before the marsh claims me... my final hope...'. The rest is smeared and unreadable.",
-  "newEntities": [
-    {
-      "type": "LOCATION",
-      "id": "loc_havenwoodHamlet",
-      "name": "Havenwood",
-      "context": "An isolated hamlet located deep within the southern swamps, mentioned in an old journal. It was founded by refugees and is likely difficult to find and potentially distrustful of strangers. Its exact location is unknown beyond being in the southern swamps. It is a small, self-sufficient community.",
-      "locationType": "Settlement"
-    }
-  ]
-}
-
-EXAMPLE: Player gains an item and some currency
-
-USER: CURRENT PLAYER PROMPT: I sell the silver bracelet I found to the jeweler at whatever price he offers.
-
-RESPONSE:
-{
-  "userFacingText": "The jeweler examines the silver bracelet with a critical eye, turning it over in his hands and inspecting the craftsmanship. 'Interesting piece,' he murmurs. 'Not local work... perhaps from the southern provinces.' After a moment's consideration, he offers you 15 gold pieces for it. You accept, and he counts out the coins into your palm. 'A pleasure doing business with you,' he says with a satisfied nod as he places the bracelet in a velvet-lined display case.",
-  "partialUpdates": {
-    "player": {
-      "type": "PLAYER",
-      "inventory": [
-        {
-          "name": "Silver Bracelet",
-          "quantity": 1,
-          "action": "Remove"
-        }
-      ],
-      "currencies": [
-        {
-          "name": "Gold",
-          "amount": 15,
-          "action": "Add"
-        }
-      ]
-    },
-    "npc_jewelerJoe": {
-      "type": "NPC",
-      "inventory": [
-        {
-          "name": "Silver Bracelet",
-          "quantity": 1,
-          "action": "Add"
-        }
-      ]
-    }
-  }
-}
-
-EXAMPLE: Player updates multiple entities
-
-USER: CURRENT PLAYER PROMPT: I give my spare healing potion to the wounded guard and tell him to follow me to the healer's hut.
 
 RESPONSE:
 {
@@ -800,20 +309,47 @@ RESPONSE:
         }
       ]
     },
-    "npc_woundedGuard": {
-      "type": "NPC",
-      "currentLocationId": "loc_townSquare",
-      "visualDescription": {
-        "condition": "The guard looks injured but more stable after drinking the healing potion. He's still favoring his wounded leg."
-      },
-      "dispositionTowardsPlayer": "Fond"
-    }
+    "npcEntries": [
+      {
+        "id": "npc_woundedGuard",
+        "type": "NPC",
+        "currentLocationId": "loc_townSquare",
+        "visualDescription": {
+          "condition": "The guard looks injured but more stable after drinking the healing potion. He's still favoring his wounded leg."
+        },
+        "dispositionTowardsPlayer": "Fond"
+      }
+    ]
   }
 }
-
-EXAMPLE: Player completes a quest
-
-USER: CURRENT PLAYER PROMPT: I return to Captain Harlowe and show him the recovered medallion.
+---
+# EXAMPLE: Player completes a quest
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "inventory": [
+      {
+        "name": "Ancient Bronze Medallion",
+        "quantity": 1
+      }
+    ],
+    "activeQuests": [
+      "quest_captainsMedallion"
+    ]
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_captainHarlowe",
+      "name": "Captain Harlowe",
+      "currentLocationId": "loc_guardsBarracks",
+      "visibleToPlayer": true,
+      "knownToPlayer": true,
+      "dispositionTowardsPlayer": "Friendly"
+    }
+  ],
+  "playerInput": "I return to Captain Harlowe and show him the recovered medallion."
+}
 
 RESPONSE:
 {
@@ -849,53 +385,88 @@ RESPONSE:
         }
       ]
     },
-    "npc_captainHarlowe": {
-      "type": "NPC",
-      "dispositionTowardsPlayer": "Loyal"
-    }
+    "npcEntries": [
+      {
+        "id": "npc_captainHarlowe",
+        "type": "NPC",
+        "dispositionTowardsPlayer": "Loyal"
+      }
+    ]
   }
 }
-
-EXAMPLE: Player departs a location and begins travel (Simple Transition)
+---
+# EXAMPLE: Player departs a location and begins travel (Simple Transition)
 USER:
-Current player prompt: I leave the village and head west towards the Sunken Forest.
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "currentLocationId": "loc_newbrookVillage"
+  },
+  "currentLocationDetails": {
+    "id": "loc_newbrookVillage",
+    "name": "Newbrook Village",
+    "locationType": "Settlement",
+    "description": "A small, peaceful village with thatched-roof cottages and friendly inhabitants."
+  },
+  "playerInput": "I leave the village and head west towards the Sunken Forest."
+}
 
 RESPONSE:
 {
   "userFacingText": "You wave farewell to the last of the village guards and turn your steps towards the west. The well-trodden path soon gives way to a narrower trail as the sounds of the village fade behind you. The air grows cooler and damper as the trees of the Sunken Forest loom ahead, their gnarled branches interlocking overhead like skeletal fingers, casting the path in perpetual twilight.\n\nAfter walking for about an hour, the trees press in even closer, and the silence is broken only by the crunch of your boots on the damp earth and the occasional drip of moisture from the canopy. The path ahead seems to split. One way leads slightly downhill into an area choked with thick, thorny bushes, while the other climbs gently towards a ridge where the trees thin out slightly. Which way do you proceed?"
 }
-
-
-EXAMPLE: Player departs a location and begins travel (Leading to Encounter/Challenge - based on user provided scenario)
+---
+# EXAMPLE: Player departs a location and begins travel (Leading to Encounter/Challenge - based on user provided scenario)
 USER:
-Current player prompt: I leave the forge and head south towards Whispering Pass.
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "currentLocationId": "loc_ancientForge"
+  },
+  "currentLocationDetails": {
+    "id": "loc_ancientForge",
+    "name": "Ancient Forge",
+    "locationType": "Building",
+    "description": "A massive stone structure housing the legendary forge of Emberhold, where Smith Runa works her craft."
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_smithRuna",
+      "name": "Smith Runa",
+      "currentLocationId": "loc_ancientForge",
+      "visibleToPlayer": true,
+      "knownToPlayer": true
+    }
+  ],
+  "playerInput": "I leave the forge and head south towards Whispering Pass."
+}
 
 RESPONSE:
 {
   "userFacingText": "You gather your belongings, sling your dark sword across your back, and prepare to depart the Ancient Forge. Smith Runa barely acknowledges your departure beyond a curt nod, her focus already returned to the unyielding metal on her anvil. Leaving the forge, you step out into the crisp mountain air. The village of Emberhold spreads out below you in the valley, smoke curling lazily from chimneys, looking deceptively peaceful from this height.\n\nThe path leads southward, gradually ascending towards the imposing peaks of the Ember Mountains. As the afternoon wears on, the sun begins its descent, painting the sky in hues of orange and purple. The entrance to Whispering Pass looms before you – a stark, shadowed cleft in the mountainside. A palpable wind whistles through the gap, carrying an unsettling, mournful sound. The air grows colder as you step into the pass proper. The path narrows, flanked by steep, rocky walls, and loose scree shifts underfoot, making the going treacherous. Looking ahead, the pass seems to twist out of sight around a rocky outcrop. The wind howls more fiercely here, echoing strangely off the stone. Do you press forward cautiously, mindful of the unstable footing, or try to move quickly through this exposed section?"
 }
-
-
-EXAMPLE: Player explicitly attacks an NPC
+---
+# EXAMPLE: Player explicitly attacks an NPC
 USER:
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_forestPath"
-},
-"npcs": [
-  {
-    "id": "npc_banditLeader",
-    "name": "Rolf",
-    "currentLocationId": "loc_forestPath",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true
-  }
-]
-
-Current player prompt: I've had enough of Rolf's threats. I draw my sword and lunge at him!
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_forestPath"
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_banditLeader",
+      "name": "Rolf",
+      "currentLocationId": "loc_forestPath",
+      "visibleToPlayer": true,
+      "knownToPlayer": true,
+      "knowsPlayer": true,
+      "dispositionTowardsPlayer": "Hostile"
+    }
+  ],
+  "playerInput": "I've had enough of Rolf's threats. I draw my sword and lunge at him!"
+}
 
 RESPONSE:
 {
@@ -903,17 +474,23 @@ RESPONSE:
   "combatTriggered": true,
   "enemyToEngageId": "npc_banditLeader"
 }
-
-EXAMPLE: Player is ambushed by monsters
+---
+# EXAMPLE: Player is ambushed by monsters
 USER:
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_abandonedMine"
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_abandonedMine"
+  },
+  "currentLocationDetails": {
+    "id": "loc_abandonedMine",
+    "name": "Abandoned Mine",
+    "locationType": "Delve",
+    "description": "A dark, decrepit mine shaft that hasn't been used in decades. The air is stale and heavy with dust."
+  },
+  "playerInput": "I venture deeper into the dark tunnel, holding my torch ahead of me."
 }
-
-Current player prompt: I venture deeper into the dark tunnel, holding my torch ahead of me.
 
 RESPONSE:
 {
@@ -928,40 +505,552 @@ RESPONSE:
     }
   ],
   "partialUpdates": {
-    "npc_mineCrawler": {
-      "type": "NPC",
-      "visibleToPlayer": true,
-      "knownToPlayer": true
-    }
+    "npcEntries": [
+      {
+        "id": "npc_mineCrawler",
+        "type": "NPC",
+        "visibleToPlayer": true,
+        "knownToPlayer": true,
+        "dispositionTowardsPlayer": "Hostile"
+      }
+    ]
   },
   "combatTriggered": true,
   "enemyToEngageId": "npc_mineCrawler"
 }
-
-EXAMPLE: Player fails a skill check that results in combat
+---
+# EXAMPLE: Player fails a skill check that results in combat
 USER:
-...
-"player": {
-  "type": "PLAYER",
-  "name": "Alaric",
-  "currentLocationId": "loc_cityGuardpost"
-},
-"npcs": [
-  {
-    "id": "npc_guardCaptain",
-    "name": "Captain Voss",
-    "currentLocationId": "loc_cityGuardpost",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true
-  }
-]
-
-Current player prompt: I try to sneak past the sleeping guard to get the key hanging on the wall.
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_cityGuardpost"
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_guardCaptain",
+      "name": "Captain Voss",
+      "currentLocationId": "loc_cityGuardpost",
+      "visibleToPlayer": true,
+      "knownToPlayer": true,
+      "knowsPlayer": true
+    }
+  ],
+  "playerInput": "I try to sneak past the sleeping guard to get the key hanging on the wall."
+}
 
 RESPONSE:
 {
   "userFacingText": "You attempt to creep silently across the guardpost. The floorboards are old and the night is quiet – perhaps too quiet. As you reach for the key ring, your boot catches on a loose nail. The resulting CREAK seems to echo through the chamber like thunder. Captain Voss's eyes snap open instantly, years of training evident in how quickly he's on his feet with sword drawn. \"Thief!\" he bellows, his face reddening with anger. \"I knew you couldn't be trusted!\" He advances on you with clear intent – talking your way out of this one doesn't seem likely.",
+  "partialUpdates": {
+      "npcEntries": [
+          {
+              "id": "npc_guardCaptain",
+              "type": "NPC",
+              "dispositionTowardsPlayer": "Hostile"
+          }
+      ]
+  },
   "combatTriggered": true,
   "enemyToEngageId": "npc_guardCaptain"
 }
+---
+# EXAMPLE: Selling an Item to a Merchant
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "inventory": [
+      {
+        "name": "Steel Helmet",
+        "quantity": 1
+      }
+    ]
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_villageMerchant",
+      "name": "Village Merchant",
+      "currentLocationId": "loc_marketplace",
+      "visibleToPlayer": true,
+      "knownToPlayer": true
+    }
+  ],
+  "playerInput": "That sounds fair. I'll take the 15 gold."
+}
+
+RESPONSE:
+{
+  "userFacingText": "The merchant nods and counts out 15 gold coins, placing them in your palm. He takes the helmet and places it on a display with his other wares. 'Pleasure doing business with you,' he says with a satisfied smile.",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "inventory": [{
+          "name": "Steel Helmet",
+          "quantity": 1,
+          "action": "Remove"
+        }],
+      "currencies": [{
+          "name": "Gold",
+          "amount": 15,
+          "action": "Add"
+        }]
+    },
+    "npcEntries": [
+      {
+        "id": "npc_villageMerchant",
+        "type": "NPC",
+        "inventory": [{
+            "name": "Steel Helmet",
+            "description": "A well-crafted steel helmet offering good protection",
+            "quantity": 1,
+            "action": "Add"
+          }]
+      }
+    ]
+  }
+}
+---
+# EXAMPLE: Using Up an Item
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "inventory": [
+      {
+        "name": "Apple",
+        "quantity": 1
+      }
+    ]
+  },
+  "playerInput": "I take out an apple and eat it."
+}
+
+RESPONSE:
+{
+  "userFacingText": "Yum! You eat the apple. Keep them doctors away, eh?.",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "inventory": [{
+          "name": "Apple",
+          "quantity": 1,
+          "action": "Remove"
+        }]
+    }
+  }
+}
+---
+# EXAMPLE: Climbing a Crumbling Wall (Success)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I scramble up the wall to get to the ruined battlements. Time is short!"},
+      {"GM to Player": "Base difficulty is 4—the wall is quite unstable. Because the guards are nearly here, I'm adding +1 difficulty for urgency, raising it to 5. That means you need to roll 15 or higher on a d20 for a success."},
+      {"Player to GM": "I have the 'Street Climber' tag. Also, I'll use the vines growing along the wall for extra handholds."},
+      {"GM to Player": "Street Climber reduces the difficulty from 5 down to 4. Using the vines is a clever environmental advantage, so that reduces it from 4 down to 3. Now you need 9 or higher."}
+    ]
+  },
+  "playerInput": "I got a 10!"
+}
+
+RESPONSE:
+{
+  "userFacingText": "You succeed. You clamber up the wall just in time, flattening yourself against the parapet as the guards march past below."
+}
+---
+# EXAMPLE: Searching for a Hidden Mechanism (Failure)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I search the marble statue near the wall, looking for any hidden trigger."},
+      {"GM to Player": "Base difficulty is 3 (9 or higher). But the chamber is dark, so I'm raising it by +1 to 4—you need 12 or higher."},
+      {"Player to GM": "I'll light a candle."},
+      {"GM to Player": "A normal candle helps a bit, but not enough to fully negate the darkness penalty. I'll reduce the difficulty by 1 for your candle, going from 4 down to 3. You now need 9 or higher."}
+    ]
+  },
+  "playerInput": "(Rolls 5) I got a 5."
+}
+
+RESPONSE:
+{
+  "userFacingText": "You run your hands around the statue's base but can't find anything. Time is ticking, and you might have missed something crucial. You'll have to either search another part of the room or find better lighting or a new approach."
+}
+---
+# EXAMPLE: Hacking a Corporate Door Lock (Impossible)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I try to hack into the same corporate system from a distant terminal with no direct line."},
+      {"GM to Player": "Base difficulty is 7—remote hacking is significantly tougher. You need 21 or higher. Also, the system's firewall is on high alert after your last intrusion, adding +1 to 8—that's 24 or higher."},
+      {"Player to GM": "I'll try using my 'Expert Hacker' tag. That lowers it from 8 to 7, so 21 or higher needed."},
+      {"GM to Player": "Yeah, you can't roll that high."}
+    ]
+  },
+  "playerInput": "Well, i guess there's no point in trying then."
+}
+
+RESPONSE:
+{
+  "userFacingText": "Exactly, trying the same thing again is usually harder. Look for a different way to approach this."
+}
+---
+# EXAMPLE: Negotiating with a Reluctant Witness (Failure)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I try to calm her down and persuade her to talk. I explain we only want to keep her safe."},
+      {"GM to Player": "Base difficulty 4—she's rattled. No direct penalty, so that's 12 or higher needed."},
+      {"Player to GM": "I'll use my 'Gentle Demeanor' tag and also offer her a blanket and a cup of tea from my supply kit."},
+      {"GM to Player": "Gentle Demeanor lowers difficulty from 4 to 3 (9 or higher). The tea is a thoughtful gesture—reduce from 3 to 2 (6 or higher). Roll it."}
+    ]
+  },
+  "playerInput": "(Rolls 4) I got a 4. That's not enough."
+}
+
+RESPONSE:
+{
+  "userFacingText": "She shakes her head, tears welling up. 'I—I can't… they'll hurt me…' She pulls away, refusing to speak. You'll need a different tactic—or more time."
+}
+---
+# EXAMPLE: Trying to Lower Difficulty with a Weak Tag (Success)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I pick the lock at the side entrance. I'm using my 'Good at Crossword Puzzles' tag—I figure it demonstrates I'm detail-oriented!"},
+      {"GM to Player": "Base difficulty is 3 (9 or higher). That tag doesn't really help with lockpicking. No change; you need a relevant skill or tool."}
+    ]
+  },
+  "playerInput": "Alright, guess not. I roll as is.(Rolls 11)"
+}
+
+RESPONSE:
+{
+  "userFacingText": "11 is above 9, so you succeed. Despite no relevant tag, you manage to jimmy it open with some trial and error."
+}
+---
+# EXAMPLE: Critical Failure (Hacking Shuttle)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I hack the shuttle controls to force a new flight path."},
+      {"GM to Player": "Base difficulty 6 (18+). This is advanced tech. It's also encrypted by a top-tier corp, adding +1 to total 7 (21+)."},
+      {"Player to GM": "I have the 'Ex-Military Pilot' tag. Does that help?"},
+      {"GM to Player": "That reduces it from 7 to 6—need 18 or higher."}
+    ]
+  },
+  "playerInput": "(Rolls a 3) Ouch, a 3."
+}
+
+RESPONSE:
+{
+  "userFacingText": "The override fails so catastrophically that the shuttle's safety protocols engage. Engines lock up, and the craft starts to lose altitude. You'll have to make an emergency landing or risk a crash."
+}
+---
+# EXAMPLE: Asking the King for His Crown (Impossible Failure)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I politely request that His Majesty grant me the royal crown—for safekeeping, of course."},
+      {"GM to Player": "Base difficulty 10 (TN 30)—this is an absurd request. The king's guard is watching. That guard's suspicious nature adds +1, but since difficulty can't exceed 10, it stays at 10 (30+). You need a 30, which is impossible on a standard d20."},
+      {"Player to GM": "I try anyway. I have 'Silver Tongue' and I mention my 'Honorary Knight' status."},
+      {"GM to Player": "Are you, like, particularly bad at math or something? Silver Tongue reduces it from 10 to 9 (need 27+). Honorary Knight is somewhat relevant, so it goes from 9 to 8 (24+). I mean...Roll it, if you want."}
+    ]
+  },
+  "playerInput": "I rolled a nat 20!"
+}
+
+RESPONSE:
+{
+  "userFacingText": "Yeah, nat 20s don't work here. The difficulty was 24, so 20 doesn't cut it. The king barely stifles a laugh. 'You think you can bear the burden of the crown, subject? Guards—escort this dreamer away.'",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "currentLocationId": "loc_castleThroneRoomWaitingArea"
+    }
+  }
+}
+---
+# EXAMPLE: Sensing Deceit (Success)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I watch him closely, looking for nervous tics or inconsistencies in his story. I want to see if he's lying."},
+      {"GM to Player": "Base difficulty is 3 (needing 9+ on a d20), since reading people is somewhat straightforward. But this merchant's practiced at deception, so I add +1, making it 4 (12+ required)."},
+      {"Player to GM": "I have the tag 'Seasoned Negotiator'. That should help me pick up on subtle cues. Also, I lean in with casual small talk to get him off-guard."},
+      {"GM to Player": "Alright, 'Seasoned Negotiator' reduces difficulty from 4 down to 3 (9+). Small talk is clever, but not enough to reduce it further—he's still quite cagey. Final difficulty is 3. Roll your d20."}
+    ]
+  },
+  "playerInput": "I roll a 12."
+}
+
+RESPONSE:
+{
+  "userFacingText": "That's a success. While insight is not a lie detector, you do notice that he started gesticulating a lot when you asked about the quality of the products."
+}
+---
+# EXAMPLE: Skinning a Large Animal (Success)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I carefully skin the elk to get a clean, usable pelt."},
+      {"GM to Player": "Base difficulty is 3 (9+). It's messy work, requiring some skill."},
+      {"Player to GM": "I'm a Huntsman. Also, I'm using a specialized skinning knife from my kit."},
+      {"GM to Player": "Huntsman lowers it from 3 to 2 (6+). Specialized knife is exactly for this purpose, so that's another reduction down to 1 (3+). Roll it."}
+    ]
+  },
+  "playerInput": "I got a 15"
+}
+
+RESPONSE:
+{
+  "userFacingText": "Well done!. You skillfully remove the pelt without a single mistake. It's in prime condition.",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "inventory": [{
+          "name": "Prime Great Elk Pelt",
+          "description": "A great elk pelt in mint condition",
+          "quantity": 1,
+          "action": "Add"
+        }]
+    }
+  }
+}
+---
+# EXAMPLE: Building a Simple Shed (Success)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I gather timber and start framing the walls."},
+      {"GM to Player": "Base difficulty is 4 (12+). It requires decent carpentry knowledge and planning."},
+      {"Player to GM": "I do have 'Carpenter's Apprentice' as a tag, and I'll lay out a chalk diagram beforehand to ensure stability."},
+      {"GM to Player": "Carpenter's Apprentice reduces the difficulty from 4 to 3 (9+). The chalk planning is thorough, so that's another drop to 2 (6+). Roll."}
+    ]
+  },
+  "playerInput": "I rolled an 8!"
+}
+
+RESPONSE:
+{
+  "userFacingText": "That's above 6. The framework goes up solidly, and by evening, you have a sturdy shed ready for use."
+}
+---
+# EXAMPLE: Complex roll (Sneak/Knockout Success)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I sneak behind the guard and try to knock them out before they can raise an alarm."},
+      {"GM to Player": "That's actually two rolls. First, a stealth check to approach unnoticed. Then, a knockout attack. The first one is stealth. Base difficulty is 4 (12+). The guard is somewhat vigilant, adding +1, so 5 (15+). Do you have any tags or advantages to reduce this difficulty?"},
+      {"Player to GM": "I have 'Stealth Ops' from my special forces training and I'm wearing 'Soft-Soled Boots'."},
+      {"GM to Player": "That's two valid reductions. So from 5 down to 4, and 4 down to 3. Now you need 9 or higher on the d20."},
+      {"Player to GM": "I rolled a 14."},
+      {"GM to Player": "That's a success. You move silently behind crates until you're right behind the guard, unseen. You're now in striking distance, but taking someone out in one go is still tricky. Base difficulty 5 (15+)."},
+      {"Player to GM": "I'm trained in 'Close-Quarters Combat'."},
+      {"GM to Player": "That reduces from 5 to 4 (12+). Roll it."}
+    ]
+  },
+  "playerInput": "I got a 17."
+}
+
+RESPONSE:
+{
+  "userFacingText": "Success. You club the guard's helmet from behind. He crumples to the ground with a groan, unconscious before he can cry out."
+}
+---
+# EXAMPLE: Failures lead to consequences (Stealth Fail)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I sneak behind the guard and knock them out in one swift move."},
+      {"GM to Player": "We split this into two checks: stealth first, then the knockout. Base difficulty for stealth is 4 (12+). The guard is alert, so +1: difficulty 5 (15+). Any tags?"},
+      {"Player to GM": "I have 'Stealth Ops' but no special gear."},
+      {"GM to Player": "That reduces it from 5 to 4 (12+). Roll."}
+    ]
+  },
+  "playerInput": "8"
+}
+
+RESPONSE:
+{
+  "userFacingText": "Failure. Your foot scuffs against debris, and the guard whips around, spotting you instantly. He shouts an alarm and draws his weapon. There's no chance for a surprise knockout now—you'll have to deal with him head-on or make a run for it."
+}
+---
+# EXAMPLE: Lying About a Tag (Failure)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I bluff my way through, tell the guard I'm a licensed courier. I have 'Forged Papers' and 'Expert Deception', so I should get a big reduction."},
+      {"GM to Player": "Base difficulty is 4 (12+). *DM checks the character's listed tags*. You do have 'Forged Papers', that's valid. But your other social tag is 'Charming Bookworm', not 'Expert Deception'. You sneaky sneaky player you. Difficulty drops from 4 to 3 thanks to the forged papers. Target number is 9. Roll it."}
+    ]
+  },
+  "playerInput": "Ah, can never fool the all seeing DM. Fine. I rolled a 6."
+}
+
+RESPONSE:
+{
+  "userFacingText": "That's a failure. The guard frowns, running his thumb along the document seal. 'Courier, huh? Wait here while I call this in.' Things are getting tense."
+}
+---
+# EXAMPLE: Haggling with a Merchant (Success)
+USER:
+{
+  "conversationLog": {
+    "messages": [
+      {"Player to GM": "I want to try haggling with the merchant for a better price on that silver dagger. It's marked at 15 gold pieces, but I think that's too steep."},
+      {"GM to Player": "Base difficulty is 3 (9+) for basic haggling. However, this merchant is known to be particularly stubborn about his prices, especially for weapons of this quality, so I'm adding +1 difficulty. You need 12 or higher."},
+      {"Player to GM": "I'll use my 'Market Savvy' tag since I've spent years trading at bazaars. And I'll casually mention that I saw a similar dagger at another stall for cheaper."},
+      {"GM to Player": "Your 'Market Savvy' reduces the difficulty from 4 to 3 (9+). The comparison to a competitor is a good tactic—that gives you another reduction to difficulty 2 (6+). Roll your d20."}
+    ]
+  },
+  "playerInput": "I roll a 10."
+}
+
+RESPONSE:
+{
+  "userFacingText": "Success! The merchant's expression sours slightly, but he nods with grudging respect. 'Hmph. Alright, I can see you know your blades. Twelve gold, and not a copper less.' He wraps the silver dagger in a cloth. 'You're getting a bargain, mark my words.'",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "currencies": [{
+          "name": "Gold",
+          "amount": 12,
+          "action": "Remove"
+        }],
+      "inventory": [{
+          "name": "Silver Dagger",
+          "description": "A finely crafted dagger with a silver blade and ornate hilt",
+          "quantity": 1,
+          "action": "Add"
+        }]
+    }
+  }
+}
+---
+# EXAMPLE: Updating World State (Time Passing)
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "currentLocationId": "loc_cozyInnRoom"
+  },
+  "worldContext": {
+    "gameTime": "Day 2, 08:00",
+    "daysSinceStart": 2
+  },
+  "playerInput": "I decide to rest in my room until the next morning to recover."
+}
+
+RESPONSE:
+{
+  "userFacingText": "You settle into the surprisingly comfortable bed in your room at the Cozy Inn. The sounds of the town fade as you drift off to sleep. You wake feeling refreshed, the morning sun filtering through the window.\n\nIt seems a new day has dawned.",
+  "partialUpdates": {
+    "world": {
+      "type": "WORLD",
+      "gameTime": "Day 3, 08:00",
+      "daysSinceStart": 3
+    }
+  }
+}
+---
+# EXAMPLE: Player Attempts NPC Interaction via GM Channel
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "currentLocationId": "loc_marketSquare"
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_merchantTomas",
+      "name": "Tomas",
+      "currentLocationId": "loc_marketSquare",
+      "visibleToPlayer": true
+    }
+  ],
+  "playerInput": "I ask Tomas what he thinks about the recent disappearances."
+}
+
+RESPONSE:
+{
+  "userFacingText": "Tomas the merchant is standing right there by his stall, currently occupied polishing some apples. If you want to ask him something, you should probably talk *to* him directly."
+}
+---
+# EXAMPLE: Player Gains a Status Effect
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "currentLocationId": "loc_swampPath"
+  },
+  "currentLocationDetails": {
+    "description": "A treacherous path through a murky swamp. Noxious fumes rise from the stagnant water."
+  },
+  "playerInput": "I push through the thick swamp gas, trying to get across quickly."
+}
+
+RESPONSE:
+{
+  "userFacingText": "You hold your breath initially, but the swamp gas is pervasive. As you emerge on the other side, your head swims and a wave of nausea washes over you. The fumes seem to have taken a toll.",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "statusEffects": [
+        {
+          "name": "Nauseous",
+          "action": "Add"
+        }
+      ]
+    }
+  }
+}
+---
+# EXAMPLE: Player Loses a Status Effect
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "currentLocationId": "loc_healersHut",
+    "statusEffects": [ { "name": "Nauseous" } ],
+    "inventory": [ { "name": "Antidote Potion", "quantity": 1 } ]
+  },
+  "playerInput": "I drink the antidote potion to clear my head."
+}
+
+RESPONSE:
+{
+  "userFacingText": "You quickly down the antidote potion. The churning in your stomach subsides, and the dizziness fades. You feel much better.",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "inventory": [
+        {
+          "name": "Antidote Potion",
+          "quantity": 1,
+          "action": "Remove"
+        }
+      ],
+      "statusEffects": [
+        {
+          "name": "Nauseous",
+          "action": "Remove"
+        }
+      ]
+    }
+  }
+}
+---

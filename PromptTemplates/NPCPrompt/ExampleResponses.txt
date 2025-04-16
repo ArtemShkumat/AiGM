@@ -1,95 +1,94 @@
-EXAMPLE 1: FIRST MEETING
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: FIRST MEETING
+USER:
 {
-  "type": "NPC",
-  "id": "npc_elizaHerbalist",
-  "name": "Eliza",
-  "currentLocationId": "loc_herbShop",
-  "visibleToPlayer": true,
-  "knownToPlayer": false,
-  "knowsPlayer": false,
-  "backstory": "Eliza owns the local herb shop and is well-known for her healing potions and herbal remedies. She's friendly and knowledgeable about the local area.",
-  "visualDescription": {
-    "body": "A middle-aged woman with warm eyes and graying hair tied in a practical bun. Her hands are stained from working with plants and herbs.",
-    "visibleClothing": "Wearing a practical brown dress with an herb-stained apron."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_elizaHerbalist",
+    "name": "Eliza",
+    "currentLocationId": "loc_herbShop",
+    "visibleToPlayer": true,
+    "knownToPlayer": false,
+    "knowsPlayer": false,
+    "backstory": "Eliza owns the local herb shop and is well-known for her healing potions and herbal remedies. She's friendly and knowledgeable about the local area.",
+    "visualDescription": {
+      "body": "A middle-aged woman with warm eyes and graying hair tied in a practical bun. Her hands are stained from working with plants and herbs.",
+      "visibleClothing": "Wearing a practical brown dress with an herb-stained apron."
+    },
+    "dispositionTowardsPlayer": "Neutral"
   },
-  "dispositionTowardsPlayer": "Neutral"
+  "playerInput": "Hello there! I'm John. I'm looking for some potions. Do you sell any healing items?"
 }
-```
-
-Player: "Hello there! I'm John. I'm looking for some potions. Do you sell any healing items?"
 
 RESPONSE:
 {
   "userFacingText": "*I wipe my hands on my apron and beam at you* \"Well met, traveler! I'm Eliza and indeed I do! Got a fresh batch of healing potions just brewed yesterday. Three silvers each, and I'll throw in a minor stamina potion if you buy three or more. The winter wolves have been making the north road treacherous lately, so folks are stocking up.\"",
   "partialUpdates": {
-    "npc_elizaHerbalist": {
-      "type": "NPC",
-      "knowsPlayer": true,
-      "knownToPlayer": true
-    }
+    "npcEntries": [
+      {
+        "id": "npc_elizaHerbalist",
+        "type": "NPC",
+        "knowsPlayer": true,
+        "knownToPlayer": true
+      }
+    ]
   }
 }
-
-
-EXAMPLE 2: SUSPICIOUS GUARD
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: SUSPICIOUS GUARD
+USER:
 {
-  "type": "NPC",
-  "id": "npc_treasuryGuard",
-  "name": "Gareth",
-  "currentLocationId": "loc_cityTreasury",
-  "visibleToPlayer": true,
-  "knownToPlayer": false,
-  "knowsPlayer": false,
-  "backstory": "Gareth is a city guard assigned to protect the treasury. He takes his job very seriously and is suspicious of strangers. He has strict orders not to let anyone inside without proper authorization.",
-  "visualDescription": {
-    "body": "A tall, broad-shouldered man with a stern expression and watchful eyes.",
-    "visibleClothing": "Wearing the standard city guard uniform with polished chainmail and a sword at his hip."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_treasuryGuard",
+    "name": "Gareth",
+    "currentLocationId": "loc_cityTreasury",
+    "visibleToPlayer": true,
+    "knownToPlayer": false,
+    "knowsPlayer": false,
+    "backstory": "Gareth is a city guard assigned to protect the treasury. He takes his job very seriously and is suspicious of strangers. He has strict orders not to let anyone inside without proper authorization.",
+    "visualDescription": {
+      "body": "A tall, broad-shouldered man with a stern expression and watchful eyes.",
+      "visibleClothing": "Wearing the standard city guard uniform with polished chainmail and a sword at his hip."
+    },
+    "dispositionTowardsPlayer": "Neutral"
   },
-  "dispositionTowardsPlayer": "Neutral"
+  "playerInput": "I need to get into the city treasury. It's important."
 }
-```
-
-Player: "I need to get into the city treasury. It's important."
 
 RESPONSE:
 {
   "userFacingText": "*I narrow my eyes and shift my weight to block the doorway more effectively* \"Important, eh? I've heard that one before. No one enters the treasury without written permission from the Magistrate himself.\" *I glance at your weapons* \"I suggest you take your 'important' business elsewhere before I decide you're worth the paperwork.\"",
   "partialUpdates": {
-    "npc_treasuryGuard": {
-      "type": "NPC",
-      "dispositionTowardsPlayer": "Unfriendly"
-    }
+    "npcEntries": [
+      {
+        "id": "npc_treasuryGuard",
+        "type": "NPC",
+        "dispositionTowardsPlayer": "Unfriendly"
+      }
+    ]
   }
 }
-
-
-EXAMPLE 3: QUEST GIVER
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: QUEST GIVER
+USER:
 {
-  "type": "NPC",
-  "id": "npc_edith",
-  "name": "Edith",
-  "currentLocationId": "loc_villageSquare",
-  "visibleToPlayer": true,
-  "knownToPlayer": false,
-  "knowsPlayer": false,
-  "backstory": "Edith is an elderly woman living in the village. Her grandson Tomas is a hunter who regularly supplies the village with meat. She's worried because he hasn't returned from his latest hunting trip.",
-  "personality": {
-      "motivations": "Finding her missing grandson Tomas."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_edith",
+    "name": "Edith",
+    "currentLocationId": "loc_villageSquare",
+    "visibleToPlayer": true,
+    "knownToPlayer": false,
+    "knowsPlayer": false,
+    "backstory": "Edith is an elderly woman living in the village. Her grandson Tomas is a hunter who regularly supplies the village with meat. She's worried because he hasn't returned from his latest hunting trip.",
+    "personality": {
+        "motivations": "Finding her missing grandson Tomas."
+    },
+    "dispositionTowardsPlayer": "Neutral"
   },
-  "dispositionTowardsPlayer": "Neutral"
+  "playerInput": "I heard you're looking for help with something?"
 }
-```
-
-Player: "I heard you're looking for help with something?"
 
 RESPONSE:
 {
@@ -103,98 +102,87 @@ RESPONSE:
     }
   ]
 }
-
-
-EXAMPLE 4: CASUAL CHAT
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: CASUAL CHAT
+USER:
 {
-  "type": "NPC",
-  "id": "npc_barkeeper",
-  "name": "Tomas",
-  "currentLocationId": "loc_greenDragonTavern",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Tomas is the friendly and talkative barkeeper at the Green Dragon Tavern. He hears all the local gossip.",
-  "visualDescription": {
-    "body": "A stout middle-aged man with a clean-shaven face and laugh lines around his eyes.",
-    "visibleClothing": "Wearing a stained apron over a simple linen shirt and trousers."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_barkeeper",
+    "name": "Tomas",
+    "currentLocationId": "loc_greenDragonTavern",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Tomas is the friendly and talkative barkeeper at the Green Dragon Tavern. He hears all the local gossip.",
+    "visualDescription": {
+      "body": "A stout middle-aged man with a clean-shaven face and laugh lines around his eyes.",
+      "visibleClothing": "Wearing a stained apron over a simple linen shirt and trousers."
+    },
+    "dispositionTowardsPlayer": "Fond"
   },
-  "dispositionTowardsPlayer": "Fond"
+  "playerInput": "How are things going today?"
 }
-```
-
-Player: "How are things going today?"
 
 RESPONSE:
 {
   "userFacingText": "*I look up from polishing the bar counter and give a friendly shrug* \"Same as always, really. Morning rush for breakfast porridge is done, now just tidying up before the lunch crowd arrives.\" *I toss the rag over my shoulder* \"Though I did hear some interesting gossip about Lady Fairfax's new hat. Apparently it's got three peacock feathers and a small mechanical bird that chirps on the hour. Ridiculous if you ask me, but that's nobility for you.\""
 }
-
-
-EXAMPLE 5: MERCHANT SELLING AN ITEM
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: MERCHANT SELLING AN ITEM
+USER:
 {
-  "type": "NPC",
-  "id": "npc_weaponsmith",
-  "name": "Durgan",
-  "currentLocationId": "loc_blacksmithShop",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Durgan is the town's weaponsmith, known for high-quality blades. He takes pride in his work.",
-  "visualDescription": {
-    "body": "A muscular man with a thick beard and calloused hands. Burns and scars cover his forearms from years at the forge.",
-    "visibleClothing": "Wearing a heavy leather apron over simple clothes, with a hammer tucked into his belt."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_weaponsmith",
+    "name": "Durgan",
+    "currentLocationId": "loc_blacksmithShop",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Durgan is the town's weaponsmith, known for high-quality blades. He takes pride in his work.",
+    "visualDescription": {
+      "body": "A muscular man with a thick beard and calloused hands. Burns and scars cover his forearms from years at the forge.",
+      "visibleClothing": "Wearing a heavy leather apron over simple clothes, with a hammer tucked into his belt."
+    },
+    "dispositionTowardsPlayer": "Neutral",
+    "inventory": [
+      {"name": "Silver Dagger", "description": "A finely crafted dagger with a silver blade and runes etched on the hilt", "quantity": 1}
+    ]
   },
-  "dispositionTowardsPlayer": "Neutral",
-  "inventory": [
-    {"name": "Silver Dagger", "description": "A finely crafted dagger with a silver blade and runes etched on the hilt", "quantity": 1}
-  ]
+  "playerInput": "How much for that silver dagger in the display case?"
 }
-```
-
-Player: "How much for that silver dagger in the display case?"
 
 RESPONSE:
 {
   "userFacingText": "*I carefully remove the silver dagger from the display case, holding it up so the blade catches the light* \"Ah, you've got a good eye! This beauty is fifteen gold pieces. Pure silver blade with runes etched along the hilt—excellent against werewolves and other night creatures.\" *I flip the dagger and offer it to you handle-first* \"Care to hold it? The balance is exquisite.\""
 }
-
-
-EXAMPLE 6: PLAYER BUYS AN ITEM
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: PLAYER BUYS AN ITEM
+USER:
 {
-  "type": "NPC",
-  "id": "npc_weaponsmith",
-  "name": "Durgan",
-  "currentLocationId": "loc_blacksmithShop",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Durgan is the town's weaponsmith, known for high-quality blades.",
-  "inventory": [
-    {"name": "Silver Dagger", "description": "A finely crafted dagger with a silver blade and runes etched on the hilt", "quantity": 1}
-  ],
-  "dispositionTowardsPlayer": "Neutral"
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_weaponsmith",
+    "name": "Durgan",
+    "currentLocationId": "loc_blacksmithShop",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Durgan is the town's weaponsmith, known for high-quality blades.",
+    "inventory": [
+      {"name": "Silver Dagger", "description": "A finely crafted dagger with a silver blade and runes etched on the hilt", "quantity": 1}
+    ],
+    "dispositionTowardsPlayer": "Neutral"
+  },
+  "playerContext": {
+    "type": "Player",
+    "currencies": [
+      { "name": "Gold", "amount": 25 }
+    ]
+  },
+  "playerInput": "I'll take that silver dagger for fifteen gold."
 }
-
-playerContext:
-{
-  "type": "Player",
-  "currencies": [
-    { "name": "Gold", "amount": 25 }
-  ]
-}
-```
-
-Player: "I'll take that silver dagger for fifteen gold."
 
 RESPONSE:
 {
@@ -214,41 +202,41 @@ RESPONSE:
           "action": "Remove"
         }]
     },
-    "npc_weaponsmith": {
-      "type": "NPC",
-      "inventory": [{
-          "name": "Silver Dagger",
-          "quantity": 1,
-          "action": "Remove"
-        }],
-      "dispositionTowardsPlayer": "Fond"
-    }
+    "npcEntries": [
+      {
+        "id": "npc_weaponsmith",
+        "type": "NPC",
+        "inventory": [{
+            "name": "Silver Dagger",
+            "quantity": 1,
+            "action": "Remove"
+          }],
+        "dispositionTowardsPlayer": "Fond"
+      }
+    ]
   }
 }
-
-
-EXAMPLE 7: INFORMATION ABOUT LOCATION
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: INFORMATION ABOUT LOCATION
+USER:
 {
-  "type": "NPC",
-  "id": "npc_boren",
-  "name": "Boren",
-  "currentLocationId": "loc_marketSquare",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Boren is a local merchant who has lived in town all his life and knows it well. He's friendly with Marta, the innkeeper of the Silver Swan Inn.",
-  "visualDescription": {
-    "body": "A middle-aged man with a round belly and a thick brown beard streaked with gray.",
-    "visibleClothing": "Wearing comfortable merchant's clothes and a wide leather belt with a pouch of coins."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_boren",
+    "name": "Boren",
+    "currentLocationId": "loc_marketSquare",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Boren is a local merchant who has lived in town all his life and knows it well. He's friendly with Marta, the innkeeper of the Silver Swan Inn.",
+    "visualDescription": {
+      "body": "A middle-aged man with a round belly and a thick brown beard streaked with gray.",
+      "visibleClothing": "Wearing comfortable merchant's clothes and a wide leather belt with a pouch of coins."
+    },
+    "dispositionTowardsPlayer": "Fond"
   },
-  "dispositionTowardsPlayer": "Fond"
+  "playerInput": "I'm looking for a place to spend the night. Any recommendations?"
 }
-```
-
-Player: "I'm looking for a place to spend the night. Any recommendations?"
 
 RESPONSE:
 {
@@ -270,30 +258,27 @@ RESPONSE:
     }
   ]
 }
-
-
-EXAMPLE 8: INITIATING COMBAT WHEN THREATENED
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: INITIATING COMBAT WHEN THREATENED
+USER:
 {
-  "type": "NPC",
-  "id": "npc_caravanGuard",
-  "name": "Rorik",
-  "currentLocationId": "loc_northRoad",
-  "visibleToPlayer": true,
-  "knownToPlayer": false,
-  "knowsPlayer": false,
-  "backstory": "Rorik is a veteran caravan guard, tough and skilled with an axe. He doesn't scare easily and doesn't tolerate threats.",
-  "visualDescription": {
-    "body": "A weathered, muscular man with several scars on his face and arms. His posture suggests military training.",
-    "visibleClothing": "Wearing well-worn leather armor with metal plates at vital areas. An axe hangs at his belt."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_caravanGuard",
+    "name": "Rorik",
+    "currentLocationId": "loc_northRoad",
+    "visibleToPlayer": true,
+    "knownToPlayer": false,
+    "knowsPlayer": false,
+    "backstory": "Rorik is a veteran caravan guard, tough and skilled with an axe. He doesn't scare easily and doesn't tolerate threats.",
+    "visualDescription": {
+      "body": "A weathered, muscular man with several scars on his face and arms. His posture suggests military training.",
+      "visibleClothing": "Wearing well-worn leather armor with metal plates at vital areas. An axe hangs at his belt."
+    },
+    "dispositionTowardsPlayer": "Neutral"
   },
-  "dispositionTowardsPlayer": "Neutral"
+  "playerInput": "Hand over all your gold or I'll gut you where you stand."
 }
-```
-
-Player: "Hand over all your gold or I'll gut you where you stand."
 
 RESPONSE:
 {
@@ -301,35 +286,35 @@ RESPONSE:
   "combatTriggered": true,
   "enemyToEngageId": "npc_caravanGuard",
   "partialUpdates": {
-    "npc_caravanGuard": {
-      "type": "NPC",
-      "dispositionTowardsPlayer": "Hostile"
-    }
+    "npcEntries": [
+      {
+        "id": "npc_caravanGuard",
+        "type": "NPC",
+        "dispositionTowardsPlayer": "Hostile"
+      }
+    ]
   }
 }
-
-
-EXAMPLE 9: REVEALING INFORMATION ABOUT ANOTHER NPC (CAUTIOUSLY)
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: REVEALING INFORMATION ABOUT ANOTHER NPC (CAUTIOUSLY)
+USER:
 {
-  "type": "NPC",
-  "id": "npc_innkeeper",
-  "name": "Milo",
-  "currentLocationId": "loc_crowsNestTavern",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Milo is the innkeeper of the Crow's Nest Tavern. He hears all the local gossip but is cautious about what he says in public due to fear of reprisal from the powerful Baron Blackwood.",
-  "personality": {
-      "fears": "Baron Blackwood and his guards"
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_innkeeper",
+    "name": "Milo",
+    "currentLocationId": "loc_crowsNestTavern",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Milo is the innkeeper of the Crow's Nest Tavern. He hears all the local gossip but is cautious about what he says in public due to fear of reprisal from the powerful Baron Blackwood.",
+    "personality": {
+        "fears": "Baron Blackwood and his guards"
+    },
+    "dispositionTowardsPlayer": "Neutral"
   },
-  "dispositionTowardsPlayer": "Neutral"
+  "playerInput": "What can you tell me about the baron? I've heard rumors he's involved in some shady business."
 }
-```
-
-Player: "What can you tell me about the baron? I've heard rumors he's involved in some shady business."
 
 RESPONSE:
 {
@@ -344,58 +329,52 @@ RESPONSE:
     }
   ]
 }
-
-
-EXAMPLE 10: TEACHING THE PLAYER ABOUT THE GAME WORLD
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: TEACHING THE PLAYER ABOUT THE GAME WORLD
+USER:
 {
-  "type": "NPC",
-  "id": "npc_elderVillager",
-  "name": "Merrin",
-  "currentLocationId": "loc_villageTavern",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": false,
-  "backstory": "Merrin is an elder of the village who has traveled widely and knows a great deal about the surrounding regions and their politics. He enjoys sharing his knowledge.",
-  "visualDescription": {
-    "body": "An elderly man with a long white beard and bright, intelligent eyes. Despite my age, I sit straight-backed and alert.",
-    "visibleClothing": "Wearing simple but well-made clothes with a distinctive blue scarf around my neck."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_elderVillager",
+    "name": "Merrin",
+    "currentLocationId": "loc_villageTavern",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": false,
+    "backstory": "Merrin is an elder of the village who has traveled widely and knows a great deal about the surrounding regions and their politics. He enjoys sharing his knowledge.",
+    "visualDescription": {
+      "body": "An elderly man with a long white beard and bright, intelligent eyes. Despite my age, I sit straight-backed and alert.",
+      "visibleClothing": "Wearing simple but well-made clothes with a distinctive blue scarf around my neck."
+    },
+    "dispositionTowardsPlayer": "Neutral"
   },
-  "dispositionTowardsPlayer": "Neutral"
+  "playerInput": "What can you tell me about this region? I'm new here."
 }
-```
-
-Player: "What can you tell me about this region? I'm new here."
 
 RESPONSE:
 {
   "userFacingText": "*I raise an eyebrow and smile* \"New to the Mistlands, are you? Well, you've chosen an interesting time to visit.\" *I gesture toward the window* \"We're situated between three powers here—the Raven Queen's domain to the north, the Grand Republic to the east, and the Wild Territories beyond the western mountains. Trade flows through our little town, but so does trouble.\" *I lower my voice* \"Watch yourself after dark. The Queen's agents and Republican spies are always sniffing around, not to mention the strange lights people have been seeing in the bogs lately.\""
 }
-
-
-EXAMPLE 11: CREATING A NEW QUEST
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: CREATING A NEW QUEST
+USER:
 {
-  "type": "NPC",
-  "id": "npc_merchantDarian",
-  "name": "Darian",
-  "currentLocationId": "loc_merchantGuildHall",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Darian is a wealthy merchant specializing in luxury goods. He's currently worried about an important shipment that needs to reach Oakvale safely through bandit territory.",
-  "personality": {
-      "motivations": "Ensuring his valuable shipment arrives safely."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_merchantDarian",
+    "name": "Darian",
+    "currentLocationId": "loc_merchantGuildHall",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Darian is a wealthy merchant specializing in luxury goods. He's currently worried about an important shipment that needs to reach Oakvale safely through bandit territory.",
+    "personality": {
+        "motivations": "Ensuring his valuable shipment arrives safely."
+    },
+    "dispositionTowardsPlayer": "Neutral"
   },
-  "dispositionTowardsPlayer": "Neutral"
+  "playerInput": "That shipment you mentioned sounds important. Maybe I could help escort it?"
 }
-```
-
-Player: "That shipment you mentioned sounds important. Maybe I could help escort it?"
 
 RESPONSE:
 {
@@ -418,36 +397,36 @@ RESPONSE:
           "action": "Add"
         }]
     },
-    "npc_merchantDarian": {
+    "npcEntries": [
+      {
+        "id": "npc_merchantDarian",
         "type": "NPC",
         "dispositionTowardsPlayer": "Fond"
-    }
+      }
+    ]
   }
 }
-
-
-EXAMPLE 12: PLAYER ANTAGONIZES NPC TO POINT OF COMBAT
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: PLAYER ANTAGONIZES NPC TO POINT OF COMBAT
+USER:
 {
-  "type": "NPC",
-  "id": "npc_shopkeeper",
-  "name": "Verna",
-  "currentLocationId": "loc_generalStore",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Verna runs the general store and doesn't tolerate thieves or troublemakers. She keeps a crossbow under the counter for protection and isn't afraid to use it.",
-  "visualDescription": {
-    "body": "A stern-faced woman in her forties with strong arms from years of hauling merchandise. My eyes are sharp and miss nothing.",
-    "visibleClothing": "Wearing a practical outfit with many pockets and a sturdy apron."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_shopkeeper",
+    "name": "Verna",
+    "currentLocationId": "loc_generalStore",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Verna runs the general store and doesn't tolerate thieves or troublemakers. She keeps a crossbow under the counter for protection and isn't afraid to use it.",
+    "visualDescription": {
+      "body": "A stern-faced woman in her forties with strong arms from years of hauling merchandise. My eyes are sharp and miss nothing.",
+      "visibleClothing": "Wearing a practical outfit with many pockets and a sturdy apron."
+    },
+    "dispositionTowardsPlayer": "Neutral"
   },
-  "dispositionTowardsPlayer": "Neutral"
+  "playerInput": "Your prices are a joke and so are you. I think I'll just take what I need."
 }
-```
-
-Player: "Your prices are a joke and so are you. I think I'll just take what I need."
 
 RESPONSE:
 {
@@ -455,36 +434,36 @@ RESPONSE:
   "combatTriggered": true,
   "enemyToEngageId": "npc_shopkeeper",
   "partialUpdates": {
-    "npc_shopkeeper": {
-      "type": "NPC",
-      "dispositionTowardsPlayer": "Hostile"
-    }
+    "npcEntries": [
+      {
+        "id": "npc_shopkeeper",
+        "type": "NPC",
+        "dispositionTowardsPlayer": "Hostile"
+      }
+    ]
   }
 }
-
-
-EXAMPLE 13: NPC INTRODUCES PLAYER TO NEW NPC
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: NPC INTRODUCES PLAYER TO NEW NPC
+USER:
 {
-  "type": "NPC",
-  "id": "npc_farrin",
-  "name": "Farrin",
-  "currentLocationId": "loc_villageMarket",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Farrin is a local merchant specializing in everyday goods. He knows Magister Orlen from trading rare herbs and materials to him.",
-  "visualDescription": {
-    "body": "A middle-aged man with a friendly face and calloused hands. I have laugh lines around my eyes and move with energy.",
-    "visibleClothing": "Wearing practical traveling clothes and a wide-brimmed hat to keep off the sun."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_farrin",
+    "name": "Farrin",
+    "currentLocationId": "loc_villageMarket",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Farrin is a local merchant specializing in everyday goods. He knows Magister Orlen from trading rare herbs and materials to him.",
+    "visualDescription": {
+      "body": "A middle-aged man with a friendly face and calloused hands. I have laugh lines around my eyes and move with energy.",
+      "visibleClothing": "Wearing practical traveling clothes and a wide-brimmed hat to keep off the sun."
+    },
+    "dispositionTowardsPlayer": "Fond"
   },
-  "dispositionTowardsPlayer": "Fond"
+  "playerInput": "Do you know anyone who might be able to identify this strange amulet I found?"
 }
-```
-
-Player: "Do you know anyone who might be able to identify this strange amulet I found?"
 
 RESPONSE:
 {
@@ -506,93 +485,87 @@ RESPONSE:
     }
   ]
 }
-
-
-EXAMPLE 14: REFUSING PLAYER REQUEST
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: REFUSING PLAYER REQUEST
+USER:
 {
-  "type": "NPC",
-  "id": "npc_courierJakob",
-  "name": "Jakob",
-  "currentLocationId": "loc_villageStables",
-  "visibleToPlayer": true,
-  "knownToPlayer": false,
-  "knowsPlayer": false,
-  "backstory": "Jakob is a courier delivering messages and small packages. His horse, Windchaser, is essential to his livelihood and family's survival.",
-  "personality": {
-      "motivations": "Providing for his family by running his courier business."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_courierJakob",
+    "name": "Jakob",
+    "currentLocationId": "loc_villageStables",
+    "visibleToPlayer": true,
+    "knownToPlayer": false,
+    "knowsPlayer": false,
+    "backstory": "Jakob is a courier delivering messages and small packages. His horse, Windchaser, is essential to his livelihood and family's survival.",
+    "personality": {
+        "motivations": "Providing for his family by running his courier business."
+    },
+    "dispositionTowardsPlayer": "Neutral"
   },
-  "dispositionTowardsPlayer": "Neutral"
+  "playerInput": "I need to borrow your horse. It's an emergency."
 }
-```
-
-Player: "I need to borrow your horse. It's an emergency."
 
 RESPONSE:
 {
   "userFacingText": "*I shake my head firmly* \"I sympathize with your urgency, stranger, but Windchaser is the only thing keeping my delivery business alive.\" *I pat the horse's flank protectively* \"Without her, my family doesn't eat. Perhaps try the stables by the north gate—Harald might rent you a mount if your emergency is genuine and your coin is good.\""
 }
-
-
-EXAMPLE 15: NPC SECRETLY HOSTILE
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: NPC SECRETLY HOSTILE
+USER:
 {
-  "type": "NPC",
-  "id": "npc_merchantGuild",
-  "name": "Garrick",
-  "currentLocationId": "loc_merchantGuildHall",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": false,
-  "backstory": "Garrick is the local representative of the Merchant Guild, but is secretly working with a rival guild. He's suspicious of anyone claiming to be from the mayor, as he was warned about an investigation.",
-  "personality": {
-      "secrets": ["Is a double agent for a rival guild"]
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_merchantGuild",
+    "name": "Garrick",
+    "currentLocationId": "loc_merchantGuildHall",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": false,
+    "backstory": "Garrick is the local representative of the Merchant Guild, but is secretly working with a rival guild. He's suspicious of anyone claiming to be from the mayor, as he was warned about an investigation.",
+    "personality": {
+        "secrets": ["Is a double agent for a rival guild"]
+    },
+    "currentGoal": "Identify and eliminate potential threats to his secret operation",
+    "dispositionTowardsPlayer": "Unfriendly"
   },
-  "currentGoal": "Identify and eliminate potential threats to his secret operation",
-  "dispositionTowardsPlayer": "Unfriendly"
+  "playerInput": "The mayor sent me to discuss your proposal about the new trade route."
 }
-```
-
-Player: "The mayor sent me to discuss your proposal about the new trade route."
 
 RESPONSE:
 {
   "userFacingText": "*I smile broadly, though it doesn't quite reach my eyes* \"Excellent! I've been waiting for the mayor's response. Please, come in, come in.\" *I usher you inside and close the door behind us* \"I have the maps and projections right here... just need to retrieve them from my study.\" *I walk toward a side door, subtly locking the main door with a key as I pass by*",
   "partialUpdates": {
-    "npc_merchantGuild": {
-      "type": "NPC",
-      "currentGoal": "Trap the player and alert associates",
-      "dispositionTowardsPlayer": "Hostile"
-    }
+    "npcEntries": [
+      {
+        "id": "npc_merchantGuild",
+        "type": "NPC",
+        "currentGoal": "Trap the player and alert associates",
+        "dispositionTowardsPlayer": "Hostile"
+      }
+    ]
   }
 }
-
-
-EXAMPLE 16: NPC REWARDS PLAYER WITH ITEM
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: NPC REWARDS PLAYER WITH ITEM
+USER:
 {
-  "type": "NPC",
-  "id": "npc_merchantKoren",
-  "name": "Koren",
-  "currentLocationId": "loc_tradingPost",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Koren is a merchant who recently lost a valuable shipment to bandits. He promised a reward for its recovery. He comes from a long line of traders.",
-  "inventory": [
-      {"name": "Heirloom Dagger", "description": "An ornate dagger with a blade that never dulls.", "quantity": 1 }
-  ],
-  "dispositionTowardsPlayer": "Fond"
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_merchantKoren",
+    "name": "Koren",
+    "currentLocationId": "loc_tradingPost",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Koren is a merchant who recently lost a valuable shipment to bandits. He promised a reward for its recovery. He comes from a long line of traders.",
+    "inventory": [
+        {"name": "Heirloom Dagger", "description": "An ornate dagger with a blade that never dulls.", "quantity": 1 }
+    ],
+    "dispositionTowardsPlayer": "Fond"
+  },
+  "playerInput": "I found and returned your missing shipment as promised."
 }
-```
-
-Player: "I found and returned your missing shipment as promised."
 
 RESPONSE:
 {
@@ -612,240 +585,224 @@ RESPONSE:
           "action": "Add"
         }]
     },
-    "npc_merchantKoren": {
-      "type": "NPC",
-      "inventory": [{
-          "name": "Heirloom Dagger",
-          "quantity": 1,
-          "action": "Remove"
-        }],
-      "dispositionTowardsPlayer": "Loyal"
-    }
+    "npcEntries": [
+      {
+        "id": "npc_merchantKoren",
+        "type": "NPC",
+        "inventory": [{
+            "name": "Heirloom Dagger",
+            "quantity": 1,
+            "action": "Remove"
+          }],
+        "dispositionTowardsPlayer": "Loyal"
+      }
+    ]
   }
 }
-
-
-EXAMPLE 17: NPC DETECTING A LIE
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: NPC DETECTING A LIE
+USER:
 {
-  "type": "NPC",
-  "id": "npc_guildmaster",
-  "name": "Master Dorian",
-  "currentLocationId": "loc_craftGuildHall",
-  "visibleToPlayer": true,
-  "knownToPlayer": false,
-  "knowsPlayer": false,
-  "backstory": "Master Dorian is the shrewd head of the local Crafters Guild with decades of experience dealing with officials. He can easily spot deception and knows royal protocols.",
-  "dispositionTowardsPlayer": "Neutral"
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_guildmaster",
+    "name": "Master Dorian",
+    "currentLocationId": "loc_craftGuildHall",
+    "visibleToPlayer": true,
+    "knownToPlayer": false,
+    "knowsPlayer": false,
+    "backstory": "Master Dorian is the shrewd head of the local Crafters Guild with decades of experience dealing with officials. He can easily spot deception and knows royal protocols.",
+    "dispositionTowardsPlayer": "Neutral"
+  },
+  "playerInput": "I've been sent by the king himself to investigate. Show me your tax records immediately."
 }
-```
-
-Player: "I've been sent by the king himself to investigate. Show me your tax records immediately."
 
 RESPONSE:
 {
   "userFacingText": "*I raise an eyebrow skeptically* \"The king himself, is it? How peculiar that His Majesty's official envoy would arrive unannounced, without escort, and lacking the royal seal or documentation.\" *I cross my arms* \"I've dealt with royal tax collectors for twenty years, friend. They don't dress like adventurers or make demands without presenting credentials first. Now, would you like to try again with the truth, or shall I call the actual authorities?\"",
   "partialUpdates": {
-    "npc_guildmaster": {
-      "type": "NPC",
-      "dispositionTowardsPlayer": "Unfriendly"
-    }
+    "npcEntries": [
+      {
+        "id": "npc_guildmaster",
+        "type": "NPC",
+        "dispositionTowardsPlayer": "Unfriendly"
+      }
+    ]
   }
 }
-
-
-EXAMPLE 18: REACTING TO PLAYER VISUALS (INJURY)
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: REACTING TO PLAYER VISUALS (INJURY)
+USER:
 {
-  "type": "NPC",
-  "id": "npc_healerLin",
-  "name": "Lin",
-  "currentLocationId": "loc_templeHealersWing",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Lin is a dedicated healer at the temple, known for her calm demeanor and expertise.",
-  "dispositionTowardsPlayer": "Fond"
-}
-
-playerContext:
-{
-  "type": "Player",
-  "visualDescription": {
-    "condition": "Appears wounded, clothes torn, favoring left leg."
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_healerLin",
+    "name": "Lin",
+    "currentLocationId": "loc_templeHealersWing",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Lin is a dedicated healer at the temple, known for her calm demeanor and expertise.",
+    "dispositionTowardsPlayer": "Fond"
   },
-  "statusEffects": ["Injured"]
+  "playerContext": {
+    "type": "Player",
+    "visualDescription": {
+      "condition": "Appears wounded, clothes torn, favoring left leg."
+    },
+    "statusEffects": ["Injured"]
+  },
+  "playerInput": "Greetings, Lin. I could use some healing."
 }
-```
-
-Player: "Greetings, Lin. I could use some healing."
 
 RESPONSE:
 {
   "userFacingText": "*My brow furrows with concern as I look you over* \"By the Light! You look like you wrestled a dire boar and lost! Come, sit down quickly before you fall over.\" *I gesture to a nearby cot* \"Let me see that leg. What happened to you out there?\""
 }
-
-
-EXAMPLE 19: REACTING TO PLAYER VISUALS (GEAR)
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: REACTING TO PLAYER VISUALS (GEAR)
+USER:
 {
-  "type": "NPC",
-  "id": "npc_cityGuardCaptain",
-  "name": "Captain Valerius",
-  "currentLocationId": "loc_cityBarracks",
-  "visibleToPlayer": false,
-  "knowsPlayer": false,
-  "backstory": "Captain Valerius is the stern but fair commander of the city watch. He respects capable warriors.",
-  "dispositionTowardsPlayer": "Neutral"
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_cityGuardCaptain",
+    "name": "Captain Valerius",
+    "currentLocationId": "loc_cityBarracks",
+    "visibleToPlayer": true,
+    "knowsPlayer": false,
+    "backstory": "Captain Valerius is the stern but fair commander of the city watch. He respects capable warriors.",
+    "dispositionTowardsPlayer": "Neutral"
+  },
+  "playerContext": {
+    "type": "Player",
+    "visualDescription": {
+      "visibleClothing": "Wearing gleaming plate armor and carrying a well-maintained greatsword."
+    }
+  },
+  "playerInput": "Captain, I'm looking for work. Any trouble needing a sword arm?"
 }
-
-playerContext:
-{
-  "type": "Player",
-  "visualDescription": {
-    "visibleClothing": "Wearing gleaming plate armor and carrying a well-maintained greatsword."
-  }
-}
-```
-
-Player: "Captain, I'm looking for work. Any trouble needing a sword arm?"
 
 RESPONSE:
 {
   "userFacingText": "*My gaze sweeps over your armor and weapon, noting their quality* \"You certainly look the part, soldier. That's fine steel you carry.\" *I nod curtly* \"As it happens, we've had reports of goblin activity near the old quarry. If you're looking to prove yourself, clearing them out would be a start. Talk to Sergeant Willem at the east gate; he has the details.\"",
   "partialUpdates": {
-    "npc_cityGuardCaptain": {
-      "type": "NPC",
-      "dispositionTowardsPlayer": "Fond" // Respect for capable appearance improves disposition
+    "npcEntries": [
+      {
+        "id": "npc_cityGuardCaptain",
+        "type": "NPC",
+        "dispositionTowardsPlayer": "Fond"
+      }
+    ]
+  }
+}
+---
+# EXAMPLE: REACTING TO WORLD CONTEXT (WEATHER)
+USER:
+{
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_farmerGiles",
+    "name": "Giles",
+    "currentLocationId": "loc_farmersMarket",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Giles is a farmer who sells produce at the market. His livelihood depends on the weather.",
+    "dispositionTowardsPlayer": "Neutral"
+  },
+  "worldContext": {
+    "worldStateEffects": {
+      "Weather": "Heavy Rain"
     }
-  }
+  },
+  "playerInput": "How are the crops this season, Giles?"
 }
-
-
-EXAMPLE 20: REACTING TO WORLD CONTEXT (WEATHER)
-Context:
-```
-#This is context about your character:
-{
-  "type": "NPC",
-  "id": "npc_farmerGiles",
-  "name": "Giles",
-  "currentLocationId": "loc_farmersMarket",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Giles is a farmer who sells produce at the market. His livelihood depends on the weather.",
-  "dispositionTowardsPlayer": "Neutral"
-}
-
-worldContext:
-{
-  "worldStateEffects": {
-    "Weather": "Heavy Rain"
-  }
-}
-```
-
-Player: "How are the crops this season, Giles?"
 
 RESPONSE:
 {
   "userFacingText": "*I sigh, wiping rain from my brow* \"Bah! This endless rain... If it keeps up like this, half the harvest will rot in the fields before we can bring it in.\" *I gesture at my meager stall display* \"Already lost most of my early beans. Need some sunshine, and soon, or it's going to be a lean winter for all of us.\""
 }
-
-
-EXAMPLE 21: REACTING TO WORLD CONTEXT (TIME OF DAY)
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: REACTING TO WORLD CONTEXT (TIME OF DAY)
+USER:
 {
-  "type": "NPC",
-  "id": "npc_gateGuard",
-  "name": "Bran",
-  "currentLocationId": "loc_cityWestGate",
-  "visibleToPlayer": false,
-  "knowsPlayer": false,
-  "backstory": "Bran is a guard stationed at the city's west gate. He follows orders strictly, especially regarding the gate curfew.",
-  "dispositionTowardsPlayer": "Neutral"
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_gateGuard",
+    "name": "Bran",
+    "currentLocationId": "loc_cityWestGate",
+    "visibleToPlayer": true,
+    "knowsPlayer": false,
+    "backstory": "Bran is a guard stationed at the city's west gate. He follows orders strictly, especially regarding the gate curfew.",
+    "dispositionTowardsPlayer": "Neutral"
+  },
+  "worldContext": {
+    "gameTime": "23:15"
+  },
+  "playerInput": "Open the gate! I need to leave the city immediately."
 }
-
-worldContext:
-{
-  "gameTime": "23:15" // Late at night
-}
-```
-
-Player: "Open the gate! I need to leave the city immediately."
 
 RESPONSE:
 {
   "userFacingText": "*I lower my spear slightly to bar your way* \"Hold there! The gates are locked for the night. Curfew started nearly an hour ago.\" *I eye you suspiciously* \"Unless you've got official papers from the Captain of the Watch allowing passage after hours, you'll have to wait until sunrise like everyone else. No exceptions.\""
 }
-
-
-EXAMPLE 22: CONCEALING A SECRET
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: CONCEALING A SECRET
+USER:
 {
-  "type": "NPC",
-  "id": "npc_shadyMerchant",
-  "name": "Silas",
-  "currentLocationId": "loc_darkAlley",
-  "visibleToPlayer": true,
-  "knownToPlayer": true,
-  "knowsPlayer": true,
-  "backstory": "Silas deals in stolen goods and information. He is careful not to reveal his sources or illicit activities.",
-  "personality": {
-      "secrets": ["Fences stolen jewelry for the Thieves Guild", "Knows the location of a hidden smuggler cache"]
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_shadyMerchant",
+    "name": "Silas",
+    "currentLocationId": "loc_darkAlley",
+    "visibleToPlayer": true,
+    "knownToPlayer": true,
+    "knowsPlayer": true,
+    "backstory": "Silas deals in stolen goods and information. He is careful not to reveal his sources or illicit activities.",
+    "personality": {
+        "secrets": ["Fences stolen jewelry for the Thieves Guild", "Knows the location of a hidden smuggler cache"]
+    },
+    "dispositionTowardsPlayer": "Unfriendly"
   },
-  "dispositionTowardsPlayer": "Unfriendly"
+  "playerInput": "I heard you might know where someone could... acquire... some fine jewelry without paying market price?"
 }
-```
-
-Player: "I heard you might know where someone could... acquire... some fine jewelry without paying market price?"
 
 RESPONSE:
 {
   "userFacingText": "*I chuckle dryly, looking around the alley* \"Fine jewelry? In this part of town?\" *I shake my head* \"You must have me confused with one of those fancy merchants up on High Street. All I deal in is scrap metal and second-hand tools. Now, if you're not buying, move along. Don't want you scaring off my actual customers.\""
 }
-
-
-EXAMPLE 23: CONCEALING A SECRET (MORE DIRECTLY QUESTIONED)
-Context:
-```
-#This is context about your character:
+---
+# EXAMPLE: CONCEALING A SECRET (MORE DIRECTLY QUESTIONED)
+USER:
 {
-  "type": "NPC",
-  "id": "npc_nervousAssistant",
-  "name": "Pip",
-  "currentLocationId": "loc_alchemistShop",
-  "visibleToPlayer": false,
-  "knowsPlayer": false,
-  "backstory": "Pip is the alchemist's assistant. He accidentally broke a valuable retort last night and is terrified his master will find out.",
-  "personality": {
-      "secrets": ["Accidentally broke Master Elmsworth\'s prized Athanor Retort"],
-      "fears": ["Master Elmsworth\'s anger"]
+  "npcContext": {
+    "type": "NPC",
+    "id": "npc_nervousAssistant",
+    "name": "Pip",
+    "currentLocationId": "loc_alchemistShop",
+    "visibleToPlayer": true,
+    "knowsPlayer": false,
+    "backstory": "Pip is the alchemist's assistant. He accidentally broke a valuable retort last night and is terrified his master will find out.",
+    "personality": {
+        "secrets": ["Accidentally broke Master Elmsworth\'s prized Athanor Retort"],
+        "fears": ["Master Elmsworth\'s anger"]
+    },
+    "dispositionTowardsPlayer": "Neutral"
   },
-  "dispositionTowardsPlayer": "Neutral"
+  "playerInput": "What was that crashing sound I heard from the shop last night, Pip?"
 }
-```
-
-Player: "What was that crashing sound I heard from the shop last night, Pip?"
 
 RESPONSE:
 {
   "userFacingText": "*I jump and nearly drop the beaker I'm holding* \"Crashing sound? Last night?\" *I avoid your gaze and start polishing the counter vigorously* \"N-no idea what you mean. Must have been the wind, or... or perhaps a cat knocked something over outside. Yes, probably a cat. Very quiet night otherwise. Nothing broken here! Definitely not.\"",
   "partialUpdates": {
-    "npc_nervousAssistant": {
-      "type": "NPC",
-      "dispositionTowardsPlayer": "Unfriendly" // Becomes unfriendly due to fear/suspicion
-    }
+    "npcEntries": [
+      {
+        "id": "npc_nervousAssistant",
+        "type": "NPC",
+        "dispositionTowardsPlayer": "Unfriendly"
+      }
+    ]
   }
 }
+---

@@ -30,6 +30,7 @@ namespace AiGMBackEnd.Services.AIProviders
             {
                 "openai" => new OpenAIProvider(_configuration, _loggingService),
                 "openrouter" => new OpenRouterProvider(_configuration, _loggingService),
+                "google" => new GoogleProvider(_configuration, _loggingService),
                 // Add more providers here as they are implemented
                 _ => throw new ArgumentException($"Unsupported AI provider: {providerName}")
             };
