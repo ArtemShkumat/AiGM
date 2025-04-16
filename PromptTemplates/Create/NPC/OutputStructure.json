@@ -23,7 +23,7 @@
       "type": "object",
       "properties": {
         "temperament": { "type": "string" },
-        "traits": { "type": "string", "description": "Formerly quirks. Notable character traits." },
+        "traits": { "type": "string", "description": "Notable character traits." },
         "motivations": { "type": "string" },
         "fears": { "type": "string" },
         "secrets": { "type": "array", "items": { "type": "string" } }

@@ -219,7 +219,7 @@ NPC files define non-player characters. Place them in the `npcs/` subfolder (e.g
 
   "personality": {
     "temperament": "Gruff but fair",
-    "quirks": "Constantly polishing mugs",
+    "traits": "Constantly polishing mugs",
     "motivations": "Running a successful tavern",
     "fears": "Running out of ale",
     "secrets": [

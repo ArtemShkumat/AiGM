@@ -69,7 +69,7 @@ namespace AiGMBackEnd.Models
         public string Temperament { get; set; }
         
         [JsonPropertyName("traits")]
-        public string Quirks { get; set; }
+        public string Traits { get; set; }
 
         [JsonPropertyName("motivations")]
         public string Motivations { get; set; }

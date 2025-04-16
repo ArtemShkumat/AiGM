@@ -97,7 +97,7 @@ namespace AiGMBackEnd.Services.Processors
                     return;
                 }
 
-                var entityCreationJobs = new Dictionary<string, string>();
+                Dictionary<string, string> entityCreationJobs = null;
                 if (newEntities != null && newEntities.Any())
                 {
                     entityCreationJobs = await ProcessNewEntitiesAsync(newEntities, userId);
@@ -105,8 +105,35 @@ namespace AiGMBackEnd.Services.Processors
 
                 if (partialUpdates != null)
                 {
-                    await ProcessPartialUpdatesAsync(partialUpdates, userId, entityCreationJobs);
+                    if (entityCreationJobs != null && entityCreationJobs.Any())
+                    {
+                        // Get the ID of the last scheduled creation job to use for continuation
+                        string lastJobId = entityCreationJobs.Values.LastOrDefault(jobId => !string.IsNullOrEmpty(jobId));
+
+                        if (!string.IsNullOrEmpty(lastJobId))
+                        {
+                            _loggingService.LogInfo($"Scheduling partial updates to run after entity creation job {lastJobId} completes.");
+                            // Schedule ProcessPartialUpdatesAsync to run only after the last entity creation job completes successfully.
+                            BackgroundJob.ContinueJobWith(
+                                lastJobId,
+                                () => ProcessPartialUpdatesAsync(partialUpdates, userId), // No longer pass entityCreationJobs
+                                JobContinuationOptions.OnlyOnSucceededState);
+                        }
+                        else
+                        {
+                            // This case might happen if all new entities already existed or failed scheduling. Run updates immediately.
+                            _loggingService.LogInfo("No valid entity creation jobs were scheduled. Running partial updates immediately.");
+                            await ProcessPartialUpdatesAsync(partialUpdates, userId); // No longer pass entityCreationJobs
+                        }
+                    }
+                    else
+                    {
+                        // No new entities, process updates immediately or enqueue directly if desired.
+                        _loggingService.LogInfo("No new entities to create. Processing partial updates immediately.");
+                        await ProcessPartialUpdatesAsync(partialUpdates, userId); // No longer pass entityCreationJobs
+                    }
                 }
+                // If partialUpdates is null but newEntities exist, the creation jobs are scheduled, and we are done here.
             }
             catch (Exception ex)
             {
@@ -241,7 +268,7 @@ namespace AiGMBackEnd.Services.Processors
             }
         }
 
-        private async Task ProcessPartialUpdatesAsync(PartialUpdates partialUpdates, string userId, Dictionary<string, string> entityCreationJobs)
+        public async Task ProcessPartialUpdatesAsync(PartialUpdates partialUpdates, string userId)
         {
             _loggingService.LogInfo($"Starting to process partial updates for user {userId}");
             
@@ -276,6 +303,8 @@ namespace AiGMBackEnd.Services.Processors
                         }
                         
                         _loggingService.LogInfo($"Processing NPC update for {npcUpdate.Id}");
+                        
+                        // Process normally
                         await ProcessNpcUpdateAsync(userId, npcUpdate.Id, npcUpdate);
                     }
                 }
@@ -293,7 +322,7 @@ namespace AiGMBackEnd.Services.Processors
                         }
                         
                         _loggingService.LogInfo($"Processing location update for {locationUpdate.Id}");
-                        await ProcessEntityUpdateAsync(userId, locationUpdate.Id, locationUpdate, entityCreationJobs);
+                        await ProcessEntityUpdateAsync(userId, locationUpdate.Id, locationUpdate);
                     }
                 }
                 
@@ -310,7 +339,7 @@ namespace AiGMBackEnd.Services.Processors
             {
                 _loggingService.LogError($"Error processing partial updates for user {userId}: {ex.Message}");
                 _loggingService.LogError($"Exception stack trace: {ex.StackTrace}");
-                throw; // Re-throw to allow calling code to handle
+                throw; // Re-throw to allow calling code/Hangfire to handle
             }
         }
 
@@ -400,7 +429,7 @@ namespace AiGMBackEnd.Services.Processors
             return false;
         }       
 
-        private async Task ProcessEntityUpdateAsync(string userId, string entityId, IUpdatePayload updateData, Dictionary<string, string> entityCreationJobs)
+        private async Task ProcessEntityUpdateAsync(string userId, string entityId, IUpdatePayload updateData)
         {
             // Get the entity type from the update data
             string entityType = updateData.Type?.ToLower();
@@ -419,13 +448,34 @@ namespace AiGMBackEnd.Services.Processors
                 await ProcessNpcUpdateAsync(userId, entityId, npcUpdate);
                 return;
             }
-           
-            // Wait for entity creation if needed
-            if (entityCreationJobs.ContainsKey(entityId) && !await WaitForEntityCreationAsync(userId, entityId, entityType))
+            
+            // Handle Location with NPCs array special case
+            if (entityType == "location" && updateData is LocationUpdatePayload locationUpdate && locationUpdate.Npcs != null && locationUpdate.Npcs.Any())
             {
-                return; // Skip update if entity creation didn't complete
+                await ProcessLocationNpcsUpdateAsync(userId, entityId, locationUpdate.Npcs);
+                
+                // If there are other properties to update, create a copy without the Npcs property
+                var locationUpdateWithoutNpcs = new LocationUpdatePayload
+                {
+                    Id = locationUpdate.Id,
+                    KnownToPlayer = locationUpdate.KnownToPlayer,
+                    ParentLocation = locationUpdate.ParentLocation
+                };
+                
+                // Check if there are actually other properties to update besides Npcs
+                if (locationUpdateWithoutNpcs.KnownToPlayer != null || !string.IsNullOrEmpty(locationUpdateWithoutNpcs.ParentLocation))
+                {
+                     _loggingService.LogInfo($"Processing remaining location properties for {entityId}");
+                     updateData = locationUpdateWithoutNpcs;
+                }
+                else
+                {
+                     _loggingService.LogInfo($"Only NPC updates found for location {entityId}. Skipping further processing for this update object.");
+                     return; // No other properties to update
+                }
             }
             
+            // If no pending creation or continuation not scheduled, proceed with normal update
             // Determine the collection based on entity type
             string collection = GetCollectionForEntityType(entityType);
             if (collection == null)
@@ -435,86 +485,56 @@ namespace AiGMBackEnd.Services.Processors
             }
             
             // Serialize the update data to JSON for storage
-            // Explicitly use the concrete type for serialization
-            string updateJson = "{}";
+            string updateJson = SerializeUpdateData(updateData);
+            
+            // Don't apply empty updates
+            if (string.IsNullOrWhiteSpace(updateJson) || updateJson == "{}" )
+            {
+                 _loggingService.LogInfo($"Skipping update for {entityType} {entityId} as serialized data is empty.");
+                 return;
+            }
+            
+            // Apply the update
+            await UpdateEntityAsync(userId, collection, entityId, updateJson);
+        }
+        
+        /// <summary>
+        /// Serializes update data to JSON based on its runtime type
+        /// </summary>
+        private string SerializeUpdateData(IUpdatePayload updateData)
+        {
             try
             {
                 // Serialize based on the actual runtime type
                 if (updateData is NpcUpdatePayload npcPayload)
                 {
-                    updateJson = System.Text.Json.JsonSerializer.Serialize(npcPayload, _jsonSerializerOptions);
+                    return System.Text.Json.JsonSerializer.Serialize(npcPayload, _jsonSerializerOptions);
                 }
-                else if (updateData is LocationUpdatePayload locPayload)
+                else if (updateData is LocationUpdatePayload locationPayload)
                 {
-                    updateJson = System.Text.Json.JsonSerializer.Serialize(locPayload, _jsonSerializerOptions);
+                    return System.Text.Json.JsonSerializer.Serialize(locationPayload, _jsonSerializerOptions);
+                }
+                else if (updateData is WorldUpdatePayload worldPayload)
+                {
+                    return System.Text.Json.JsonSerializer.Serialize(worldPayload, _jsonSerializerOptions);
                 }
                 else if (updateData is PlayerUpdatePayload playerPayload)
                 {
-                    // Player updates are handled separately, but include for completeness
-                    updateJson = System.Text.Json.JsonSerializer.Serialize(playerPayload, _jsonSerializerOptions);
-                }
-                 else if (updateData is WorldUpdatePayload worldPayload)
-                {
-                    updateJson = System.Text.Json.JsonSerializer.Serialize(worldPayload, _jsonSerializerOptions);
+                    return System.Text.Json.JsonSerializer.Serialize(playerPayload, _jsonSerializerOptions);
                 }
                 else
                 {
-                    // Fallback for any other IUpdatePayload types (if added later)
-                     _loggingService.LogWarning($"Attempting to serialize unknown IUpdatePayload type: {updateData.GetType().Name}");
-                    updateJson = System.Text.Json.JsonSerializer.Serialize(updateData, _jsonSerializerOptions);
+                    // Generic serialization
+                    return System.Text.Json.JsonSerializer.Serialize(updateData, _jsonSerializerOptions);
                 }
-            }
-            catch(Exception ex)
-            {
-                _loggingService.LogError($"Error during update JSON serialization for {entityId}: {ex.Message}");
-                updateJson = "{}"; // Prevent applying faulty JSON
-            }
-            
-            // Enhanced logging of the update JSON for debugging
-            _loggingService.LogInfo($"Update JSON for {entityId}: {updateJson}");
-            
-            // Apply the update
-            if (!string.IsNullOrEmpty(updateJson) && updateJson != "{}")
-            {
-                await UpdateEntityAsync(userId, collection, entityId, updateJson);                
-            }
-        }
-
-        private async Task<bool> WaitForEntityCreationAsync(string userId, string entityId, string entityType)
-        {
-            _loggingService.LogInfo($"Waiting for {entityType} {entityId} to be created before applying update");
-            try
-            {
-                // Instead of waiting directly for the job, we'll check the status
-                // periodically (with a timeout) through the status tracking service
-                var timeoutTask = Task.Delay(TimeSpan.FromMinutes(2));
-                var checkInterval = TimeSpan.FromSeconds(2);
-                var startTime = DateTime.UtcNow;
-                bool isComplete = false;
-                
-                // Poll every few seconds to check if the entity creation is complete
-                while (!isComplete && DateTime.UtcNow - startTime < TimeSpan.FromMinutes(2))
-                {
-                    await Task.Delay(checkInterval);
-                    var status = await _statusTrackingService.GetEntityStatusAsync(userId, entityId);
-                    isComplete = status != null && (status.Status == "complete" || status.Status == "error");
-                }
-                
-                if (!isComplete)
-                {
-                    _loggingService.LogWarning($"Timed out waiting for {entityType} {entityId} to be created");
-                    return false;
-                }
-                
-                return true;
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error waiting for entity creation: {ex.Message}");
-                return false;
+                _loggingService.LogError($"Error serializing update data: {ex.Message}");
+                return "{}";
             }
         }
-
+        
         private string GetCollectionForEntityType(string entityType)
         {
             return entityType.ToLower() switch
@@ -826,11 +846,8 @@ namespace AiGMBackEnd.Services.Processors
         {
             _loggingService.LogInfo($"Processing NPC update for {npcId}");
             
-            // Check if inventory is being updated
-            bool inventoryChanged = updateData.Inventory != null && updateData.Inventory.Any();
-            
-            // Handle inventory updates if present
-            if (inventoryChanged)
+            // Handle inventory updates first if present
+            if (updateData.Inventory != null && updateData.Inventory.Any())
             {
                 await ProcessNpcInventoryUpdatesAsync(userId, npcId, updateData.Inventory);
             }
@@ -838,11 +855,28 @@ namespace AiGMBackEnd.Services.Processors
             // Convert the update data to JSON for storage update
             string updateJson = System.Text.Json.JsonSerializer.Serialize(updateData, _jsonSerializerOptions);
             
-            // Only apply the update if there's something to update
-            if (!string.IsNullOrEmpty(updateJson) && updateJson != "{}")
+            // Only apply the update if there's something to update beyond inventory
+             if (!string.IsNullOrEmpty(updateJson) && updateJson != "{}")
             {
-                await UpdateEntityAsync(userId, "npcs", npcId, updateJson);
+                // Check if the only thing serialized was an empty inventory list we already processed
+                var tempDeserialize = System.Text.Json.JsonSerializer.Deserialize<NpcUpdatePayload>(updateJson, _jsonSerializerOptions);
+                if (tempDeserialize != null && (tempDeserialize.VisibleToPlayer != null || tempDeserialize.VisualDescription != null)) // Add other NPC fields here if needed
+                {
+                     await UpdateEntityAsync(userId, "npcs", npcId, updateJson);
+                }
+                 else if (updateData.Inventory == null || !updateData.Inventory.Any()) // If inventory was null/empty AND nothing else was set
+                 {
+                      _loggingService.LogInfo($"Skipping empty NPC update for {npcId}");
+                 }
+                 else // Only inventory was updated, which we handled above.
+                 {
+                      _loggingService.LogInfo($"Only inventory updates found for NPC {npcId}. Already processed.");
+                 }
             }
+             else if (updateData.Inventory == null || !updateData.Inventory.Any()) // If inventory was null/empty AND updateJson was empty/{}
+             {
+                 _loggingService.LogInfo($"Skipping empty NPC update for {npcId}");
+             }
         }
         
         private async Task ProcessNpcInventoryUpdatesAsync(string userId, string npcId, List<InventoryUpdateItem> inventoryUpdates)
@@ -946,6 +980,84 @@ namespace AiGMBackEnd.Services.Processors
             {
                 int indexToRemove = indicesToRemove[i];
                 inventoryUpdates.RemoveAt(indexToRemove);
+            }
+        }
+
+        /// <summary>
+        /// Processes location updates that include NPC list changes (Add/Remove).
+        /// </summary>
+        private async Task ProcessLocationNpcsUpdateAsync(string userId, string locationId, List<NpcListUpdateItem> npcUpdates)
+        {
+            if (npcUpdates == null || !npcUpdates.Any())
+            {
+                return;
+            }
+            
+            _loggingService.LogInfo($"Processing {npcUpdates.Count} NPC updates for location {locationId}");
+            
+            // Load the current location
+            var location = await _storageService.GetLocationAsync(userId, locationId);
+            if (location == null)
+            {
+                _loggingService.LogWarning($"Cannot process NPC updates for non-existent location: {locationId}");
+                return;
+            }
+            
+            // Initialize NPCs list if it's null
+            if (location.Npcs == null)
+            {
+                location.Npcs = new List<string>();
+            }
+            
+            // Keep track of modifications
+            bool locationModified = false;
+            
+            // Process each NPC update
+            foreach (var npcUpdate in npcUpdates)
+            {
+                string npcId = npcUpdate.NpcId;
+                if (string.IsNullOrEmpty(npcId))
+                {
+                    _loggingService.LogWarning("Skipping NPC update with missing NPC ID");
+                    continue;
+                }
+                
+                // Handle based on action
+                if (npcUpdate.Action == UpdateAction.Add)
+                {
+                    // Add NPC to location if it's not already there
+                    if (!location.Npcs.Contains(npcId))
+                    {
+                        location.Npcs.Add(npcId);
+                        locationModified = true;
+                        _loggingService.LogInfo($"Added NPC {npcId} to location {locationId}");
+                    }
+                    else
+                    {
+                        _loggingService.LogInfo($"NPC {npcId} already in location {locationId}, skipping add");
+                    }
+                }
+                else if (npcUpdate.Action == UpdateAction.Remove)
+                {
+                    // Remove NPC from location
+                    if (location.Npcs.Contains(npcId))
+                    {
+                        location.Npcs.Remove(npcId);
+                        locationModified = true;
+                        _loggingService.LogInfo($"Removed NPC {npcId} from location {locationId}");
+                    }
+                    else
+                    {
+                        _loggingService.LogInfo($"NPC {npcId} not in location {locationId}, skipping remove");
+                    }
+                }
+            }
+            
+            // Save the updated location if modified
+            if (locationModified)
+            {
+                await _storageService.SaveAsync(userId, $"locations/{locationId}", location);
+                _loggingService.LogInfo($"Saved updated NPCs for location {locationId}");
             }
         }
     }

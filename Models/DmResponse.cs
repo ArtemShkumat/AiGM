@@ -13,6 +13,7 @@ namespace AiGMBackEnd.Models
         /// The narrative text to be displayed directly to the user.
         /// </summary>
         [JsonPropertyName("userFacingText")]
+        [JsonConverter(typeof(SanitizedStringConverter))]
         public string UserFacingText { get; set; } = string.Empty;
 
         /// <summary>

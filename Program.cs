@@ -58,6 +58,9 @@ builder.Services.AddSingleton<StorageService>();
 // Register notification service
 builder.Services.AddSingleton<GameNotificationService>();
 
+// Register LLM response deserializer
+builder.Services.AddSingleton<ILlmResponseDeserializer, LlmResponseDeserializer>();
+
 // Register AI services
 builder.Services.AddSingleton<AiGMBackEnd.Services.AIProviders.AIProviderFactory>();
 builder.Services.AddSingleton<AiService>();

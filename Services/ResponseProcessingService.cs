@@ -24,8 +24,11 @@ namespace AiGMBackEnd.Services
         private readonly ISummarizePromptProcessor _summarizePromptProcessor;
         private readonly IEnemyStatBlockProcessor _enemyStatBlockProcessor;
         private readonly ICombatResponseProcessor _combatResponseProcessor;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private readonly ILlmResponseDeserializer _llmResponseDeserializer;
         private readonly GameNotificationService _gameNotificationService;
+
+        // Deserialization timeout constant
+        private static readonly TimeSpan DeserializationTimeout = TimeSpan.FromSeconds(30);
 
         public ResponseProcessingService(
             StorageService storageService,
@@ -39,6 +42,7 @@ namespace AiGMBackEnd.Services
             ISummarizePromptProcessor summarizePromptProcessor,
             IEnemyStatBlockProcessor enemyStatBlockProcessor,
             ICombatResponseProcessor combatResponseProcessor,
+            ILlmResponseDeserializer llmResponseDeserializer,
             GameNotificationService gameNotificationService)
         {
             _storageService = storageService;
@@ -52,23 +56,8 @@ namespace AiGMBackEnd.Services
             _summarizePromptProcessor = summarizePromptProcessor;
             _enemyStatBlockProcessor = enemyStatBlockProcessor;
             _combatResponseProcessor = combatResponseProcessor;
+            _llmResponseDeserializer = llmResponseDeserializer;
             _gameNotificationService = gameNotificationService;
-
-            _jsonSerializerOptions = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                WriteIndented = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                AllowTrailingCommas = true
-            };
-            // Register custom converters
-            _jsonSerializerOptions.Converters.Add(new CreationHookConverter());
-            _jsonSerializerOptions.Converters.Add(new UpdatePayloadConverter());
-            _jsonSerializerOptions.Converters.Add(new UpdatePayloadDictionaryConverter());
-            _jsonSerializerOptions.Converters.Add(new CreationHookListConverter());
-            _jsonSerializerOptions.Converters.Add(new LlmSafeIntConverter());
-            _jsonSerializerOptions.Converters.Add(new NpcListConverter());
-            _jsonSerializerOptions.Converters.Add(new PartialUpdatesConverter());
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)
@@ -83,37 +72,77 @@ namespace AiGMBackEnd.Services
                     return await HandleCombatResponseAsync(llmResponse, userId);
                 }
 
-                DmResponse dmResponse = null;
-                try
+                // Early check for empty response
+                if (string.IsNullOrWhiteSpace(llmResponse))
                 {
-                    if (string.IsNullOrWhiteSpace(llmResponse))
-                    {
-                        _loggingService.LogWarning($"Received empty or null LLM response for user {userId}.");
-                        return new ProcessedResult { UserFacingText = "Received an empty response.", Success = false, ErrorMessage = "Empty LLM response." };
-                    }
-                    llmResponse = llmResponse.Trim();
-                    _loggingService.LogInfo($"Attempting to deserialize DmResponse for user {userId}. Response length: {llmResponse.Length}");
-                    dmResponse = System.Text.Json.JsonSerializer.Deserialize<DmResponse>(llmResponse, _jsonSerializerOptions);
-                    _loggingService.LogInfo($"Successfully deserialized DmResponse for user {userId}. HasPartialUpdates: {dmResponse.PartialUpdates != null}, HasNewEntities: {dmResponse.NewEntities != null && dmResponse.NewEntities.Count > 0}");
-                }
-                catch (System.Text.Json.JsonException jsonEx)
-                {
-                    _loggingService.LogError($"Failed to deserialize DmResponse JSON for user {userId}: {jsonEx.Message}. Inner exception: {jsonEx.InnerException?.Message}. Raw response: {llmResponse}");
-                    _loggingService.LogError($"JSON exception stack trace: {jsonEx.StackTrace}");
-                    return new ProcessedResult { UserFacingText = "Error processing game state update (Invalid Format).", Success = false, ErrorMessage = $"JSON Deserialization Error: {jsonEx.Message}" };
-                }
-                catch (Exception ex)
-                {
-                    _loggingService.LogError($"Unexpected error during DmResponse deserialization for user {userId}: {ex.Message}. Inner exception: {ex.InnerException?.Message}. Raw response: {llmResponse}");
-                    _loggingService.LogError($"Exception stack trace: {ex.StackTrace}");
-                    return new ProcessedResult { UserFacingText = "Error processing game state update (Internal Error).", Success = false, ErrorMessage = $"Deserialization Error: {ex.Message}" };
+                    _loggingService.LogWarning($"Received empty or null LLM response for user {userId}.");
+                    return new ProcessedResult 
+                    { 
+                        UserFacingText = "Received an empty response.", 
+                        Success = false, 
+                        ErrorMessage = "Empty LLM response." 
+                    };
                 }
 
-                if (dmResponse == null)
+                // Attempt to deserialize the response with timeout protection
+                var (deserializationSuccess, dmResponse, deserializationError) = 
+                    await _llmResponseDeserializer.TryDeserializeAsync<DmResponse>(llmResponse, DeserializationTimeout);
+
+                string extractedUserFacingText = null;
+                
+                // If deserialization failed, try to salvage the situation
+                if (!deserializationSuccess || dmResponse == null)
                 {
-                    _loggingService.LogError($"DmResponse deserialization resulted in null for user {userId}. Raw response: {llmResponse}");
-                    return new ProcessedResult { UserFacingText = "Error processing game state update (Null Response).", Success = false, ErrorMessage = "Deserialized DmResponse was null." };
+                    // Try to extract just the userFacingText using regex
+                    extractedUserFacingText = ExtractUserFacingTextAsFallback(llmResponse);
+                    
+                    if (!string.IsNullOrWhiteSpace(extractedUserFacingText))
+                    {
+                        _loggingService.LogInfo($"Successfully extracted userFacingText via regex: {extractedUserFacingText.Substring(0, Math.Min(50, extractedUserFacingText.Length))}...");
+                        
+                        // Now try to fix the JSON by replacing the problematic userFacingText with a placeholder
+                        string sanitizedJson = System.Text.RegularExpressions.Regex.Replace(
+                            llmResponse,
+                            @"(""userFacingText""\s*:\s*"").*?("")",
+                            "$1placeholder$2",
+                            System.Text.RegularExpressions.RegexOptions.Singleline);
+                        
+                        // Try deserialization again with sanitized JSON
+                        (deserializationSuccess, dmResponse, deserializationError) = 
+                            await _llmResponseDeserializer.TryDeserializeAsync<DmResponse>(sanitizedJson, DeserializationTimeout);
+                        
+                        if (deserializationSuccess && dmResponse != null)
+                        {
+                            _loggingService.LogInfo("Successfully deserialized sanitized JSON after userFacingText extraction");
+                        }
+                    }
                 }
+                
+                // If we still couldn't deserialize, return an error response
+                if (!deserializationSuccess || dmResponse == null)
+                {
+                    string errorMessage = deserializationError is TimeoutException
+                        ? "Deserialization timed out."
+                        : $"Deserialization Error: {deserializationError?.Message}";
+
+                    string userFacingMessage = !string.IsNullOrWhiteSpace(extractedUserFacingText)
+                        ? extractedUserFacingText  // Use extracted text if available
+                        : (deserializationError is TimeoutException
+                            ? "Error processing game state update (Timeout)."
+                            : "Error processing game state update (Invalid Format).");
+
+                    _loggingService.LogError($"Failed to deserialize DmResponse for user {userId}: {errorMessage}. Raw response: {llmResponse}");
+                    
+                    return new ProcessedResult 
+                    { 
+                        UserFacingText = userFacingMessage, 
+                        Success = !string.IsNullOrWhiteSpace(extractedUserFacingText), // Mark as success if we got fallback text
+                        ErrorMessage = errorMessage 
+                    };
+                }
+
+                // Process the successfully deserialized DmResponse
+                _loggingService.LogInfo($"Successfully deserialized DmResponse for user {userId}. HasPartialUpdates: {dmResponse.PartialUpdates != null}, HasNewEntities: {dmResponse.NewEntities != null && dmResponse.NewEntities.Count > 0}");
 
                 bool hasUpdates = 
                     (dmResponse.NewEntities != null && dmResponse.NewEntities.Count > 0) || 
@@ -133,7 +162,11 @@ namespace AiGMBackEnd.Services
                     _loggingService.LogInfo($"No new entities or partial updates in DmResponse for user {userId}");
                 }
 
-                string userFacingText = dmResponse.UserFacingText ?? string.Empty;
+                // If we extracted userFacingText earlier, use that instead of the placeholder
+                string userFacingText = !string.IsNullOrWhiteSpace(extractedUserFacingText) 
+                    ? extractedUserFacingText 
+                    : dmResponse.UserFacingText ?? string.Empty;
+                    
                 if (promptType == PromptType.DM)
                 {
                     await _storageService.AddDmMessageAsync(userId, userFacingText);
@@ -210,6 +243,7 @@ namespace AiGMBackEnd.Services
                 
                 string jsonContent = CleanJsonResponse(llmResponse);
 
+                // Validate JSON using JsonDocument
                 try
                 {
                     using var jsonDoc = System.Text.Json.JsonDocument.Parse(jsonContent);
@@ -354,6 +388,72 @@ namespace AiGMBackEnd.Services
                 // Decide if we should re-throw or just log
                 throw; 
             }
+        }
+
+        /// <summary>
+        /// Extracts just the userFacingText from a JSON response using regex as a fallback
+        /// when full JSON deserialization fails.
+        /// </summary>
+        private string ExtractUserFacingTextAsFallback(string jsonResponse)
+        {
+            if (string.IsNullOrWhiteSpace(jsonResponse))
+            {
+                return string.Empty;
+            }
+            
+            try
+            {
+                // Look for "userFacingText": "some text" pattern
+                var match = System.Text.RegularExpressions.Regex.Match(
+                    jsonResponse,
+                    @"""userFacingText""\s*:\s*""((?:\\.|[^""\\])*)""",
+                    System.Text.RegularExpressions.RegexOptions.Singleline);
+                
+                if (match.Success && match.Groups.Count > 1)
+                {
+                    string extractedText = match.Groups[1].Value;
+                    
+                    // Unescape common JSON escape sequences
+                    extractedText = System.Text.RegularExpressions.Regex.Replace(
+                        extractedText, 
+                        @"\\([""\\\/bfnrt])",  // Handle standard JSON escape sequences
+                        m => {
+                            return m.Groups[1].Value switch
+                            {
+                                "\"" => "\"",
+                                "\\" => "\\",
+                                "/" => "/",
+                                "b" => "\b",
+                                "f" => "\f",
+                                "n" => "\n",
+                                "r" => "\r",
+                                "t" => "\t",
+                                _ => m.Groups[1].Value
+                            };
+                        });
+                    
+                    // Also handle Unicode escapes like \uXXXX
+                    extractedText = System.Text.RegularExpressions.Regex.Replace(
+                        extractedText,
+                        @"\\u([0-9a-fA-F]{4})",
+                        m => {
+                            if (int.TryParse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber, null, out int unicodeValue))
+                            {
+                                return char.ConvertFromUtf32(unicodeValue);
+                            }
+                            return m.Value; // Keep as is if parse fails
+                        });
+                    
+                    _loggingService.LogInfo($"Extracted userFacingText via regex: {extractedText.Substring(0, Math.Min(50, extractedText.Length))}...");
+                    return extractedText;
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error extracting userFacingText via regex: {ex.Message}");
+            }
+            
+            return string.Empty;
         }
     }
 }

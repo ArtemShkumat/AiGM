@@ -45,14 +45,7 @@ namespace AiGMBackEnd.Services.Processors
                     _loggingService.LogWarning($"NPC type mismatch or missing for NPC {npc.Id}. Setting to 'NPC'.");
                     npc.Type = "NPC";
                 }
-
-                // Fix potential quirk mapping issue from schema update
-                // If Personality exists and Quirks is null but the JObject had 'traits'
-                if (npc.Personality != null && npc.Personality.Quirks == null && npcData["personality"]?["traits"] != null)
-                {
-                    _loggingService.LogInfo($"Mapping 'traits' from JSON to 'Quirks' property for NPC {npc.Id}");
-                    npc.Personality.Quirks = npcData["personality"]["traits"].ToString();
-                }
+                
 
                 // Save the deserialized NPC data
                 // Assuming the path format is correct

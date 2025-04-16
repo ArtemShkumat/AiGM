@@ -22,7 +22,7 @@ Format adherence: Use only the field names provided below. An array means you ma
   
   "personality": {
     "temperament": "GENERAL_DISPOSITION",
-    "quirks": "NOTABLE_CHARACTER_TRAITS",
+    "traits": "NOTABLE_CHARACTER_TRAITS",
     "motivations": "WHAT_DRIVES_THIS_NPC",
     "fears": "WHAT_THIS_NPC_IS_AFRAID_OF",
     "secrets": [

@@ -93,7 +93,8 @@ namespace AiGMBackEnd.Models
             string type = null;
             while (readerClone.Read())
             {
-                if (readerClone.TokenType == JsonTokenType.PropertyName && readerClone.GetString() == "type")
+                if (readerClone.TokenType == JsonTokenType.PropertyName && 
+                    (readerClone.GetString().ToLowerInvariant() == "type")) // Case-insensitive check for "type"
                 {
                     if (readerClone.Read() && readerClone.TokenType == JsonTokenType.String)
                     {
@@ -124,8 +125,14 @@ namespace AiGMBackEnd.Models
 
             // Now deserialize based on the determined type using the original reader
             var actualOptions = JsonConverterHelper.GetOptionsWithoutConverter(options, this); // Call static helper
+            
+            // Set PropertyNameCaseInsensitive to true to handle case variations in property names
+            actualOptions.PropertyNameCaseInsensitive = true;
+            
+            // Normalize the type to uppercase for comparison
+            string normalizedType = type.ToUpperInvariant();
 
-            return type switch
+            return normalizedType switch
             {
                 "NPC" => JsonSerializer.Deserialize<NpcCreationHook>(ref reader, actualOptions),
                 "LOCATION" => JsonSerializer.Deserialize<LocationCreationHook>(ref reader, actualOptions),
@@ -165,7 +172,8 @@ namespace AiGMBackEnd.Models
             string type = null;
             while (readerClone.Read())
             {
-                if (readerClone.TokenType == JsonTokenType.PropertyName && readerClone.GetString() == "type")
+                if (readerClone.TokenType == JsonTokenType.PropertyName && 
+                    (readerClone.GetString().ToLowerInvariant() == "type")) // Case-insensitive check for "type"
                 {
                     if (readerClone.Read() && readerClone.TokenType == JsonTokenType.String)
                     {
@@ -193,6 +201,11 @@ namespace AiGMBackEnd.Models
             }
 
             var actualOptions = JsonConverterHelper.GetOptionsWithoutConverter(options, this); // Call static helper
+            
+            // Set PropertyNameCaseInsensitive to true to handle case variations in property names
+            actualOptions.PropertyNameCaseInsensitive = true;
+            
+            // Normalize the type to uppercase for comparison
             string normalizedType = type.ToUpperInvariant();
 
             return normalizedType switch
@@ -306,11 +319,22 @@ namespace AiGMBackEnd.Models
 
             var result = new List<NpcListUpdateItem>();
             
-            // Skip the StartArray token
-            reader.Read();
-            
-            while (reader.TokenType != JsonTokenType.EndArray)
+            // Create new options to avoid infinite recursion
+            var newOptions = new JsonSerializerOptions(options);
+            var existingConverter = newOptions.Converters.FirstOrDefault(c => c.GetType() == typeof(NpcListConverter));
+            if (existingConverter != null)
             {
+                newOptions.Converters.Remove(existingConverter);
+            }
+            
+            // Read until we reach the end of the array
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndArray)
+                {
+                    return result;
+                }
+                
                 if (reader.TokenType == JsonTokenType.String)
                 {
                     // Simple string format - convert to NpcListUpdateItem with Add action
@@ -322,22 +346,63 @@ namespace AiGMBackEnd.Models
                             Action = UpdateAction.Add 
                         });
                     }
-                    reader.Read(); // Move to next token
                 }
                 else if (reader.TokenType == JsonTokenType.StartObject)
                 {
                     // Object format - deserialize as NpcListUpdateItem
-                    var itemOptions = new JsonSerializerOptions(options);
-                    var existingConverter = itemOptions.Converters.FirstOrDefault(c => c.GetType() == typeof(NpcListConverter));
-                    if (existingConverter != null)
+                    // We need to manually parse the object to handle case insensitivity
+                    string npcId = null;
+                    UpdateAction action = UpdateAction.Add; // Default action
+                    
+                    // Start reading the object
+                    while (reader.Read())
                     {
-                        itemOptions.Converters.Remove(existingConverter);
+                        if (reader.TokenType == JsonTokenType.EndObject)
+                        {
+                            break;
+                        }
+                        
+                        if (reader.TokenType == JsonTokenType.PropertyName)
+                        {
+                            string propertyName = reader.GetString().ToLowerInvariant(); // Make case-insensitive
+                            reader.Read(); // Move to value
+                            
+                            if (propertyName == "npcid")
+                            {
+                                npcId = reader.GetString();
+                            }
+                            else if (propertyName == "action")
+                            {
+                                string actionStr = reader.GetString()?.ToUpperInvariant(); // Make case-insensitive
+                                if (actionStr == "ADD")
+                                {
+                                    action = UpdateAction.Add;
+                                }
+                                else if (actionStr == "REMOVE")
+                                {
+                                    action = UpdateAction.Remove;
+                                }
+                                else
+                                {
+                                    // Default to Add if unrecognized
+                                    action = UpdateAction.Add;
+                                }
+                            }
+                            else
+                            {
+                                // Skip unknown properties
+                                reader.Skip();
+                            }
+                        }
                     }
                     
-                    var item = JsonSerializer.Deserialize<NpcListUpdateItem>(ref reader, itemOptions);
-                    if (item != null)
+                    // Add the item if we found an npcId
+                    if (!string.IsNullOrEmpty(npcId))
                     {
-                        result.Add(item);
+                        result.Add(new NpcListUpdateItem { 
+                            NpcId = npcId, 
+                            Action = action 
+                        });
                     }
                 }
                 else
@@ -347,7 +412,7 @@ namespace AiGMBackEnd.Models
                 }
             }
             
-            return result;
+            throw new JsonException("Unexpected end of JSON array in NpcList.");
         }
 
         public override void Write(Utf8JsonWriter writer, List<NpcListUpdateItem> value, JsonSerializerOptions options)
@@ -356,16 +421,27 @@ namespace AiGMBackEnd.Models
             
             if (value != null)
             {
-                var itemOptions = new JsonSerializerOptions(options);
-                var existingConverter = itemOptions.Converters.FirstOrDefault(c => c.GetType() == typeof(NpcListConverter));
+                // Create new options to avoid infinite recursion
+                var newOptions = new JsonSerializerOptions(options);
+                var existingConverter = newOptions.Converters.FirstOrDefault(c => c.GetType() == typeof(NpcListConverter));
                 if (existingConverter != null)
                 {
-                    itemOptions.Converters.Remove(existingConverter);
+                    newOptions.Converters.Remove(existingConverter);
                 }
                 
                 foreach (var item in value)
                 {
-                    JsonSerializer.Serialize(writer, item, itemOptions);
+                    writer.WriteStartObject();
+                    
+                    // Write npcId
+                    writer.WritePropertyName("npcId");
+                    writer.WriteStringValue(item.NpcId);
+                    
+                    // Write action
+                    writer.WritePropertyName("action");
+                    writer.WriteStringValue(item.Action.ToString());
+                    
+                    writer.WriteEndObject();
                 }
             }
             
@@ -496,8 +572,18 @@ namespace AiGMBackEnd.Models
         {
             var entries = new List<NpcUpdatePayload>();
             
-            // Remove this converter from options to avoid recursion
-            var newOptions = JsonConverterHelper.GetOptionsWithoutConverter(options, this);
+            // Create new options with case-insensitive property names
+            var newOptions = new JsonSerializerOptions(options)
+            {
+                PropertyNameCaseInsensitive = true  // Ensure case-insensitive property name matching
+            };
+            
+            // Remove this converter to avoid recursion
+            var existingConverter = newOptions.Converters.FirstOrDefault(c => c.GetType() == typeof(PartialUpdatesConverter));
+            if (existingConverter != null)
+            {
+                newOptions.Converters.Remove(existingConverter);
+            }
             
             while (reader.Read())
             {
@@ -508,10 +594,26 @@ namespace AiGMBackEnd.Models
 
                 if (reader.TokenType == JsonTokenType.StartObject)
                 {
-                    var entry = JsonSerializer.Deserialize<NpcUpdatePayload>(ref reader, newOptions);
-                    if (entry != null)
+                    try
                     {
-                        entries.Add(entry);
+                        var entry = JsonSerializer.Deserialize<NpcUpdatePayload>(ref reader, newOptions);
+                        if (entry != null)
+                        {
+                            // Ensure ID is set - needed for further processing
+                            if (string.IsNullOrEmpty(entry.Id))
+                            {
+                                // Skip this entry if ID is missing
+                                reader.Skip(); // Skip to the end of the object
+                                continue;
+                            }
+                            
+                            entries.Add(entry);
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        // Log and skip this entry if there's a deserialization error
+                        reader.Skip(); // Skip to the end of the object
                     }
                 }
                 else
@@ -527,8 +629,18 @@ namespace AiGMBackEnd.Models
         {
             var entries = new List<LocationUpdatePayload>();
             
-            // Remove this converter from options to avoid recursion
-            var newOptions = JsonConverterHelper.GetOptionsWithoutConverter(options, this);
+            // Create new options with case-insensitive property names
+            var newOptions = new JsonSerializerOptions(options)
+            {
+                PropertyNameCaseInsensitive = true  // Ensure case-insensitive property name matching
+            };
+            
+            // Remove this converter to avoid recursion
+            var existingConverter = newOptions.Converters.FirstOrDefault(c => c.GetType() == typeof(PartialUpdatesConverter));
+            if (existingConverter != null)
+            {
+                newOptions.Converters.Remove(existingConverter);
+            }
             
             while (reader.Read())
             {
@@ -539,10 +651,26 @@ namespace AiGMBackEnd.Models
 
                 if (reader.TokenType == JsonTokenType.StartObject)
                 {
-                    var entry = JsonSerializer.Deserialize<LocationUpdatePayload>(ref reader, newOptions);
-                    if (entry != null)
+                    try
                     {
-                        entries.Add(entry);
+                        var entry = JsonSerializer.Deserialize<LocationUpdatePayload>(ref reader, newOptions);
+                        if (entry != null)
+                        {
+                            // Ensure ID is set - needed for further processing
+                            if (string.IsNullOrEmpty(entry.Id))
+                            {
+                                // Try to find an id property with different casing if it's missing
+                                reader.Skip(); // Skip to the end of the object
+                                continue;  // Skip this entry if ID is missing
+                            }
+                            
+                            entries.Add(entry);
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        // Log and skip this entry if there's a deserialization error
+                        reader.Skip(); // Skip to the end of the object
                     }
                 }
                 else
@@ -593,6 +721,53 @@ namespace AiGMBackEnd.Models
             }
 
             writer.WriteEndObject();
+        }
+    }
+
+    // --- Sanitized String Converter ---
+    /// <summary>
+    /// JsonConverter that sanitizes string values by removing or fixing problematic escape sequences.
+    /// This helps handle malformed strings from LLM responses.
+    /// </summary>
+    public class SanitizedStringConverter : JsonConverter<string>
+    {
+        public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.String)
+            {
+                throw new JsonException("Expected string value");
+            }
+
+            // Get the raw string
+            string value = reader.GetString();
+            
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+            
+            try
+            {
+                // Replace problematic escape sequences
+                // Convert double backslashes that aren't part of valid escape sequences to single backslashes
+                value = System.Text.RegularExpressions.Regex.Replace(
+                    value,
+                    @"\\\\(?![""\\\/bfnrt]|u[0-9a-fA-F]{4})",  // Match \\ not followed by valid escape chars
+                    @"\");                                      // Replace with single \
+                
+                return value;
+            }
+            catch (Exception)
+            {
+                // If any error occurs during sanitization, return the original string
+                return value;
+            }
+        }
+
+        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+        {
+            // For writing, just use the normal string serialization
+            writer.WriteStringValue(value);
         }
     }
 } 
