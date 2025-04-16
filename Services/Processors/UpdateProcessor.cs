@@ -609,6 +609,8 @@ namespace AiGMBackEnd.Services.Processors
                 {
                     await _inventoryStorageService.RemoveItemFromPlayerInventoryAsync(userId, itemName, quantity);
                     _loggingService.LogInfo($"Removed {quantity}x {itemName} from player inventory");
+                    // Mark this item for removal to prevent double-processing
+                    indicesToRemove.Add(i);
                 }
                 else
                 {
