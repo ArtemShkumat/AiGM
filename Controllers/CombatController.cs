@@ -283,7 +283,8 @@ namespace AiGMBackEnd.Controllers
                     EnemyLevel = enemyStatBlock.Level,
                     CurrentEnemySuccesses = combatState.CurrentEnemySuccesses,
                     SuccessesRequired = enemyStatBlock.SuccessesRequired,
-                    PlayerConditions = combatState.PlayerConditions
+                    PlayerConditions = combatState.PlayerConditions,
+                    CombatLog = combatState.CombatLog
                 });
             }
             catch (Exception ex)

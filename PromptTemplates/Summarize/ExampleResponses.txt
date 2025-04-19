@@ -6,25 +6,25 @@ The adventurer arrived in Emberhold Village and discovered the Ember Crystal was
 {
   "messages": [
     {
-      "Player to DM": "Where am I?"
+      "Player to GM": "Where am I?"
     },
     {
-      "DM to Player": "You find yourself in the heart of Emberhold Village... You see the Elder's Hut. And not too far from you, two people... an elderly man... a shorter, stout man... likely a merchant. { \"newEntities\": [], \"partialUpdates\": { \"npc_elderVarric\": { \"type\": \"NPC\", \"visibleToPlayer\": true }, \"npc_merchantThorin\": { \"type\": \"NPC\", \"visibleToPlayer\": true } } }"
+      "GM to Player": "You find yourself in the heart of Emberhold Village... You see the Elder's Hut. And not too far from you, two people... an elderly man... a shorter, stout man... likely a merchant."
     },
     {
       "Player to Merchant Thorin": "Hail friend! How's business?"
     },
     {
-      "Merchant Thorin to Player": "\"Well met, friend! Business is... 'Interesting' at the moment. The village is quiet what with the Ember Crystal gone... But I'm always open for trade...\" { \"newEntities\": [], \"partialUpdates\": { \"npc_merchantThorin\": { \"type\": \"NPC\", \"knowsPlayer\": true, \"knownToPlayer\": true } } }"
+      "Merchant Thorin to Player": "\"Well met, friend! Business is... 'Interesting' at the moment. The village is quiet what with the Ember Crystal gone... But I'm always open for trade...\""
     },
     {
       "Player to Merchant Thorin": "Anywhere I can get a drink around here?"
     },
     {
-      "Merchant Thorin to Player": "\"Well, the Empty Hearth is normally the social gathering spot, but without the Ember Crystal... Ah, but there's always the back room at my place! I keep a private stock of fine dwarven ale... I'll even let you have a cup on the house...\" { \"newEntities\": [], \"partialUpdates\": {} }"
+      "Merchant Thorin to Player": "\"Well, the Empty Hearth is normally the social gathering spot, but without the Ember Crystal... Ah, but there's always the back room at my place! I keep a private stock of fine dwarven ale... I'll even let you have a cup on the house...\""
     },
     {
-      "Player to DM": "I go where Thorin suggests."
+      "Player to GM": "I go where Thorin suggests."
     }
   ]
 }
@@ -41,25 +41,25 @@ The adventurer explored the Whisperwood Forest, encountering a wounded forest gu
 {
   "messages": [
     {
-      "Player to DM": "I search the clearing for tracks."
+      "Player to GM": "I search the clearing for tracks."
     },
     {
-      "DM to Player": "You scan the muddy ground near the ancient standing stones. Faintly, you make out large, clawed footprints leading deeper into the Whispering Woods, alongside smaller, booted prints. An unnatural chill hangs in the air. { \"newEntities\": [], \"partialUpdates\": { \"loc_ancientStones\": { \"type\": \"LOCATION\", \"descriptionDetails\": \"Clawed and booted tracks lead into the woods.\" } } }"
+      "GM to Player": "You scan the muddy ground near the ancient standing stones. Faintly, you make out large, clawed footprints leading deeper into the Whispering Woods, alongside smaller, booted prints. An unnatural chill hangs in the air."
     },
     {
-      "Player to DM": "Follow the tracks."
+      "Player to GM": "Follow the tracks."
     },
     {
-      "DM to Player": "Pushing through tangled vines, you follow the tracks deeper into the woods. The light dims. Suddenly, you hear a low growl. Ahead, a large wolf with fur the color of shadow and glowing red eyes blocks your path. It doesn't look natural. { \"newEntities\": [ { \"type\": \"npc\", \"id\": \"npc_shadowWolf\", \"name\": \"Shadow Wolf\", \"description\": \"A large wolf seemingly infused with shadow magic, glowing red eyes.\" } ], \"partialUpdates\": { \"npc_shadowWolf\": { \"type\": \"NPC\", \"visibleToPlayer\": true, \"hostile\": true } } }"
+      "GM to Player": "Pushing through tangled vines, you follow the tracks deeper into the woods. The light dims. Suddenly, you hear a low growl. Ahead, a large wolf with fur the color of shadow and glowing red eyes blocks your path. It doesn't look natural."
     },
     {
-      "Player to DM": "I draw my sword and prepare to fight."
+      "Player to GM": "I draw my sword and prepare to fight."
     },
     {
-      "DM to Player": "The Shadow Wolf lunges! You manage to parry its snapping jaws. The fight is fierce, but your blade finds its mark. The creature dissolves into wisps of black smoke, leaving behind a strange, cold amulet shaped like a coiled snake. { \"newEntities\": [], \"partialUpdates\": { \"npc_shadowWolf\": { \"type\": \"NPC\", \"visibleToPlayer\": false, \"status\": \"defeated\" }, \"player\": { \"type\": \"PLAYER\", \"inventory\": [ { \"itemId\": \"item_snakeAmulet\", \"name\": \"Shadow Snake Amulet\", \"quantity\": 1 } ] } } }"
+      "GM to Player": "The Shadow Wolf lunges! You manage to parry its snapping jaws. The fight is fierce, but your blade finds its mark. The creature dissolves into wisps of black smoke, leaving behind a strange, cold amulet shaped like a coiled snake."
     },
     {
-      "Player to DM": "I continue following the tracks, examining the amulet."
+      "Player to GM": "I continue following the tracks, examining the amulet."
     }
   ]
 }
@@ -76,29 +76,76 @@ The player visited the Dusty Tome Tavern in Westdale where they met Innkeeper Gr
 {
   "messages": [
     {
-      "Player to DM": "I approach the city guard captain."
+      "Player to GM": "I approach the city guard captain."
     },
     {
-      "DM to Player": "You walk up to Captain Valerius near the West Gate of Silverhaven. He stands tall, his armor gleaming, observing the flow of traffic. He eyes you warily. { \"newEntities\": [], \"partialUpdates\": { \"npc_captainValerius\": { \"type\": \"NPC\", \"visibleToPlayer\": true } } }"
+      "GM to Player": "You walk up to Captain Valerius near the West Gate of Silverhaven. He stands tall, his armor gleaming, observing the flow of traffic. He eyes you warily."
     },
     {
       "Player to Captain Valerius": "Captain, I've heard troubling rumors about disappearances near the old docks. What can you tell me?"
     },
     {
-      "Captain Valerius to Player": "\"Rumors are just that - rumors, citizen. The docks are rough, people come and go. Nothing for the City Watch to worry about. Keep your nose out of guard business.\" His tone is dismissive. { \"newEntities\": [], \"partialUpdates\": { \"npc_captainValerius\": { \"type\": \"NPC\", \"attitudeTowardsPlayer\": \"dismissive\" } } }"
+      "Captain Valerius to Player": "\"Rumors are just that - rumors, citizen. The docks are rough, people come and go. Nothing for the City Watch to worry about. Keep your nose out of guard business.\" His tone is dismissive."
     },
     {
-      "Player to DM": "I try to gauge his reaction. Does he seem nervous or just annoyed?"
+      "Player to GM": "I try to gauge his reaction. Does he seem nervous or just annoyed?"
     },
     {
-      "DM to Player": "He seems mostly annoyed, perhaps a little impatient, but you don't detect obvious nervousness. He clearly wants you to leave. { \"newEntities\": [], \"partialUpdates\": {} }"
+      "GM to Player": "He seems mostly annoyed, perhaps a little impatient, but you don't detect obvious nervousness. He clearly wants you to leave."
     },
     {
-      "Player to DM": "I leave the captain and head towards the Rusty Flagon tavern near the docks."
+      "Player to GM": "I leave the captain and head towards the Rusty Flagon tavern near the docks."
     }
   ]
 }
 
 ## EXPECTED SUMMARY OUTPUT:
 
-The adventurer approached Captain Valerius at Silverhaven's West Gate to inquire about rumored disappearances near the docks. The Captain dismissed the rumors and warned the adventurer to stay out of guard business. Seeming annoyed rather than nervous, the Captain prompted the adventurer to leave, who then decided to head towards the Rusty Flagon tavern. 
+The adventurer approached Captain Valerius at Silverhaven's West Gate to inquire about rumored disappearances near the docks. The Captain dismissed the rumors and warned the adventurer to stay out of guard business. Seeming annoyed rather than nervous, the Captain prompted the adventurer to leave, who then decided to head towards the Rusty Flagon tavern.
+
+EXAMPLE 4:
+The player investigated Blackwood Manor. They entered through the unlocked front door into a dusty foyer. They examined a grandfather clock, finding it stopped. Proceeding into the drawing-room, they found overturned furniture and a torn portrait. In the library, they discovered a hidden journal behind a loose brick, detailing the previous owner's obsession with necromancy and a ritual. A sudden chill filled the room, and ghostly whispers surrounded them. Frightened, they attempted to flee the library but found the door jammed. After forcing the door open, they ran back through the drawing-room and foyer, exiting the manor.
+
+## INPUT CONVERSATION LOG:
+
+{
+  "messages": [
+    { "Player to GM": "I approach the spooky-looking Blackwood Manor." },
+    { "GM to Player": "The iron gates hang open, groaning softly in the wind. The path is overgrown. Blackwood Manor looms before you, windows like dark eyes. The air is heavy and still." },
+    { "Player to GM": "Are the front doors locked?" },
+    { "GM to Player": "You push tentatively on the heavy oak doors. One creaks open slightly, revealing a dark, dust-filled foyer." },
+    { "Player to GM": "I enter the foyer cautiously." },
+    { "GM to Player": "Cobwebs hang like macabre decorations. Dust motes dance in the single beam of light piercing the gloom from a high, grimy window. A large grandfather clock stands silent against one wall. Doors lead off to the left and right." },
+    { "Player to GM": "I check the grandfather clock." },
+    { "GM to Player": "The clock face is cracked, the hands frozen at midnight. Thick dust covers it." },
+    { "Player to GM": "Okay, I'll try the door on the left." },
+    { "GM to Player": "This door leads into what seems to have been a drawing-room. Furniture is draped in white sheets, though some pieces are overturned. A large, torn portrait hangs above a cold fireplace." },
+    { "Player to GM": "Examine the portrait." },
+    { "GM to Player": "The portrait depicts a stern-looking man in old-fashioned clothes. It's been slashed diagonally, obscuring much of his face." },
+    { "Player to GM": "Anything else of interest here?" },
+    { "GM to Player": "Scattered papers lie near the overturned desk, mostly mundane household accounts, but one seems to be a letter, half-burnt." },
+    { "Player to GM": "Read the letter." },
+    { "GM to Player": "Much of it is illegible, but you can make out words like '...forbidden knowledge...', '...power beyond imagining...', and '...the ritual demands a price...'" },
+    { "Player to GM": "Okay, enough of this room. I'll go back to the foyer and try the door on the right." },
+    { "GM to Player": "You return to the foyer and open the right-hand door. This appears to be a library. Bookshelves line the walls, floor to ceiling, many bare, others crammed with decaying tomes." },
+    { "Player to GM": "Search the library for anything unusual." },
+    { "GM to Player": "Dust lies thick everywhere. As you scan the shelves, you notice one brick in the fireplace hearth seems slightly loose." },
+    { "Player to GM": "I try to pry the loose brick out." },
+    { "GM to Player": "With a little effort, the brick comes free, revealing a small alcove behind it. Inside rests a leather-bound journal." },
+    { "Player to GM": "I take the journal and read it." },
+    { "GM to Player": "The journal belonged to the manor's last owner, Lord Alistair Blackwood. It details his descent into necromantic studies, his attempts to contact the dead, and preparations for a dark ritual. The last entry speaks of imminent success..." },
+    { "Player to GM": "This is creepy. Anything else happen?" },
+    { "GM to Player": "As you finish reading, a sudden, unnatural cold permeates the library. You hear faint, overlapping whispers seeming to come from all around you, though you can't make out the words. The air grows heavy." },
+    { "Player to GM": "Okay, time to leave! I head for the library door." },
+    { "GM to Player": "You reach the door and pull the handle, but it doesn't budge. It seems stuck fast." },
+    { "Player to GM": "Seriously? I try to force it open. Shoulder charge!" },
+    { "GM to Player": "You slam your shoulder against the door. Wood groans in protest. On the second try, the door bursts open with a crack." },
+    { "Player to GM": "I run out, back through the foyer, and out the front door!" },
+    { "GM to Player": "You race through the drawing-room, back into the foyer, and stumble out the main entrance, gasping for fresh air. The heavy door slams shut behind you with a definitive boom." },
+    { "Player to GM": "I don't look back and get away from the manor." }
+  ]
+}
+
+## EXPECTED SUMMARY OUTPUT:
+
+The adventurer approached and entered Blackwood Manor through the unlocked front door into the foyer, noting a stopped grandfather clock. They explored the drawing-room, finding overturned furniture, a torn portrait, and a partially burnt letter mentioning forbidden knowledge. Moving to the library, they discovered a loose brick hiding a journal detailing Lord Blackwood's necromantic ritual plans. Upon reading it, the room grew cold with whispers, and the door became stuck. The adventurer forced the door open and fled the manor back through the drawing-room and foyer. 

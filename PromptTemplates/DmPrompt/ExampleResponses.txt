@@ -949,7 +949,7 @@ USER:
     "currentLocationId": "loc_cozyInnRoom"
   },
   "worldContext": {
-    "gameTime": "Day 2, 08:00",
+    "gameTime": "1486-03-20T23:15:00Z",
     "daysSinceStart": 2
   },
   "playerInput": "I decide to rest in my room until the next morning to recover."
@@ -961,7 +961,7 @@ RESPONSE:
   "partialUpdates": {
     "world": {
       "type": "WORLD",
-      "gameTime": "Day 3, 08:00",
+      "gameTime": "1486-03-21T08:00:00Z",
       "daysSinceStart": 3
     }
   }
