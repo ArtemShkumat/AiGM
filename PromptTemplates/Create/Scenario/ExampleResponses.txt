@@ -12,7 +12,8 @@
     "description": "A gritty noir adventure in the rain-soaked, neon-lit streets of a cyberpunk metropolis.",
     "startingLocationId": "settlement_sector_7",
     "currencies": ["Euro-Yen Credits"],
-    "economy": "Currency: Euro-Yen Credits (¥€).\nTypical costs: Synth-Noodle bowl: ¥€10. Shot of cheap synth-booze: ¥€5. Dose of 'Glimmer' stim: ¥€50. Basic data chip: ¥€100. Cramped sleep-pod rental (8 hours): ¥€40. Back-alley cyber-repair (minor): ¥€300+. Basic pistol: ¥€500.\nTypical incomes (Sector 7): Unskilled labor (day): ¥€50-80. Info brokering (minor job): ¥€200-500. Street samurai merc work (risky gig): ¥€1000+. Corporate wageslave (low-tier): ¥€1500/month."
+    "economy": "Currency: Euro-Yen Credits (¥€).\nTypical costs: Synth-Noodle bowl: ¥€10. Shot of cheap synth-booze: ¥€5. Dose of 'Glimmer' stim: ¥€50. Basic data chip: ¥€100. Cramped sleep-pod rental (8 hours): ¥€40. Back-alley cyber-repair (minor): ¥€300+. Basic pistol: ¥€500.\nTypical incomes (Sector 7): Unskilled labor (day): ¥€50-80. Info brokering (minor job): ¥€200-500. Street samurai merc work (risky gig): ¥€1000+. Corporate wageslave (low-tier): ¥€1500/month.",
+    "gameTime": "2077-10-23 09:00"
   },
   "locations": [
     {
@@ -114,7 +115,8 @@
     "description": "A low-fantasy saga set in the politically charged continent of Westeros, where seasons are long and winter threatens all.",
     "startingLocationId": "settlement_winter_village",
     "currencies": ["Gold Dragons", "Silver Stags", "Copper Pennies"],
-    "economy": "Currency conversion: 1 Gold Dragon = 210 Silver Stags = 11760 Copper Pennies.\nTypical costs (Winter Village/North): Loaf of bread: 3 Pennies. Mug of ale: 2 Pennies. Bowl of stew: 1 Stag. Inn stay (common): 5 Stags/night. Basic dagger: 10 Dragons. Traveler's clothes: 1 Dragon. Horse (average): 50 Dragons.\nTypical incomes (North): Farmhand: 1-2 Stags/day. Village guard: 5 Stags/day. Skilled craftsperson: 10-20 Stags/day. Minor landed knight: 50-100 Dragons/year."
+    "economy": "Currency conversion: 1 Gold Dragon = 210 Silver Stags = 11760 Copper Pennies.\nTypical costs (Winter Village/North): Loaf of bread: 3 Pennies. Mug of ale: 2 Pennies. Bowl of stew: 1 Stag. Inn stay (common): 5 Stags/night. Basic dagger: 10 Dragons. Traveler's clothes: 1 Dragon. Horse (average): 50 Dragons.\nTypical incomes (North): Farmhand: 1-2 Stags/day. Village guard: 5 Stags/day. Skilled craftsperson: 10-20 Stags/day. Minor landed knight: 50-100 Dragons/year.",
+    "gameTime": "298 AC, End of Summer, Day 1, Morning"
   },
   "locations": [
     {

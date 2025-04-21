@@ -231,7 +231,7 @@ namespace AiGMBackEnd.Services.Processors
                         if (entityHook is LocationCreationHook locHook)
                         {
                             jobId = BackgroundJob.Enqueue(() =>
-                                _serviceProvider.GetService<HangfireJobsService>().CreateLocationAsync(userId, locHook.Id, locHook.Name, locHook.LocationType, locHook.Context, false));
+                                _serviceProvider.GetService<HangfireJobsService>().CreateLocationAsync(userId, locHook.Id, locHook.Name, locHook.LocationType, locHook.Context, null, false));
                             _loggingService.LogInfo($"Scheduled location creation job for {locHook.Id}, job ID: {jobId}");
                         }
                          else { throw new InvalidCastException("Mismatched hook type for LOCATION"); }

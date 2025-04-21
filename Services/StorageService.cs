@@ -88,20 +88,20 @@ namespace AiGMBackEnd.Services
             await _entityStorageService.GetPlayerAsync(userId);
 
         // World accessors
-        public async Task<World> GetWorldAsync(string userId) => 
-            await _entityStorageService.GetWorldAsync(userId);
+        public async Task<World> GetWorldAsync(string userId, string scenarioId = null) => 
+            await _entityStorageService.GetWorldAsync(userId, scenarioId);
 
         // Game Setting accessors
-        public async Task<GameSetting> GetGameSettingAsync(string userId) => 
-            await _entityStorageService.GetGameSettingAsync(userId);
+        public async Task<GameSetting> GetGameSettingAsync(string userId, string scenarioId = null) => 
+            await _entityStorageService.GetGameSettingAsync(userId, scenarioId);
 
         // Game Preferences accessors
         public async Task<GamePreferences> GetGamePreferencesAsync(string userId) => 
             await _entityStorageService.GetGamePreferencesAsync(userId);
 
         // Location accessors
-        public async Task<Location> GetLocationAsync(string userId, string locationId) => 
-            await _entityStorageService.GetLocationAsync(userId, locationId);
+        public async Task<Location> GetLocationAsync(string userId, string locationId, string scenarioId = null) => 
+            await _entityStorageService.GetLocationAsync(userId, locationId, scenarioId);
 
         // NPC accessors
         public async Task<Npc> GetNpcAsync(string userId, string npcId) => 

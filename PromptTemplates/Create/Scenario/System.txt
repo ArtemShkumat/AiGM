@@ -13,6 +13,7 @@ IMPORTANT GUIDELINES:
         *   Typical costs for common items/services (e.g., meal, drink, lodging, basic weapon, simple clothing).
         *   Optionally, typical income ranges for different social levels or jobs relevant to the setting.
     *   Select a logical `startingLocationId` from the generated locations (usually the main settlement).
+    *   Determine a plausible starting `gameTime` (e.g., "1247-05-15 8 am", "Year 1, Spring, Day 1, Morning").
 3.  **Create Hierarchical Locations:**
     *   Generate an initial set of locations following a top-down structure, starting broad and getting more specific. A good starting point is:
         *   1 Realm/World

@@ -46,14 +46,8 @@ namespace AiGMBackEnd.Services.Processors
                     await _gameScenarioService.SaveScenarioFileAsync(scenarioId, "gameSetting.json", gameSettingData, userId, isStartingScenario);
                 }
                 
-                // Create a basic world.json file
-                var worldData = new JObject
-                {
-                    ["id"] = scenarioId,
-                    ["name"] = gameSettingData?["gameName"]?.ToString() ?? "New World",
-                    ["description"] = gameSettingData?["description"]?.ToString() ?? "",
-                    ["entities"] = new JArray()
-                };
+                // Create the initial world.json file based on World.cs structure
+                JObject worldData = CreateInitialWorldJson(gameSettingData, scenarioId);
                 await _gameScenarioService.SaveScenarioFileAsync(scenarioId, "world.json", worldData, userId, isStartingScenario);
                 
                 // Process locations
@@ -77,6 +71,22 @@ namespace AiGMBackEnd.Services.Processors
                 _logger.LogError(ex, $"Error processing scenario {scenarioId}: {ex.Message}");
                 throw;
             }
+        }
+
+        private JObject CreateInitialWorldJson(JToken gameSettingData, string scenarioId)
+        {
+            string gameTime = gameSettingData?["gameTime"]?.ToString() ?? "Year 1, Day 1, 8:00 AM";
+            
+            return new JObject
+            {
+                ["type"] = "WORLD",
+                ["gameTime"] = gameTime,
+                ["daysSinceStart"] = 1,
+                ["currentPlayer"] = "", // Assuming no player initially for scenario
+                ["locations"] = new JArray(),
+                ["npcs"] = new JArray(),
+                ["quests"] = new JArray()
+            };
         }
 
         private async Task ProcessLocationsAsync(string scenarioId, JArray locationsData, string userId, bool isStartingScenario)
@@ -179,6 +189,40 @@ namespace AiGMBackEnd.Services.Processors
                 entities.Add(entityObject);
                 worldJson["entities"] = entities;
                 
+                // Add entity summary based on type
+                switch (entityType)
+                {
+                    case "Location":
+                        var locationsArray = (JArray)worldJson["locations"] ?? new JArray();
+                        var locationSummary = new JObject
+                        {
+                            ["id"] = entityId,
+                            ["name"] = entityName,
+                            // Extract LocationType from the actual location data if available, otherwise default
+                            // This requires loading the specific location file which is not done here.
+                            // For now, we'll leave it potentially blank or generic. 
+                            // A separate WorldSync job might be better for populating details.
+                            ["locationType"] = "" // Placeholder - Requires location data lookup
+                        };
+                        locationsArray.Add(locationSummary);
+                        worldJson["locations"] = locationsArray;
+                        break;
+                    case "Npc":
+                        var npcsArray = (JArray)worldJson["npcs"] ?? new JArray();
+                        var npcSummary = new JObject
+                        {
+                            ["id"] = entityId,
+                            ["name"] = entityName
+                        };
+                        npcsArray.Add(npcSummary);
+                        worldJson["npcs"] = npcsArray;
+                        break;
+                    // Add cases for other entity types like Quests if needed
+                    default:
+                        _logger.LogWarning($"Attempted to register unsupported entity type '{entityType}' in world.json");
+                        return; // Don't save if type is unknown
+                }
+
                 // Save updated world.json
                 await _gameScenarioService.SaveScenarioFileAsync(scenarioId, worldPath, worldJson, userId, isStartingScenario);
             }
@@ -230,6 +274,7 @@ namespace AiGMBackEnd.Services.Processors
                                 entityName, 
                                 locationType, 
                                 context, 
+                                initialLocationId,
                                 isStartingScenario, 
                                 new Dictionary<string, string> { { "scenarioId", scenarioId } }
                             )

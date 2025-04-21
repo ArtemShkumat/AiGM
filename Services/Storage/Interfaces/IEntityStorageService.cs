@@ -8,10 +8,10 @@ namespace AiGMBackEnd.Services.Storage
     public interface IEntityStorageService
     {
         Task<Player> GetPlayerAsync(string userId);
-        Task<World> GetWorldAsync(string userId);
-        Task<GameSetting> GetGameSettingAsync(string userId);
+        Task<World> GetWorldAsync(string userId, string scenarioId = null);
+        Task<GameSetting> GetGameSettingAsync(string userId, string scenarioId = null);
         Task<GamePreferences> GetGamePreferencesAsync(string userId);
-        Task<Location> GetLocationAsync(string userId, string locationId);
+        Task<Location> GetLocationAsync(string userId, string locationId, string scenarioId = null);
         Task<Npc> GetNpcAsync(string userId, string npcId);
         Task<Quest> GetQuestAsync(string userId, string questId);
         Task<List<Npc>> GetNpcsInLocationAsync(string userId, string locationId);

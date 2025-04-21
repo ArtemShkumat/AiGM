@@ -155,7 +155,7 @@ namespace AiGMBackEnd.Services
         /// <summary>
         /// Creates a location entity
         /// </summary>
-        public async Task CreateLocationAsync(string userId, string locationId, string locationName, string locationType, string context, bool isStartingScenario = false)
+        public async Task CreateLocationAsync(string userId, string locationId, string locationName, string locationType, string context, string parentLocationId = null, bool isStartingScenario = false)
         {
             var request = new PromptRequest 
             { 
@@ -164,7 +164,8 @@ namespace AiGMBackEnd.Services
                 LocationId = locationId,
                 LocationName = locationName,
                 LocationType = locationType,
-                Context = context
+                Context = context,
+                ParentLocationId = parentLocationId
             };
             
             // Add metadata to track if this is for a starting scenario
@@ -176,7 +177,7 @@ namespace AiGMBackEnd.Services
         /// <summary>
         /// Creates a location entity with additional metadata
         /// </summary>
-        public async Task CreateLocationWithMetadataAsync(string userId, string locationId, string locationName, string locationType, string context, bool isStartingScenario, Dictionary<string, string> additionalMetadata)
+        public async Task CreateLocationWithMetadataAsync(string userId, string locationId, string locationName, string locationType, string context, string parentLocationId = null, bool isStartingScenario = false, Dictionary<string, string> additionalMetadata = null)
         {
             var request = new PromptRequest 
             { 
@@ -185,7 +186,8 @@ namespace AiGMBackEnd.Services
                 LocationId = locationId,
                 LocationName = locationName,
                 LocationType = locationType,
-                Context = context
+                Context = context,
+                ParentLocationId = parentLocationId
             };
             
             // Add metadata to track if this is for a starting scenario

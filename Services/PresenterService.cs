@@ -150,7 +150,7 @@ namespace AiGMBackEnd.Services
                         case "LOCATION":
                             var locName = reference.ReferenceId.Replace("loc_", "").Replace("_", " ");
                             jobId = BackgroundJob.Enqueue(() => 
-                                _hangfireJobsService.CreateLocationAsync(userId, reference.ReferenceId, locName, "BUILDING", contextMessage, false));
+                                _hangfireJobsService.CreateLocationAsync(userId, reference.ReferenceId, locName, "BUILDING", contextMessage, null, false));
                             break;
                             
                         case "QUEST":
