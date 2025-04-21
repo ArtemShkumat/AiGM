@@ -45,7 +45,6 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
                 new WorldContextSection(world).AppendTo(promptContentBuilder);
-                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
                 new PlayerContextSection(player).AppendTo(promptContentBuilder);
                 
                 promptContentBuilder.AppendLine();

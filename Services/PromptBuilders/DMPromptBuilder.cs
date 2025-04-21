@@ -51,16 +51,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Process connected locations
                 var connectedLocations = new List<Location>();
                 if (location != null)
-                {
-                    foreach (var cl in location.ConnectedLocations)
-                    {
-                        var connectedLocation = await _storageService.GetLocationAsync(request.UserId, cl);
-                        if (connectedLocation != null)
-                        {
-                            connectedLocations.Add(connectedLocation);
-                        }
-                    }
-                    
+                {                    
                     // Get parent location if it exists
                     if (!string.IsNullOrEmpty(location.ParentLocation))
                     {
@@ -69,11 +60,6 @@ namespace AiGMBackEnd.Services.PromptBuilders
                         {
                             promptContentDict["parentLocation"] = parentLocation;
                         }
-                    }
-                    
-                    if (connectedLocations.Count > 0)
-                    {
-                        promptContentDict["connectedLocations"] = connectedLocations;
                     }
                 }
 

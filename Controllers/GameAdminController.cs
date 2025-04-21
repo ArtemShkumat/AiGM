@@ -7,6 +7,7 @@ using AiGMBackEnd.Services;
 using AiGMBackEnd.Services.Storage;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using AiGMBackEnd.Models.Prompts;
 
 namespace AiGMBackEnd.Controllers
 {
@@ -104,34 +105,31 @@ namespace AiGMBackEnd.Controllers
             }
         }
         
-        [HttpPost("{gameId}/sync-npc-locations")]
-        public async Task<IActionResult> SyncNpcLocations(string gameId)
+        [HttpPost("createScenario")]
+        public async Task<IActionResult> CreateScenario([FromBody] CreateScenarioRequest request)
         {
-            if (string.IsNullOrEmpty(gameId))
+            if (string.IsNullOrEmpty(request.ScenarioPrompt))
             {
-                return BadRequest("GameId is required");
+                return BadRequest("Scenario prompt is required");
             }
 
             try
             {
-                // Call the service to perform the synchronization
-                var (updatedCount, syncResults) = await _worldSyncService.SyncNpcLocationsAsync(gameId);
+                _loggingService.LogInfo($"Creating starting scenario from prompt: {request.ScenarioPrompt}");
+                
+                // Call the presenter service to handle scenario creation with isStartingScenario flag
+                var scenarioId = await _presenterService.CreateScenarioAsync(request, isStartingScenario: true);
                 
                 return Ok(new { 
-                    Message = $"NPC location synchronization complete. Updated {updatedCount} locations.", 
-                    UpdatedCount = updatedCount,
-                    Details = syncResults 
+                    Message = "Starting scenario creation initiated", 
+                    ScenarioId = scenarioId,
+                    CheckStatusEndpoint = $"/api/EntityStatus/pending/{scenarioId}"
                 });
-            }
-            catch (DirectoryNotFoundException dnfe)
-            {
-                _loggingService.LogWarning($"Synchronization failed for game {gameId}. Game directory not found: {dnfe.Message}");
-                return NotFound(new { Message = $"Synchronization failed. Game with ID '{gameId}' not found." });
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error during NPC location synchronization for game {gameId}: {ex.Message}");
-                return StatusCode(500, new { Message = $"An unexpected error occurred during synchronization.", Error = ex.Message });
+                _loggingService.LogError($"Error creating scenario: {ex.Message}");
+                return StatusCode(500, new { Message = "An unexpected error occurred during scenario creation", Error = ex.Message });
             }
         }
     }

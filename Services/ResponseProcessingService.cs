@@ -26,6 +26,7 @@ namespace AiGMBackEnd.Services
         private readonly ICombatResponseProcessor _combatResponseProcessor;
         private readonly ILlmResponseDeserializer _llmResponseDeserializer;
         private readonly GameNotificationService _gameNotificationService;
+        private readonly IScenarioProcessor _scenarioProcessor;
 
         // Deserialization timeout constant
         private static readonly TimeSpan DeserializationTimeout = TimeSpan.FromSeconds(30);
@@ -43,7 +44,8 @@ namespace AiGMBackEnd.Services
             IEnemyStatBlockProcessor enemyStatBlockProcessor,
             ICombatResponseProcessor combatResponseProcessor,
             ILlmResponseDeserializer llmResponseDeserializer,
-            GameNotificationService gameNotificationService)
+            GameNotificationService gameNotificationService,
+            IScenarioProcessor scenarioProcessor)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -58,6 +60,7 @@ namespace AiGMBackEnd.Services
             _combatResponseProcessor = combatResponseProcessor;
             _llmResponseDeserializer = llmResponseDeserializer;
             _gameNotificationService = gameNotificationService;
+            _scenarioProcessor = scenarioProcessor;
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)
@@ -287,49 +290,88 @@ namespace AiGMBackEnd.Services
                     throw new InvalidOperationException($"ProcessHiddenJsonAsync should not be called for {promptType} after refactoring.");
                 }
 
-                JObject jsonObject;
-                try
-                {
-                    jsonObject = JObject.Parse(jsonContent);
-                }
-                catch (Newtonsoft.Json.JsonException ex)
-                {
-                    _loggingService.LogError($"Failed to parse JSON in ProcessHiddenJsonAsync (Newtonsoft): {ex.Message}. Content: {jsonContent}");
-                    jsonContent = jsonContent.Trim();
-                    jsonObject = JObject.Parse(jsonContent);
-                }
+                // Parse the JSON content
+                var jsonObject = JObject.Parse(jsonContent);
 
+                // Dispatch to the appropriate processor based on prompt type
                 switch (promptType)
                 {
+                    case PromptType.CreateLocation:
+                        await _locationProcessor.ProcessAsync(jsonObject, userId);
+                        break;
                     case PromptType.CreateQuest:
                         await _questProcessor.ProcessAsync(jsonObject, userId);
                         break;
                     case PromptType.CreateNPC:
                         await _npcProcessor.ProcessAsync(jsonObject, userId);
                         break;
-                    case PromptType.CreateLocation:
-                        await _locationProcessor.ProcessAsync(jsonObject, userId);
-                        break;
                     case PromptType.CreatePlayer:
                         await _playerProcessor.ProcessAsync(jsonObject, userId);
+                        break;
+                    case PromptType.Summarize:
+                        // Handle Summarize using the same method as other types
+                        // This should be handled in its own processor eventually
+                        _loggingService.LogWarning($"Summarize handling via ProcessHiddenJsonAsync is not yet fully implemented");
+                        // Skip calling an unimplemented method
                         break;
                     case PromptType.CreateEnemyStatBlock:
                         await _enemyStatBlockProcessor.ProcessAsync(jsonObject, userId);
                         break;
-                    case PromptType.SummarizeCombat:
-                        // Future: Handle summarizing combat results
-                        _loggingService.LogWarning($"SummarizeCombat handling not yet implemented in ProcessHiddenJsonAsync");
+                    case PromptType.CreateScenario:
+                        // Get the scenario ID from the request, assuming it's passed via RequestMetadata
+                        var scenarioId = GetScenarioIdFromMetadata(jsonContent);
+                        if (string.IsNullOrEmpty(scenarioId))
+                        {
+                            // If not in metadata, try to generate a consistent ID from the content
+                            scenarioId = $"scenario_{DateTime.UtcNow.Ticks}";
+                        }
+                        
+                        // Check if this is a starting scenario from metadata
+                        bool isStartingScenario = false;
+                        try 
+                        {
+                            var metadataObj = jsonObject["metadata"] as JObject;
+                            if (metadataObj != null && metadataObj["isStartingScenario"] != null)
+                            {
+                                bool.TryParse(metadataObj["isStartingScenario"].ToString(), out isStartingScenario);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _loggingService.LogWarning($"Error extracting isStartingScenario flag: {ex.Message}");
+                        }
+                        
+                        await _scenarioProcessor.ProcessAsync(jsonObject, scenarioId, userId, isStartingScenario);
                         break;
                     default:
-                        _loggingService.LogWarning($"Unhandled PromptType in ProcessHiddenJsonAsync: {promptType}");
+                        _loggingService.LogWarning($"Unsupported prompt type for ProcessHiddenJsonAsync: {promptType}");
                         break;
                 }
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing hidden JSON for {promptType}: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                _loggingService.LogError($"Error in ProcessHiddenJsonAsync for {promptType}, user {userId}: {ex.Message}");
                 throw;
             }
+        }
+
+        // Helper method to extract scenario ID from metadata if available
+        private string GetScenarioIdFromMetadata(string jsonContent)
+        {
+            try
+            {
+                var jsonObject = JObject.Parse(jsonContent);
+                var metadata = jsonObject["metadata"] as JObject;
+                if (metadata != null)
+                {
+                    return metadata["scenarioId"]?.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogWarning($"Error extracting scenario ID from metadata: {ex.Message}");
+            }
+            return null;
         }
 
         /// <summary>

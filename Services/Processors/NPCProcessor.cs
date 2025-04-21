@@ -5,6 +5,7 @@ using AiGMBackEnd.Models;
 using AiGMBackEnd.Services;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json; // Added for deserialization
+using System.IO;
 
 namespace AiGMBackEnd.Services.Processors
 {
@@ -25,44 +26,52 @@ namespace AiGMBackEnd.Services.Processors
         {
             try
             {
-                _loggingService.LogInfo("Processing NPC creation using direct deserialization.");
+                _loggingService.LogInfo("Processing NPC creation from LLM response.");
 
-                // Directly deserialize JObject to Npc model
-                var npc = npcData.ToObject<Models.Npc>();
-
-                // Basic validation
-                if (npc == null || string.IsNullOrEmpty(npc.Id))
+                // Check if this is for a starting scenario
+                bool isStartingScenario = false;
+                var metadata = npcData["metadata"] as JObject;
+                if (metadata != null && metadata["isStartingScenario"] != null)
                 {
-                    _loggingService.LogError("Failed to deserialize NPC data or NPC ID is missing.");
-                    string? potentialId = npcData["id"]?.ToString();
-                    _loggingService.LogWarning($"Attempted NPC creation for ID (from JObject): {potentialId ?? "Not Found"}");
+                    bool.TryParse(metadata["isStartingScenario"].ToString(), out isStartingScenario);
+                }
+
+                // Extract basic properties
+                string npcId = npcData["id"]?.ToString();
+                if (string.IsNullOrEmpty(npcId))
+                {
+                    _loggingService.LogError("Missing npcId in NPC data");
                     return;
                 }
 
-                // Ensure the Type is set correctly
-                if (string.IsNullOrEmpty(npc.Type) || npc.Type != "NPC")
+                string npcType = npcData["type"]?.ToString() ?? "NPC";
+                npcData["type"] = npcType; // Ensure type is set
+
+                // Choose the correct storage method based on whether this is a starting scenario
+                if (isStartingScenario)
                 {
-                    _loggingService.LogWarning($"NPC type mismatch or missing for NPC {npc.Id}. Setting to 'NPC'.");
-                    npc.Type = "NPC";
+                    // Get scenarioId from metadata
+                    string scenarioId = metadata?["scenarioId"]?.ToString();
+                    if (string.IsNullOrEmpty(scenarioId))
+                    {
+                        _loggingService.LogError($"Missing scenarioId in metadata for starting scenario NPC {npcId}");
+                        return;
+                    }
+
+                    string npcPath = Path.Combine("Data", "startingScenarios", scenarioId, "npcs", $"{npcId}.json");
+                    await File.WriteAllTextAsync(npcPath, npcData.ToString());
+                    _loggingService.LogInfo($"Saved starting scenario NPC {npcId} to {npcPath}");
                 }
-                
-
-                // Save the deserialized NPC data
-                // Assuming the path format is correct
-                await _storageService.SaveAsync(userId, $"npcs/{npc.Id}", npc);
-                _loggingService.LogInfo($"Successfully processed and saved NPC: {npc.Id}");
-
-            }
-            catch (JsonSerializationException jsonEx)
-            {
-                _loggingService.LogError($"JSON deserialization error processing NPC creation: {jsonEx.Message}");
-                _loggingService.LogInfo($"Problematic JSON data: {npcData.ToString()}"); // Use LogInfo
-                throw;
+                else
+                {
+                    // Normal user save
+                    await _storageService.SaveAsync(userId, "npc", npcData);
+                    _loggingService.LogInfo($"Successfully processed and saved NPC {npcId} for user {userId}");
+                }
             }
             catch (Exception ex)
             {
                 _loggingService.LogError($"Error processing NPC creation: {ex.Message}");
-                _loggingService.LogInfo($"JSON data during error: {npcData.ToString()}"); // Use LogInfo
                 throw;
             }
         }

@@ -5,6 +5,8 @@ using AiGMBackEnd.Services;
 using AiGMBackEnd.Services.Processors;
 using AiGMBackEnd.Services.Storage;
 using AiGMBackEnd.Hubs;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +80,10 @@ builder.Services.AddSingleton<IUpdateProcessor, UpdateProcessor>();
 builder.Services.AddSingleton<ISummarizePromptProcessor, SummarizePromptProcessor>();
 builder.Services.AddSingleton<IEnemyStatBlockProcessor, EnemyStatBlockProcessor>();
 builder.Services.AddSingleton<ICombatResponseProcessor, CombatResponseProcessor>();
+
+// Register scenario processor using a factory for lazy loading to break circular dependencies
+// This needs to be registered before services that depend on it
+builder.Services.AddSingleton<IScenarioProcessor, ScenarioProcessor>();
 
 // Register CombatPromptBuilder (if not already there - assuming it exists)
 // If CombatPromptBuilder is not part of a broader registration, add it explicitly

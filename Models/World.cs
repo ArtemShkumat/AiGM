@@ -17,12 +17,6 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("currentPlayer")]
         public string CurrentPlayer { get; set; }
         
-        [JsonPropertyName("worldStateEffects")]
-        public Dictionary<string, string> WorldStateEffects { get; set; } = new Dictionary<string, string>();
-        
-        [JsonPropertyName("lore")]
-        public List<LoreSummary> Lore { get; set; } = new List<LoreSummary>();
-        
         [JsonPropertyName("locations")]
         public List<LocationSummary> Locations { get; set; } = new List<LocationSummary>();
         
@@ -32,19 +26,7 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("quests")]
         public List<QuestSummary> Quests { get; set; } = new List<QuestSummary>();
     }
-
-    public class LoreSummary
-    {
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
-        
-        [JsonPropertyName("title")]
-        public string Title { get; set; }
-        
-        [JsonPropertyName("summary")]
-        public string Summary { get; set; }
-    }
-
+   
     public class LocationSummary
     {
         [JsonPropertyName("id")]
@@ -73,17 +55,5 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("title")]
         public string Title { get; set; }
-    }
-
-    public class WorldHistoryLogEntry
-    {
-        [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
-        
-        [JsonPropertyName("event")]
-        public string Event { get; set; }
-        
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
-    }
+    }   
 }

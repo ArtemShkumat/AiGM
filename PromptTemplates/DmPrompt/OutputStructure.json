@@ -206,15 +206,6 @@
               "currentLocationId": {
                 "type": "string"
               },
-              "knownToPlayer": {
-                "type": "boolean"
-              },
-              "knowsPlayer": {
-                "type": "boolean"
-              },
-              "visibleToPlayer": {
-                "type": "boolean"
-              },
               "visualDescription": {
                 "type": "object",
                 "properties": {
@@ -322,23 +313,6 @@
               },
               "knownToPlayer": {
                 "type": "boolean"
-              },
-              "npcs": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "npcId": {
-                      "type": "string",
-                      "description": "ID of the NPC"
-                    },
-                    "action": {
-                      "type": "string",
-                      "enum": ["Add", "Remove"]
-                    }
-                  },
-                  "required": ["npcId", "action"]
-                }
               },
               "parentLocation": {
                 "type": "string"

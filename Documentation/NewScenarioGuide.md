@@ -42,7 +42,6 @@ The following JSON files are essential for a complete starting scenario:
 *   Location files in the `locations/` subfolder (e.g., `locations/loc_emberhold.json`): Define all locations in the world.
 *   NPC files in the `npcs/` subfolder (e.g., `npcs/npc_elderVarric.json`): Define all NPCs in the world.
 *   Quest files in the `quests/` subfolder (e.g., `quests/quest_emberCrystal.json`): Define all quests in the world.
-*   Lore files in the `lore/` subfolder (e.g., `lore/lore_emberCrystal.json`): Define all lore items in the world.
 
 ## 3. File Structures and Key Fields
 

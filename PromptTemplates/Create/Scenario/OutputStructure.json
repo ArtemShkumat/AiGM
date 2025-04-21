@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "properties": {
+    "gameSetting": {
+      "type": "object",
+      "properties": {
+        "gameName": { "type": "string" },
+        "genre": { "type": "string" },
+        "theme": { "type": "string" },
+        "setting": { "type": "string" },
+        "description": { "type": "string" },
+        "startingLocationId": { "type": "string" },
+        "currencies": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "economy": { "type": "string" }
+      },
+      "required": ["gameName", "genre", "theme", "setting", "description", "startingLocationId", "currencies", "economy"]
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "locationType": { "type": "string" },
+          "parentLocationId": { 
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": ["id", "name", "description", "locationType", "parentLocationId"]
+      }
+    },
+    "npcs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "initialLocationId": { "type": "string" }
+        },
+        "required": ["id", "name", "description", "initialLocationId"]
+      }
+    }
+  },
+  "required": ["gameSetting", "locations", "npcs"]
+} 

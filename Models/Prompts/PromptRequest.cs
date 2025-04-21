@@ -1,5 +1,6 @@
 using System;
 using AiGMBackEnd.Services;
+using System.Collections.Generic;
 
 namespace AiGMBackEnd.Models.Prompts
 {
@@ -17,5 +18,9 @@ namespace AiGMBackEnd.Models.Prompts
         public string Context { get; set; } = string.Empty;
         public string QuestName { get; set; } = string.Empty;
         public string QuestId { get; set; } = string.Empty;
+        public string ScenarioId { get; set; } = string.Empty;
+        
+        // Dictionary for additional metadata that doesn't fit into the standard properties
+        public Dictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
     }
 } 

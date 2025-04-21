@@ -22,17 +22,7 @@ USER:
 
 RESPONSE:
 {
-  "userFacingText": "*I wipe my hands on my apron and beam at you* \"Well met, traveler! I'm Eliza and indeed I do! Got a fresh batch of healing potions just brewed yesterday. Three silvers each, and I'll throw in a minor stamina potion if you buy three or more. The winter wolves have been making the north road treacherous lately, so folks are stocking up.\"",
-  "partialUpdates": {
-    "npcEntries": [
-      {
-        "id": "npc_elizaHerbalist",
-        "type": "NPC",
-        "knowsPlayer": true,
-        "knownToPlayer": true
-      }
-    ]
-  }
+  "userFacingText": "*I wipe my hands on my apron and beam at you* \"Well met, traveler! I'm Eliza and indeed I do! Got a fresh batch of healing potions just brewed yesterday. Three silvers each, and I'll throw in a minor stamina potion if you buy three or more. The winter wolves have been making the north road treacherous lately, so folks are stocking up.\""
 }
 ---
 # EXAMPLE: SUSPICIOUS GUARD

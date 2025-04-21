@@ -80,8 +80,7 @@ Storage services include:
 - `GetQuestAsync(userId, questId)` → Task<Quest>: Get quest entity.
 - `GetNpcsInLocationAsync(userId, locationId)` → Task<List<Npc>>: Get all NPCs in a location.
 - `GetAllNpcsAsync(gameId)` → Task<List<Npc>>: Get all NPCs in a game.
-- `GetAllVisibleNpcsAsync(gameId)` → Task<List<Npc>>: Get all visible NPCs.
-- `GetVisibleNpcsInLocationAsync(gameId, locationId)` → Task<List<NpcInfo>>: Get visible NPCs in location.
+- `GetNpcsAtCurrentLocationAsync(gameId)` → Task<List<Npc>>: Get NPCs at player's current location.
 - `GetAllQuestsAsync(gameId)` → Task<List<Quest>>: Get all quests.
 - `GetActiveQuestsAsync(userId, activeQuestIds)` → Task<List<Quest>>: Get active quests.
 - `AddEntityToWorldAsync(userId, entityId, entityName, entityType)` → Task: Add entity to world.
@@ -136,7 +135,6 @@ Storage services include:
 **WorldSyncService**:
 - `SyncWorldWithEntitiesAsync(userId)` → Task: Sync world with all entities.
 - `SyncNpcLocationsAsync(gameId)` → Task<(int, List<object>)>: Sync NPCs with locations.
-- `HideNpcsInLocationAsync(userId, locationId)` → Task<int>: Set VisibleToPlayer to false for all NPCs in a specific location after player leaves.
 
 2.7. LoggingService
 Role: Provide centralized logs for prompt requests, errors, time taken, etc.
@@ -157,6 +155,12 @@ Methods:
 2.9. Models
 Where: RPGGame/Models/
 What: Classes for Npc, Player, Location, Quest, World, Prompt, PromptRequest, ProcessedResult. Includes interfaces like `ICreationHook` and `IUpdatePayload` and their implementations (e.g., `NpcCreationHook`, `PlayerUpdatePayload`) to represent structured LLM outputs. Also includes custom `JsonConverter` implementations in `Models/Converters.cs`. JSON is stored in RPGGame/Data/<UserId>/..., loaded into these model classes at runtime.
+
+Location Model Structure:
+- `Location` (abstract base class): Defines common properties for all location types including `Type`, `LocationType`, `Id`, `Name`, `Description`, `ParentLocation`, and `TypicalOccupants`.
+- `GenericLocation`: A concrete implementation of `Location` used for nested location types (Floor, Room, District, DelveRoom) that don't require unique properties beyond the base definition.
+- Specialized Location Classes (`Building`, `Delve`, `Settlement`, `Wilds`): Extend the base `Location` class with type-specific properties.
+- `LocationConverter`: JSON converter for proper serialization/deserialization of the location hierarchy.
 
 2.10. AI Providers (`Services/AIProviders/`)
 Role: Handle communication specifics for different LLM APIs (e.g., OpenAI, OpenRouter).
@@ -247,7 +251,6 @@ HangfireJobsService (Worker):
       `UpdateProcessor` iterates through the `partialUpdates` dictionary, calling `StorageService` to save changes for each entity ID.
       When a location change is detected in the player updates, `UpdateProcessor` calls:
         - Triggers conversation summarization via `SummarizeConversationAsync`
-        - Calls `HideNpcsInLocationAsync` to set all NPCs in the previous location to not visible
       Adds DM message to log via `StorageService`.
       Returns `ProcessedResult` (containing `userFacingText`).
 Hangfire completes the job.
@@ -371,7 +374,7 @@ Hangfire provides a robust job processing framework...
 *   **Stat Block Creation:** Handle potential failures during on-demand stat block creation gracefully (e.g., notify user combat cannot start).
 *   **Combat Processor Validation:** `CombatResponseProcessor` should rigorously validate LLM state updates (success counts, condition application) against game rules.
 
-*   **NPC Visibility Management:** When a player changes location, all NPCs in the previous location should have their `VisibleToPlayer` property set to `false`. This is automatically handled via the `WorldSyncService.HideNpcsInLocationAsync` method called from the `UpdateProcessor` after conversation summarization. This ensures NPCs are not automatically visible when the player returns later.
+*   **NPC Location Context:** The system tracks NPCs exclusively via their `currentLocationId` property. There are no separate visibility flags or location-based NPC lists. This simplifies the architecture and ensures a single source of truth for NPC positioning. The narrative description of NPCs (whether they're described visually, by name, etc.) is managed through the DM prompt based on narrative context rather than explicit visibility flags.
 
 ...
 (Rest of section remains largely the same)

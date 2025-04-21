@@ -32,8 +32,7 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                     id = _location.Id,
                     name = _location.Name,
                     description = _location.Description,
-                    type = _location.Type,
-                    connectedLocations = _location.ConnectedLocations
+                    type = _location.Type
                 };
                 builder.AppendLine(JsonSerializer.Serialize(simplifiedLocation, options));
             }

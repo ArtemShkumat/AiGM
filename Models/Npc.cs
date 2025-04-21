@@ -16,15 +16,6 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("currentLocationId")]
         public string CurrentLocationId { get; set; }
-
-        [JsonPropertyName("knownToPlayer")]
-        public bool KnownToPlayer { get; set; }
-
-        [JsonPropertyName("knowsPlayer")]
-        public bool KnowsPlayer { get; set; }
-
-        [JsonPropertyName("visibleToPlayer")]
-        public bool VisibleToPlayer { get; set; }
         
         [JsonPropertyName("visualDescription")]
         public VisualDescription VisualDescription { get; set; } = new VisualDescription();
@@ -42,10 +33,7 @@ namespace AiGMBackEnd.Models
         public int Age { get; set; }
 
         [JsonPropertyName("dispositionTowardsPlayer")]
-        public string DispositionTowardsPlayer { get; set; }
-        
-        [JsonPropertyName("knownEntities")]
-        public KnownEntities KnownEntities { get; set; } = new KnownEntities();        
+        public string DispositionTowardsPlayer { get; set; }     
         
         [JsonPropertyName("questInvolvement")]
         public List<string> QuestInvolvement { get; set; } = new List<string>();
@@ -80,27 +68,5 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("secrets")]
         public List<string> Secrets { get; set; } = new List<string>();
 
-    }
-
-    public class KnownEntities
-    {
-        [JsonPropertyName("npcsKnown")]
-        public List<NpcsKnownDetails> NpcsKnown { get; set; } = new List<NpcsKnownDetails>();
-        
-        [JsonPropertyName("locationsKnown")]
-        public List<string> LocationsKnown { get; set; } = new List<string>();
-    }
-
-    public class NpcsKnownDetails
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-
-        [JsonPropertyName("levelOfFamiliarity")]
-        public string LevelOfFamiliarity { get; set; }// Aware/Met/Known/Familiar/Deep
-
-        [JsonPropertyName("disposition")]
-        public string Disposition { get; set; }//Hostile/Unfriendly/Neutral/Fond/Loyal
-
-    }
+    }    
 }

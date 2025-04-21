@@ -61,6 +61,16 @@ namespace AiGMBackEnd.Services
             {
                 _loggingService.LogInfo($"Starting entity creation job for {entityType} {entityId}");
                 
+                // Check if this is for a starting scenario
+                bool isStartingScenario = false;
+                if (request.Metadata != null && request.Metadata.TryGetValue("isStartingScenario", out string isStartingScenarioStr))
+                {
+                    bool.TryParse(isStartingScenarioStr, out isStartingScenario);
+                }
+                
+                string jobContext = isStartingScenario ? "starting scenario template" : "user game";
+                _loggingService.LogInfo($"Entity creation is for {jobContext}");
+                
                 // Register that we're creating this entity
                 await _statusTrackingService.RegisterEntityCreationAsync(userId, entityId, entityType);
                 
@@ -94,7 +104,7 @@ namespace AiGMBackEnd.Services
         /// <summary>
         /// Creates an NPC entity 
         /// </summary>
-        public async Task CreateNpcAsync(string userId, string npcId, string npcName, string context, string currentLocationId)
+        public async Task CreateNpcAsync(string userId, string npcId, string npcName, string context, string currentLocationId, bool isStartingScenario = false)
         {
             var request = new PromptRequest 
             { 
@@ -106,13 +116,46 @@ namespace AiGMBackEnd.Services
                 NpcId = npcId
             };
             
+            // Add metadata to track if this is for a starting scenario
+            request.Metadata["isStartingScenario"] = isStartingScenario.ToString();
+            
+            await CreateEntityAsync(userId, npcId, "npc", request);
+        }
+        
+        /// <summary>
+        /// Creates an NPC entity with additional metadata
+        /// </summary>
+        public async Task CreateNpcWithMetadataAsync(string userId, string npcId, string npcName, string context, string currentLocationId, bool isStartingScenario, Dictionary<string, string> additionalMetadata)
+        {
+            var request = new PromptRequest 
+            { 
+                PromptType = PromptType.CreateNPC,
+                UserId = userId,
+                Context = context,
+                NpcLocation = currentLocationId,
+                NpcName = npcName,
+                NpcId = npcId
+            };
+            
+            // Add metadata to track if this is for a starting scenario
+            request.Metadata["isStartingScenario"] = isStartingScenario.ToString();
+            
+            // Add additional metadata
+            if (additionalMetadata != null)
+            {
+                foreach (var kvp in additionalMetadata)
+                {
+                    request.Metadata[kvp.Key] = kvp.Value;
+                }
+            }
+            
             await CreateEntityAsync(userId, npcId, "npc", request);
         }
         
         /// <summary>
         /// Creates a location entity
         /// </summary>
-        public async Task CreateLocationAsync(string userId, string locationId, string locationName, string locationType, string context)
+        public async Task CreateLocationAsync(string userId, string locationId, string locationName, string locationType, string context, bool isStartingScenario = false)
         {
             var request = new PromptRequest 
             { 
@@ -123,6 +166,39 @@ namespace AiGMBackEnd.Services
                 LocationType = locationType,
                 Context = context
             };
+            
+            // Add metadata to track if this is for a starting scenario
+            request.Metadata["isStartingScenario"] = isStartingScenario.ToString();
+            
+            await CreateEntityAsync(userId, locationId, "location", request);
+        }
+
+        /// <summary>
+        /// Creates a location entity with additional metadata
+        /// </summary>
+        public async Task CreateLocationWithMetadataAsync(string userId, string locationId, string locationName, string locationType, string context, bool isStartingScenario, Dictionary<string, string> additionalMetadata)
+        {
+            var request = new PromptRequest 
+            { 
+                PromptType = PromptType.CreateLocation,
+                UserId = userId,
+                LocationId = locationId,
+                LocationName = locationName,
+                LocationType = locationType,
+                Context = context
+            };
+            
+            // Add metadata to track if this is for a starting scenario
+            request.Metadata["isStartingScenario"] = isStartingScenario.ToString();
+            
+            // Add additional metadata
+            if (additionalMetadata != null)
+            {
+                foreach (var kvp in additionalMetadata)
+                {
+                    request.Metadata[kvp.Key] = kvp.Value;
+                }
+            }
             
             await CreateEntityAsync(userId, locationId, "location", request);
         }
@@ -142,6 +218,28 @@ namespace AiGMBackEnd.Services
             };
             
             await CreateEntityAsync(userId, questId, "quest", request);
+        }
+        
+        /// <summary>
+        /// Creates a scenario based on a prompt
+        /// </summary>
+        public async Task CreateScenarioAsync(string userId, string scenarioId, string scenarioPrompt, bool isStartingScenario = false)
+        {
+            var request = new PromptRequest 
+            { 
+                PromptType = PromptType.CreateScenario,
+                UserId = userId,
+                UserInput = scenarioPrompt,
+                ScenarioId = scenarioId
+            };
+            
+            // Add metadata to indicate if this is a starting scenario
+            request.Metadata = new Dictionary<string, string>
+            {
+                { "isStartingScenario", isStartingScenario.ToString() }
+            };
+            
+            await CreateEntityAsync(userId, scenarioId, "scenario", request);
         }
         
         /// <summary>

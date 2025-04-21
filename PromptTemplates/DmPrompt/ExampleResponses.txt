@@ -1,69 +1,4 @@
----
-# EXAMPLE: Player enters a location
-USER:
-{
-  "playerContext": {
-    "type": "PLAYER",
-    "currentLocationId": "loc_mainStreet"
-  },
-  "connectedLocations": [
-    {
-      "id": "loc_rustyAnchorTavern",
-      "npcs": [
-        {
-          "id": "npc_redBeardedBarkeep",
-          "currentLocationId": "loc_rustyAnchorTavern",
-          "visibleToPlayer": false,
-          "knownToPlayer": false,
-          "knowsPlayer": false
-        },
-        {
-          "id": "npc_hoodedFigure",
-          "currentLocationId": "loc_rustyAnchorTavern",
-          "visibleToPlayer": false,
-          "knownToPlayer": false,
-          "knowsPlayer": false
-        }
-      ]
-    }
-  ],
-  "npcsPresentInThisLocation": [
-    {
-      "id": "npc_johnTheBaptist",
-      "currentLocationId": "loc_mainStreet",
-      "visibleToPlayer": true
-    }
-  ],
-  "playerInput": "I walk into the tavern and look around."
-}
 
-RESPONSE:
-{
-  "userFacingText": "You leave John The Baptist behind. The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma of spiced mead. A crackling hearth dominates the far wall, casting dancing shadows across the weathered wooden tables. Several patrons huddle in small groups - sailors sharing tall tales, a pair of merchants haggling over a contract, and a hooded figure sitting alone in the corner, occasionally glancing toward the door.",
-  "partialUpdates": {
-    "player": {
-      "type": "PLAYER",
-      "currentLocationId": "loc_rustyAnchorTavern"
-    },
-    "npcEntries": [
-      {
-        "id": "npc_johnTheBaptist",
-        "type": "NPC",
-        "visibleToPlayer": false
-      },
-      {
-        "id": "npc_redBeardedBarkeep",
-        "type": "NPC",
-        "visibleToPlayer": true
-      },
-      {
-        "id": "npc_hoodedFigure",
-        "type": "NPC",
-        "visibleToPlayer": true
-      }
-    ]
-  }
-}
 ---
 # EXAMPLE: Player looks around, seeking new NPCs in a busy street.
 USER:
@@ -94,42 +29,6 @@ RESPONSE:
       "currentLocationId": "loc_emberhold"
     }
   ]
-}
----
-# EXAMPLE: Player meets an NPC and they introduce themselves to each other
-USER:
-{
-  "playerContext": {
-    "type": "PLAYER",
-    "name": "Alaric",
-    "currentLocationId": "loc_marketSquare"
-  },
-  "npcsPresentInThisLocation": [
-    {
-      "id": "npc_merchantTomas",
-      "name": "Tomas",
-      "currentLocationId": "loc_marketSquare",
-      "visibleToPlayer": true,
-      "knownToPlayer": false,
-      "knowsPlayer": false
-    }
-  ],
-  "playerInput": "I approach the merchant at his stall. \"Good day! I'm Alaric, new to these parts. What's your name?\""
-}
-
-RESPONSE:
-{
-  "userFacingText": "The merchant looks up from arranging a display of colorful fabrics. He's a middle-aged man with salt-and-pepper hair and weathered hands that speak of years of work. His initially cautious expression softens at your friendly approach.\nThe merchant replies, 'Tomas is the name. Welcome to our town, Alaric. Always good to see a new face, though times are... difficult. What brings you here?'",
-  "partialUpdates": {
-    "npcEntries": [
-      {
-        "id": "npc_merchantTomas",
-        "type": "NPC",
-        "knownToPlayer": true,
-        "knowsPlayer": true
-      }
-    ]
-  }
 }
 ---
 # EXAMPLE: Player discovers a new location with connections to existing NPCs and potential quests
@@ -227,44 +126,7 @@ RESPONSE:
     "player": {
       "type": "PLAYER",
       "currentLocationId": "loc_silverFoxTavern"
-    },
-    "locationEntries": [
-      {
-        "id": "loc_silverFoxTavern",
-        "type": "LOCATION",
-        "npcs": [
-          {
-            "npcId": "npc_bartonInnkeeper",
-            "action": "Add"
-          },
-          {
-            "npcId": "npc_linaBarmaid",
-            "action": "Add"
-          },
-          {
-            "npcId": "npc_oldTobin",
-            "action": "Add"
-          }
-        ]
-      }
-    ],
-    "npcEntries": [
-       {
-        "id": "npc_bartonInnkeeper",
-        "type": "NPC",
-        "visibleToPlayer": true
-      },
-      {
-        "id": "npc_linaBarmaid",
-        "type": "NPC",
-        "visibleToPlayer": true
-      },
-      {
-        "id": "npc_oldTobin",
-        "type": "NPC",
-        "visibleToPlayer": true
-      }
-    ]
+    }
   }
 }
 
@@ -509,8 +371,6 @@ RESPONSE:
       {
         "id": "npc_mineCrawler",
         "type": "NPC",
-        "visibleToPlayer": true,
-        "knownToPlayer": true,
         "dispositionTowardsPlayer": "Hostile"
       }
     ]
