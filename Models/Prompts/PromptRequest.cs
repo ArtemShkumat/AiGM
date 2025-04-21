@@ -21,7 +21,7 @@ namespace AiGMBackEnd.Models.Prompts
         public string QuestId { get; set; } = string.Empty;
         public string ScenarioId { get; set; } = string.Empty;
         
-        // Dictionary for additional metadata that doesn't fit into the standard properties
-        public Dictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+        // Flag to indicate if this is for a starting scenario (replaces Metadata)
+        public bool IsStartingScenario { get; set; } = false;
     }
 } 

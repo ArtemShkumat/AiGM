@@ -144,13 +144,13 @@ namespace AiGMBackEnd.Services
                         case "NPC":
                             var npcName = reference.ReferenceId.Replace("npc_", "").Replace("_", " ");
                             jobId = BackgroundJob.Enqueue(() => 
-                                _hangfireJobsService.CreateNpcAsync(userId, reference.ReferenceId, npcName, contextMessage, null, false));
+                                _hangfireJobsService.CreateNpcAsync(userId, reference.ReferenceId, npcName, contextMessage, null, false, null));
                             break;
                             
                         case "LOCATION":
                             var locName = reference.ReferenceId.Replace("loc_", "").Replace("_", " ");
                             jobId = BackgroundJob.Enqueue(() => 
-                                _hangfireJobsService.CreateLocationAsync(userId, reference.ReferenceId, locName, "BUILDING", contextMessage, null, false));
+                                _hangfireJobsService.CreateLocationAsync(userId, reference.ReferenceId, locName, "BUILDING", contextMessage, null, false, null));
                             break;
                             
                         case "QUEST":

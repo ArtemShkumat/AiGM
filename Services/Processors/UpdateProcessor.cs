@@ -221,7 +221,7 @@ namespace AiGMBackEnd.Services.Processors
                         if (entityHook is NpcCreationHook npcHook)
                         {
                             jobId = BackgroundJob.Enqueue(() =>
-                                _serviceProvider.GetService<HangfireJobsService>().CreateNpcAsync(userId, npcHook.Id, npcHook.Name, npcHook.Context, npcHook.CurrentLocationId, false));
+                                _serviceProvider.GetService<HangfireJobsService>().CreateNpcAsync(userId, npcHook.Id, npcHook.Name, npcHook.Context, npcHook.CurrentLocationId, false, null));
                             _loggingService.LogInfo($"Scheduled NPC creation job for {npcHook.Id}, job ID: {jobId}");
                         }
                         else { throw new InvalidCastException("Mismatched hook type for NPC"); }
@@ -231,7 +231,7 @@ namespace AiGMBackEnd.Services.Processors
                         if (entityHook is LocationCreationHook locHook)
                         {
                             jobId = BackgroundJob.Enqueue(() =>
-                                _serviceProvider.GetService<HangfireJobsService>().CreateLocationAsync(userId, locHook.Id, locHook.Name, locHook.LocationType, locHook.Context, null, false));
+                                _serviceProvider.GetService<HangfireJobsService>().CreateLocationAsync(userId, locHook.Id, locHook.Name, locHook.LocationType, locHook.Context, null, false, null));
                             _loggingService.LogInfo($"Scheduled location creation job for {locHook.Id}, job ID: {jobId}");
                         }
                          else { throw new InvalidCastException("Mismatched hook type for LOCATION"); }

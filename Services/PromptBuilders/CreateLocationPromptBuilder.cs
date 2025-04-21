@@ -54,11 +54,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Extract scenario ID from request or metadata if provided
                 string scenarioId = request.ScenarioId;
                 
-                // Check if we have a scenario ID in the metadata
-                if (string.IsNullOrEmpty(scenarioId) && request.Metadata.ContainsKey("scenarioId"))
-                {
-                    scenarioId = request.Metadata["scenarioId"];
-                }
+                // No need to check metadata as we're now using ScenarioId directly
 
                 // Load context data based on the available identifiers
                 World world = null;

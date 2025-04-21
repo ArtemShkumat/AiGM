@@ -106,6 +106,7 @@ namespace AiGMBackEnd.Services.Processors
                 string locationName = locationObj["name"]?.ToString() ?? "Unnamed Location";
                 string locationType = locationObj["locationType"]?.ToString() ?? "Generic";
                 string locationDescription = locationObj["description"]?.ToString() ?? "";
+                string parentLocationId = locationObj["parentLocationId"]?.ToString();
                 
                 // Create context for the location creation
                 string context = $"Create a detailed {locationType} called '{locationName}'. Description: {locationDescription}";
@@ -113,8 +114,8 @@ namespace AiGMBackEnd.Services.Processors
                 // Register entity in world first
                 await RegisterEntityInWorldAsync(scenarioId, locationId, locationName, "Location", userId, isStartingScenario);
                 
-                // Schedule the creation job
-                string jobId = ScheduleEntityCreation("LOCATION", locationId, locationName, locationType, context, userId, isStartingScenario);
+                // Schedule the creation job - pass parentLocationId correctly and scenarioId as the last parameter
+                string jobId = ScheduleEntityCreation("LOCATION", locationId, locationName, locationType, context, userId, isStartingScenario, parentLocationId, scenarioId);
                 if (!string.IsNullOrEmpty(jobId))
                 {
                     creationJobs.Add(locationId, jobId);
@@ -151,7 +152,7 @@ namespace AiGMBackEnd.Services.Processors
                 await RegisterEntityInWorldAsync(scenarioId, npcId, npcName, "Npc", userId, isStartingScenario);
                 
                 // Schedule the creation job
-                string jobId = ScheduleEntityCreation("NPC", npcId, npcName, null, context, userId, isStartingScenario, initialLocationId);
+                string jobId = ScheduleEntityCreation("NPC", npcId, npcName, null, context, userId, isStartingScenario, initialLocationId, scenarioId);
                 if (!string.IsNullOrEmpty(jobId))
                 {
                     creationJobs.Add(npcId, jobId);
@@ -232,7 +233,7 @@ namespace AiGMBackEnd.Services.Processors
             }
         }
         
-        private string ScheduleEntityCreation(string entityType, string entityId, string entityName, string locationType, string context, string userId, bool isStartingScenario, string initialLocationId = null)
+        private string ScheduleEntityCreation(string entityType, string entityId, string entityName, string locationType, string context, string userId, bool isStartingScenario, string initialLocationId = null, string scenarioId = null)
         {
             if (string.IsNullOrEmpty(entityId) || string.IsNullOrEmpty(entityName) || string.IsNullOrEmpty(context))
             {
@@ -244,39 +245,36 @@ namespace AiGMBackEnd.Services.Processors
 
             try
             {
-                // Get the scenarioId which should be passed as userId in the ProcessAsync method
-                string scenarioId = userId;
-                
                 switch (entityType)
                 {
                     case "NPC":
-                        // For NPCs, we need to add scenarioId to metadata
+                        // For NPCs, pass the scenarioId directly in the request
                         jobId = BackgroundJob.Enqueue<HangfireJobsService>(service => 
-                            service.CreateNpcWithMetadataAsync(
+                            service.CreateNpcAsync(
                                 userId, 
                                 entityId, 
                                 entityName, 
                                 context, 
-                                initialLocationId, 
-                                isStartingScenario, 
-                                new Dictionary<string, string> { { "scenarioId", scenarioId } }
+                                initialLocationId,
+                                isStartingScenario,
+                                scenarioId
                             )
                         );
                         _logger.LogInformation($"Scheduled NPC creation job for {entityId}, job ID: {jobId}");
                         break;
 
                     case "LOCATION":
-                        // For Locations, we need to add scenarioId to metadata
+                        // For Locations, pass the scenarioId directly in the request
                         jobId = BackgroundJob.Enqueue<HangfireJobsService>(service => 
-                            service.CreateLocationWithMetadataAsync(
+                            service.CreateLocationAsync(
                                 userId, 
                                 entityId, 
                                 entityName, 
                                 locationType, 
                                 context, 
                                 initialLocationId,
-                                isStartingScenario, 
-                                new Dictionary<string, string> { { "scenarioId", scenarioId } }
+                                isStartingScenario,
+                                scenarioId
                             )
                         );
                         _logger.LogInformation($"Scheduled location creation job for {entityId}, job ID: {jobId}");
