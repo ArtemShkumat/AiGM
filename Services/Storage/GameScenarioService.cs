@@ -78,6 +78,25 @@ namespace AiGMBackEnd.Services.Storage
                 // Create user game directory
                 Directory.CreateDirectory(userGamePath);
                 
+                // Ensure a default world.json exists immediately
+                var defaultWorldPath = Path.Combine(userGamePath, "world.json");
+                if (!File.Exists(defaultWorldPath))
+                {
+                    // Create a minimal World object
+                    var defaultWorld = new World 
+                    {
+                        Type = "WORLD",
+                        GameTime = "Day 1, Morning", // Or a suitable default
+                        DaysSinceStart = 0,
+                        CurrentPlayer = gameId, 
+                        Locations = new List<LocationSummary>(), 
+                        Npcs = new List<NpcSummary>(), 
+                        Quests = new List<QuestSummary>()
+                    };
+                    await _baseStorageService.SaveAsync(gameId, "world", defaultWorld);
+                    _loggingService.LogInfo($"Created default world.json for game {gameId}");
+                }
+
                 // Copy scenario files and folders to the user's game directory
                 CopyDirectory(scenarioPath, userGamePath);
                 

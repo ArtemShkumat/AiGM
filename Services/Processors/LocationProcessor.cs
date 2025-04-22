@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.IO;
+using AiGMBackEnd.Services.Storage;
 
 namespace AiGMBackEnd.Services.Processors
 {
@@ -16,6 +17,7 @@ namespace AiGMBackEnd.Services.Processors
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;
         private readonly GameNotificationService _gameNotificationService;
+        private readonly IGameScenarioService _gameScenarioService;
 
         // Define constants for location types used internally
         private const string LocationTypeBuilding = "building";
@@ -30,15 +32,19 @@ namespace AiGMBackEnd.Services.Processors
         public LocationProcessor(
             StorageService storageService,
             LoggingService loggingService,
-            GameNotificationService gameNotificationService)
+            GameNotificationService gameNotificationService,
+            IGameScenarioService gameScenarioService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
             _gameNotificationService = gameNotificationService;
+            _gameScenarioService = gameScenarioService;
         }
 
         public async Task ProcessAsync(JObject locationData, string userId)
         {
+            List<Task> nestedSaveTasks = new List<Task>(); // Initialize here for the non-scenario case
+
             try
             {
                 _loggingService.LogInfo("Processing location creation from LLM response.");
@@ -59,34 +65,118 @@ namespace AiGMBackEnd.Services.Processors
                     return;
                 }
 
-                string locationType = locationData["type"]?.ToString() ?? "LOCATION";
-                locationData["type"] = locationType; // Ensure type is set
+                // Ensure locationType is present in the main JObject for dispatching
+                string locationTypeValue = locationData["locationType"]?.ToString();
+                 if (string.IsNullOrEmpty(locationTypeValue))
+                {
+                    _loggingService.LogError($"Missing locationType in location data for {locationId}");
+                    return;
+                }
+                locationData["type"] = "LOCATION"; // Ensure base type is set
 
-                // Choose the correct storage method based on whether this is a starting scenario
+                // Determine the specific location type to process nested structures
+                Location locationModel = null; // C# model only needed for non-scenario case
+
+                // Process nested structures based on type
+                switch (locationTypeValue.ToLower())
+                {
+                    case LocationTypeBuilding:
+                        if (isStartingScenario)
+                        {
+                            await ProcessBuildingNestedAsync(locationData, null, userId, true, null);
+                        }
+                        else
+                        {
+                            Building buildingModel = locationData.ToObject<Building>(JsonSerializer.CreateDefault()); // Deserialize
+                            locationModel = buildingModel;
+                            await ProcessBuildingNestedAsync(locationData, buildingModel, userId, false, nestedSaveTasks);
+                        }
+                        break;
+                    case LocationTypeSettlement:
+                         if (isStartingScenario)
+                        {
+                            await ProcessSettlementNestedAsync(locationData, null, userId, true, null);
+                        }
+                        else
+                        {
+                            Settlement settlementModel = locationData.ToObject<Settlement>(JsonSerializer.CreateDefault()); // Deserialize
+                            locationModel = settlementModel;
+                            await ProcessSettlementNestedAsync(locationData, settlementModel, userId, false, nestedSaveTasks);
+                        }
+                        break;
+                    case LocationTypeDelve:
+                         if (isStartingScenario)
+                        {
+                            await ProcessDelveNestedAsync(locationData, null, userId, true, null);
+                        }
+                        else
+                        {
+                            Delve delveModel = locationData.ToObject<Delve>(JsonSerializer.CreateDefault()); // Deserialize
+                            locationModel = delveModel;
+                            await ProcessDelveNestedAsync(locationData, delveModel, userId, false, nestedSaveTasks);
+                        }
+                        break;
+                    case LocationTypeWilds:
+                        // Wilds only has POIs which don't need separate IDs/files currently
+                        if (!isStartingScenario)
+                        {
+                            Wilds wildsModel = locationData.ToObject<Wilds>(JsonSerializer.CreateDefault()); // Deserialize
+                            locationModel = wildsModel;
+                            ProcessWildsNested(locationData, wildsModel); // Sync POIs to C# model
+                        }
+                        // No nested file saving needed for Wilds POIs
+                        break;
+                    default:
+                         _loggingService.LogInfo($"Location type '{locationTypeValue}' for {locationId} has no specific nested structures to process.");
+                         if (!isStartingScenario)
+                         {
+                            // Still need to deserialize to save the C# model if it's a generic type
+                            locationModel = locationData.ToObject<GenericLocation>(JsonSerializer.CreateDefault());
+                         }
+                         break;
+                }
+
+                // Perform saving based on scenario flag
                 if (isStartingScenario)
                 {
-                    // Get scenarioId from metadata
                     string scenarioId = metadata?["scenarioId"]?.ToString();
                     if (string.IsNullOrEmpty(scenarioId))
                     {
                         _loggingService.LogError($"Missing scenarioId in metadata for starting scenario location {locationId}");
                         return;
                     }
-
-                    string locationPath = Path.Combine("Data", "startingScenarios", scenarioId, "locations", $"{locationId}.json");
-                    await File.WriteAllTextAsync(locationPath, locationData.ToString());
-                    _loggingService.LogInfo($"Saved starting scenario location {locationId} to {locationPath}");
+                    await _gameScenarioService.SaveScenarioLocationAsync(scenarioId, locationId, locationData, userId, isStartingScenario);
+                    _loggingService.LogInfo($"Saved starting scenario location {locationId} (with nested IDs) to scenario {scenarioId}");
                 }
                 else
                 {
-                    // Normal user save
-                    await _storageService.SaveAsync(userId, "location", locationData);
-                    _loggingService.LogInfo($"Successfully processed and saved location {locationId} for user {userId}");
+                    // Wait for any nested location saves to complete
+                    if (nestedSaveTasks.Any())
+                    {
+                         await Task.WhenAll(nestedSaveTasks);
+                         _loggingService.LogInfo($"Completed saving {nestedSaveTasks.Count} nested locations for {locationId}.");
+                    }
+                   
+                    // Save the parent C# model (which now contains ID lists for nested items)
+                    if (locationModel != null) // Ensure we have a deserialized model
+                    {
+                         await _storageService.SaveAsync(userId, $"locations/{locationId}", locationModel);
+                         _loggingService.LogInfo($"Successfully processed and saved PARENT location {locationId} (C# Model) for user {userId}");
+                    }
+                    else
+                    {
+                        _loggingService.LogError($"Failed to save parent location {locationId} for user {userId} because C# model was null.");
+                    }
                 }
+            }
+            catch (JsonException jsonEx)
+            {
+                 _loggingService.LogError($"JSON Error processing location creation: {jsonEx.Message}\nData: {locationData.ToString(Newtonsoft.Json.Formatting.None)}");
+                 throw;
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing location creation: {ex.Message}");
+                _loggingService.LogError($"Error processing location creation: {ex.Message}\nStackTrace: {ex.StackTrace}");
                 throw;
             }
         }
@@ -149,9 +239,21 @@ namespace AiGMBackEnd.Services.Processors
             return valuables;
         }
 
-        private async Task ProcessBuildingNestedAsync(JObject locationData, Building building, string userId, List<Task> nestedSaveTasks)
+        private async Task ProcessBuildingNestedAsync(JObject locationData, Building building, string userId, bool isStartingScenario, List<Task> nestedSaveTasks)
         {
-            building.FloorIds = new List<string>();
+            // Use parent ID from building model if available (non-scenario), otherwise from JObject
+            string parentBuildingId = isStartingScenario ? locationData["id"]?.ToString() : building?.Id;
+             if (string.IsNullOrEmpty(parentBuildingId))
+            {
+                 _loggingService.LogError("Cannot generate nested IDs for building, parent ID is missing.");
+                 return;
+            }
+
+            // Only initialize C# list if not a starting scenario
+            if (!isStartingScenario && building != null)
+            {
+                building.FloorIds = new List<string>();
+            }
 
             if (locationData["floors"] is JArray floorsArray)
             {
@@ -160,56 +262,94 @@ namespace AiGMBackEnd.Services.Processors
                     if (floorData is JObject floorObj)
                     {
                         string floorName = floorObj["floor_name"]?.ToString() ?? $"Unnamed_{LocationTypeFloor}";
-                        string floorId = GenerateNestedLocationId(building.Id, LocationTypeFloor, floorName);
+                        string floorId = GenerateNestedLocationId(parentBuildingId, LocationTypeFloor, floorName);
 
-                        var floorLocation = new GenericLocation
+                        // Add ID directly to JObject for starting scenarios
+                        if (isStartingScenario)
                         {
-                            Id = floorId,
-                            Name = floorName,
-                            LocationType = LocationTypeFloor,
-                            ParentLocation = building.Id,
-                            Description = floorObj["description"]?.ToString(),
-                            Type = "LOCATION"
-                        };
-
-                        List<string> roomIdsForThisFloor = new List<string>();
-                        if (floorObj["rooms"] is JArray roomsArray)
+                            floorObj["id"] = floorId;
+                            floorObj["parentLocationId"] = parentBuildingId;
+                            floorObj["locationType"] = LocationTypeFloor;
+                        }
+                        else // Existing logic for live game data
                         {
-                            foreach (var roomData in roomsArray)
+                            if (building == null) { _loggingService.LogError("Building model is null in non-scenario nested processing."); return; } // Safety check
+                            var floorLocation = new GenericLocation
                             {
-                                if (roomData is JObject roomObj)
-                                {
-                                    string roomName = roomObj["name"]?.ToString() ?? $"Unnamed_{LocationTypeRoom}";
-                                    string roomId = GenerateNestedLocationId(floorId, LocationTypeRoom, roomName);
-
-                                    var roomLocation = new GenericLocation
-                                    {
-                                        Id = roomId,
-                                        Name = roomName,
-                                        LocationType = LocationTypeRoom,
-                                        ParentLocation = floorId,
-                                        Description = roomObj["description"]?.ToString(),
-                                        Type = "LOCATION"
-                                    };
-
-                                    nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{roomId}", roomLocation));
-                                    roomIdsForThisFloor.Add(roomId);
-                                }
-                            }
+                                Id = floorId,
+                                Name = floorName,
+                                LocationType = LocationTypeFloor,
+                                ParentLocation = parentBuildingId,
+                                Description = floorObj["description"]?.ToString(),
+                                Type = "LOCATION"
+                            };
+                            nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{floorId}", floorLocation));
+                            building.FloorIds.Add(floorId);
                         }
 
-                        nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{floorId}", floorLocation));
-                        building.FloorIds.Add(floorId);
+                        // Process rooms recursively, passing the flag
+                        await ProcessRoomsNestedAsync(floorObj, floorId, userId, isStartingScenario, nestedSaveTasks);
                     }
                 }
             }
             await Task.CompletedTask;
         }
 
-        private async Task ProcessSettlementNestedAsync(JObject locationData, Settlement settlement, string userId, List<Task> nestedSaveTasks)
+        // Helper method specifically for rooms, called from ProcessBuildingNestedAsync
+        private async Task ProcessRoomsNestedAsync(JObject floorObj, string floorId, string userId, bool isStartingScenario, List<Task> nestedSaveTasks)
         {
-            settlement.DistrictIds = new List<string>();
+             if (floorObj["rooms"] is JArray roomsArray)
+             {
+                 foreach (var roomData in roomsArray)
+                 {
+                     if (roomData is JObject roomObj)
+                     {
+                         string roomName = roomObj["name"]?.ToString() ?? $"Unnamed_{LocationTypeRoom}";
+                         string roomId = GenerateNestedLocationId(floorId, LocationTypeRoom, roomName);
 
+                         if (isStartingScenario)
+                         {
+                            roomObj["id"] = roomId;
+                            roomObj["parentLocationId"] = floorId;
+                            roomObj["locationType"] = LocationTypeRoom;
+                         }
+                         else
+                         {
+                             var roomLocation = new GenericLocation
+                             {
+                                 Id = roomId,
+                                 Name = roomName,
+                                 LocationType = LocationTypeRoom,
+                                 ParentLocation = floorId,
+                                 Description = roomObj["description"]?.ToString(),
+                                 Type = "LOCATION"
+                             };
+                             nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{roomId}", roomLocation));
+                             // Note: Rooms are not currently added to Floor.RoomIds, logic assumes direct lookup or exploration
+                         }
+                     }
+                 }
+             }
+            await Task.CompletedTask;
+        }
+
+        // Updated method signature to include isStartingScenario
+        private async Task ProcessSettlementNestedAsync(JObject locationData, Settlement settlement, string userId, bool isStartingScenario, List<Task> nestedSaveTasks)
+        {
+            // Use parent ID from settlement model if available (non-scenario), otherwise from JObject
+            string parentSettlementId = isStartingScenario ? locationData["id"]?.ToString() : settlement?.Id;
+            if (string.IsNullOrEmpty(parentSettlementId))
+            {
+                 _loggingService.LogError("Cannot generate nested IDs for settlement, parent ID is missing.");
+                 return;
+            }
+
+            // Only initialize C# list if not a starting scenario
+            if (!isStartingScenario && settlement != null)
+            {
+                 settlement.DistrictIds = new List<string>();
+            }
+           
             if (locationData["districts"] is JArray districtsArray)
             {
                 foreach (var districtData in districtsArray)
@@ -217,30 +357,52 @@ namespace AiGMBackEnd.Services.Processors
                     if (districtData is JObject districtObj)
                     {
                         string districtName = districtObj["name"]?.ToString() ?? $"Unnamed_{LocationTypeDistrict}";
-                        string districtId = GenerateNestedLocationId(settlement.Id, LocationTypeDistrict, districtName);
+                        string districtId = GenerateNestedLocationId(parentSettlementId, LocationTypeDistrict, districtName);
 
-                        var districtLocation = new GenericLocation
+                        if (isStartingScenario)
                         {
-                            Id = districtId,
-                            Name = districtName,
-                            LocationType = LocationTypeDistrict,
-                            ParentLocation = settlement.Id,
-                            Description = districtObj["description"]?.ToString(),
-                            TypicalOccupants = districtObj["typicalOccupants"]?.ToString() ?? string.Empty,
-                            Type = "LOCATION"
-                        };
-
-                        nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{districtId}", districtLocation));
-                        settlement.DistrictIds.Add(districtId);
+                            districtObj["id"] = districtId;
+                            districtObj["parentLocationId"] = parentSettlementId;
+                            districtObj["locationType"] = LocationTypeDistrict;
+                        }
+                        else // Existing logic for live game data
+                        {
+                            if (settlement == null) { _loggingService.LogError("Settlement model is null in non-scenario nested processing."); return; } // Safety check
+                            var districtLocation = new GenericLocation
+                            {
+                                Id = districtId,
+                                Name = districtName,
+                                LocationType = LocationTypeDistrict,
+                                ParentLocation = parentSettlementId,
+                                Description = districtObj["description"]?.ToString(),
+                                TypicalOccupants = districtObj["typicalOccupants"]?.ToString() ?? string.Empty,
+                                Type = "LOCATION"
+                            };
+                            nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{districtId}", districtLocation));
+                            settlement.DistrictIds.Add(districtId);
+                        }
                     }
                 }
             }
             await Task.CompletedTask;
         }
 
-        private async Task ProcessDelveNestedAsync(JObject locationData, Delve delve, string userId, List<Task> nestedSaveTasks)
+        // Updated method signature to include isStartingScenario
+        private async Task ProcessDelveNestedAsync(JObject locationData, Delve delve, string userId, bool isStartingScenario, List<Task> nestedSaveTasks)
         {
-            delve.DelveRoomIds = new List<string>();
+            // Use parent ID from delve model if available (non-scenario), otherwise from JObject
+            string parentDelveId = isStartingScenario ? locationData["id"]?.ToString() : delve?.Id;
+             if (string.IsNullOrEmpty(parentDelveId))
+            {
+                 _loggingService.LogError("Cannot generate nested IDs for delve, parent ID is missing.");
+                 return;
+            }
+
+            // Only initialize C# list if not a starting scenario
+            if (!isStartingScenario && delve != null)
+            {
+                delve.DelveRoomIds = new List<string>();
+            }
 
             if (locationData["delve_rooms"] is JArray roomsArray)
             {
@@ -249,28 +411,46 @@ namespace AiGMBackEnd.Services.Processors
                     if (roomData is JObject roomObj)
                     {
                         string roomName = roomObj["name"]?.ToString() ?? $"Unnamed_{LocationTypeDelveRoom}";
-                        string roomId = GenerateNestedLocationId(delve.Id, LocationTypeDelveRoom, roomName);
+                        string roomId = GenerateNestedLocationId(parentDelveId, LocationTypeDelveRoom, roomName);
 
-                        string role = roomObj["role"]?.ToString() ?? "Unknown Role";
-                        string challenge = roomObj["challenge"]?.ToString() ?? "No specific challenge described.";
-                        string baseDescription = roomObj["description"]?.ToString() ?? string.Empty;
-                        string combinedDescription = $@"Role: {role}
+                        if (isStartingScenario)
+                        {
+                            string role = roomObj["role"]?.ToString() ?? "Unknown Role";
+                            string challenge = roomObj["challenge"]?.ToString() ?? "No specific challenge described.";
+                            string baseDescription = roomObj["description"]?.ToString() ?? string.Empty;
+                            string combinedDescription = $@"Role: {role}
 Challenge: {challenge}
 
 {baseDescription}";
 
-                        var roomLocation = new GenericLocation
+                            roomObj["id"] = roomId;
+                            roomObj["parentLocationId"] = parentDelveId;
+                            roomObj["description"] = combinedDescription; // Update description in JObject too
+                            roomObj["locationType"] = LocationTypeDelveRoom;
+                        }
+                        else // Existing logic for live game data
                         {
-                            Id = roomId,
-                            Name = roomName,
-                            LocationType = LocationTypeDelveRoom,
-                            ParentLocation = delve.Id,
-                            Description = combinedDescription,
-                            Type = "LOCATION"
-                        };
+                             if (delve == null) { _loggingService.LogError("Delve model is null in non-scenario nested processing."); return; } // Safety check
+                             string role = roomObj["role"]?.ToString() ?? "Unknown Role";
+                            string challenge = roomObj["challenge"]?.ToString() ?? "No specific challenge described.";
+                            string baseDescription = roomObj["description"]?.ToString() ?? string.Empty;
+                            string combinedDescription = $@"Role: {role}
+Challenge: {challenge}
 
-                        nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{roomId}", roomLocation));
-                        delve.DelveRoomIds.Add(roomId);
+{baseDescription}";
+
+                            var roomLocation = new GenericLocation
+                            {
+                                Id = roomId,
+                                Name = roomName,
+                                LocationType = LocationTypeDelveRoom,
+                                ParentLocation = parentDelveId,
+                                Description = combinedDescription,
+                                Type = "LOCATION"
+                            };
+                            nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{roomId}", roomLocation));
+                            delve.DelveRoomIds.Add(roomId);
+                        }
                     }
                 }
             }

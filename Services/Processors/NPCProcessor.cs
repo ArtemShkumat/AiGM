@@ -6,6 +6,7 @@ using AiGMBackEnd.Services;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json; // Added for deserialization
 using System.IO;
+using AiGMBackEnd.Services.Storage; // Add this using statement
 
 namespace AiGMBackEnd.Services.Processors
 {
@@ -13,13 +14,16 @@ namespace AiGMBackEnd.Services.Processors
     {
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;
+        private readonly IGameScenarioService _gameScenarioService; // Add this field
 
         public NPCProcessor(
             StorageService storageService,
-            LoggingService loggingService)
+            LoggingService loggingService,
+            IGameScenarioService gameScenarioService) // Add IGameScenarioService here
         {
             _storageService = storageService;
             _loggingService = loggingService;
+            _gameScenarioService = gameScenarioService; // Assign it here
         }
 
         public async Task ProcessAsync(JObject npcData, string userId)
@@ -58,9 +62,11 @@ namespace AiGMBackEnd.Services.Processors
                         return;
                     }
 
-                    string npcPath = Path.Combine("Data", "startingScenarios", scenarioId, "npcs", $"{npcId}.json");
-                    await File.WriteAllTextAsync(npcPath, npcData.ToString());
-                    _loggingService.LogInfo($"Saved starting scenario NPC {npcId} to {npcPath}");
+                    // Delegate saving to GameScenarioService
+                    await _gameScenarioService.SaveScenarioNpcAsync(scenarioId, npcId, npcData, userId, isStartingScenario);
+                    // string npcPath = Path.Combine("Data", "startingScenarios", scenarioId, "npcs", $"{npcId}.json");
+                    // await File.WriteAllTextAsync(npcPath, npcData.ToString());
+                    // _loggingService.LogInfo($"Saved starting scenario NPC {npcId} to {npcPath}");
                 }
                 else
                 {

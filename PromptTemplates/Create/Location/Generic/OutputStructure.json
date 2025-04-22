@@ -23,15 +23,18 @@
       "description": "A detailed description of the location's key characteristics, atmosphere, and notable features, appropriate for its type and scale."
     },
     "parentLocationId": { 
-      "type": ["string", "null"], 
+      "type": "string", 
+      "nullable": true,
       "description": "ID of the parent location (Provided by application). Should be null for top-level locations like Realms."
     },
     "typicalOccupants": { 
-      "type": ["string", "null"], 
+      "type": "string", 
+      "nullable": true,
       "description": "Optional: Free-form description of typical occupants/creatures found at this location."
     },
     "history": { 
-      "type": ["string", "null"], 
+      "type": "string", 
+      "nullable": true,
       "description": "Optional: Brief relevant history of the location."
     }
   },

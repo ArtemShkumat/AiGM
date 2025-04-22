@@ -78,8 +78,14 @@ namespace AiGMBackEnd.Services
                 var llmResponse = await _aiService.GetCompletionAsync(prompt);
                 _loggingService.LogInfo($"LLM response received for {entityType} {entityId}, length: {llmResponse?.Length ?? 0}");
                 
-                // 3. Process the response
-                var processedResult = await _responseProcessingService.HandleCreateResponseAsync(llmResponse, request.PromptType, userId);
+                // 3. Process the response, passing scenario context
+                var processedResult = await _responseProcessingService.HandleCreateResponseAsync(
+                    llmResponse, 
+                    request.PromptType, 
+                    userId,
+                    request.IsStartingScenario, // Pass the flag
+                    request.ScenarioId        // Pass the ID
+                );
                 
                 // 4. Sync world with entities
                 await _storageService.SyncWorldWithEntitiesAsync(userId);
@@ -455,7 +461,13 @@ namespace AiGMBackEnd.Services
                 else // Assume it's a creation prompt
                 {
                      _loggingService.LogInfo($"Processing creation response ({request.PromptType}) (Job ID: {jobId})");
-                    processedResult = await _responseProcessingService.HandleCreateResponseAsync(llmResponse, request.PromptType, request.UserId);
+                    processedResult = await _responseProcessingService.HandleCreateResponseAsync(
+                        llmResponse, 
+                        request.PromptType, 
+                        request.UserId,
+                        request.IsStartingScenario, // Pass the flag
+                        request.ScenarioId        // Pass the ID
+                    );
                 }
                 
                 // 4. Sync world with entities if needed (HandleResponseAsync doesn't do this anymore for combat trigger)

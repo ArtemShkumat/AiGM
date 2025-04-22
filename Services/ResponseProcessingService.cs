@@ -238,7 +238,7 @@ namespace AiGMBackEnd.Services
             }
         }
 
-        public async Task<ProcessedResult> HandleCreateResponseAsync(string llmResponse, PromptType promptType, string userId)
+        public async Task<ProcessedResult> HandleCreateResponseAsync(string llmResponse, PromptType promptType, string userId, bool isStartingScenario, string scenarioId)
         {
             try
             {
@@ -257,7 +257,8 @@ namespace AiGMBackEnd.Services
                     return new ProcessedResult { UserFacingText = string.Empty, Success = false, ErrorMessage = $"Invalid JSON: {ex.Message}" };
                 }
 
-                await ProcessHiddenJsonAsync(jsonContent, promptType, userId);
+                // Call the internal processor, passing the scenario context
+                await ProcessHiddenJsonAsync(jsonContent, promptType, userId, isStartingScenario, scenarioId);
 
                 return new ProcessedResult
                 {
@@ -280,33 +281,38 @@ namespace AiGMBackEnd.Services
             return cleaned;
         }
 
-        private async Task ProcessHiddenJsonAsync(string jsonContent, PromptType promptType, string userId)
+        private async Task ProcessHiddenJsonAsync(string jsonContent, PromptType promptType, string userId, bool isStartingScenario, string scenarioId)
         {
+            JObject jsonData = null;
             try
             {
-                if (promptType == PromptType.DM || promptType == PromptType.NPC || promptType == PromptType.Combat)
+                // Use Newtonsoft.Json for more robust parsing and JObject manipulation
+                jsonData = JObject.Parse(jsonContent);
+
+                // Add metadata if this is part of starting scenario creation
+                if (isStartingScenario)
                 {
-                    _loggingService.LogError($"ProcessHiddenJsonAsync incorrectly called for {promptType}. Should be handled by HandleResponseAsync directly.");
-                    throw new InvalidOperationException($"ProcessHiddenJsonAsync should not be called for {promptType} after refactoring.");
+                    var metadata = new JObject();
+                    metadata["isStartingScenario"] = true;
+                    metadata["scenarioId"] = scenarioId;
+                    jsonData["metadata"] = metadata;
+                    _loggingService.LogInfo($"Added starting scenario metadata. ScenarioId: {scenarioId}");
                 }
 
-                // Parse the JSON content
-                var jsonObject = JObject.Parse(jsonContent);
-
-                // Dispatch to the appropriate processor based on prompt type
+                // Call the appropriate processor
                 switch (promptType)
                 {
                     case PromptType.CreateLocation:
-                        await _locationProcessor.ProcessAsync(jsonObject, userId);
+                        await _locationProcessor.ProcessAsync(jsonData, userId);
                         break;
                     case PromptType.CreateQuest:
-                        await _questProcessor.ProcessAsync(jsonObject, userId);
+                        await _questProcessor.ProcessAsync(jsonData, userId);
                         break;
                     case PromptType.CreateNPC:
-                        await _npcProcessor.ProcessAsync(jsonObject, userId);
+                        await _npcProcessor.ProcessAsync(jsonData, userId);
                         break;
                     case PromptType.CreatePlayer:
-                        await _playerProcessor.ProcessAsync(jsonObject, userId);
+                        await _playerProcessor.ProcessAsync(jsonData, userId);
                         break;
                     case PromptType.Summarize:
                         // Handle Summarize using the same method as other types
@@ -315,25 +321,25 @@ namespace AiGMBackEnd.Services
                         // Skip calling an unimplemented method
                         break;
                     case PromptType.CreateEnemyStatBlock:
-                        await _enemyStatBlockProcessor.ProcessAsync(jsonObject, userId);
+                        await _enemyStatBlockProcessor.ProcessAsync(jsonData, userId);
                         break;
                     case PromptType.CreateScenario:
                         // Get the scenario ID from the request, assuming it's passed via RequestMetadata
-                        var scenarioId = GetScenarioIdFromMetadata(jsonContent);
-                        if (string.IsNullOrEmpty(scenarioId))
+                        var scenarioIdFromMetadata = GetScenarioIdFromMetadata(jsonContent);
+                        if (string.IsNullOrEmpty(scenarioIdFromMetadata))
                         {
                             // If not in metadata, try to generate a consistent ID from the content
-                            scenarioId = $"scenario_{DateTime.UtcNow.Ticks}";
+                            scenarioIdFromMetadata = $"scenario_{DateTime.UtcNow.Ticks}";
                         }
                         
                         // Check if this is a starting scenario from metadata
-                        bool isStartingScenario = false;
+                        bool isStartingScenarioFromMetadata = false;
                         try 
                         {
-                            var metadataObj = jsonObject["metadata"] as JObject;
+                            var metadataObj = jsonData["metadata"] as JObject;
                             if (metadataObj != null && metadataObj["isStartingScenario"] != null)
                             {
-                                bool.TryParse(metadataObj["isStartingScenario"].ToString(), out isStartingScenario);
+                                bool.TryParse(metadataObj["isStartingScenario"].ToString(), out isStartingScenarioFromMetadata);
                             }
                         }
                         catch (Exception ex)
@@ -341,7 +347,7 @@ namespace AiGMBackEnd.Services
                             _loggingService.LogWarning($"Error extracting isStartingScenario flag: {ex.Message}");
                         }
                         
-                        await _scenarioProcessor.ProcessAsync(jsonObject, scenarioId, userId, isStartingScenario);
+                        await _scenarioProcessor.ProcessAsync(jsonData, scenarioIdFromMetadata, userId, isStartingScenarioFromMetadata);
                         break;
                     default:
                         _loggingService.LogWarning($"Unsupported prompt type for ProcessHiddenJsonAsync: {promptType}");
