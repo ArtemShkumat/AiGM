@@ -29,9 +29,13 @@
             "type": "string",
             "description": "Required for NPCs"
           },
-          "locationType": {
-            "type": "string",
-            "enum": ["Building", "Settlement", "Delve", "Wilds"],
+          "locationDetails": {
+            "type": "object",
+            "properties": {
+              "parentLocationId": { "type": "string" },
+              "locationType": { "type": "string" }
+            },
+            "required": ["parentLocationId", "locationType"],
             "description": "Required for locations"
           }
         },
@@ -176,16 +180,7 @@
             },
             "daysSinceStart": {
               "type": "integer"
-            },
-            "worldStateEffects": {
-              "type": "object",
-              "properties": {
-                "effects": {
-                  "type": "string",
-                  "description": "Placeholder for world state effects"
-                }
-              }
-            }
+            }            
           },
           "required": ["type"]
         },
@@ -226,51 +221,6 @@
               "dispositionTowardsPlayer": {
                 "type": "string"
               },
-              "knownEntities": {
-                "type": "object",
-                "properties": {
-                  "npcsKnown": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "Name or ID of the known NPC being updated/added/removed"
-                        },
-                        "levelOfFamiliarity": {
-                          "type": "string"
-                        },
-                        "disposition": {
-                          "type": "string"
-                        },
-                        "action": {
-                          "type": "string",
-                          "enum": ["Add", "Remove"]
-                        }
-                      },
-                      "required": ["name", "action"]
-                    }
-                  },
-                  "locationsKnown": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "locationId": {
-                          "type": "string",
-                          "description": "ID of the location"
-                        },
-                        "action": {
-                          "type": "string",
-                          "enum": ["Add", "Remove"]
-                        }
-                      },
-                      "required": ["locationId", "action"]
-                    }
-                  }
-                }
-              },
               "inventory": {
                 "type": "array",
                 "items": {
@@ -307,18 +257,11 @@
                 "type": "string",
                 "description": "The unique identifier of the location being updated"
               },
-              "type": {
-                "type": "string",
-                "enum": ["LOCATION"]
-              },
-              "knownToPlayer": {
-                "type": "boolean"
-              },
-              "parentLocation": {
+              "currentCondition": {
                 "type": "string"
               }
             },
-            "required": ["type"]
+            "required": ["id", "currentCondition"]
           }
         }
       }

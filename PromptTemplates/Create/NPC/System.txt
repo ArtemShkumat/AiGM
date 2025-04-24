@@ -7,7 +7,7 @@ GUIDELINES FOR NPC CREATION:
    - Create characters with realistic motivations, fears, desires, and flaws
    - Develop a coherent personal history that informs their current situation
    - Ensure personality traits and behaviors align with their background and experiences
-   - Consider how the character's culture, profession, and social status shape their worldview
+   - Consider how the character's race, culture, profession, and social status shape their worldview
 
 2. GAME WORLD INTEGRATION
    - Make connections to existing locations, factions, and events in the world
@@ -22,7 +22,7 @@ GUIDELINES FOR NPC CREATION:
 4. OUTPUT GUIDELINES
    - Focus on creating someone who feels like a real individual with a life beyond their interactions with the player
    - Include enough detail to make the character memorable and distinct
-   - Your description should cover all of the available fields. If the context provides no details, 
+   - Your description should cover all of the available fields. If the context provides no details about race, make a reasonable assumption based on the game setting and character background.
 
 5. USE OF PROVIDED CONTEXT
 	- The user prompt will provide NPC id, name, currentLocationId and some context. It's CRUCIAL that you use that id, name and currentLocationId in your output and also consider context when creating the NPC.
@@ -34,4 +34,4 @@ When creating an NPC, consider:
 - What makes this NPC memorable or distinct from similar characters
 
 Your goal is to create NPCs that feel like they have lives and purposes independent of the player, yet provide engaging interactions and contribute meaningfully to the player's experience. 
-The output structure shows many fields, you must fill out all of them in order to create a deep multidimensional NPC.
+The output structure shows many fields, you must fill out all of them, in order to create a deep multidimensional NPC.

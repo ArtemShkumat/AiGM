@@ -17,7 +17,6 @@ Your Response:
   "id": "loc_old_sparrows_shop",
   "name": "Old Sparrow's Shop",
   "description": "A general store providing staples and odd trinkets to local villagers.",
-  "knownToPlayer": true,
   "connectedLocations": [],
   "parentLocation": "loc_village_hollowbrook",
   "npcs": [
@@ -177,7 +176,6 @@ Your response:
   "id": "loc_oakheaven_trading_post",
   "name": "Oakhaven Trading Post",
   "description": "A bustling hub for merchants and travelers, Oakhaven Trading Post provides essential services and acts as a neutral ground for trade in the region.",
-  "knownToPlayer": false,
   "connectedLocations": [],
   "parentLocation": "loc_mountain_pass",
   "npcs": [],
@@ -359,7 +357,6 @@ Your response:
   "id": "loc_goldenBarrelTavern",
   "name": "The Golden Barrel",
   "description": "A popular tavern renowned for its excellent mead and honeyed porter, serving as the social heart of Springvale.",
-  "knownToPlayer": true,
   "connectedLocations": [],
   "parentLocation": "loc_springvale",
   "npcs": [

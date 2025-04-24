@@ -270,6 +270,7 @@ namespace AiGMBackEnd.Services.Processors
                             floorObj["id"] = floorId;
                             floorObj["parentLocationId"] = parentBuildingId;
                             floorObj["locationType"] = LocationTypeFloor;
+                            floorObj["currentCondition"] = "in it's normal condition - still unvisited by the player";
                         }
                         else // Existing logic for live game data
                         {
@@ -281,6 +282,7 @@ namespace AiGMBackEnd.Services.Processors
                                 LocationType = LocationTypeFloor,
                                 ParentLocation = parentBuildingId,
                                 Description = floorObj["description"]?.ToString(),
+                                CurrentCondition = floorObj["currentCondition"]?.ToString() ?? "in it's normal condition - still unvisited by the player",
                                 Type = "LOCATION"
                             };
                             nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{floorId}", floorLocation));
@@ -312,6 +314,7 @@ namespace AiGMBackEnd.Services.Processors
                             roomObj["id"] = roomId;
                             roomObj["parentLocationId"] = floorId;
                             roomObj["locationType"] = LocationTypeRoom;
+                            roomObj["currentCondition"] = "in it's normal condition - still unvisited by the player";
                          }
                          else
                          {
@@ -322,6 +325,7 @@ namespace AiGMBackEnd.Services.Processors
                                  LocationType = LocationTypeRoom,
                                  ParentLocation = floorId,
                                  Description = roomObj["description"]?.ToString(),
+                                 CurrentCondition = roomObj["currentCondition"]?.ToString() ?? "in it's normal condition - still unvisited by the player",
                                  Type = "LOCATION"
                              };
                              nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{roomId}", roomLocation));
@@ -364,6 +368,7 @@ namespace AiGMBackEnd.Services.Processors
                             districtObj["id"] = districtId;
                             districtObj["parentLocationId"] = parentSettlementId;
                             districtObj["locationType"] = LocationTypeDistrict;
+                            districtObj["currentCondition"] = "in it's normal condition - still unvisited by the player";
                         }
                         else // Existing logic for live game data
                         {
@@ -376,6 +381,7 @@ namespace AiGMBackEnd.Services.Processors
                                 ParentLocation = parentSettlementId,
                                 Description = districtObj["description"]?.ToString(),
                                 TypicalOccupants = districtObj["typicalOccupants"]?.ToString() ?? string.Empty,
+                                CurrentCondition = districtObj["currentCondition"]?.ToString() ?? "in it's normal condition - still unvisited by the player",
                                 Type = "LOCATION"
                             };
                             nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{districtId}", districtLocation));
@@ -427,6 +433,7 @@ Challenge: {challenge}
                             roomObj["parentLocationId"] = parentDelveId;
                             roomObj["description"] = combinedDescription; // Update description in JObject too
                             roomObj["locationType"] = LocationTypeDelveRoom;
+                            roomObj["currentCondition"] = "in it's normal condition - still unvisited by the player";
                         }
                         else // Existing logic for live game data
                         {
@@ -446,6 +453,7 @@ Challenge: {challenge}
                                 LocationType = LocationTypeDelveRoom,
                                 ParentLocation = parentDelveId,
                                 Description = combinedDescription,
+                                CurrentCondition = roomObj["currentCondition"]?.ToString() ?? "in it's normal condition - still unvisited by the player",
                                 Type = "LOCATION"
                             };
                             nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{roomId}", roomLocation));

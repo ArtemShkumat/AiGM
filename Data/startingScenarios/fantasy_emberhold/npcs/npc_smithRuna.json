@@ -51,9 +51,7 @@
       "loc_emberhold",
       "loc_ancientForge"
     ]
-  },
-  
-  "questInvolvement": ["quest_emberCrystal"],
+  },  
   
   "inventory": [
     {

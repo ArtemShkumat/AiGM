@@ -52,7 +52,7 @@ The `userFacingText` field contains the narrative and dialogue shown to the play
     -   Detailed rules below.
 -   **`partialUpdates` (object, Optional):**
     -   Use to reflect changes to existing entities *caused by this interaction*.
-    -   Most common use: updating **your own NPC state** (e.g., `dispositionTowardsPlayer` changes, `knowsPlayer` becomes true, `inventory` changes if you give/receive an item).
+    -   Most common use: updating **your own NPC state** (e.g., `dispositionTowardsPlayer` changes, `inventory` changes if you give/receive an item).
     -   Can also update the `player` state (e.g., `inventory`/`currencies` change, `activeQuests` updates if you give a quest).
     -   Detailed rules below.
 

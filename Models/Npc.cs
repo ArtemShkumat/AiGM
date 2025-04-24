@@ -25,6 +25,8 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("backstory")]
         public string Backstory { get; set; }
+        [JsonPropertyName("race")]
+        public string Race { get; set; }
 
         [JsonPropertyName("currentGoal")]
         public string CurrentGoal { get; set; }
@@ -34,9 +36,6 @@ namespace AiGMBackEnd.Models
 
         [JsonPropertyName("dispositionTowardsPlayer")]
         public string DispositionTowardsPlayer { get; set; }     
-        
-        [JsonPropertyName("questInvolvement")]
-        public List<string> QuestInvolvement { get; set; } = new List<string>();
         
         [JsonPropertyName("inventory")]
         public List<InventoryItem> Inventory { get; set; } = new List<InventoryItem>();

@@ -32,10 +32,10 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                     name = _npc.Name,
                     visualDescription = _npc.VisualDescription,
                     backstory = _npc.Backstory,
+                    race = _npc.Race,
                     age = _npc.Age,
                     currentGoal = _npc.CurrentGoal,
-                    dispositionTowardsPlayer = _npc.DispositionTowardsPlayer,
-                    questInvolvement = _npc.QuestInvolvement
+                    dispositionTowardsPlayer = _npc.DispositionTowardsPlayer
                 };
             }
             

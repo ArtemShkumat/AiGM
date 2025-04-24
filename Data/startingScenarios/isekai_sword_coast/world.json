@@ -3,11 +3,6 @@
   "gameTime": "1486-03-20T08:15:00Z",
   "daysSinceStart": 1,
   "currentPlayer": "",
-  "worldStateEffects": {
-    "weather": "clear",
-    "season": "spring",
-    "timeOfDay": "morning"
-  },
   "lore": [],
   "locations": [
     {

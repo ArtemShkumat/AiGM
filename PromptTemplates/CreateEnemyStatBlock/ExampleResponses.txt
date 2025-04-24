@@ -46,9 +46,7 @@
   },
   "world": {
     "worldName": "Former Metropolis",
-    "gameTime": "Day 15, Afternoon",
-    "worldStateEffects": {"Weather": "Overcast, damp"}
-    // Other world details omitted
+    "gameTime": "Day 15, Afternoon"
   },
   "npc": {
     "id": "npc_desperate_scavengers",
@@ -85,9 +83,7 @@
   },
   "world": {
     "worldName": "Whispering Woods",
-    "gameTime": "Day 1, Dusk",
-    "worldStateEffects": {"Magic": "Ambient wild magic is strong"}
-    // Other world details omitted
+    "gameTime": "Day 1, Dusk"
   },
   "npc": {
     "id": "npc_grove_warden",

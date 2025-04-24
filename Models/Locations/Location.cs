@@ -29,5 +29,8 @@ namespace AiGMBackEnd.Models.Locations
 
         [JsonPropertyName("typicalOccupants")]
         public string TypicalOccupants { get; set; } = string.Empty;
+
+        [JsonPropertyName("currentCondition")]
+        public string CurrentCondition { get; set; } = "in it's normal condition - still unvisited by the player";
     }
 }

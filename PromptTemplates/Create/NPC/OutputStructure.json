@@ -5,9 +5,6 @@
     "id": { "type": "string", "description": "Unique identifier for the NPC" },
     "name": { "type": "string", "description": "NPC's name" },
     "currentLocationId": { "type": "string", "description": "ID of the NPC's current location" },
-    "knownToPlayer": { "type": "boolean", "description": "Whether the player knows of this NPC's existence" },
-    "knowsPlayer": { "type": "boolean", "description": "Whether the NPC knows the player" },
-    "visibleToPlayer": { "type": "boolean", "description": "Whether the NPC is currently visible to the player" },
     "visualDescription": {
       "type": "object",
       "properties": {
@@ -31,29 +28,10 @@
       "required": ["temperament", "traits", "motivations", "fears", "secrets"]
     },
     "backstory": { "type": "string" },
+    "race": { "type": "string", "description": "NPC's race (e.g., Human, Elf, Orc)" },
     "currentGoal": { "type": "string", "description": "What the NPC is currently trying to achieve" },
     "age": { "type": "integer" },
     "dispositionTowardsPlayer": { "type": "string", "description": "e.g., Hostile, Unfriendly, Neutral, Fond, Loyal" },
-    "knownEntities": {
-      "type": "object",
-      "properties": {
-        "npcsKnown": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": { "type": "string" },
-              "levelOfFamiliarity": { "type": "string", "description": "Aware/Met/Known/Familiar/Deep" },
-              "disposition": { "type": "string", "description": "Hostile/Unfriendly/Neutral/Fond/Loyal" }
-            },
-            "required": ["name", "levelOfFamiliarity", "disposition"]
-          }
-        },
-        "locationsKnown": { "type": "array", "items": { "type": "string" }, "description": "List of location IDs known by the NPC" }
-      },
-      "required": ["npcsKnown", "locationsKnown"]
-    },
-    "questInvolvement": { "type": "array", "items": { "type": "string" }, "description": "List of Quest IDs the NPC is involved in" },
     "inventory": {
       "type": "array",
       "items": {
@@ -80,8 +58,8 @@
     }
   },
   "required": [
-    "type", "id", "name", "currentLocationId", "knownToPlayer", "knowsPlayer", "visibleToPlayer", 
-    "visualDescription", "personality", "backstory", "currentGoal", "age", "dispositionTowardsPlayer", 
-    "knownEntities", "questInvolvement", "inventory", "conversationLog"
+    "type", "id", "name", "currentLocationId",
+    "visualDescription", "personality", "backstory", "race", "currentGoal", "age", "dispositionTowardsPlayer",
+    "inventory", "conversationLog"
   ]
 }

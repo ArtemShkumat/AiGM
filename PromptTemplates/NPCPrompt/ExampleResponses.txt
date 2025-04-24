@@ -7,9 +7,6 @@ USER:
     "id": "npc_elizaHerbalist",
     "name": "Eliza",
     "currentLocationId": "loc_herbShop",
-    "visibleToPlayer": true,
-    "knownToPlayer": false,
-    "knowsPlayer": false,
     "backstory": "Eliza owns the local herb shop and is well-known for her healing potions and herbal remedies. She's friendly and knowledgeable about the local area.",
     "visualDescription": {
       "body": "A middle-aged woman with warm eyes and graying hair tied in a practical bun. Her hands are stained from working with plants and herbs.",
@@ -33,9 +30,6 @@ USER:
     "id": "npc_treasuryGuard",
     "name": "Gareth",
     "currentLocationId": "loc_cityTreasury",
-    "visibleToPlayer": true,
-    "knownToPlayer": false,
-    "knowsPlayer": false,
     "backstory": "Gareth is a city guard assigned to protect the treasury. He takes his job very seriously and is suspicious of strangers. He has strict orders not to let anyone inside without proper authorization.",
     "visualDescription": {
       "body": "A tall, broad-shouldered man with a stern expression and watchful eyes.",
@@ -68,9 +62,6 @@ USER:
     "id": "npc_edith",
     "name": "Edith",
     "currentLocationId": "loc_villageSquare",
-    "visibleToPlayer": true,
-    "knownToPlayer": false,
-    "knowsPlayer": false,
     "backstory": "Edith is an elderly woman living in the village. Her grandson Tomas is a hunter who regularly supplies the village with meat. She's worried because he hasn't returned from his latest hunting trip.",
     "personality": {
         "motivations": "Finding her missing grandson Tomas."
@@ -101,9 +92,6 @@ USER:
     "id": "npc_barkeeper",
     "name": "Tomas",
     "currentLocationId": "loc_greenDragonTavern",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Tomas is the friendly and talkative barkeeper at the Green Dragon Tavern. He hears all the local gossip.",
     "visualDescription": {
       "body": "A stout middle-aged man with a clean-shaven face and laugh lines around his eyes.",
@@ -127,9 +115,6 @@ USER:
     "id": "npc_weaponsmith",
     "name": "Durgan",
     "currentLocationId": "loc_blacksmithShop",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Durgan is the town's weaponsmith, known for high-quality blades. He takes pride in his work.",
     "visualDescription": {
       "body": "A muscular man with a thick beard and calloused hands. Burns and scars cover his forearms from years at the forge.",
@@ -156,9 +141,6 @@ USER:
     "id": "npc_weaponsmith",
     "name": "Durgan",
     "currentLocationId": "loc_blacksmithShop",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Durgan is the town's weaponsmith, known for high-quality blades.",
     "inventory": [
       {"name": "Silver Dagger", "description": "A finely crafted dagger with a silver blade and runes etched on the hilt", "quantity": 1}
@@ -215,9 +197,6 @@ USER:
     "id": "npc_boren",
     "name": "Boren",
     "currentLocationId": "loc_marketSquare",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Boren is a local merchant who has lived in town all his life and knows it well. He's friendly with Marta, the innkeeper of the Silver Swan Inn.",
     "visualDescription": {
       "body": "A middle-aged man with a round belly and a thick brown beard streaked with gray.",
@@ -257,9 +236,6 @@ USER:
     "id": "npc_caravanGuard",
     "name": "Rorik",
     "currentLocationId": "loc_northRoad",
-    "visibleToPlayer": true,
-    "knownToPlayer": false,
-    "knowsPlayer": false,
     "backstory": "Rorik is a veteran caravan guard, tough and skilled with an axe. He doesn't scare easily and doesn't tolerate threats.",
     "visualDescription": {
       "body": "A weathered, muscular man with several scars on his face and arms. His posture suggests military training.",
@@ -294,9 +270,6 @@ USER:
     "id": "npc_innkeeper",
     "name": "Milo",
     "currentLocationId": "loc_crowsNestTavern",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Milo is the innkeeper of the Crow's Nest Tavern. He hears all the local gossip but is cautious about what he says in public due to fear of reprisal from the powerful Baron Blackwood.",
     "personality": {
         "fears": "Baron Blackwood and his guards"
@@ -328,9 +301,6 @@ USER:
     "id": "npc_elderVillager",
     "name": "Merrin",
     "currentLocationId": "loc_villageTavern",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": false,
     "backstory": "Merrin is an elder of the village who has traveled widely and knows a great deal about the surrounding regions and their politics. He enjoys sharing his knowledge.",
     "visualDescription": {
       "body": "An elderly man with a long white beard and bright, intelligent eyes. Despite my age, I sit straight-backed and alert.",
@@ -354,9 +324,6 @@ USER:
     "id": "npc_merchantDarian",
     "name": "Darian",
     "currentLocationId": "loc_merchantGuildHall",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Darian is a wealthy merchant specializing in luxury goods. He's currently worried about an important shipment that needs to reach Oakvale safely through bandit territory.",
     "personality": {
         "motivations": "Ensuring his valuable shipment arrives safely."
@@ -405,9 +372,6 @@ USER:
     "id": "npc_shopkeeper",
     "name": "Verna",
     "currentLocationId": "loc_generalStore",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Verna runs the general store and doesn't tolerate thieves or troublemakers. She keeps a crossbow under the counter for protection and isn't afraid to use it.",
     "visualDescription": {
       "body": "A stern-faced woman in her forties with strong arms from years of hauling merchandise. My eyes are sharp and miss nothing.",
@@ -442,9 +406,6 @@ USER:
     "id": "npc_farrin",
     "name": "Farrin",
     "currentLocationId": "loc_villageMarket",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Farrin is a local merchant specializing in everyday goods. He knows Magister Orlen from trading rare herbs and materials to him.",
     "visualDescription": {
       "body": "A middle-aged man with a friendly face and calloused hands. I have laugh lines around my eyes and move with energy.",
@@ -484,9 +445,6 @@ USER:
     "id": "npc_courierJakob",
     "name": "Jakob",
     "currentLocationId": "loc_villageStables",
-    "visibleToPlayer": true,
-    "knownToPlayer": false,
-    "knowsPlayer": false,
     "backstory": "Jakob is a courier delivering messages and small packages. His horse, Windchaser, is essential to his livelihood and family's survival.",
     "personality": {
         "motivations": "Providing for his family by running his courier business."
@@ -509,9 +467,6 @@ USER:
     "id": "npc_merchantGuild",
     "name": "Garrick",
     "currentLocationId": "loc_merchantGuildHall",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": false,
     "backstory": "Garrick is the local representative of the Merchant Guild, but is secretly working with a rival guild. He's suspicious of anyone claiming to be from the mayor, as he was warned about an investigation.",
     "personality": {
         "secrets": ["Is a double agent for a rival guild"]
@@ -545,9 +500,6 @@ USER:
     "id": "npc_merchantKoren",
     "name": "Koren",
     "currentLocationId": "loc_tradingPost",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Koren is a merchant who recently lost a valuable shipment to bandits. He promised a reward for its recovery. He comes from a long line of traders.",
     "inventory": [
         {"name": "Heirloom Dagger", "description": "An ornate dagger with a blade that never dulls.", "quantity": 1 }
@@ -598,9 +550,6 @@ USER:
     "id": "npc_guildmaster",
     "name": "Master Dorian",
     "currentLocationId": "loc_craftGuildHall",
-    "visibleToPlayer": true,
-    "knownToPlayer": false,
-    "knowsPlayer": false,
     "backstory": "Master Dorian is the shrewd head of the local Crafters Guild with decades of experience dealing with officials. He can easily spot deception and knows royal protocols.",
     "dispositionTowardsPlayer": "Neutral"
   },
@@ -629,9 +578,6 @@ USER:
     "id": "npc_healerLin",
     "name": "Lin",
     "currentLocationId": "loc_templeHealersWing",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Lin is a dedicated healer at the temple, known for her calm demeanor and expertise.",
     "dispositionTowardsPlayer": "Fond"
   },
@@ -658,8 +604,6 @@ USER:
     "id": "npc_cityGuardCaptain",
     "name": "Captain Valerius",
     "currentLocationId": "loc_cityBarracks",
-    "visibleToPlayer": true,
-    "knowsPlayer": false,
     "backstory": "Captain Valerius is the stern but fair commander of the city watch. He respects capable warriors.",
     "dispositionTowardsPlayer": "Neutral"
   },
@@ -685,34 +629,6 @@ RESPONSE:
     ]
   }
 }
----
-# EXAMPLE: REACTING TO WORLD CONTEXT (WEATHER)
-USER:
-{
-  "npcContext": {
-    "type": "NPC",
-    "id": "npc_farmerGiles",
-    "name": "Giles",
-    "currentLocationId": "loc_farmersMarket",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
-    "backstory": "Giles is a farmer who sells produce at the market. His livelihood depends on the weather.",
-    "dispositionTowardsPlayer": "Neutral"
-  },
-  "worldContext": {
-    "worldStateEffects": {
-      "Weather": "Heavy Rain"
-    }
-  },
-  "playerInput": "How are the crops this season, Giles?"
-}
-
-RESPONSE:
-{
-  "userFacingText": "*I sigh, wiping rain from my brow* \"Bah! This endless rain... If it keeps up like this, half the harvest will rot in the fields before we can bring it in.\" *I gesture at my meager stall display* \"Already lost most of my early beans. Need some sunshine, and soon, or it's going to be a lean winter for all of us.\""
-}
----
 # EXAMPLE: REACTING TO WORLD CONTEXT (TIME OF DAY)
 USER:
 {
@@ -721,8 +637,6 @@ USER:
     "id": "npc_gateGuard",
     "name": "Bran",
     "currentLocationId": "loc_cityWestGate",
-    "visibleToPlayer": true,
-    "knowsPlayer": false,
     "backstory": "Bran is a guard stationed at the city's west gate. He follows orders strictly, especially regarding the gate curfew.",
     "dispositionTowardsPlayer": "Neutral"
   },
@@ -745,9 +659,6 @@ USER:
     "id": "npc_shadyMerchant",
     "name": "Silas",
     "currentLocationId": "loc_darkAlley",
-    "visibleToPlayer": true,
-    "knownToPlayer": true,
-    "knowsPlayer": true,
     "backstory": "Silas deals in stolen goods and information. He is careful not to reveal his sources or illicit activities.",
     "personality": {
         "secrets": ["Fences stolen jewelry for the Thieves Guild", "Knows the location of a hidden smuggler cache"]
@@ -770,8 +681,6 @@ USER:
     "id": "npc_nervousAssistant",
     "name": "Pip",
     "currentLocationId": "loc_alchemistShop",
-    "visibleToPlayer": true,
-    "knowsPlayer": false,
     "backstory": "Pip is the alchemist's assistant. He accidentally broke a valuable retort last night and is terrified his master will find out.",
     "personality": {
         "secrets": ["Accidentally broke Master Elmsworth\'s prized Athanor Retort"],

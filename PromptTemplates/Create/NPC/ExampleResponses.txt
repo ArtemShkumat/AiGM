@@ -16,9 +16,7 @@ Your Response:
   "id": "npc_smith_Runa",
   "name": "Smith Runa",
   "currentLocationId": "loc_ancientForge",
-  "knownToPlayer": false,
-  "knowsPlayer": false,
-  "visibleToPlayer": false,
+  "race": "Human",
   
   "visualDescription": {
     "gender": "female",
@@ -46,28 +44,7 @@ Your Response:
   "age": 45,
   
   "dispositionTowardsPlayer": "neutral",
-  
-  "knownEntities": {
-    "npcsKnown": [
-      {
-        "name": "Elder Varric",
-        "levelOfFamiliarity": "Deep",
-        "disposition": "Respectful"
-      },
-      {
-        "name": "Merchant Thorin",
-        "levelOfFamiliarity": "Known",
-        "disposition": "Neutral"
-      }
-    ],
-    "locationsKnown": [
-      "loc_emberhold",
-      "loc_ancientForge"
-    ]
-  },
-  
-  "questInvolvement": ["quest_emberCrystal"],
-  
+    
   "inventory": [
     {
       "name": "Master's Hammer",
@@ -110,9 +87,7 @@ Your Response:
   "id": "npc_Finn",
   "name": "Finn",
   "currentLocationId": "loc_boston_pharmacy",
-  "knownToPlayer": false,
-  "knowsPlayer": false,
-  "visibleToPlayer": true,
+  "race": "Human",
   
   "visualDescription": {
     "gender": "Male",
@@ -140,18 +115,7 @@ Your Response:
   "age": 10,
   
   "dispositionTowardsPlayer": "Unfriendly",
-  
-  "knownEntities": {
-    "npcsKnown": [],
-    "locationsKnown": [
-      "loc_boston_pharmacy",
-      "loc_boston_apartments",
-      "loc_boston_park"
-    ]
-  },
-  
-  "questInvolvement": [],
-  
+    
   "inventory": [
     {
       "name": "Worn Teddy Bear",

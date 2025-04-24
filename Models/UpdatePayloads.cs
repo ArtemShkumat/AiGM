@@ -118,18 +118,6 @@ namespace AiGMBackEnd.Models
         public UpdateAction Action { get; set; } // Add or Remove
     }
 
-
-    public class KnownEntitiesUpdatePayload
-    {
-        [JsonPropertyName("npcsKnown")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<KnownNpcUpdateItem>? NpcsKnown { get; set; }
-
-        [JsonPropertyName("locationsKnown")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<KnownLocationUpdateItem>? LocationsKnown { get; set; }
-    }
-
     // --- Concrete Update Payload Classes ---
 
     public class PlayerUpdatePayload : IUpdatePayload
@@ -179,10 +167,6 @@ namespace AiGMBackEnd.Models
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         [JsonConverter(typeof(LlmSafeIntConverter))]
         public int? DaysSinceStart { get; set; }
-
-        [JsonPropertyName("worldStateEffects")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Dictionary<string, string>? WorldStateEffects { get; set; } // Allow adding/updating specific effects
     }
 
     public class NpcUpdatePayload : IUpdatePayload
@@ -198,15 +182,6 @@ namespace AiGMBackEnd.Models
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? CurrentLocationId { get; set; }
 
-        [JsonPropertyName("knownToPlayer")]
-        public bool? KnownToPlayer { get; set; }
-
-        [JsonPropertyName("knowsPlayer")]
-        public bool? KnowsPlayer { get; set; }
-
-        [JsonPropertyName("visibleToPlayer")]
-        public bool? VisibleToPlayer { get; set; }
-
         [JsonPropertyName("visualDescription")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public VisualDescriptionUpdatePayload? VisualDescription { get; set; }
@@ -218,10 +193,6 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("dispositionTowardsPlayer")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? DispositionTowardsPlayer { get; set; }
-
-        [JsonPropertyName("knownEntities")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public KnownEntitiesUpdatePayload? KnownEntities { get; set; }
 
         [JsonPropertyName("inventory")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -236,14 +207,6 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("id")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Id { get; set; }
-
-        [JsonPropertyName("knownToPlayer")]
-        public bool? KnownToPlayer { get; set; }
-
-        [JsonPropertyName("npcs")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        [JsonConverter(typeof(NpcListConverter))]
-        public List<NpcListUpdateItem>? Npcs { get; set; } // List of NPCs to add/remove from the location
 
          [JsonPropertyName("parentLocation")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
