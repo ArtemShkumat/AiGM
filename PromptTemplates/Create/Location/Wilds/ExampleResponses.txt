@@ -12,69 +12,42 @@ User Prompt: Create a location using this info:
 Your Response:
 
 {
+  "type": "LOCATION",
+  "locationType": "Wilds",
   "id": "wilds_darkwood_forest",
   "name": "Darkwood Forest",
-  "type": "LOCATION",
-  "locationType": "Wilds"
   "description": "A foreboding forest of ancient, towering pines that blot out the sun, creating an eternal twilight beneath their dense canopy. The air hangs heavy with mist and the scent of damp earth.",
-  "terrain": "Dense forest with massive pines, undergrowth of thorny bushes, and occasional clearings. The ground is uneven, with exposed roots, hidden sinkholes, and patches of treacherous bog.",
-  "dangers": "Poisonous fungi that release spores when disturbed, packs of aggressive shadow wolves, and the disorienting nature of the forest itself which seems to shift when travelers aren't looking directly at their path.",
   "parentLocationId": "region_northern_frontier",
-  "connectedLocationIds": [
-    "settlement_oakhollow",
-    "delve_forgotten_barrow",
-    "settlement_mist_harbor"
-  ]
-  ,
-  "details": {
-    "danger_level": 7,
-    "wildlife": "Shadow wolves, venomous spiders the size of dinner plates, owlbears, and the rare forest drake that hunts at night.",
-    "weather_patterns": "Frequent heavy mists, sudden downpours that turn forest paths to mud, and occasional bone-chilling cold snaps even in summer months."
-  },
+  "typicalOccupants": "Wood sprites, wandering druids, small forest creatures, occasional elvish hunters, and rarely, a centaur band.",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
+  "terrain": "Deciduous Forest",
+  "dangers": "Venomous snakes, quicksand, territorial wood sprites, and pockets of twisted fey magic. Shadow wolves, venomous spiders the size of dinner plates, owlbears, and the rare forest drake that hunts at night.",
+  "danger_level": 7,
   "points_of_interest": [
     {
       "name": "The Whispering Grove",
       "description": "A circular clearing where the trees grow in a perfect ring. The wind passing through creates sounds reminiscent of hushed conversations in an unknown language.",
-      "dangers": "Those who listen too long to the whispers risk becoming entranced and wandering deeper into the forest, following voices only they can hear.",
-      "resources": "Rare medicinal mushrooms grow here that can cure certain poisons if properly prepared."
+      "hinting_at": "An ancient druidic ritual site where the veil between worlds is thin, potentially offering communications with nature spirits or fey creatures."
     },
     {
       "name": "Widow's Creek",
       "description": "A narrow, swift-flowing creek with water so clear it's almost invisible. The stones beneath are a peculiar black color, polished smooth over centuries.",
-      "dangers": "The water is preternaturally cold, causing rapid numbness to anything submerged in it for more than a few seconds.",
-      "resources": "The black stones can hold enchantments unusually well, making them valuable to certain mages and artificers."
+      "hinting_at": "The creek's unusual properties suggest a connection to the Shadowfell; drinking the water might grant temporary glimpses of the shadow realm."
     },
     {
       "name": "The Hanging Ruins",
       "description": "Remnants of an ancient watchtower now partially suspended in the canopy, as the massive trees have grown beneath and around it, lifting sections of stonework into the air.",
-      "dangers": "The structure is unstable and may collapse at any moment. Venomous tree vipers have made nests in the higher sections.",
-      "resources": "Ancient artifacts of a forgotten civilization can occasionally be found among the ruins."
-    }
-  ],
-  "traversal": {
-    "difficulty": "Extremely challenging. Few clear paths exist, and those that do often lead travelers astray or end abruptly.",
-    "common_obstacles": "Dense thorny undergrowth, fallen trees creating barriers, sudden drops concealed by foliage, and patches of ground that appear solid but are actually treacherous bogs.",
-    "paths": [
-      {
-        "name": "Woodcutter's Trail",
-        "description": "A narrow, winding path marked by occasional blazes on tree trunks. The only somewhat reliable route through the forest's outer edges.",
-        "safety_level": "Moderate near the forest edge, becoming increasingly dangerous deeper in."
-      },
-      {
-        "name": "Forgotten King's Road",
-        "description": "Remnants of an ancient cobblestone road, now broken and reclaimed by the forest. Only short stretches remain visible, but they follow a relatively straight line from east to west.",
-        "safety_level": "Unpredictable. While the road itself is easier to traverse, it attracts the attention of the forest's more dangerous inhabitants."
-      }
-    ]
-  },
-  "npcs": [
-    {
-      "npcId": "npc_old_trapper_voren",
-      "location_hint": "Maintains a small, well-hidden cabin near the edge of the forest closest to Oakhollow. Knows the outer regions of Darkwood better than anyone."
+      "hinting_at": "The ruins contain symbols and artifacts of a forgotten civilization that once maintained a network of similar watchtowers throughout the region."
     },
     {
-      "npcId": "npc_witch_morgaine",
-      "location_hint": "Lives deep within the forest in a hut that walks on giant chicken legs. Her location constantly changes, but smoke from her chimney can sometimes be spotted from the Hanging Ruins."
+      "name": "Woodcutter's Trail",
+      "description": "A narrow, winding path marked by occasional blazes on tree trunks. The only somewhat reliable route through the forest's outer edges.",
+      "hinting_at": "The trail markers contain hidden messages that can be read by those who know what to look for, revealing safe resting spots and danger zones."
+    },
+    {
+      "name": "Forgotten King's Road",
+      "description": "Remnants of an ancient cobblestone road, now broken and reclaimed by the forest. Only short stretches remain visible, but they follow a relatively straight line from east to west.",
+      "hinting_at": "The road once connected important sites of an ancient kingdom, and following it completely might lead to undiscovered ruins with valuable treasures."
     }
   ]
 } 

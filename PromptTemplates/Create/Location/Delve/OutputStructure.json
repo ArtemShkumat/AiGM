@@ -8,6 +8,7 @@
     "description": { "type": "string", "description": "Overall description of the delve's theme, atmosphere, and history" },
     "parentLocationId": { "type": "string", "description": "ID of the parent location (e.g., Wilds ID, provided by application)" },
     "typicalOccupants": { "type": "string", "description": "Free-form description of typical occupants/creatures/hazards." },
+    "currentCondition": { "type": "string", "description": "Description of the current condition of the place (e.g., 'in it's normal condition - still unvisited by the player')." },
     "purpose": { "type": "string", "description": "The original purpose or reason this delve exists" },
     "delve_rooms": {
       "type": "array",
@@ -19,6 +20,7 @@
           "role": { "type": "string", "description": "Conceptual role (Entrance, Puzzle, Setback, Climax, Reward)" },
           "description": { "type": "string", "description": "Detailed description of the room's appearance and contents" },
           "challenge": { "type": "string", "description": "Primary obstacle, puzzle, or encounter in this room." },
+          "currentCondition": { "type": "string", "description": "Description of the current condition of the delve room (e.g., 'in it's normal condition - still unvisited by the player')." },
           "points_of_interest": {
             "type": "array",
             "items": {
@@ -47,13 +49,13 @@
             }
           }
         },
-        "required": ["name", "role", "description", "challenge", "points_of_interest"]
+        "required": ["name", "role", "description", "challenge", "currentCondition", "points_of_interest"]
       }
     }
   },
   "required": [
     "type", "locationType", "id", "name", "description",
-    "parentLocationId", "typicalOccupants",
+    "parentLocationId", "typicalOccupants", "currentCondition",
     "purpose", "delve_rooms"
   ]
 } 

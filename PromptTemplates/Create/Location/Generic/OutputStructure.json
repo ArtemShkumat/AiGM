@@ -32,9 +32,9 @@
       "nullable": true,
       "description": "Optional: Free-form description of typical occupants/creatures found at this location."
     },
-    "currentCondition": {
-      "type": "string",
-      "description": "Description of the location's current condition (e.g., 'in it's normal condition - still unvisited by the player')."
+    "currentCondition": { 
+      "type": "string", 
+      "description": "Description of the current condition of the place (e.g., 'in it's normal condition - still unvisited by the player')."
     },
     "history": { 
       "type": "string", 

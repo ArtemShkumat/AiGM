@@ -157,7 +157,7 @@ Where: RPGGame/Models/
 What: Classes for Npc, Player, Location, Quest, World, Prompt, PromptRequest, ProcessedResult. Includes interfaces like `ICreationHook` and `IUpdatePayload` and their implementations (e.g., `NpcCreationHook`, `PlayerUpdatePayload`) to represent structured LLM outputs. Also includes custom `JsonConverter` implementations in `Models/Converters.cs`. JSON is stored in RPGGame/Data/<UserId>/..., loaded into these model classes at runtime.
 
 Location Model Structure:
-- `Location` (abstract base class): Defines common properties for all location types including `Type`, `LocationType`, `Id`, `Name`, `Description`, `ParentLocation`, and `TypicalOccupants`.
+- `Location` (abstract base class): Defines common properties for all location types including `Type`, `LocationType`, `Id`, `Name`, `Description`, `ParentLocation`, `TypicalOccupants`, and `CurrentCondition`.
 - `GenericLocation`: A concrete implementation of `Location` used for nested location types (Floor, Room, District, DelveRoom) that don't require unique properties beyond the base definition.
 - Specialized Location Classes (`Building`, `Delve`, `Settlement`, `Wilds`): Extend the base `Location` class with type-specific properties.
 - `LocationConverter`: JSON converter for proper serialization/deserialization of the location hierarchy.

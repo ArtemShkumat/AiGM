@@ -9,14 +9,16 @@ Follow these guidelines:
 **Building-Level Details:**
 *   Provide `exterior_description`, `purpose`, and `history`.
 *   Include a `typical_occupants` string describing the kinds of people or creatures usually found here (e.g., "Busy shoppers and merchants during the day, quiet at night except for watchmen.").
+*   Include a `current_condition` string describing the current state of the building. For newly created buildings, use "in it's normal condition - still unvisited by the player" or similar wording.
 
 **Structure (Floors and Rooms):**
 *   If the building has multiple levels, organize the description by floors (using descriptive names like "Ground Floor", "Cellar", "Upper Floor", "Attic").
-*   For each floor, describe its general layout and list the rooms it contains.
+*   For each floor, describe its general layout and list the rooms it contains. Include a `current_condition` field for each floor.
 *   For each room, provide:
     *   `name`: A descriptive name (e.g., "Main Hall", "Kitchen", "Guard Barracks"). **Do not generate IDs for floors or rooms.** The application will create unique IDs later based on these names.
     *   `type`: (e.g., "bedroom", "office", "workshop")
     *   `description`: A detailed description of the room.
+    *   `current_condition`: A description of the current state of the room. For new rooms, use "in it's normal condition - still unvisited by the player" or similar.
     *   `points_of_interest`: 1-3 interactable or evocative features (as objects with `name`, `description`, `hinting_at`).
     *   `valuables`: Any meaningful loot (as objects with `name`, `why_its_here`, `description`, `quantity`, `value`).
 
@@ -31,14 +33,18 @@ Example Room Structure Snippet (Conceptual JSON):
 ```json
 {
   // ... building properties ...
+  "typicalOccupants": "Merchants and customers during business hours",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
   "floors": [
     {
       "floor_name": "Ground Floor",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
       "rooms": [
         {
           "name": "Entrance Hall",
           "type": "Entry",
           "description": "...",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [ ... ],
           "valuables": [ ... ]
         },
@@ -46,12 +52,14 @@ Example Room Structure Snippet (Conceptual JSON):
           "name": "Kitchen",
           "type": "Service",
           "description": "...",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           // ... poi, valuables ...
         }
       ]
     },
     {
       "floor_name": "Upper Floor",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
       "rooms": [ ... ]
     }
   ]

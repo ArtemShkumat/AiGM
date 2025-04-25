@@ -12,113 +12,77 @@ User Prompt: Create a location using this info:
 Your Response:
 
 {
-  "id": "settlement_willowbrook",
-  "name": "Willowbrook Village",
   "type": "LOCATION",
   "locationType": "Settlement",
+  "id": "settlement_willowbrook",
+  "name": "Willowbrook Village",
   "description": "A quaint rural village nestled along a gentle, meandering brook, renowned for its warm community and simple charm.",
+  "parentLocationId": "loc_greenfields",
+  "typicalOccupants": "Mostly humans and halflings who work the surrounding farms and practice traditional crafts.",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
   "purpose": "A farming and trading community sustained by agriculture and local crafts.",
   "history": "Founded centuries ago by settlers seeking fertile lands, Willowbrook has endured storms and conflicts while retaining its close-knit spirit.",
   "size": "Village",  
-  "parentLocationId": "loc_greenfields",
-  "connectedLocationIds": [
-    "road_oldmill",
-    "forest_whispering"
-  ],  
-  "demographics": {
-    "population": 350,
-    "factions": [
-      {
-        "name": "Village Elders",
-        "description": "A council of respected villagers managing local affairs and resolving disputes.",
-        "npcs": [
-          { "npcId": "npc_elder_marion" },
-          { "npcId": "npc_elder_thomas" }
-        ]
-      },
-      {
-        "name": "Local Farmers",
-        "description": "A loose association of farming families sharing news and trading goods at the market.",
-        "npcs": []
-      }
-    ]
-  },
+  "population": 350,
   "districts": [
     {
       "name": "Village Center",
       "description": "The heart of Willowbrook, where the marketplace, town hall, and communal well reside. Cobblestone streets and modest wooden buildings define this district.",
-      "navigation": {
-        "connected_districts": [
-          "Residential Quarter",
-          "Outskirts"
-        ]
-      },
-      "notable_features": [
+      "currentCondition": "in it's normal condition - still unvisited by the player",
+      "typicalOccupants": "Merchants, craftspeople, and village officials conducting daily business.",
+      "points_of_interest": [
         {
           "name": "Town Well",
-          "description": "A centuries-old stone well providing fresh water and serving as a communal gathering spot."
+          "description": "A centuries-old stone well providing fresh water and serving as a communal gathering spot.",
+          "hinting_at": "Local gossip suggests wishes made at the well during a full moon may come true, hinting at minor magical properties."
         },
         {
           "name": "Market Square",
-          "description": "A bustling open-air market where villagers gather weekly to trade goods and exchange news."
-        }
-      ],
-      "npcs": [
-        { "npcId": "npc_market_vendor_annie" }
-      ],
-      "buildings": [
-        {
-          "buildingId": "building_townhall",
-          "description": "The administrative center where the village council meets."
+          "description": "A bustling open-air market where villagers gather weekly to trade goods and exchange news.",
+          "hinting_at": "Traveling merchants occasionally bring exotic goods and tales from distant lands, potentially offering adventure hooks."
         },
         {
-          "buildingId": "building_old_sparrows_shop",
-          "description": "A modest general store providing essentials and odd trinkets, run by the affable shopkeeper Old Sparrow."
+          "name": "Old Town Hall",
+          "description": "The administrative center where the village council meets.",
+          "hinting_at": "Ancient records stored in the basement might contain information about local legends and forgotten treasures."
         }
       ]
     },
     {
       "name": "Residential Quarter",
       "description": "A cluster of modest homes and cottages where most villagers reside. Quiet lanes and small gardens define this area.",
-      "navigation": {
-        "connected_districts": [
-          "Village Center",
-          "Outskirts"
-        ]
-      },
-      "notable_features": [
+      "currentCondition": "in it's normal condition - still unvisited by the player",
+      "typicalOccupants": "Families, craftspeople, and elders living in close-knit community.",
+      "points_of_interest": [
         {
           "name": "Community Garden",
-          "description": "A shared plot where villagers cultivate vegetables and herbs."
-        }
-      ],
-      "npcs": [
-        { "npcId": "npc_old_granny_susie" }
-      ],
-      "buildings": [
+          "description": "A shared plot where villagers cultivate vegetables and herbs.",
+          "hinting_at": "Some of the herbs grown here have unusual properties, suggesting knowledge of folk remedies and minor alchemy."
+        },
         {
-          "buildingId": "building_cottage_1",
-          "description": "A well-kept cottage with a vibrant garden, home to a local family."
+          "name": "Elder's Cottage",
+          "description": "A well-kept cottage with a vibrant garden, home to the village's oldest resident.",
+          "hinting_at": "The elder keeps journals chronicling decades of village history, including references to ancient ruins nearby."
         }
       ]
     },
     {
       "name": "Outskirts",
       "description": "The peripheral area featuring scattered farms, fields, and the occasional abandoned structure that hints at earlier times.",
-      "navigation": {
-        "connected_districts": [
-          "Village Center",
-          "Residential Quarter"
-        ]
-      },
-      "notable_features": [
+      "currentCondition": "in it's normal condition - still unvisited by the player",
+      "typicalOccupants": "Farmers, herders, and the occasional hermit living away from the village center.",
+      "points_of_interest": [
         {
           "name": "Old Mill Ruins",
-          "description": "Remnants of a once-thriving watermill that powered the village�s early industry."
+          "description": "Remnants of a once-thriving watermill that powered the village's early industry.",
+          "hinting_at": "Local legends speak of treasure hidden beneath the mill during a bandit raid generations ago."
+        },
+        {
+          "name": "Willow Grove",
+          "description": "A serene stand of willow trees along the brook that gives the village its name.",
+          "hinting_at": "The oldest trees are said to whisper secrets to those who listen carefully, suggesting a minor connection to nature spirits or fey."
         }
-      ],
-      "npcs": [],
-      "buildings": []
+      ]
     }
   ]
 }

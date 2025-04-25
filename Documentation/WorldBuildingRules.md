@@ -50,6 +50,12 @@ This document outlines the principles for structuring and generating the game wo
 
 *   **Guidance for DM:** The `Location` object has a `TypicalOccupants` string property. This is a free-form description for the LLM acting as the Dungeon Master (DM) or game engine. It suggests the *types* of NPCs commonly found there (e.g., "Market stalls run by local artisans", "Rowdy patrons and a tired barkeep", "Goblins guarding the entrance"). The DM uses this guidance when populating the location dynamically during gameplay.
 
+### 5. Current Condition
+
+*   **Location State Tracking:** The `Location` object has a `CurrentCondition` string property. This tracks the current state of the location, particularly after player interactions. For newly created locations that the player hasn't visited yet, the default condition is "in it's normal condition - still unvisited by the player".
+*   **Use Cases:** When players trash a tavern during a bar fight, loot a dungeon, burn down a building, or otherwise change a location's state, the `CurrentCondition` field provides this context to the LLM when it's describing or generating content for that location.
+*   **Persistence:** This field is persistent, allowing the game to maintain a consistent world state even as players modify the environment through their actions.
+
 ## Scenario Creation Workflow (General)
 
 1.  **Top-Down:** Start defining the larger containers (e.g., Region).
@@ -63,4 +69,5 @@ This document outlines the principles for structuring and generating the game wo
 *   Prompts must clearly instruct the LLM to adhere to the ID naming convention (use names for nested parts).
 *   Prompts must provide the necessary context (`ParentLocationId`, the `Id` for the main location being generated).
 *   Prompts should ask for the `TypicalOccupants` description.
+*   Prompts should ask for the `CurrentCondition` description. For new locations, instruct use of "in it's normal condition - still unvisited by the player".
 *   Prompts should *not* ask the LLM to populate specific NPC lists within the location structure.

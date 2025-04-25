@@ -8,6 +8,7 @@
     "description": { "type": "string", "description": "Overall description of the area's environment, climate, and general atmosphere" },
     "parentLocationId": { "type": "string", "description": "ID of the parent location (e.g., Region ID, provided by application)" },
     "typicalOccupants": { "type": "string", "description": "Free-form description of common wildlife, monsters, or infrequent travelers." },
+    "currentCondition": { "type": "string", "description": "Description of the current condition of the place (e.g., 'in it's normal condition - still unvisited by the player')." },
     "terrain": { "type": "string", "description": "Dominant terrain type (e.g., Forest, Swamp, Mountain, Desert)" },
     "dangers": { "type": "string", "description": "Description of common environmental hazards or hostile creatures" },
     "danger_level": { "type": "integer", "description": "Subjective danger level (e.g., 1-10 scale)" },
@@ -26,7 +27,7 @@
   },
   "required": [
     "type", "locationType", "id", "name", "description",
-    "parentLocationId", "typicalOccupants",
+    "parentLocationId", "typicalOccupants", "currentCondition",
     "terrain", "dangers", "danger_level", "points_of_interest"
   ]
 } 

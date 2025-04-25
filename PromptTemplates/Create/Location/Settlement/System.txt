@@ -9,6 +9,7 @@ Follow these guidelines:
 **Settlement-Level Details:**
 *   Provide `purpose`, `history`, `size` (e.g., "Hamlet", "Village", "Town", "City"), and estimated `population`.
 *   Include a `typical_occupants` string describing the general populace (e.g., "Hardy farmers and loggers", "Cosmopolitan citizens and wealthy merchants", "Close-knit villagers wary of outsiders").
+*   Include a `current_condition` string describing the current state of the settlement. For newly created settlements, use "in it's normal condition - still unvisited by the player" or similar wording.
 
 **Structure (Districts):**
 *   Break the settlement into logical districts (e.g., "Market Square", "Residential Quarter", "Docks", "Temple District", "Old Town", "Industrial Zone").
@@ -16,6 +17,7 @@ Follow these guidelines:
 *   For each district, provide:
     *   `name`: A descriptive name. **Do not generate IDs for districts.** The application will create unique IDs later.
     *   `description`: An overview of the district's atmosphere, appearance, and key features.
+    *   `current_condition`: A description of the current state of the district. For new districts, use "in it's normal condition - still unvisited by the player" or similar.
     *   `points_of_interest`: 1-3 notable landmarks or locations within the district (as objects with `name`, `description`, `hinting_at`). These are distinct from major buildings which might be separate `Location` objects.
     *   `(Optional) typical_occupants`: A more specific description for this district if it differs significantly from the settlement average.
 
@@ -31,10 +33,13 @@ Example District Structure Snippet (Conceptual JSON):
 ```json
 {
   // ... settlement properties ...
+  "typicalOccupants": "Farmers, artisans, and merchants",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
   "districts": [
     {
       "name": "Market Quarter",
       "description": "Bustling with activity during the day...",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
       "points_of_interest": [ 
         { "name": "Town Well", "description": "..." , "hinting_at": "" }
       ],
@@ -43,6 +48,7 @@ Example District Structure Snippet (Conceptual JSON):
     {
       "name": "Residential District",
       "description": "Quiet streets lined with modest homes...",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
       "points_of_interest": [ ... ]
       // typical_occupants might be omitted if same as settlement level
     }

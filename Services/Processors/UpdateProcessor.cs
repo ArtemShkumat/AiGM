@@ -443,26 +443,13 @@ namespace AiGMBackEnd.Services.Processors
             }
             
             // Handle Location with NPCs array special case
-            if (entityType == "location" && updateData is LocationUpdatePayload locationUpdate && locationUpdate.Npcs != null && locationUpdate.Npcs.Any())
+            if (entityType == "location" && updateData is LocationUpdatePayload locationUpdate)
             {                
-                // If there are other properties to update, create a copy without the Npcs property
-                var locationUpdateWithoutNpcs = new LocationUpdatePayload
+                // If no properties to update, just return
+                if (string.IsNullOrEmpty(locationUpdate.ParentLocation))
                 {
-                    Id = locationUpdate.Id,
-                    KnownToPlayer = locationUpdate.KnownToPlayer,
-                    ParentLocation = locationUpdate.ParentLocation
-                };
-                
-                // Check if there are actually other properties to update besides Npcs
-                if (locationUpdateWithoutNpcs.KnownToPlayer != null || !string.IsNullOrEmpty(locationUpdateWithoutNpcs.ParentLocation))
-                {
-                     _loggingService.LogInfo($"Processing remaining location properties for {entityId}");
-                     updateData = locationUpdateWithoutNpcs;
-                }
-                else
-                {
-                     _loggingService.LogInfo($"Only NPC updates found for location {entityId}. Skipping further processing for this update object.");
-                     return; // No other properties to update
+                     _loggingService.LogInfo($"No updatable properties found for location {entityId}. Skipping further processing for this update object.");
+                     return; // No properties to update
                 }
             }
             
@@ -853,7 +840,7 @@ namespace AiGMBackEnd.Services.Processors
             {
                 // Check if the only thing serialized was an empty inventory list we already processed
                 var tempDeserialize = System.Text.Json.JsonSerializer.Deserialize<NpcUpdatePayload>(updateJson, _jsonSerializerOptions);
-                if (tempDeserialize != null && (tempDeserialize.VisibleToPlayer != null || tempDeserialize.VisualDescription != null)) // Add other NPC fields here if needed
+                if (tempDeserialize != null && (tempDeserialize.VisualDescription != null || tempDeserialize.CurrentGoal != null || tempDeserialize.DispositionTowardsPlayer != null || tempDeserialize.CurrentLocationId != null)) // Updated NPC fields
                 {
                      await UpdateEntityAsync(userId, "npcs", npcId, updateJson);
                 }

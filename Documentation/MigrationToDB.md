@@ -26,7 +26,7 @@ This document outlines the step-by-step plan for migrating our file-based storag
 - **Games**: `GameId` (PK), `CreationTimestamp`, `Name`, `Description`
 - **Players**: `Id` (PK), `GameId` (FK), `Name`, `Race`, `Class`, `Level`, `Stats`, `Inventory`, `QuestIds`
 - **Worlds**: `Id` (PK), `GameId` (FK), `CurrentPlayer`, `CurrentLocation`, `Settings`, `Description`
-- **Locations**: `Id` (PK), `GameId` (FK), `Name`, `Description`, `Type`, `ConnectedLocationIds`, `NPCIds`, `ItemIds`
+- **Locations**: `Id` (PK), `GameId` (FK), `Name`, `Description`, `Type`,  `NPCIds`, `ItemIds`
 - **Npcs**: `Id` (PK), `GameId` (FK), `Name`, `Description`, `CurrentLocationId` (FK), `VisibleToPlayer`, `Stats`
 - **Quests**: `Id` (PK), `GameId` (FK), `Title`, `Description`, `Status`, `Steps`, `Rewards`, `RelatedNPCIds`
 - **GameSettings**: `Id` (PK), `GameId` (FK), `Difficulty`, `Theme`, `ContentSettings`

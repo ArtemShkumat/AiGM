@@ -8,6 +8,7 @@
     "description": { "type": "string", "description": "Overall description of the settlement's character, atmosphere, and setting" },
     "parentLocationId": { "type": "string", "description": "ID of the parent location (e.g., Region ID, provided by application)" },
     "typicalOccupants": { "type": "string", "description": "Free-form description of the general populace." },
+    "currentCondition": { "type": "string", "description": "Description of the current condition of the place (e.g., 'in it's normal condition - still unvisited by the player')." },
     "purpose": { "type": "string", "description": "The primary function or reason for the settlement's existence" },
     "history": { "type": "string", "description": "Brief history of the settlement" },
     "size": { "type": "string", "description": "Size category (e.g., Hamlet, Village, Town, City)" },
@@ -32,15 +33,16 @@
               "required": ["name", "description", "hinting_at"]
             }
           },
-          "typicalOccupants": { "type": "string", "description": "Optional specific occupants for this district if different from settlement." }
+          "typicalOccupants": { "type": "string", "description": "Optional specific occupants for this district if different from settlement." },
+          "currentCondition": { "type": "string", "description": "Description of the current condition of the district (e.g., 'in it's normal condition - still unvisited by the player')." }
         },
-        "required": ["name", "description", "points_of_interest"]
+        "required": ["name", "description", "points_of_interest", "currentCondition"]
       }
     }
   },
   "required": [
     "type", "locationType", "id", "name", "description",
-    "parentLocationId", "typicalOccupants",
+    "parentLocationId", "typicalOccupants", "currentCondition",
     "purpose", "history", "size", "population", "districts"
   ]
 } 

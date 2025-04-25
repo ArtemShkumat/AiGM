@@ -17,11 +17,9 @@ Your Response:
   "id": "loc_old_sparrows_shop",
   "name": "Old Sparrow's Shop",
   "description": "A general store providing staples and odd trinkets to local villagers.",
-  "connectedLocations": [],
-  "parentLocation": "loc_village_hollowbrook",
-  "npcs": [
-    "npc_OldSparrow"
-  ],
+  "parentLocationId": "loc_village_hollowbrook",
+  "typicalOccupants": "The elderly shopkeeper known as Old Sparrow and occasional customers from the village.",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
   "exterior_description": "A weathered timber storefront with a creaky wooden sign bearing a faded sparrow emblem.",
   "purpose": "A general store providing staples and odd trinkets to local villagers.",
   "history": "Run by Old Sparrow for three decades, rumored to have once been a small tavern.",
@@ -29,33 +27,30 @@ Your Response:
     {
       "floor_name": "Ground Floor",
       "description": "Polished wooden flooring, shelves lined with basic supplies, a counter near the entrance.",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
       "rooms": [
         {
           "name": "Main Shop Area",
           "type": "Retail Room",
           "description": "A cozy space cluttered with barrels of grain, jars of pickles, and various travel necessities. The smell of herbal tea mingles with old wood.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Seasonal Harvesting Poster",
               "description": "A faded poster showing local harvesting seasons, pinned behind the counter.",
               "hinting_at": "Indicates Old Sparrow's focus on homegrown produce and local trade."
             }
           ],
-          "valuables": [],
-          "npcs": [
-            "npc_OldSparrow"
-          ],
-          "navigation": {
-            "connected_rooms": [
-              "Storage Room"
-            ]
-          }
+          "valuables": []
         },
         {
           "name": "Storage Room",
           "type": "Supply Closet",
           "description": "Dimly lit, stacked with crates and sacks of flour, a single lantern rattling on an overhead hook.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Debt Ledger",
               "description": "A dusty ledger listing small debts from local farmers.",
               "hinting_at": "Old Sparrow extends credit for those struggling between harvests."
             }
@@ -68,11 +63,7 @@ Your Response:
               "quantity": 3,
               "value": 2
             }
-          ],
-          "npcs": [],
-          "connected_rooms": [
-              "Main Shop Area"
-          ]          
+          ]
         }
       ]
     }
@@ -176,9 +167,9 @@ Your response:
   "id": "loc_oakheaven_trading_post",
   "name": "Oakhaven Trading Post",
   "description": "A bustling hub for merchants and travelers, Oakhaven Trading Post provides essential services and acts as a neutral ground for trade in the region.",
-  "connectedLocations": [],
-  "parentLocation": "loc_mountain_pass",
-  "npcs": [],
+  "parentLocationId": "loc_mountain_pass",
+  "typicalOccupants": "Merchants, travelers, mercenaries, and locals trading goods or seeking information.",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
   "exterior_description": "A sturdy, two-story building constructed of rough-hewn timber and stone. A wide porch wraps around the front, offering shelter from the elements. The sound of bartering and the smell of roasted meat fill the air.",
   "purpose": "A neutral trading post facilitating commerce between various settlements and traveling merchants.",
   "history": "Established decades ago as a convenient meeting point for traders avoiding Emberhold's strictly regulated markets, Oakhaven has grown into a thriving community centered around its trading post.",
@@ -186,17 +177,21 @@ Your response:
     {
       "floor_name": "Ground Floor",
       "description": "The main trading floor, a bustling tavern, and a common room for travelers.",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
       "rooms": [
         {
           "name": "Main Trading Floor",
           "type": "Retail Area",
           "description": "A large, open space filled with stalls and counters displaying various goods. Merchants haggle with customers amidst the constant movement of people and piles of wares.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Bandit Wanted Poster",
               "description": "A wanted poster for bandits known to roam the mountain passes.",
               "hinting_at": "The dangers faced by those transporting goods to Oakhaven."
             },
             {
+              "name": "Merchant Scale",
               "description": "A large scale set for measuring goods, recently recalibrated",
               "hinting_at": "Oakhaven is known for it's fair deals."
             }
@@ -209,62 +204,49 @@ Your response:
               "quantity": 1,
               "value": 1
             }
-          ],
-          "npcs": [],
-            "connected_rooms": [
-              "Common Room",
-              "Tavern",
-              "Storage Room"
-            ]
+          ]
         },
         {
           "name": "Tavern",
           "type": "Tavern",
           "description": "A noisy and lively tavern filled with rough-looking patrons. The air is thick with the smell of ale and woodsmoke. A bard strums a melancholic tune in the corner.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Mercenary Group",
               "description": "A group of mercenaries drinking and boasting about their exploits.",
               "hinting_at": "Potential allies or rivals, depending on the player's actions."
             },
             {
+              "name": "Emberhold Deserter Poster",
               "description": "A wanted poster for deserters of Emberhold",
               "hinting_at": "Some people are fleeing Emberhold Village"
             }
           ],
-          "valuables": [],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Main Trading Floor",
-              "Kitchen"
-            ]
-          }
+          "valuables": []
         },
         {
           "name": "Common Room",
           "type": "Rest Area",
           "description": "A sparsely furnished room with several wooden benches and a fireplace. Weary travelers rest and share stories.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Regional Map",
               "description": "A map of the surrounding region, marked with safe routes and bandit lairs.",
               "hinting_at": "Valuable information for navigating the mountain passes."
             }
           ],
-          "valuables": [],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Main Trading Floor",
-              "Upstairs Landing"
-            ]
-          }
+          "valuables": []
         },
         {
           "name": "Storage Room",
           "type": "Storage",
           "description": "Crates, sacks, and barrels fill this room. The air is thick with the scents of different goods.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Emberhold Crate",
               "description": "A partially open crate with Emberhold's emblem on the side.",
               "hinting_at": "The quality of the goods coming from Emberhold is declining."
             }
@@ -277,60 +259,38 @@ Your response:
               "quantity": 1,
               "value": 20
             }
-          ],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Main Trading Floor"
-            ]
-          }
+          ]
         }
       ]
     },
     {
       "floor_name": "Second Floor",
       "description": "Private rooms for rent and storage.",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
       "rooms": [
         {
           "name": "Upstairs Landing",
           "type": "Hallway",
           "description": "Connects to rooms for rent",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [],
-          "valuables": [],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Common Room",
-              "Room 1",
-              "Room 2"
-            ]
-          }
+          "valuables": []
         },
         {
           "name": "Room 1",
           "type": "Room",
           "description": "This old room seems to be untouched for days.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [],
-          "valuables": [],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Upstairs Landing"
-            ]
-          }
+          "valuables": []
         },
         {
           "name": "Room 2",
           "type": "Room",
           "description": "Occupied room with a sleeping man.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [],
-          "valuables": [],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Upstairs Landing"
-            ]
-          }
+          "valuables": []
         }
       ]
     }
@@ -357,11 +317,9 @@ Your response:
   "id": "loc_goldenBarrelTavern",
   "name": "The Golden Barrel",
   "description": "A popular tavern renowned for its excellent mead and honeyed porter, serving as the social heart of Springvale.",
-  "connectedLocations": [],
-  "parentLocation": "loc_springvale",
-  "npcs": [
-    "npc_dalla"
-  ],
+  "parentLocationId": "loc_springvale",
+  "typicalOccupants": "Locals from Springvale, travelers passing through, and Dalla the innkeeper who knows everything happening in town.",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
   "exterior_description": "A two-story timber-framed building with a painted golden barrel hanging above the door. Warm light spills from its windows, and the sounds of laughter and music can be heard from within.",
   "purpose": "A tavern providing food, drink, entertainment, and lodging to locals and travelers passing through Springvale.",
   "history": "Originally built as a meadery fifty years ago, The Golden Barrel has grown from a simple tasting room to the town's premier gathering place under the ownership of three generations of Dalla's family.",
@@ -369,17 +327,21 @@ Your response:
     {
       "floor_name": "Ground Floor",
       "description": "The main tavern area with polished wooden floors, a long bar, and several round tables. A large hearth dominates one wall.",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
       "rooms": [
         {
           "name": "Main Tavern Hall",
           "type": "Common Room",
           "description": "A spacious room filled with the aroma of honeyed mead and roasted meat. Wooden tables and chairs are arranged around a central area where performers occasionally play. The walls are decorated with agricultural tools and hunting trophies.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Barrel Tap System",
               "description": "A large barrel tap system behind the bar, crafted from polished oak with brass fittings.",
               "hinting_at": "The tavern's pride in their house-brewed mead and porter."
             },
             {
+              "name": "Notice Board",
               "description": "A notice board covered with job postings, announcements, and requests.",
               "hinting_at": "The tavern serves as an informal center for local news and opportunities."
             }
@@ -392,60 +354,44 @@ Your response:
               "quantity": 1,
               "value": 25
             }
-          ],
-          "npcs": [
-            "npc_dalla"
-          ],
-          "navigation": {
-            "connected_rooms": [
-              "Kitchen",
-              "Private Dining Room"
-            ]
-          }
+          ]
         },
         {
           "name": "Kitchen",
           "type": "Service Area",
           "description": "A warm, busy kitchen with several cooking fires and preparation tables. Herbs hang from the ceiling beams, and the smell of fresh bread fills the air.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Recipe Book",
               "description": "A recipe book bound in leather, open to a page detailing the secret spices for the tavern's famous honeyed porter.",
               "hinting_at": "The closely guarded brewing secrets passed down through Dalla's family."
             }
           ],
-          "valuables": [],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Main Tavern Hall",
-              "Storage Cellar"
-            ]
-          }
+          "valuables": []
         },
         {
           "name": "Private Dining Room",
           "type": "Private Room",
           "description": "A smaller, more intimate room with a single large table and comfortable chairs. A small hearth provides warmth, and the walls are lined with shelves of books and curios.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Trade Route Maps",
               "description": "A collection of maps showing trade routes through the region, with notes scribbled in the margins.",
               "hinting_at": "Dalla's network of informants and her knowledge of merchant activities."
             }
           ],
-          "valuables": [],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Main Tavern Hall"
-            ]
-          }
+          "valuables": []
         },
         {
           "name": "Storage Cellar",
           "type": "Storage",
           "description": "A cool, dry cellar filled with barrels of mead and porter, sacks of grain, and preserved foods.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Hidden Chest",
               "description": "A small locked chest hidden behind several barrels.",
               "hinting_at": "Dalla's private collection of valuable information or treasures."
             }
@@ -458,72 +404,53 @@ Your response:
               "quantity": 3,
               "value": 15
             }
-          ],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Kitchen"
-            ]
-          }
+          ]
         }
       ]
     },
     {
       "floor_name": "Second Floor",
       "description": "A hallway with several guest rooms available for rent.",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
       "rooms": [
         {
           "name": "Upstairs Hallway",
           "type": "Hallway",
           "description": "A narrow corridor with doors leading to guest rooms. Soft rugs muffle footsteps, and small lanterns provide warm light.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [],
-          "valuables": [],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Traveler's Room",
-              "Merchant's Suite",
-              "Dalla's Quarters"
-            ]
-          }
+          "valuables": []
         },
         {
           "name": "Traveler's Room",
           "type": "Guest Room",
           "description": "A simple but comfortable room with a bed, small table, and chest for personal belongings. A window overlooks the town square.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [],
-          "valuables": [],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Upstairs Hallway"
-            ]
-          }
+          "valuables": []
         },
         {
           "name": "Merchant's Suite",
           "type": "Guest Room",
           "description": "A more spacious room with a large bed, writing desk, and private washbasin. Intended for wealthy merchants or important visitors.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Merchant Ledger",
               "description": "A ledger left open on the desk, showing trade calculations.",
               "hinting_at": "The room's current occupant may be a merchant planning a major transaction."
             }
           ],
-          "valuables": [],
-          "npcs": [],
-          "navigation": {
-            "connected_rooms": [
-              "Upstairs Hallway"
-            ]
-          }
+          "valuables": []
         },
         {
           "name": "Dalla's Quarters",
           "type": "Private Room",
           "description": "The innkeeper's personal quarters, tidy and practical with a bed, desk, and shelves of personal items.",
+          "currentCondition": "in it's normal condition - still unvisited by the player",
           "points_of_interest": [
             {
+              "name": "Secret Notebooks",
               "description": "A collection of small notebooks filled with tidy handwriting, documenting years of observations and secrets heard in the tavern.",
               "hinting_at": "Dalla's extensive knowledge of local affairs and her role as an information gatherer."
             }
@@ -536,15 +463,7 @@ Your response:
               "quantity": 1,
               "value": 50
             }
-          ],
-          "npcs": [
-            "npc_dalla"
-          ],
-          "navigation": {
-            "connected_rooms": [
-              "Upstairs Hallway"
-            ]
-          }
+          ]
         }
       ]
     }

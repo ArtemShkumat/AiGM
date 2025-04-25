@@ -19,6 +19,7 @@ Your Response:
   "description": "A formidable range of jagged, snow-capped mountains that pierce the clouds, acting as a stark barrier between the fertile Heartlands and the dangerous Blasted Wastes. The air is thin and cold, and fierce winds constantly howl through the narrow, treacherous passes, echoing strangely like whispers. Ancient, crumbling ruins cling precariously to the slopes, remnants of a long-lost civilization. Travel is extremely hazardous due to avalanches, hidden crevasses, unstable ruins, and territorial mountain predators.",
   "parentLocationId": "realm_eldoria",
   "typicalOccupants": "Giant eagles nesting on high crags, hardy mountain goat herds, isolated mining outposts searching for rare sky-metals, scattered tribes of frost goblins dwelling in ice caves, and rumors of slumbering ancient elementals within the mountain hearts.",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
   "history": "Once home to the Sky Citadel civilization who built magnificent structures high amongst the peaks, the mountains were shattered during the Sundering. Now, only ruins and legends remain, drawing brave explorers, desperate treasure hunters, and those seeking to uncover the secrets of the past."
 }
 
@@ -44,6 +45,7 @@ Your Response:
   "description": "A solitary menhir of smooth, grey stone standing about ten feet tall in a small, mossy clearing. Its surface is perpetually damp, and a steady trickle of crystal-clear, cool water weeps from a point near its apex, collecting in a small, naturally formed basin at its base before overflowing into the soft earth. The air around it feels strangely calm and pure.",
   "parentLocationId": "region_mistwood",
   "typicalOccupants": "Small forest animals are often seen drinking from the basin. Occasionally, elven pilgrims or lost travelers seeking respite might be found resting nearby.",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
   "history": "Ancient elven lore claims the stone marks the resting place of a benevolent nature spirit who sacrificed itself to purify the surrounding woods after a blight. The water it produces is said to have minor healing properties and never freezes, even in the harshest winters."
 }
 
@@ -69,6 +71,7 @@ Your Response:
   "description": "A bleak, monochromatic reflection of the material plane, existing as a distinct realm suffused with necrotic energy and negative emotions. Familiar landscapes are twisted into dark parodies; forests are groves of skeletal trees, cities are crumbling ruins haunted by sorrowful specters, and the sky is a perpetual twilight devoid of sun or stars. Colors are muted, sounds are muffled, and a pervasive chill clings to everything. It is a place of loss, memory, and encroaching darkness.",
   "parentLocationId": null,
   "typicalOccupants": "Undead creatures (shadows, ghosts, wraiths, ghouls), sorrowful spirits bound to locations, desperate mortals trapped between worlds, rare pockets of Shadar-kai settlements, and powerful entities drawn to the plane's negative energy.",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
   "history": "The origins of the Shadowfell Echo are debated; some claim it formed from the accumulated psychic residue of tragedies on the material plane, while others believe it was deliberately crafted by powerful entities as a staging ground or prison plane. It waxes and wanes in proximity to the material world, occasionally creating temporary crossings."
 }
 
@@ -93,5 +96,6 @@ Your Response:
   "description": "The largest and most influential human nation in Silverhaven, occupying the vast, fertile Heartlands region. Auldcrest is a feudal monarchy renowned for its disciplined armies, chivalric orders of knights, productive farmlands, and sprawling capital city. It maintains a strong central authority under the current monarch, King Theron IV, and strives to maintain order and prosperity throughout its territories, often acting as a stabilizing force in the realm's politics.",
   "parentLocationId": "realm_silverhaven",
   "typicalOccupants": "Predominantly human population, including farmers, artisans, merchants, soldiers, nobles, and clergy of the state-sanctioned pantheon. Significant populations of halflings integrate well into human society, particularly in agricultural areas and cities.",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
   "history": "Founded over five centuries ago by uniting warring baronies under the first High King, Auldcrest has grown steadily through strategic alliances, agricultural advancements, and military prowess. It has weathered numerous border conflicts, internal disputes, and magical threats, emerging each time with its core territories intact and its influence expanded."
 } 
