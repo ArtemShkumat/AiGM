@@ -267,7 +267,16 @@ USER:
 
 RESPONSE:
 {
-  "userFacingText": "You wave farewell to the last of the village guards and turn your steps towards the west. The well-trodden path soon gives way to a narrower trail as the sounds of the village fade behind you. The air grows cooler and damper as the trees of the Sunken Forest loom ahead, their gnarled branches interlocking overhead like skeletal fingers, casting the path in perpetual twilight.\n\nAfter walking for about an hour, the trees press in even closer, and the silence is broken only by the crunch of your boots on the damp earth and the occasional drip of moisture from the canopy. The path ahead seems to split. One way leads slightly downhill into an area choked with thick, thorny bushes, while the other climbs gently towards a ridge where the trees thin out slightly. Which way do you proceed?"
+  "userFacingText": "You wave farewell to the last of the village guards and turn your steps towards the west. The well-trodden path soon gives way to a narrower trail as the sounds of the village fade behind you. The air grows cooler and damper as the trees of the Sunken Forest loom ahead, their gnarled branches interlocking overhead like skeletal fingers, casting the path in perpetual twilight.\n\nAfter walking for about an hour, the trees press in even closer, and the silence is broken only by the crunch of your boots on the damp earth and the occasional drip of moisture from the canopy. The path ahead seems to split. One way leads slightly downhill into an area choked with thick, thorny bushes, while the other climbs gently towards a ridge where the trees thin out slightly. Which way do you proceed?",
+  "partialUpdates": {
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 1,
+        "unit": "hours"
+      }
+    }
+  }
 }
 ---
 # EXAMPLE: Player departs a location and begins travel (Leading to Encounter/Challenge - based on user provided scenario)
@@ -295,7 +304,16 @@ USER:
 
 RESPONSE:
 {
-  "userFacingText": "You gather your belongings, sling your dark sword across your back, and prepare to depart the Ancient Forge. Smith Runa barely acknowledges your departure beyond a curt nod, her focus already returned to the unyielding metal on her anvil. Leaving the forge, you step out into the crisp mountain air. The village of Emberhold spreads out below you in the valley, smoke curling lazily from chimneys, looking deceptively peaceful from this height.\n\nThe path leads southward, gradually ascending towards the imposing peaks of the Ember Mountains. As the afternoon wears on, the sun begins its descent, painting the sky in hues of orange and purple. The entrance to Whispering Pass looms before you – a stark, shadowed cleft in the mountainside. A palpable wind whistles through the gap, carrying an unsettling, mournful sound. The air grows colder as you step into the pass proper. The path narrows, flanked by steep, rocky walls, and loose scree shifts underfoot, making the going treacherous. Looking ahead, the pass seems to twist out of sight around a rocky outcrop. The wind howls more fiercely here, echoing strangely off the stone. Do you press forward cautiously, mindful of the unstable footing, or try to move quickly through this exposed section?"
+  "userFacingText": "You gather your belongings, sling your dark sword across your back, and prepare to depart the Ancient Forge. Smith Runa barely acknowledges your departure beyond a curt nod, her focus already returned to the unyielding metal on her anvil. Leaving the forge, you step out into the crisp mountain air. The village of Emberhold spreads out below you in the valley, smoke curling lazily from chimneys, looking deceptively peaceful from this height.\n\nThe path leads southward, gradually ascending towards the imposing peaks of the Ember Mountains. As the afternoon wears on, the sun begins its descent, painting the sky in hues of orange and purple. The entrance to Whispering Pass looms before you – a stark, shadowed cleft in the mountainside. A palpable wind whistles through the gap, carrying an unsettling, mournful sound. The air grows colder as you step into the pass proper. The path narrows, flanked by steep, rocky walls, and loose scree shifts underfoot, making the going treacherous. Looking ahead, the pass seems to twist out of sight around a rocky outcrop. The wind howls more fiercely here, echoing strangely off the stone. Do you press forward cautiously, mindful of the unstable footing, or try to move quickly through this exposed section?",
+  "partialUpdates": {
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 3,
+        "unit": "hours"
+      }
+    }
+  }
 }
 ---
 # EXAMPLE: Player explicitly attacks an NPC
@@ -354,6 +372,13 @@ RESPONSE:
     }
   ],
   "partialUpdates": {
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 20,
+        "unit": "minutes"
+      }
+    },
     "npcEntries": [
       {
         "id": "npc_mineCrawler",
@@ -480,6 +505,13 @@ RESPONSE:
           "quantity": 1,
           "action": "Remove"
         }]
+    },
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 5,
+        "unit": "minutes"
+      }
     }
   }
 }
@@ -519,7 +551,16 @@ USER:
 
 RESPONSE:
 {
-  "userFacingText": "You run your hands around the statue's base but can't find anything. Time is ticking, and you might have missed something crucial. You'll have to either search another part of the room or find better lighting or a new approach."
+  "userFacingText": "You run your hands around the statue's base but can't find anything. Time is ticking, and you might have missed something crucial. You'll have to either search another part of the room or find better lighting or a new approach.",
+  "partialUpdates": {
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 15,
+        "unit": "minutes"
+      }
+    }
+  }
 }
 ---
 # EXAMPLE: Hacking a Corporate Door Lock (Impossible)
@@ -666,6 +707,13 @@ RESPONSE:
           "quantity": 1,
           "action": "Add"
         }]
+    },
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 45,
+        "unit": "minutes"
+      }
     }
   }
 }
@@ -790,10 +838,6 @@ USER:
     "type": "PLAYER",
     "currentLocationId": "loc_cozyInnRoom"
   },
-  "worldContext": {
-    "gameTime": "1486-03-20T23:15:00Z",
-    "daysSinceStart": 2
-  },
   "playerInput": "I decide to rest in my room until the next morning to recover."
 }
 
@@ -803,8 +847,10 @@ RESPONSE:
   "partialUpdates": {
     "world": {
       "type": "WORLD",
-      "gameTime": "1486-03-21T08:00:00Z",
-      "daysSinceStart": 3
+      "timeDelta": {
+        "amount": 9,
+        "unit": "hours"
+      }
     }
   }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -9,10 +10,7 @@ namespace AiGMBackEnd.Models
         public string Type { get; set; } = "WORLD";       
         
         [JsonPropertyName("gameTime")]
-        public string GameTime { get; set; }
-        
-        [JsonPropertyName("daysSinceStart")]
-        public int DaysSinceStart { get; set; }
+        public DateTimeOffset GameTime { get; set; }
         
         [JsonPropertyName("currentPlayer")]
         public string CurrentPlayer { get; set; }
@@ -25,6 +23,34 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("quests")]
         public List<QuestSummary> Quests { get; set; } = new List<QuestSummary>();
+        
+        /// <summary>
+        /// Advances the game time based on a time delta
+        /// </summary>
+        /// <param name="delta">The time delta to apply</param>
+        public void AdvanceTime(TimeDelta delta)
+        {
+            if (delta == null)
+                return;
+                
+            switch (delta.Unit.ToLower())
+            {
+                case "seconds":
+                    GameTime = GameTime.AddSeconds(delta.Amount);
+                    break;
+                case "minutes":
+                    GameTime = GameTime.AddMinutes(delta.Amount);
+                    break;
+                case "hours":
+                    GameTime = GameTime.AddHours(delta.Amount);
+                    break;
+                case "days":
+                    GameTime = GameTime.AddDays(delta.Amount);
+                    break;
+                default:
+                    throw new ArgumentException($"Unknown time unit: {delta.Unit}");
+            }
+        }
     }
    
     public class LocationSummary

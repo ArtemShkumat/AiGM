@@ -75,13 +75,34 @@ namespace AiGMBackEnd.Services.Processors
 
         private JObject CreateInitialWorldJson(JToken gameSettingData, string scenarioId)
         {
-            string gameTime = gameSettingData?["gameTime"]?.ToString() ?? "Year 1, Day 1, 8:00 AM";
-            
+            // Parse the game time from settings if it exists, otherwise use current time
+            DateTimeOffset gameTime;
+            if (gameSettingData != null && 
+                gameSettingData["gameTime"] != null && 
+                !string.IsNullOrEmpty(gameSettingData["gameTime"].ToString()))
+            {
+                // Try to parse from ISO 8601 string
+                if (DateTimeOffset.TryParse(gameSettingData["gameTime"].ToString(), out var parsedTime))
+                {
+                    gameTime = parsedTime;
+                }
+                else
+                {
+                    // Use current time as default if parsing fails
+                    gameTime = DateTimeOffset.UtcNow;
+                    _logger.LogWarning($"Could not parse gameTime '{gameSettingData["gameTime"]}', using current time instead");
+                }
+            }
+            else
+            {
+                // Use current time as default
+                gameTime = DateTimeOffset.UtcNow;
+            }
+
             return new JObject
             {
                 ["type"] = "WORLD",
-                ["gameTime"] = gameTime,
-                ["daysSinceStart"] = 1,
+                ["gameTime"] = gameTime.ToString("o"), // "o" formatter outputs ISO 8601 format
                 ["currentPlayer"] = "", // Assuming no player initially for scenario
                 ["locations"] = new JArray(),
                 ["npcs"] = new JArray(),

@@ -286,8 +286,28 @@ namespace AiGMBackEnd.Services.Processors
                 if (partialUpdates.World != null)
                 {
                     _loggingService.LogInfo($"Processing world updates for user {userId}");
+                    
+                    // Handle timeDelta specifically
+                    if (partialUpdates.World.TimeDelta != null)
+                    {
+                        var world = await _storageService.GetWorldAsync(userId);
+                        if (world != null)
+                        {
+                            // Apply the time delta to the game time
+                            world.AdvanceTime(partialUpdates.World.TimeDelta);
+                            _loggingService.LogInfo($"Advanced game time to: {world.GameTime}");
+                            
+                            // Save the updated world
+                            await _storageService.SaveAsync(userId, "world", world);
+                        }
+                    }
+                    
+                    // Process any other world updates using the existing mechanism
                     string updateJson = System.Text.Json.JsonSerializer.Serialize(partialUpdates.World, _jsonSerializerOptions);
-                    await UpdateEntityAsync(userId, "", "world", updateJson);
+                    if (!string.IsNullOrEmpty(updateJson) && updateJson != "{}" && updateJson != "{\"type\":\"WORLD\"}")
+                    {
+                        await UpdateEntityAsync(userId, "", "world", updateJson);
+                    }
                 }
                 
                 // Process NPC entries

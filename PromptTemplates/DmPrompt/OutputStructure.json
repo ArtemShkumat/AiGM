@@ -137,8 +137,7 @@
                     "type": "string"
                   },
                   "description": {
-                    "type": "string",
-                    "description": "Needed for adding"
+                    "type": "string"
                   },
                   "action": {
                     "type": "string",
@@ -175,11 +174,23 @@
               "type": "string",
               "enum": ["WORLD"]
             },
-            "gameTime": {
-              "type": "string"
-            },
-            "daysSinceStart": {
-              "type": "integer"
+            "timeDelta": { 
+              "type": "object",
+              "properties": {
+                "amount": {
+                  "type": "integer",
+                  "minimum": 1 
+                },
+                "unit": {
+                  "type": "string",
+                  "enum": [ "seconds", "minutes", "hours", "days"
+                  ]
+                }
+              },
+              "required": [
+                "amount",
+                "unit"
+              ]
             }            
           },
           "required": ["type"]

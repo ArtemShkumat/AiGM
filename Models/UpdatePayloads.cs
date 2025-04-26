@@ -159,14 +159,9 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("type")]
         public string Type => "WORLD";
 
-        [JsonPropertyName("gameTime")]
+        [JsonPropertyName("timeDelta")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? GameTime { get; set; }
-
-        [JsonPropertyName("daysSinceStart")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        [JsonConverter(typeof(LlmSafeIntConverter))]
-        public int? DaysSinceStart { get; set; }
+        public TimeDelta? TimeDelta { get; set; }
     }
 
     public class NpcUpdatePayload : IUpdatePayload

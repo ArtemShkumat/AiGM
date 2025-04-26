@@ -79,6 +79,10 @@ The `userFacingText` field contains the narrative and dialogue shown to the play
     - **Inventory/Currency:** Use `action: "Add"` or `action: "Remove"` within `player.inventory`, `player.currencies`, or `npcEntries[].inventory`. Player has `currencies`, NPCs only `inventory`. Check `gameSetting.currencies` for valid types.
     - **Quest Status:** Update `player.activeQuests` using `action: "Add"` or `action: "Remove"`.
     - **Tags:** Update `player.rpgTags` using `action: "Add"` or `action: "Remove"`. Award tags for significant achievements, learning, etc. Tags represent skills/knowledge, not items.
+    - **Time Passage:** Use `world.timeDelta` to indicate passage of time in the narrative. This should be used when significant time passes during activities like resting, traveling, studying, waiting, etc. Specify both an `amount` (integer) and a `unit` ("seconds", "minutes", "hours", or "days").
+        - **Example:** `{"world": {"type": "WORLD", "timeDelta": {"amount": 8, "unit": "hours"}}}` to indicate 8 hours have passed (like overnight rest).
+        - Only specify time passage when narratively significant. The system will track the exact time.
+        - Prefer using standard units: minutes for short activities, hours for longer ones, days for very long periods.
 
 ## `combatTriggered` (boolean, Optional) & `enemyToEngageId` (string, Optional)
 - Set `combatTriggered: true` ONLY when combat should begin based on narrative (ambush, failed stealth) or direct player action ("I attack the guard").

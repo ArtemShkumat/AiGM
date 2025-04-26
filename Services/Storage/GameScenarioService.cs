@@ -86,8 +86,7 @@ namespace AiGMBackEnd.Services.Storage
                     var defaultWorld = new World 
                     {
                         Type = "WORLD",
-                        GameTime = "Day 1, Morning", // Or a suitable default
-                        DaysSinceStart = 0,
+                        GameTime = DateTimeOffset.UtcNow,
                         CurrentPlayer = gameId, 
                         Locations = new List<LocationSummary>(), 
                         Npcs = new List<NpcSummary>(), 
