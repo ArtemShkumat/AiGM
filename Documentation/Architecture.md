@@ -209,6 +209,37 @@ Components:
 **`CombatController`**: Handles combat-specific actions (`/api/combat/start`, `/api/combat/action`, `/api/combat/end`, `/api/combat/{gameId}`).
 `EntityStatusController`: Handles checking status of background entity creation jobs.
 
+2.14. PromptTemplates (`PromptTemplates/`)
+Role: Provide standardized, consistent instructions and formatting for all AI LLM interactions. These templates ensure reliable JSON responses by specifying expected return format and showcasing examples of valid responses.
+
+Components:
+- **Base Templates**: Each template type includes core components such as instructions, expected JSON structure, constraints, and example inputs/outputs.
+- **Specialized Subdirectories**: Organized by function (DM, NPC, CreateQuest, etc.), each containing template variants for different scenarios.
+
+Key Template Types:
+- **DM Templates** (`/DmPrompt/`): Used for general game narration and world responses, including location descriptions, environmental effects, and non-NPC interactions. Includes examples for skill checks, combat triggers, and quest discovery.
+- **NPC Templates** (`/NPC/`): Used for NPC dialogue and interactions. Handles conversation flows and NPC reactions to player choices.
+- **Creation Templates**: Several template types for entity creation:
+  - `CreateQuest/`: Templates for generating new quests with appropriate objectives and rewards.
+  - `CreateNPC/`: Templates for generating NPCs with detailed personality traits and context.
+  - `CreateLocation/`: Templates for generating different location types (buildings, settlements, wilds, etc.).
+  - `CreateEnemyStatBlock/`: Templates for generating enemy combat statistics.
+- **Combat Templates** (`/Combat/`): Used to process combat actions and generate turn-based combat responses.
+- **Summarization Templates** (`/Summarize/`, `/SummarizeCombat/`): Used to create narrative summaries of events or combat encounters.
+
+Structure:
+- Each template contains explicit instructions for the LLM.
+- Templates include the expected JSON response format with field definitions.
+- Templates showcase example requests and responses with the expected JSON structure.
+- Special directives are included for handling edge cases (e.g., missing NPCs, impossible actions).
+- Templates may include conditional instructions triggered by system flags.
+
+Usage:
+- Templates are loaded by the `TemplateService` using methods like `GetDmTemplateAsync()` or `GetNpcTemplateAsync()`.
+- The appropriate `PromptBuilder` implementation adds context-specific information to the template.
+- The resulting prompt is sent to the LLM, which uses the template instructions to format its response properly.
+- The structured responses enable reliable parsing by the `ResponseProcessingService`.
+
 3. Data & File Structure
 Data Folder:
 lua
