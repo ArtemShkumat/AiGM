@@ -11,6 +11,8 @@ namespace AiGMBackEnd.Services.PromptBuilders
 {
     public class DMPromptBuilder : BasePromptBuilder
     {
+        private readonly Random _random = new Random();
+        
         public DMPromptBuilder(StorageService storageService, LoggingService loggingService)
             : base(storageService, loggingService)
         {
@@ -96,6 +98,14 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
                 
+                // Check for random event
+                string randomEventDirective = AddRandomEvent(world.GameTime, world, request.UserId);
+                if (!string.IsNullOrEmpty(randomEventDirective))
+                {
+                    systemPromptBuilder.AppendLine(randomEventDirective);
+                    systemPromptBuilder.AppendLine();
+                }
+                
                 // Add example responses
                 systemPromptBuilder.AppendLine("# Here are some examples of prompts and responses for you to follow:");
                 PromptSection.AppendSection(systemPromptBuilder, "Example Responses", exampleResponses);
@@ -128,6 +138,51 @@ namespace AiGMBackEnd.Services.PromptBuilders
             {
                 _loggingService.LogError($"Error building DM prompt: {ex.Message}");
                 throw;
+            }
+        }
+        
+        /// <summary>
+        /// Determines if a random event should occur and returns the event directive if it should.
+        /// </summary>
+        /// <param name="currentGameTime">The current game time</param>
+        /// <param name="world">The world object</param>
+        /// <param name="userId">The user ID for saving updated world state</param>
+        /// <returns>The random event directive text if an event should occur, otherwise null</returns>
+        private string AddRandomEvent(DateTimeOffset currentGameTime, World world, string userId)
+        {
+            try
+            {
+                // Default values - 10% chance every 24 hours
+                const int chancePercent = 10;
+                const int cooldownHours = 24;
+                
+                // Check if cooldown has passed
+                bool cooldownPassed = world.LastRandomEventTime == null || 
+                                      (currentGameTime - world.LastRandomEventTime.Value).TotalHours >= cooldownHours;
+                
+                if (cooldownPassed)
+                {
+                    // Generate random number between 1-100
+                    int roll = _random.Next(1, 101);
+                    
+                    // If the roll is less than or equal to the chance percentage, trigger an event
+                    if (roll <= chancePercent)
+                    {
+                        // Update LastRandomEventTime and save the world
+                        world.LastRandomEventTime = currentGameTime;
+                        _storageService.SaveAsync(userId, "world", world).Wait();
+                        
+                        // Get the random event directive template
+                        return _storageService.GetDmTemplateAsync("random_event_directive.txt").Result;
+                    }
+                }
+                
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error in AddRandomEvent: {ex.Message}");
+                return null; // On error, don't add an event
             }
         }
     }

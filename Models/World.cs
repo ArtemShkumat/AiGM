@@ -12,6 +12,9 @@ namespace AiGMBackEnd.Models
         [JsonPropertyName("gameTime")]
         public DateTimeOffset GameTime { get; set; }
         
+        [JsonPropertyName("lastRandomEventTime")]
+        public DateTimeOffset? LastRandomEventTime { get; set; }
+        
         [JsonPropertyName("currentPlayer")]
         public string CurrentPlayer { get; set; }
         

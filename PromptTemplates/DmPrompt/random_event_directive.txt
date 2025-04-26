@@ -1,0 +1,6 @@
+📜 Random‑Event Directive
+• Invent a plausible surprise that happens right now in the player's current location.
+• It must:
+   – be resolvable within one scene or lead into a short side quest;
+   – not invalidate core facts already given;
+   – tie into at least one existing NPC trait, faction, rumour or local environmental tag (e.g. port, mine, wizard‑tower). 

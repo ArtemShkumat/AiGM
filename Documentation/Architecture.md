@@ -12,6 +12,7 @@ Response parsing that **deserializes the JSON** and applies any updates or data 
 A job queue (Hangfire, mandatory for all calls) ensuring concurrency limits.
 *   **Modular Design:** Utilize interfaces and specific implementations for AI providers, prompt building, and response processing to enhance flexibility and testability.
 *   **Strong Typing:** Employ strongly-typed models and custom JSON converters for robust data handling and serialization/deserialization of LLM responses.
+*   **Time Management:** ISO 8601 formatted timestamps for consistent game time tracking across scenarios and games. Time is stored in world.json and referenced for game progression, with graceful fallback to system time when necessary.
 
 2. Primary Components
 Below is a breakdown of the services and models:
@@ -69,6 +70,13 @@ Storage services include:
 - `ApplyPartialUpdateAsync(userId, fileId, jsonPatch)` → Task: Apply partial updates to existing JSON.
 - `GetFilePath(userId, fileId)` → string: Get the full path to a file.
 - `CopyDirectory(sourceDir, destinationDir)` → void: Copy directory and its contents.
+
+**GameTimeService**:
+- `GetCurrentGameTimeAsync(userId)` → Task<DateTimeOffset>: Gets the current game time from world.json.
+- `UpdateGameTimeAsync(userId, newGameTime)` → Task: Updates the game time in world.json.
+- `AdvanceGameTimeAsync(userId, timeSpan)` → Task: Advances the game time by a specified duration.
+- `ParseGameTimeString(timeString)` → DateTimeOffset: Parses a game time string in ISO 8601 format.
+- `FormatGameTime(gameTime)` → string: Formats a DateTimeOffset as an ISO 8601 string for storage.
 
 **EntityStorageService**:
 - `GetPlayerAsync(userId)` → Task<Player>: Get player entity.
@@ -162,6 +170,11 @@ Location Model Structure:
 - Specialized Location Classes (`Building`, `Delve`, `Settlement`, `Wilds`): Extend the base `Location` class with type-specific properties.
 - `LocationConverter`: JSON converter for proper serialization/deserialization of the location hierarchy.
 
+World Model Structure:
+- `World`: The game world container with properties including `GameTime` (DateTimeOffset stored as ISO 8601 string), `CurrentPlayer`, `Locations`, `Npcs`, `Quests`, etc.
+- Game time is stored in standard ISO 8601 format (e.g., "2023-04-01T14:30:00.000Z") for consistent parsing and compatibility.
+- Time-based events and conditions can reference this standardized game time for consistent gameplay progression.
+
 2.10. AI Providers (`Services/AIProviders/`)
 Role: Handle communication specifics for different LLM APIs (e.g., OpenAI, OpenRouter).
 Components:
@@ -237,7 +250,7 @@ PresenterService calls `BackgroundJob.Enqueue<HangfireJobsService>(x => x.Proces
 HangfireJobsService (Worker):
   Processes the `PromptRequest`.
   Calls `PromptService.BuildPromptAsync(request)` -> `DMPromptBuilder` is selected.
-  `DMPromptBuilder` loads `world.json`, `player.json`, relevant `location.json`, NPC summaries from `StorageService`, merges with templates -> returns `Prompt` object.
+  `DMPromptBuilder` loads `world.json` (including current game time), `player.json`, relevant `location.json`, NPC summaries from `StorageService`, merges with templates -> returns `Prompt` object.
   Calls `AiService.GetCompletionAsync(prompt)` -> `AIProviderFactory` creates default `IAIProvider`.
   `IAIProvider` sends the prompt string to the LLM API -> returns LLM response string (as a single JSON object).
   Calls `ResponseProcessingService.HandleResponseAsync(llmResponse, PromptType.DM, userId)`.
@@ -373,6 +386,13 @@ Hangfire provides a robust job processing framework...
 *   **Combat State:** Ensure `active_combat.json` is reliably created at the start and deleted *only after* successful summarization.
 *   **Stat Block Creation:** Handle potential failures during on-demand stat block creation gracefully (e.g., notify user combat cannot start).
 *   **Combat Processor Validation:** `CombatResponseProcessor` should rigorously validate LLM state updates (success counts, condition application) against game rules.
+
+*   **Time Management:** 
+    - All game time is stored as ISO 8601 formatted strings and parsed to DateTimeOffset objects when needed in-memory.
+    - The ScenarioProcessor initializes game time from scenario settings or defaults to current system time.
+    - Time progression is handled through explicit updates to the world.json file's gameTime property.
+    - Time-related prompts should reference the centralized game time rather than using separate time tracking mechanisms.
+    - When deserializing time values from LLM responses, always validate and sanitize the format.
 
 *   **NPC Location Context:** The system tracks NPCs exclusively via their `currentLocationId` property. There are no separate visibility flags or location-based NPC lists. This simplifies the architecture and ensures a single source of truth for NPC positioning. The narrative description of NPCs (whether they're described visually, by name, etc.) is managed through the DM prompt based on narrative context rather than explicit visibility flags.
 

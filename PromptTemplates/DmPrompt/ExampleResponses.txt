@@ -10,6 +10,36 @@ RESPONSE:
   "userFacingText": "As you look around the village, you notice a few other villagers going about their business. A pair of children play a simple game of tag near the well, their laughter a momentary spark of joy in the somber atmosphere. An older woman sweeps the stoop of her home, her brow furrowed with worry as she glances toward the mountains. You can also see a few weathered-looking miners trudging back from work. They carry heavy sacks slung over their shoulders and their faces are grim."
 }
 ---
+# EXAMPLE: Random Event triggered by Random-Event Directive
+USER:
+{
+  "playerInput": "I sit down at a table and order some ale.",
+  "currentLocationDetails": {
+    "id": "loc_silverFoxTavern",
+    "name": "Silver Fox Tavern",
+    "locationType": "BUILDING",
+    "description": "A popular tavern known for its hearty meals and warm atmosphere."
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_bartonInnkeeper",
+      "name": "Barton",
+      "role": "Innkeeper"
+    },
+    {
+      "id": "npc_linaBarmaid",
+      "name": "Lina",
+      "role": "Barmaid"
+    }
+  ],
+  "systemInstructions": "...(other instructions)...\n\n📜 Random‑Event Directive\n• Invent a plausible surprise that happens right now in the player's current location.\n• It must:\n   – be resolvable within one scene or lead into a short side quest;\n   – not invalidate core facts already given;\n   – tie into at least one existing NPC trait, faction, rumour or local environmental tag (e.g. port, mine, wizard‑tower).\n\n...(more instructions)..."
+}
+
+RESPONSE:
+{
+  "userFacingText": "You settle into a vacant table near the hearth, feeling the warmth of the fire after your long journey. Lina nods at your order and brings over a foaming mug of amber ale. 'Here you are,' she says with a polite smile, setting it down before you.\n\nJust as you're about to take your first sip, the tavern door bursts open with a bang. A burly miner stumbles in, his face ashen with panic. 'Barton!' he gasps, leaning against the doorframe. 'There's been a collapse in the east tunnel! Men trapped!'\n\nThe tavern falls silent. Barton vaults over the bar with surprising agility for his size. 'How many?' he demands, already reaching for his coat.\n\n'At least three,' the miner pants. 'Crews gathering now. Need every able hand.'\n\nBarton turns to the room, his expression grim. 'You heard him. Anyone willing to help, follow Durnik to the mines.' Several patrons rise immediately, abandoning their drinks. Lina begins packing bandages and salves into a basket, her movements quick and practiced.\n\nThe emergency has clearly disrupted the peaceful evening you had planned. The rescue effort sounds urgent - miners' lives hang in the balance."
+}
+---
 # EXAMPLE: Player engages an NPC not present in existing NPC list.
 USER:
 {
