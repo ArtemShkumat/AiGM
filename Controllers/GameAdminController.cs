@@ -105,8 +105,8 @@ namespace AiGMBackEnd.Controllers
             }
         }
         
-        [HttpPost("createScenario")]
-        public async Task<IActionResult> CreateScenario([FromBody] CreateScenarioRequest request)
+        [HttpPost("bootstrapGameFromSimplePrompt")]
+        public async Task<IActionResult> BootstrapGameFromSimplePrompt([FromBody] CreateScenarioRequest request)
         {
             if (string.IsNullOrEmpty(request.ScenarioPrompt))
             {
@@ -115,21 +115,21 @@ namespace AiGMBackEnd.Controllers
 
             try
             {
-                _loggingService.LogInfo($"Creating starting scenario from prompt: {request.ScenarioPrompt}");
+                _loggingService.LogInfo($"Creating game from simple prompt: {request.ScenarioPrompt}");
                 
-                // Call the presenter service to handle scenario creation with isStartingScenario flag
-                var scenarioId = await _presenterService.CreateScenarioAsync(request, isStartingScenario: true);
+                // Call the presenter service to handle game bootstrap with isStartingScenario flag
+                var scenarioId = await _presenterService.BootstrapGameFromSimplePromptAsync(request, isStartingScenario: true);
                 
                 return Ok(new { 
-                    Message = "Starting scenario creation initiated", 
+                    Message = "Game bootstrap from simple prompt initiated", 
                     ScenarioId = scenarioId,
                     CheckStatusEndpoint = $"/api/EntityStatus/pending/{scenarioId}"
                 });
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error creating scenario: {ex.Message}");
-                return StatusCode(500, new { Message = "An unexpected error occurred during scenario creation", Error = ex.Message });
+                _loggingService.LogError($"Error bootstrapping game from simple prompt: {ex.Message}");
+                return StatusCode(500, new { Message = "An unexpected error occurred during game bootstrap", Error = ex.Message });
             }
         }
     }

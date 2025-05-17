@@ -199,11 +199,11 @@ namespace AiGMBackEnd.Services
             return string.Empty;
         }
 
-        public async Task<string> CreateScenarioAsync(CreateScenarioRequest request, bool isStartingScenario = false)
+        public async Task<string> BootstrapGameFromSimplePromptAsync(CreateScenarioRequest request, bool isStartingScenario = false)
         {
             try
             {
-                _loggingService.LogInfo($"Starting scenario creation for prompt: {request.ScenarioPrompt}");
+                _loggingService.LogInfo($"Starting game creation from simple prompt: {request.ScenarioPrompt}");
                 
                 // Generate a scenario ID
                 string scenarioId = $"scenario_{Guid.NewGuid().ToString()}";
@@ -214,7 +214,7 @@ namespace AiGMBackEnd.Services
                 // Create the prompt request for scenario generation
                 var promptRequest = new PromptRequest
                 {
-                    PromptType = PromptType.CreateScenario,
+                    PromptType = PromptType.BootstrapGameFromSimplePrompt,
                     UserId = userId,
                     UserInput = request.ScenarioPrompt,
                     ScenarioId = scenarioId
@@ -222,15 +222,15 @@ namespace AiGMBackEnd.Services
                 
                 // Using Hangfire for background processing
                 string jobId = BackgroundJob.Enqueue<HangfireJobsService>(x => 
-                    x.CreateScenarioAsync(userId, scenarioId, request.ScenarioPrompt, isStartingScenario));
+                    x.BootstrapGameFromSimplePromptAsync(userId, scenarioId, request.ScenarioPrompt, isStartingScenario));
                 
-                _loggingService.LogInfo($"Enqueued {(isStartingScenario ? "starting " : "")}scenario creation job, ID: {jobId}");
+                _loggingService.LogInfo($"Enqueued {(isStartingScenario ? "starting " : "")}game bootstrap job from simple prompt, ID: {jobId}");
                 
                 return scenarioId;
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error creating scenario: {ex.Message}");
+                _loggingService.LogError($"Error creating game from simple prompt: {ex.Message}");
                 throw;
             }
         }

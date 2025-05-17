@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
-    public class CreateScenarioPromptBuilder : BasePromptBuilder
+    public class BootstrapGameFromSimplePromptBuilder : BasePromptBuilder
     {
-        public CreateScenarioPromptBuilder(StorageService storageService, LoggingService loggingService)
+        public BootstrapGameFromSimplePromptBuilder(StorageService storageService, LoggingService loggingService)
             : base(storageService, loggingService)
         {
         }
@@ -40,13 +40,13 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 return new Prompt(
                     systemPrompt: systemPromptBuilder.ToString(),
                     promptContent: promptContentBuilder.ToString(),
-                    promptType: PromptType.CreateScenario,
+                    promptType: PromptType.BootstrapGameFromSimplePrompt,
                     outputStructureJsonSchema: outputStructure
                 );
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error building create scenario prompt: {ex.Message}");
+                _loggingService.LogError($"Error building bootstrap game from simple prompt: {ex.Message}");
                 throw;
             }
         }

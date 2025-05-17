@@ -217,13 +217,13 @@ namespace AiGMBackEnd.Services
         }
         
         /// <summary>
-        /// Creates a scenario based on a prompt
+        /// Creates a game from a simple prompt (bootstraps the process)
         /// </summary>
-        public async Task CreateScenarioAsync(string userId, string scenarioId, string scenarioPrompt, bool isStartingScenario = false)
+        public async Task BootstrapGameFromSimplePromptAsync(string userId, string scenarioId, string scenarioPrompt, bool isStartingScenario = false)
         {
             var request = new PromptRequest 
             { 
-                PromptType = PromptType.CreateScenario,
+                PromptType = PromptType.BootstrapGameFromSimplePrompt,
                 UserId = userId,
                 UserInput = scenarioPrompt,
                 ScenarioId = scenarioId,

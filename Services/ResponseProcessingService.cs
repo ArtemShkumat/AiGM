@@ -323,7 +323,7 @@ namespace AiGMBackEnd.Services
                     case PromptType.CreateEnemyStatBlock:
                         await _enemyStatBlockProcessor.ProcessAsync(jsonData, userId);
                         break;
-                    case PromptType.CreateScenario:
+                    case PromptType.BootstrapGameFromSimplePrompt:
                         // Get the scenario ID from the request, assuming it's passed via RequestMetadata
                         var scenarioIdFromMetadata = GetScenarioIdFromMetadata(jsonContent);
                         if (string.IsNullOrEmpty(scenarioIdFromMetadata))
