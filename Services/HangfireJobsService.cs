@@ -9,6 +9,7 @@ using Hangfire.Server;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using AiGMBackEnd.Services.Storage;
 
 namespace AiGMBackEnd.Services
 {
@@ -27,6 +28,7 @@ namespace AiGMBackEnd.Services
         private readonly ILocationProcessor _locationProcessor;
         private readonly IQuestProcessor _questProcessor;
         private readonly GameNotificationService _gameNotificationService;
+        private readonly IEventStorageService _eventStorageService;
 
         public HangfireJobsService(
             LoggingService loggingService,
@@ -38,7 +40,8 @@ namespace AiGMBackEnd.Services
             INPCProcessor npcProcessor,
             ILocationProcessor locationProcessor,
             IQuestProcessor questProcessor,
-            GameNotificationService gameNotificationService)
+            GameNotificationService gameNotificationService,
+            IEventStorageService eventStorageService)
         {
             _loggingService = loggingService;
             _promptService = promptService;
@@ -50,6 +53,7 @@ namespace AiGMBackEnd.Services
             _locationProcessor = locationProcessor;
             _questProcessor = questProcessor;
             _gameNotificationService = gameNotificationService;
+            _eventStorageService = eventStorageService;
         }
 
         /// <summary>
@@ -555,6 +559,6 @@ namespace AiGMBackEnd.Services
                 _loggingService.LogError($"Error getting Hangfire job state for {jobId}: {ex.Message}");
                 return "ErrorFetchingState";
             }
-        }
+        }       
     }
 } 

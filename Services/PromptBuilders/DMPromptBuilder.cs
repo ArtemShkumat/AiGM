@@ -6,16 +6,29 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using AiGMBackEnd.Models.Locations;
 using System.Collections.Generic;
+using AiGMBackEnd.Services.Storage;
+using AiGMBackEnd.Services.Triggers;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AiGMBackEnd.Services.PromptBuilders
 {
     public class DMPromptBuilder : BasePromptBuilder
     {
         private readonly Random _random = new Random();
+        private readonly IEventStorageService _eventStorageService;
+        private readonly IEnumerable<ITriggerEvaluator> _triggerEvaluators;
         
-        public DMPromptBuilder(StorageService storageService, LoggingService loggingService)
+        public DMPromptBuilder(
+            StorageService storageService, 
+            LoggingService loggingService,
+            IEventStorageService eventStorageService,
+            IEnumerable<ITriggerEvaluator> triggerEvaluators)
             : base(storageService, loggingService)
         {
+            _eventStorageService = eventStorageService;
+            _triggerEvaluators = triggerEvaluators;
         }
 
         public override async Task<Prompt> BuildPromptAsync(PromptRequest request)
@@ -98,6 +111,29 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 systemPromptBuilder.AppendLine(systemPrompt);
                 systemPromptBuilder.AppendLine();
                 
+                // Check for triggered events
+                var triggeredEvents = await CheckForTriggeredEventsAsync(request.UserId, request.UserInput, player, world, player.CurrentLocationId, request.PreviousLocationId);
+                if (triggeredEvents.Count() > 0)
+                {
+                    systemPromptBuilder.AppendLine("### Triggered Events ###");
+                    systemPromptBuilder.AppendLine("The following events have been triggered and must be incorporated into your response:");
+                    
+                    foreach (var gameEvent in triggeredEvents)
+                    {
+                        systemPromptBuilder.AppendLine($"- {gameEvent.Summary}");
+                    }
+                    
+                    systemPromptBuilder.AppendLine();
+                    systemPromptBuilder.AppendLine("Make sure to address these events in your narrative response, maintaining a natural flow with the user's input.");
+                    systemPromptBuilder.AppendLine();
+                    
+                    // Update the events to Completed
+                    foreach (var gameEvent in triggeredEvents)
+                    {
+                        await _eventStorageService.UpdateEventStatusAsync(request.UserId, gameEvent.Id, EventStatus.Completed);
+                    }
+                }
+                
                 // Check for random event
                 string randomEventDirective = AddRandomEvent(world.GameTime, world, request.UserId);
                 if (!string.IsNullOrEmpty(randomEventDirective))
@@ -139,6 +175,85 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 _loggingService.LogError($"Error building DM prompt: {ex.Message}");
                 throw;
             }
+        }
+        
+        /// <summary>
+        /// Checks for events that should trigger based on the current context
+        /// </summary>
+        private async Task<List<Event>> CheckForTriggeredEventsAsync(
+            string userId, 
+            string userInput, 
+            Player player,
+            World world,
+            string currentLocationId,
+            string previousLocationId)
+        {
+            try
+            {
+                // Get active events
+                var activeEvents = await _eventStorageService.GetActiveEventsAsync(userId);
+                
+                if (activeEvents.Count() == 0)
+                {
+                    return new List<Event>();
+                }
+                
+                // Create trigger context
+                var context = new TriggerContext
+                {
+                    UserId = userId,
+                    CurrentTime = world.GameTime,
+                    CurrentLocationId = currentLocationId,
+                    PreviousLocationId = previousLocationId,
+                    UserInput = userInput,
+                    World = world,
+                    Player = player
+                };
+                
+                // Evaluate events against the context
+                var triggeredEvents = new List<Event>();
+                
+                foreach (var gameEvent in activeEvents)
+                {
+                    // Find the appropriate evaluator for this event's trigger type
+                    var evaluator = _triggerEvaluators.FirstOrDefault(e => e.HandledTriggerType == gameEvent.TriggerType);
+                    
+                    if (evaluator != null && evaluator.ShouldTrigger(gameEvent, context))
+                    {
+                        triggeredEvents.Add(gameEvent);
+                    }
+                }
+                
+                // Prioritize events if there are too many
+                return PrioritizeTriggeredEvents(triggeredEvents);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error checking for triggered events: {ex.Message}");
+                return new List<Event>();
+            }
+        }
+        
+        /// <summary>
+        /// Prioritizes triggered events to avoid overwhelming the narrative
+        /// </summary>
+        private List<Event> PrioritizeTriggeredEvents(List<Event> triggeredEvents)
+        {
+            if (triggeredEvents.Count <= 3)
+            {
+                return triggeredEvents;
+            }
+            
+            // Prioritize by type and creation time
+            // 1. Time-based events (older first)
+            // 2. FirstLocationEntry events (older first)
+            // 3. LocationChange events (older first)
+            return triggeredEvents
+                .OrderBy(e => e.TriggerType == EventType.Time ? 0 : 
+                              e.TriggerType == EventType.FirstLocationEntry ? 1 : 2)
+                .ThenBy(e => e.CreationTime)
+                .Take(3)
+                .ToList();
         }
         
         /// <summary>

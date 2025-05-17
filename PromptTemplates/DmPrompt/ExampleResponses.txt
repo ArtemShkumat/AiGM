@@ -971,3 +971,188 @@ RESPONSE:
   }
 }
 ---
+# EXAMPLE: Creating a timed event
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_tavernInn"
+  },
+  "playerInput": "I ask the innkeeper about the rumored goblin raids nearby."
+}
+
+RESPONSE:
+{
+  "userFacingText": "The innkeeper leans in, lowering her voice. 'Aye, the rumors are true,' she says grimly. 'Traders have been attacked on the eastern road for the past fortnight. The town guard sent a patrol yesterday to investigate. They should be back by tomorrow morning with news.' She wipes a mug with her apron. 'If you're heading east, might be wise to wait until we know what we're dealing with.'",
+  "newEntities": [
+    {
+      "type": "event",
+      "id": "event_guardPatrolReturns",
+      "name": "Guard Patrol Returns",
+      "context": "The town guard patrol returns from investigating goblin raids on the eastern road. This event should trigger automatically tomorrow morning.",
+      "eventDetails": {
+        "summary": "The town guard patrol returns from investigating goblin raids. They have discovered a small goblin camp in the hills and learned valuable information. The patrol captain can now be found at the guardhouse with his report.",
+        "triggerType": "Time",
+        "triggerValue": {
+          "type": "time",
+          "triggerTime": "+1.days"
+        }
+      }
+    }
+  ]
+}
+---
+# EXAMPLE: Creating a location-based event
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_marketplace"
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_travelingMerchant",
+      "name": "Rodrik the Merchant",
+      "currentLocationId": "loc_marketplace"
+    }
+  ],
+  "playerInput": "I buy a map from Rodrik and ask him to mark any interesting locations nearby."
+}
+
+RESPONSE:
+{
+  "userFacingText": "Rodrik unfurls an aged parchment map on his stall. 'Five silver,' he says, and when you pay, he takes out a charcoal pencil and marks several locations. 'There's an old watchtower here,' he says, circling a spot near the river. 'Abandoned years ago, but still standing. And here...' he marks a spot in the forest to the north, 'there's a shrine that locals say has healing properties. Worth a visit if you're injured.' He hands you the map with a smile. 'Safe travels, friend.'",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "currencies": [
+        {
+          "name": "Silver",
+          "amount": 5,
+          "action": "Remove"
+        }
+      ],
+      "inventory": [
+        {
+          "name": "Detailed Regional Map",
+          "quantity": 1,
+          "action": "Add"
+        }
+      ]
+    }
+  },
+  "newEntities": [
+    {
+      "type": "event",
+      "id": "event_abandonedWatchtower",
+      "name": "Discover Abandoned Watchtower",
+      "context": "Event that triggers when the player first enters the abandoned watchtower location.",
+      "eventDetails": {
+        "summary": "The player enters the abandoned watchtower for the first time. They discover signs of recent occupation, including still-warm ashes from a campfire and discarded supplies bearing the emblem of a mercenary company. This should create an atmosphere of unease, as if someone was here very recently and may return.",
+        "triggerType": "FirstLocationEntry",
+        "triggerValue": {
+          "type": "location",
+          "locationId": "loc_abandonedWatchtower",
+          "mustBeFirstVisit": true
+        }
+      }
+    },
+    {
+      "type": "event",
+      "id": "event_healingShrine",
+      "name": "Discover Forest Shrine",
+      "context": "Event that triggers whenever the player enters the healing shrine location.",
+      "eventDetails": {
+        "summary": "When the player enters the forest shrine, they feel a sense of peace. If the player is injured (check player condition), the waters of the small spring bubble with magical energy, and drinking from them will restore some health. If the player is healthy, the waters remain still but still feel refreshing.",
+        "triggerType": "LocationChange",
+        "triggerValue": {
+          "type": "location",
+          "locationId": "loc_forestShrine",
+          "mustBeFirstVisit": false
+        }
+      }
+    }
+  ]
+}
+---
+# EXAMPLE: Creating an event chain
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_villageSmithy"
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_blacksmith",
+      "name": "Galen the Blacksmith",
+      "currentLocationId": "loc_villageSmithy"
+    }
+  ],
+  "playerInput": "I commission a special sword from Galen, paying him 30 gold for the work."
+}
+
+RESPONSE:
+{
+  "userFacingText": "Galen weighs the gold in his palm, then nods appreciatively. 'A fine commission,' he says, examining your specifications. 'I'll need to work the forge day and night, but I should have it ready in three days' time.' He stores the gold in a small lockbox and pulls out a length of parchment, sketching the design. 'Steel with a touch of silver for balance, edge sharp enough to split a hair. Come back then and it'll be waiting.'",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "currencies": [
+        {
+          "name": "Gold",
+          "amount": 30,
+          "action": "Remove"
+        }
+      ]
+    }
+  },
+  "newEntities": [
+    {
+      "type": "event",
+      "id": "event_swordProgress1",
+      "name": "Sword Crafting Progress - Day 1",
+      "context": "First stage of the sword crafting process, occurs 1 day after commissioning the sword.",
+      "eventDetails": {
+        "summary": "If the player visits the smithy, Galen will be hard at work on the sword. The basic shape has been hammered out but much work remains. He'll report that progress is good and confirm it will be ready in two more days.",
+        "triggerType": "Time",
+        "triggerValue": {
+          "type": "time",
+          "triggerTime": "+1.days"
+        }
+      }
+    },
+    {
+      "type": "event",
+      "id": "event_swordProgress2",
+      "name": "Sword Crafting Progress - Day 2",
+      "context": "Second stage of the sword crafting process, occurs 2 days after commissioning the sword.",
+      "eventDetails": {
+        "summary": "If the player visits the smithy, the sword is taking shape nicely. Galen has added the silver inlay and is working on the handle. He'll mention needing to quench the blade overnight and that it will be ready tomorrow as promised.",
+        "triggerType": "Time",
+        "triggerValue": {
+          "type": "time",
+          "triggerTime": "+2.days"
+        }
+      }
+    },
+    {
+      "type": "event",
+      "id": "event_swordComplete",
+      "name": "Sword Crafting Complete",
+      "context": "Final stage of the sword crafting process, occurs 3 days after commissioning the sword.",
+      "eventDetails": {
+        "summary": "The sword is ready for collection. When the player visits the smithy, Galen will proudly present the finished masterpiece. The blade gleams with a perfect edge and elegant silver inlays. The player should receive the 'Fine Steel Sword' item with enhanced stats. If the player doesn't visit within a day, Galen will send word to them that their commission is complete.",
+        "triggerType": "Time",
+        "triggerValue": {
+          "type": "time",
+          "triggerTime": "+3.days"
+        }
+      }
+    }
+  ]
+}
+---

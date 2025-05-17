@@ -50,6 +50,7 @@ namespace AiGMBackEnd.Services.Processors
         private readonly IServiceProvider _serviceProvider;
         private readonly GameNotificationService _notificationService;
         private readonly IInventoryStorageService _inventoryStorageService;
+        private readonly IEventProcessor _eventProcessor;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public UpdateProcessor(
@@ -61,7 +62,8 @@ namespace AiGMBackEnd.Services.Processors
             IQuestProcessor questProcessor,
             INPCProcessor npcProcessor,
             GameNotificationService notificationService,
-            IInventoryStorageService inventoryStorageService)
+            IInventoryStorageService inventoryStorageService,
+            IEventProcessor eventProcessor)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -72,6 +74,7 @@ namespace AiGMBackEnd.Services.Processors
             _npcProcessor = npcProcessor;
             _notificationService = notificationService;
             _inventoryStorageService = inventoryStorageService;
+            _eventProcessor = eventProcessor;
 
             _jsonSerializerOptions = new JsonSerializerOptions
             {
@@ -245,6 +248,14 @@ namespace AiGMBackEnd.Services.Processors
                             _loggingService.LogInfo($"Scheduled quest creation job for {questHook.Id}, job ID: {jobId}");
                         }
                          else { throw new InvalidCastException("Mismatched hook type for QUEST"); }
+                        break;
+                        
+                    case "EVENT":
+                        // Convert hook data to JObject which is the format expected by the processor
+                        var eventData = JObject.FromObject(entityHook);
+                        jobId = BackgroundJob.Enqueue(() =>
+                            _serviceProvider.GetService<IEventProcessor>().ProcessAsync(eventData, userId));
+                        _loggingService.LogInfo($"Scheduled event creation job for {entityId}, job ID: {jobId}");
                         break;
 
                     default:

@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
     "userFacingText": {
@@ -13,7 +14,7 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["NPC", "LOCATION", "QUEST"],
+            "enum": ["NPC", "LOCATION", "QUEST", "ENEMY_STAT_BLOCK", "event"],
             "description": "Type of entity being created"
           },
           "id": {
@@ -37,6 +38,26 @@
             },
             "required": ["parentLocationId", "locationType"],
             "description": "Required for locations"
+          },
+          "eventDetails": {
+            "type": "object",
+            "properties": {
+              "summary": {
+                "type": "string",
+                "description": "Summary of the event, which will be shown to the DM when triggered."
+              },
+              "triggerType": {
+                "type": "string",
+                "enum": ["Time", "LocationChange", "FirstLocationEntry"],
+                "description": "The type of trigger that will cause this event to occur."
+              },
+              "triggerValue": {
+                "type": "object",
+                "description": "The specific trigger condition details."
+              }
+            },
+            "required": ["summary", "triggerType", "triggerValue"],
+            "description": "Required for events"
           }
         },
         "required": ["type", "id", "name", "context"]

@@ -16,6 +16,7 @@ namespace AiGMBackEnd.Models.Prompts
         public string LocationId { get; set; } = string.Empty;
         public string LocationName { get; set; } = string.Empty;
         public string ParentLocationId { get; set; } = string.Empty;
+        public string PreviousLocationId { get; set; } = string.Empty;
         public string Context { get; set; } = string.Empty;
         public string QuestName { get; set; } = string.Empty;
         public string QuestId { get; set; } = string.Empty;

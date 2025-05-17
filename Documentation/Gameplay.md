@@ -11,6 +11,11 @@ This document describes the expected gameplay experience from the perspective of
 *   **Dynamic World:** The world reacts to your actions. NPCs remember interactions (to some extent), locations can change, and your choices influence the unfolding story.
     *   **Time:** The game world has its own clock. Significant time (minutes, hours, days) can pass based on your actions (resting, traveling, waiting, studying) and will be noted by the DM.
     *   **Random Events:** Be prepared for occasional unexpected events introduced by the DM to add spontaneity to the narrative.
+    *   **Persistent Events:** The world continues to evolve even when you're not present. Events you trigger may have delayed consequences, and NPCs might set plans in motion that unfold over time. For example:
+        * An NPC you helped might complete a journey and arrive at a new location days later.
+        * A message you send might receive a response after some time has passed.
+        * Special events might occur the first time you enter certain locations.
+        * Your actions in one place might cause reactions elsewhere that you'll discover upon your return.
 
 ## Key Gameplay Mechanics
 
@@ -45,7 +50,13 @@ This document describes the expected gameplay experience from the perspective of
     *   **Narrative Pacing:** If you declare an ongoing action (e.g., "I travel north," "I search the library," "I keep watch"), the DM will narrate a meaningful segment of that activity, including time passage or observations, until a natural break, discovery, or interruption occurs. You don't need to constantly re-state your ongoing action.
     *   **Player Prompts:** The DM will generally only explicitly ask "What do you do?" or prompt for input when a clear **decision point** is reached (e.g., facing a sudden threat, discovering something crucial, encountering a significant obstacle or choice presented in the narration). Otherwise, you can interject with new actions whenever you wish.
 4.  **Repeat:** You continue interacting, driving the story and exploring the world.
-5.  **Persistence:** Your progress (character state, inventory, world changes, quest status) is saved automatically, allowing you to continue your game later.
+5.  **World Reactivity:** The game world evolves dynamically:
+    *   **Immediate Reactions:** Your direct actions have immediate effects (talking to NPCs, searching areas, etc.).
+    *   **Delayed Consequences:** Some actions trigger events that unfold over time. For example, sending a messenger might result in a reply arriving hours or days later in game time.
+    *   **Time-Based Events:** As game time passes, scheduled events may occur (festivals, NPC arrivals/departures, weather changes).
+    *   **Location-Based Events:** Entering certain areas may trigger special events, particularly if it's your first visit.
+    *   **Random Occurrences:** Occasionally, random events might be introduced to add unpredictability and freshness to your adventure.
+6.  **Persistence:** Your progress (character state, inventory, world changes, quest status) is saved automatically, allowing you to continue your game later.
 
 ## Goal
 

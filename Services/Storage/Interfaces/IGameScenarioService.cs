@@ -53,5 +53,22 @@ namespace AiGMBackEnd.Services.Storage
         /// <param name="userId">Not used, as GameScenarioService only deals with starting scenarios</param>
         /// <param name="isStartingScenario">Not used, always true for GameScenarioService</param>
         Task SaveScenarioNpcAsync(string scenarioId, string npcId, JToken npcData, string userId, bool isStartingScenario);
+        
+        /// <summary>
+        /// Saves an event to a scenario
+        /// </summary>
+        /// <param name="scenarioId">The scenario ID</param>
+        /// <param name="eventId">The event ID</param>
+        /// <param name="eventData">The event data</param>
+        /// <param name="userId">Not used, as GameScenarioService only deals with starting scenarios</param>
+        /// <param name="isStartingScenario">Not used, always true for GameScenarioService</param>
+        Task SaveScenarioEventAsync(string scenarioId, string eventId, JToken eventData, string userId, bool isStartingScenario);
+        
+        /// <summary>
+        /// Loads events from a scenario and creates them for a user
+        /// </summary>
+        /// <param name="scenarioId">The scenario ID</param>
+        /// <param name="userId">The user ID</param>
+        Task LoadEventsFromScenarioAsync(string scenarioId, string userId);
     }
 } 

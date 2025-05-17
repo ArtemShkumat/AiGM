@@ -64,6 +64,7 @@ Structure:
 *   **`IBaseStorageService` / `BaseStorageService.cs`**: Defines and implements the core, low-level file operations (LoadAsync, SaveAsync, GetFilePath, ApplyPartialUpdateAsync, CopyDirectory). Located in `Services/Storage/`. Uses `System.Text.Json` for serialization and `Newtonsoft.Json.Linq` for partial updates. Constructs paths relative to the `/Data/` directory at the project root.
 *   **Specialized Storage Services**: Located within `Services/Storage/`, these classes handle the logic for specific data types, often utilizing `BaseStorageService` for the actual file I/O. Key services include:
     *   `IEntityStorageService` / `EntityStorageService.cs`: Handles loading and saving core game entities like `Player`, `World`, `GameSetting`, `GamePreferences`, `Location`, `Npc`, `Quest`. Also provides methods for querying entities (e.g., `GetNpcsInLocationAsync`, `GetAllNpcsAsync`, `GetAllQuestsAsync`, `GetActiveQuestsAsync`). Crucially, it handles loading the `World` object, which contains the current `GameTime`.
+    *   `IEventStorageService` / `EventStorageService.cs`: Manages events under `/Data/userData/<UserId>/events/`. Provides methods for retrieving active events, updating event status, and purging old completed events.
     *   `IConversationLogService` / `ConversationLogService.cs`: Manages the `conversation_log.json` file (adding user/DM messages, wiping).
     *   `IEnemyStatBlockService` / `EnemyStatBlockService.cs`: Manages loading, saving, and checking existence of `EnemyStatBlock` data in `/Data/userData/<UserId>/enemies/`.
     *   `ICombatStateService` / `CombatStateService.cs`: Manages loading, saving, and deleting the `CombatState` data in `/Data/userData/<UserId>/active_combat.json`.
@@ -99,6 +100,17 @@ Role: Tracks the status (e.g., Pending, Running, Completed, Failed) of long-runn
 Where: `/Models/`
 What: Classes for Npc, Player, Quest, World, Prompt, PromptRequest, ProcessedResult, CombatState, EnemyStatBlock, etc. Includes interfaces like `ICreationHook` and `IUpdatePayload` and their implementations (e.g., `NpcCreationHook`, `PlayerUpdatePayload`) to represent structured LLM outputs. Also includes custom `JsonConverter` implementations in `/Models/Converters.cs`. JSON data from `/Data/userData/<UserId>/` is loaded into these model classes at runtime.
 
+Event Model Structure (`/Models/Events/`):
+- `Event.cs`: Defines properties for game events including Id, Summary, TriggerType, TriggerValue, Context, Status, CreationTime, and CompletionTime.
+- `EventType.cs`: Enum defining trigger types (Time, LocationChange, FirstLocationEntry).
+- `EventStatus.cs`: Enum for event status (Active, Completed, Error).
+- `TriggerValue.cs`: Abstract base class for type-specific trigger values.
+- `TimeTriggerValue.cs`: Trigger based on game time reaching a specific point.
+- `LocationTriggerValue.cs`: Trigger based on player entering a location.
+- `TriggerValueConverter.cs`: JSON converter for proper serialization/deserialization of trigger values.
+- `TriggerContext.cs`: Contains contextual information for trigger evaluation.
+- `EventCreationHook.cs`: Implements ICreationHook for event creation through LLM responses.
+
 Location Model Structure (`/Models/Locations/`):
 - `Location.cs` (abstract base class): Defines common properties for all location types.
 - `GenericLocation.cs`: A concrete implementation for simple nested locations.
@@ -129,14 +141,26 @@ Implementations (e.g., `DMPromptBuilder`, `NPCPromptBuilder`, implementations wi
 Role: Handle the domain logic associated with processing LLM responses related to specific entities or applying general updates.
 Components:
 `IEntityProcessor`: Interface defining `ProcessAsync(List<ICreationHook> creationHooks, string userId)`. Implemented by specific processors like `NPCProcessor`.
-Implementations (e.g., `LocationProcessor`, `QuestProcessor`, `NPCProcessor`, `PlayerProcessor`, **`EnemyStatBlockProcessor`**): Concrete classes implementing `IEntityProcessor`, responsible for validating and saving new entities defined in the `creationHooks` (using services from `/Services/Storage/`).
+Implementations (e.g., `LocationProcessor`, `QuestProcessor`, `NPCProcessor`, `PlayerProcessor`, **`EnemyStatBlockProcessor`**, **`EventProcessor`**): Concrete classes implementing `IEntityProcessor`, responsible for validating and saving new entities defined in the `creationHooks` (using services from `/Services/Storage/`).
 `UpdateProcessor`: Handles applying partial updates. Defines `ProcessUpdatesAsync(Dictionary<string, IUpdatePayload> updateData, string userId)`. Responsible for parsing the `updateData` dictionary and calling appropriate storage services to apply changes to existing entities.
 **`ICombatResponseProcessor`**: Interface defining `ProcessCombatResponseAsync(string llmResponse, string userId)`.
 **`CombatResponseProcessor`**: Concrete implementation for handling combat turn JSON responses, updating `CombatState` (via `CombatStateService`), and checking for combat end conditions.
 **`ISummarizePromptProcessor`**: Interface defining methods for processing summary requests.
 **`SummarizePromptProcessor`**: Concrete implementation handling both general summaries and combat summaries (using `ProcessSummaryAsync` and `ProcessCombatSummaryAsync`).
 
-2.14. Controllers (`/Controllers/`)
+2.14. Triggers (`/Services/Triggers/`)
+Role: Evaluate if events should be triggered based on the current game state and context.
+
+Components:
+- `ITriggerEvaluator`: Interface defining the contract for trigger evaluators with properties:
+  - `EventType HandledTriggerType { get; }`: The event type this evaluator handles.
+  - `bool ShouldTrigger(Event gameEvent, TriggerContext context)`: Method to evaluate if the event should trigger.
+- Concrete Implementations:
+  - `TimeTriggerEvaluator`: Evaluates if a time-based event should trigger (when game time reaches the trigger time).
+  - `LocationChangeTriggerEvaluator`: Evaluates if a location change event should trigger (when player moves to a specific location).
+  - `FirstLocationEntryTriggerEvaluator`: Evaluates if a first-time location entry event should trigger (when player enters a specific location for the first time).
+
+2.15. Controllers (`/Controllers/`)
 Role: Expose API endpoints for frontend interaction.
 Components:
 `InteractionController`: Handles general user input (`/api/interaction/input`).
@@ -146,7 +170,7 @@ Components:
 `GameManagementController`: Handles game creation, loading, saving, and potentially listing available games/scenarios (`/api/management/...`).
 `GameAdminController`: Provides administrative endpoints, possibly for debugging, data validation, or scenario management (`/api/admin/...`).
 
-2.15. PromptTemplates (`/PromptTemplates/`)
+2.16. PromptTemplates (`/PromptTemplates/`)
 Role: Provide standardized, consistent instructions and formatting for all AI LLM interactions. These templates ensure reliable JSON responses by specifying expected return format and showcasing examples of valid responses.
 
 Components:
@@ -188,6 +212,8 @@ Data Folder (`/Data/`):
     |   |-- loc_001.json
     |-- enemies/
     |   |-- enemy_001.json  (Generated enemy stat blocks)
+    |-- events/
+    |   |-- event_001.json  (Individual event files)
     |-- quests/
     |   |-- quest_001.json
     |-- logs/
@@ -314,6 +340,41 @@ HangfireJobsService (Worker - `ProcessSummarizationJobAsync`):
   **After successful processing**: Calls `CombatStateService.DeleteCombatStateAsync`.
 Completion: Summary logged, combat state deleted.
 
+4.6. Event Triggering Flow
+Trigger: As part of `DMPromptBuilder.BuildPromptAsync`.
+`DMPromptBuilder`:
+  Calls `CheckForTriggeredEventsAsync`.
+  `CheckForTriggeredEventsAsync`:
+    Loads active events via `EventStorageService.GetActiveEventsAsync`.
+    Creates a `TriggerContext` with current game state.
+    Evaluates each event against the context using the appropriate `ITriggerEvaluator`.
+    Returns triggered events (limited to 3 via `PrioritizeTriggeredEvents`).
+  If events triggered:
+    Adds triggered event summaries to the system prompt.
+    Updates each triggered event to `Completed` status.
+    Creates LLM directive to incorporate events into the narrative.
+
+4.7. Event Creation Flow
+Trigger: `ResponseProcessingService.HandleResponseAsync` detects `newEntities` containing `EventCreationHook`.
+`ResponseProcessingService`:
+  Delegates to `EventProcessor`.
+`EventProcessor`:
+  Validates event creation hook.
+  Creates new `Event` object with properties from hook.
+  Sets `Status = Active`.
+  Calls `EventStorageService.SaveEventAsync`.
+
+4.8. Random Event Flow
+Trigger: As part of `DMPromptBuilder.BuildPromptAsync` after checking for triggered events.
+`DMPromptBuilder`:
+  Calls `AddRandomEvent`.
+  `AddRandomEvent`:
+    Checks if cooldown period (default: 24 hours) has passed since last random event.
+    If true, rolls random number to determine if event occurs (default: 10% chance).
+    If triggered:
+      Updates `World.LastRandomEventTime`.
+      Adds random event directive to the prompt.
+
 5. Handling Concurrency with Hangfire
 Hangfire provides a robust job processing framework...
 (Rest of section remains the same)
@@ -332,6 +393,7 @@ Hangfire provides a robust job processing framework...
    -> PromptService
       -> IPromptBuilder (Implementations in `/Services/PromptBuilders/` and `/Services/PromptBuilders/Create/`)
          -> Storage Services (Load data)
+         -> ITriggerEvaluator (For event evaluation in DMPromptBuilder)
    -> AiService
       -> AIProviderFactory
          -> IAIProvider
@@ -339,7 +401,7 @@ Hangfire provides a robust job processing framework...
    -> ResponseProcessingService
       -> LlmResponseDeserializer (Helper)
       -> (Uses appropriate processor based on PromptType in `/Services/Processors/`)
-         -> IEntityProcessor (Implementations: ..., `EnemyStatBlockProcessor`)
+         -> IEntityProcessor (Implementations: ..., `EnemyStatBlockProcessor`, `EventProcessor`)
          -> UpdateProcessor
          -> `ICombatResponseProcessor` / `CombatResponseProcessor`
          -> `ISummarizePromptProcessor` / `SummarizePromptProcessor`
@@ -378,7 +440,7 @@ Hangfire provides a robust job processing framework...
 (Update Processors and Expand Features)
 Processors (`/Services/Processors/`)
   *   Implement `IEntityProcessor` interface.
-  *   Implement concrete entity processors (Quest, NPC, Location, `EnemyStatBlockProcessor`).
+  *   Implement concrete entity processors (Quest, NPC, Location, `EnemyStatBlockProcessor`, `EventProcessor`).
   *   Implement `UpdateProcessor`.
   *   Implement `ICombatResponseProcessor` and `CombatResponseProcessor`.
   *   Implement `ISummarizePromptProcessor` and `SummarizePromptProcessor`.

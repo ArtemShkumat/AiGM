@@ -1,9 +1,13 @@
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Services.PromptBuilders;
+using AiGMBackEnd.Services.Storage;
+using AiGMBackEnd.Services.Triggers;
 using System.Text;
 using System;
 using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AiGMBackEnd.Services
 {
@@ -30,7 +34,9 @@ namespace AiGMBackEnd.Services
 
         public PromptService(
             StorageService storageService,
-            LoggingService loggingService)
+            LoggingService loggingService,
+            IEventStorageService eventStorageService,
+            IEnumerable<ITriggerEvaluator> triggerEvaluators)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -38,7 +44,7 @@ namespace AiGMBackEnd.Services
             // Initialize prompt builders
             _promptBuilders = new Dictionary<PromptType, IPromptBuilder>
             {
-                { PromptType.DM, new DMPromptBuilder(storageService, loggingService) },
+                { PromptType.DM, new DMPromptBuilder(storageService, loggingService, eventStorageService, triggerEvaluators) },
                 { PromptType.NPC, new NPCPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateQuest, new CreateQuestPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateNPC, new CreateNPCPromptBuilder(storageService, loggingService) },
