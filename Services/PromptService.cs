@@ -23,7 +23,8 @@ namespace AiGMBackEnd.Services
         Combat,
         CreateEnemyStatBlock,
         SummarizeCombat,
-        BootstrapGameFromSimplePrompt
+        BootstrapGameFromSimplePrompt,
+        GenerateScenarioTemplate
     }
 
     public class PromptService
@@ -36,7 +37,8 @@ namespace AiGMBackEnd.Services
             StorageService storageService,
             LoggingService loggingService,
             IEventStorageService eventStorageService,
-            IEnumerable<ITriggerEvaluator> triggerEvaluators)
+            IEnumerable<ITriggerEvaluator> triggerEvaluators,
+            ITemplateService templateService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -54,7 +56,8 @@ namespace AiGMBackEnd.Services
                 { PromptType.CreateEnemyStatBlock, new CreateEnemyStatBlockPromptBuilder(storageService, loggingService) },
                 { PromptType.Combat, new CombatPromptBuilder(storageService, loggingService) },
                 { PromptType.SummarizeCombat, new SummarizeCombatPromptBuilder(storageService, loggingService) },
-                { PromptType.BootstrapGameFromSimplePrompt, new BootstrapGameFromSimplePromptBuilder(storageService, loggingService) }
+                { PromptType.BootstrapGameFromSimplePrompt, new BootstrapGameFromSimplePromptBuilder(storageService, loggingService) },
+                { PromptType.GenerateScenarioTemplate, new GenerateScenarioTemplatePromptBuilder(templateService, loggingService) }
             };
         }
 

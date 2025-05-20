@@ -8,6 +8,7 @@ using AiGMBackEnd.Services.Storage;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using AiGMBackEnd.Models.Prompts;
+using Hangfire;
 
 namespace AiGMBackEnd.Controllers
 {
@@ -15,21 +16,42 @@ namespace AiGMBackEnd.Controllers
     [Route("api/[controller]")]
     public class GameAdminController : ControllerBase
     {
+        // Add a class for the create game from template request
+        public class CreateGameFromTemplateRequest
+        {
+            public string UserId { get; set; }
+            public string TemplateId { get; set; }
+            public string NewGameName { get; set; }
+        }
+        
+        // Add a class for the new request
+        public class GenerateTemplateFromTextRequest
+        {
+            public string TemplateName { get; set; }
+            public string LargeTextInput { get; set; }
+        }
+        
         private readonly PresenterService _presenterService;
         private readonly LoggingService _loggingService;
         private readonly StorageService _storageService;
         private readonly IWorldSyncService _worldSyncService;
+        private readonly HangfireJobsService _hangfireJobsService;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
         public GameAdminController(
             PresenterService presenterService, 
             LoggingService loggingService, 
             StorageService storageService,
-            IWorldSyncService worldSyncService)
+            IWorldSyncService worldSyncService,
+            HangfireJobsService hangfireJobsService,
+            IBackgroundJobClient backgroundJobClient)
         {
             _presenterService = presenterService;
             _loggingService = loggingService;
             _storageService = storageService;
             _worldSyncService = worldSyncService;
+            _hangfireJobsService = hangfireJobsService;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         [HttpGet("{gameId}/validate")]
@@ -130,6 +152,87 @@ namespace AiGMBackEnd.Controllers
             {
                 _loggingService.LogError($"Error bootstrapping game from simple prompt: {ex.Message}");
                 return StatusCode(500, new { Message = "An unexpected error occurred during game bootstrap", Error = ex.Message });
+            }
+        }
+
+        [HttpPost("generate-template-from-text")]
+        public async Task<IActionResult> GenerateTemplateFromText([FromBody] GenerateTemplateFromTextRequest request)
+        {
+            if (string.IsNullOrEmpty(request.TemplateName))
+            {
+                return BadRequest("Template name is required");
+            }
+
+            if (string.IsNullOrEmpty(request.LargeTextInput))
+            {
+                return BadRequest("Text input is required");
+            }
+
+            try
+            {
+                _loggingService.LogInfo($"Generating scenario template from text: {request.TemplateName}");
+                
+                // Generate a template ID
+                string templateId = Guid.NewGuid().ToString();
+                
+                // Enqueue the job
+                string jobId = _backgroundJobClient.Enqueue<HangfireJobsService>(x => 
+                    x.GenerateScenarioTemplateAsync(request.LargeTextInput, templateId, request.TemplateName, null));
+                
+                return Accepted(new { 
+                    Message = "Scenario template generation initiated", 
+                    TemplateId = templateId,
+                    JobId = jobId,
+                    CheckStatusEndpoint = $"/api/EntityStatus/pending/{jobId}"
+                });
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error generating scenario template: {ex.Message}");
+                return StatusCode(500, new { Message = "An unexpected error occurred during template generation", Error = ex.Message });
+            }
+        }
+
+        [HttpPost("create-game-from-template")]
+        public async Task<IActionResult> CreateGameFromTemplate([FromBody] CreateGameFromTemplateRequest request)
+        {
+            if (string.IsNullOrEmpty(request.UserId))
+            {
+                return BadRequest("User ID is required");
+            }
+
+            if (string.IsNullOrEmpty(request.TemplateId))
+            {
+                return BadRequest("Template ID is required");
+            }
+
+            if (string.IsNullOrEmpty(request.NewGameName))
+            {
+                return BadRequest("Game name is required");
+            }
+
+            try
+            {
+                _loggingService.LogInfo($"Creating game {request.NewGameName} from template {request.TemplateId} for user {request.UserId}");
+                
+                // Generate a new game ID
+                string newGameId = Guid.NewGuid().ToString();
+                
+                // Enqueue the job
+                string jobId = _backgroundJobClient.Enqueue<HangfireJobsService>(x => 
+                    x.InstantiateScenarioFromTemplateAsync(request.UserId, request.TemplateId, newGameId, request.NewGameName, null));
+                
+                return Ok(new { 
+                    Message = "Game creation from template initiated", 
+                    GameId = newGameId,
+                    JobId = jobId,
+                    CheckStatusEndpoint = $"/api/EntityStatus/pending/{jobId}"
+                });
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error creating game from template: {ex.Message}");
+                return StatusCode(500, new { Message = "An unexpected error occurred during game creation", Error = ex.Message });
             }
         }
     }

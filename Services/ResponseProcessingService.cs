@@ -8,6 +8,9 @@ using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Hangfire;
+using System.Collections.Generic;
+using AiGMBackEnd.Services.Storage;
+using AiGMBackEnd.Services.Storage.Interfaces;
 
 namespace AiGMBackEnd.Services
 {
@@ -27,6 +30,7 @@ namespace AiGMBackEnd.Services
         private readonly ILlmResponseDeserializer _llmResponseDeserializer;
         private readonly GameNotificationService _gameNotificationService;
         private readonly IScenarioProcessor _scenarioProcessor;
+        private readonly IScenarioTemplateStorageService _scenarioTemplateStorageService;
 
         // Deserialization timeout constant
         private static readonly TimeSpan DeserializationTimeout = TimeSpan.FromSeconds(30);
@@ -45,7 +49,8 @@ namespace AiGMBackEnd.Services
             ICombatResponseProcessor combatResponseProcessor,
             ILlmResponseDeserializer llmResponseDeserializer,
             GameNotificationService gameNotificationService,
-            IScenarioProcessor scenarioProcessor)
+            IScenarioProcessor scenarioProcessor,
+            IScenarioTemplateStorageService scenarioTemplateStorageService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -61,6 +66,7 @@ namespace AiGMBackEnd.Services
             _llmResponseDeserializer = llmResponseDeserializer;
             _gameNotificationService = gameNotificationService;
             _scenarioProcessor = scenarioProcessor;
+            _scenarioTemplateStorageService = scenarioTemplateStorageService;
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)
@@ -502,6 +508,68 @@ namespace AiGMBackEnd.Services
             }
             
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Handles the response from scenario template generation
+        /// </summary>
+        public async Task HandleScenarioTemplateResponseAsync(string llmResponse, string templateId, string templateName)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Processing scenario template response for template ID {templateId}");
+                
+                if (string.IsNullOrEmpty(llmResponse))
+                {
+                    _loggingService.LogWarning("Empty scenario template response received");
+                    throw new InvalidOperationException("LLM response was empty");
+                }
+                
+                // Deserialize the response into a ScenarioTemplate
+                var template = System.Text.Json.JsonSerializer.Deserialize<ScenarioTemplate>(
+                    llmResponse, 
+                    new JsonSerializerOptions 
+                    { 
+                        PropertyNameCaseInsensitive = true,
+                        AllowTrailingCommas = true
+                    });
+                
+                if (template == null)
+                {
+                    _loggingService.LogError("Failed to deserialize scenario template response");
+                    throw new InvalidOperationException("Failed to deserialize scenario template response");
+                }
+                
+                // Set the template ID and name
+                template.TemplateId = templateId;
+                template.TemplateName = templateName;
+                
+                // Ensure we have initialized collections
+                if (template.Npcs == null) template.Npcs = new List<NpcStub>();
+                if (template.Locations == null) template.Locations = new List<LocationStub>();
+                if (template.Quests == null) template.Quests = new List<QuestStub>();
+                if (template.Events == null) template.Events = new List<EventStub>();
+                
+                // Log the counts
+                _loggingService.LogInfo($"Scenario template contains: {template.Npcs.Count} NPCs, " +
+                                       $"{template.Locations.Count} locations, {template.Quests.Count} quests, " +
+                                       $"{template.Events.Count} events");
+                
+                // Save the template
+                await _scenarioTemplateStorageService.SaveTemplateAsync(template);
+                
+                _loggingService.LogInfo($"Successfully saved scenario template {templateName} (ID: {templateId})");
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                _loggingService.LogError($"JSON error processing scenario template response: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing scenario template response: {ex.Message}");
+                throw;
+            }
         }
     }
 }

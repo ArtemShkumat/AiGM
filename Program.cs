@@ -4,6 +4,7 @@ using Hangfire.Dashboard;
 using AiGMBackEnd.Services;
 using AiGMBackEnd.Services.Processors;
 using AiGMBackEnd.Services.Storage;
+using AiGMBackEnd.Services.Storage.Interfaces;
 using AiGMBackEnd.Services.Triggers;
 using AiGMBackEnd.Hubs;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,6 +58,7 @@ builder.Services.AddSingleton<IRecentEventsService, RecentEventsService>();
 builder.Services.AddSingleton<IEnemyStatBlockService, EnemyStatBlockService>();
 builder.Services.AddSingleton<ICombatStateService, CombatStateService>();
 builder.Services.AddSingleton<IEventStorageService, EventStorageService>();
+builder.Services.AddSingleton<IScenarioTemplateStorageService, ScenarioTemplateStorageService>();
 builder.Services.AddSingleton<StorageService>();
 
 // Register event trigger evaluators

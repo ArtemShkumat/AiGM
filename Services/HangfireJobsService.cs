@@ -10,6 +10,9 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using AiGMBackEnd.Services.Storage;
+using AiGMBackEnd.Services.Storage.Interfaces;
+using System.IO;
+using AiGMBackEnd.Models.Locations;
 
 namespace AiGMBackEnd.Services
 {
@@ -29,6 +32,8 @@ namespace AiGMBackEnd.Services
         private readonly IQuestProcessor _questProcessor;
         private readonly GameNotificationService _gameNotificationService;
         private readonly IEventStorageService _eventStorageService;
+        private readonly IScenarioTemplateStorageService _scenarioTemplateStorageService;
+        private readonly string _dataPath;
 
         public HangfireJobsService(
             LoggingService loggingService,
@@ -41,7 +46,8 @@ namespace AiGMBackEnd.Services
             ILocationProcessor locationProcessor,
             IQuestProcessor questProcessor,
             GameNotificationService gameNotificationService,
-            IEventStorageService eventStorageService)
+            IEventStorageService eventStorageService,
+            IScenarioTemplateStorageService scenarioTemplateStorageService)
         {
             _loggingService = loggingService;
             _promptService = promptService;
@@ -54,6 +60,11 @@ namespace AiGMBackEnd.Services
             _questProcessor = questProcessor;
             _gameNotificationService = gameNotificationService;
             _eventStorageService = eventStorageService;
+            _scenarioTemplateStorageService = scenarioTemplateStorageService;
+            
+            // Set the data path in the same way as BaseStorageService
+            string rootDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
+            _dataPath = Path.Combine(rootDirectory, "Data");
         }
 
         /// <summary>
@@ -560,5 +571,259 @@ namespace AiGMBackEnd.Services
                 return "ErrorFetchingState";
             }
         }       
+
+        /// <summary>
+        /// Generates a scenario template from a large text input
+        /// </summary>
+        [JobDisplayName("Generate Scenario Template: {2} (ID: {1})")]
+        public async Task GenerateScenarioTemplateAsync(string largeTextInput, string templateId, string templateName, PerformContext context)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Generating scenario template from text for template {templateName} (ID: {templateId})");
+                
+                var promptRequest = new PromptRequest
+                {
+                    PromptType = PromptType.GenerateScenarioTemplate,
+                    Context = largeTextInput
+                };
+                
+                // Build and send the prompt
+                var prompt = await _promptService.BuildPromptAsync(promptRequest);
+                var llmResponse = await _aiService.GetCompletionAsync(prompt);
+                
+                // Process the response
+                await _responseProcessingService.HandleScenarioTemplateResponseAsync(llmResponse, templateId, templateName);
+                
+                _loggingService.LogInfo($"Successfully generated scenario template {templateName} (ID: {templateId})");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error generating scenario template from text: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Instantiates a new game from a previously generated scenario template
+        /// </summary>
+        [JobDisplayName("Instantiate Scenario: {3} (GameID: {2}) from Template: {1})")]
+        public async Task InstantiateScenarioFromTemplateAsync(string userId, string templateId, string newGameId, string newGameName, PerformContext context)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Instantiating game {newGameName} (ID: {newGameId}) from template {templateId} for user {userId}");
+                
+                // Load template
+                var template = await _scenarioTemplateStorageService.LoadTemplateAsync(templateId);
+                if (template == null)
+                {
+                    _loggingService.LogError($"Template with ID {templateId} not found");
+                    throw new InvalidOperationException($"Template with ID {templateId} not found");
+                }
+                
+                _loggingService.LogInfo($"Template loaded: {template.TemplateName} with {template.Locations?.Count ?? 0} locations, {template.Npcs?.Count ?? 0} NPCs, {template.Quests?.Count ?? 0} quests, {template.Events?.Count ?? 0} events");
+                
+                // Create user directory
+                await _storageService.CreateScenarioFolderStructureAsync(newGameId, userId, false);
+                
+                // Set up game settings
+                _loggingService.LogInfo($"Setting up game settings for game {newGameId}");
+                var gameSettings = template.GameSettings;
+                gameSettings.GameName = newGameName; // Override with user-provided name
+                
+                // Create core game files
+                await _storageService.SaveScenarioFileAsync(newGameId, "gameSetting", JObject.FromObject(gameSettings), userId, false);
+                
+                // Create world
+                var world = new World
+                {
+                    Type = "WORLD",
+                    GameTime = DateTimeOffset.UtcNow,
+                    CurrentPlayer = null,
+                    Locations = new List<LocationSummary>(),
+                    Npcs = new List<NpcSummary>(),
+                    Quests = new List<QuestSummary>()
+                };
+                
+                await _storageService.SaveScenarioFileAsync(newGameId, "world", JObject.FromObject(world), userId, false);
+                
+                // Process entity creation in sequential jobs
+                // Create locations
+                foreach (var locationStub in template.Locations)
+                {
+                    var locationId = $"loc_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+                    BackgroundJob.Enqueue<HangfireJobsService>(x => 
+                        x.CreateLocationAsync(userId, locationId, locationStub.Name, "BUILDING", locationStub.Description, null, false, newGameId));
+                }
+                
+                // Process NPCs after locations (give it a delay to allow locations to be created first)
+                foreach (var npcStub in template.Npcs)
+                {
+                    var npcId = $"npc_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+                    var npcJobId = BackgroundJob.Schedule<HangfireJobsService>(x => 
+                        x.CreateNpcAsync(userId, npcId, npcStub.Name, npcStub.Description, null, false, newGameId),
+                        TimeSpan.FromSeconds(30)); // Delay to allow locations to be created first
+                }
+                
+                // Process Quests after NPCs (with a longer delay)
+                foreach (var questStub in template.Quests)
+                {
+                    var questId = $"quest_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+                    var questJobId = BackgroundJob.Schedule<HangfireJobsService>(x => 
+                        x.CreateQuestAsync(userId, questId, questStub.Name, questStub.Description),
+                        TimeSpan.FromSeconds(60)); // Delay to allow NPCs to be created first
+                }
+                
+                // Process Events after everything else (with the longest delay)
+                if (template.Events != null && template.Events.Count > 0)
+                {
+                    foreach (var eventStub in template.Events)
+                    {
+                        var eventId = $"event_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+                        var eventJobId = BackgroundJob.Schedule<HangfireJobsService>(x =>
+                            x.CreateEventAsync(userId, eventId, eventStub.Name, eventStub.Summary, 
+                                eventStub.TriggerType, eventStub.TriggerValue, eventStub.Context, newGameId),
+                            TimeSpan.FromSeconds(90)); // Delay to allow other entities to be created first
+                    }
+                }
+                
+                _loggingService.LogInfo($"Successfully initiated game creation from template. Locations: {template.Locations.Count}, NPCs: {template.Npcs.Count}, Quests: {template.Quests.Count}, Events: {template.Events?.Count ?? 0}");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error instantiating game from template: {ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Creates an event entity
+        /// </summary>
+        public async Task CreateEventAsync(string userId, string eventId, string eventName, string eventSummary, 
+            string triggerType, EventTriggerValue triggerValue, string context, string gameId)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Creating event {eventName} (ID: {eventId}) for user {userId}");
+                
+                // Convert trigger type from string to enum
+                if (!Enum.TryParse<EventType>(triggerType, out var eventTriggerType))
+                {
+                    _loggingService.LogWarning($"Invalid trigger type {triggerType} for event {eventId}. Defaulting to Time.");
+                    eventTriggerType = EventType.Time;
+                }
+                
+                // Create the appropriate trigger value based on type
+                TriggerValue eventTriggerValue;
+                switch (eventTriggerType)
+                {
+                    case EventType.Time:
+                        eventTriggerValue = new TimeTriggerValue 
+                        { 
+                            TriggerTime = DateTimeOffset.Parse(triggerValue.TargetTime)
+                        };
+                        break;
+                    case EventType.LocationChange:
+                    case EventType.FirstLocationEntry:
+                        // For location-based triggers, we need to find the actual location ID
+                        string locationId = await FindLocationIdByNameAsync(userId, triggerValue.LocationName);
+                        bool mustBeFirstVisit = eventTriggerType == EventType.FirstLocationEntry;
+                        eventTriggerValue = new LocationTriggerValue { 
+                            LocationId = locationId ?? triggerValue.LocationId,
+                            MustBeFirstVisit = mustBeFirstVisit
+                        };
+                        break;
+                    default:
+                        throw new ArgumentException($"Unsupported event type: {eventTriggerType}");
+                }
+                
+                // Create a context dictionary 
+                var contextDict = new Dictionary<string, object>();
+                if (!string.IsNullOrEmpty(context))
+                {
+                    // Add the context string as a description
+                    contextDict["description"] = context;
+                    
+                    // Add game ID if available
+                    if (!string.IsNullOrEmpty(gameId))
+                    {
+                        contextDict["gameId"] = gameId;
+                    }
+                }
+                
+                // Create the event
+                var gameEvent = new Event
+                {
+                    Id = eventId,
+                    Summary = eventSummary,
+                    TriggerType = eventTriggerType,
+                    TriggerValue = eventTriggerValue,
+                    Context = contextDict,
+                    Status = EventStatus.Active,
+                    CreationTime = DateTimeOffset.UtcNow,
+                    CompletionTime = null
+                };
+                
+                // Save the event
+                await _eventStorageService.SaveEventAsync(userId, gameEvent);
+                
+                _loggingService.LogInfo($"Successfully created event {eventName} (ID: {eventId})");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error creating event {eventId}: {ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Finds a location ID by name
+        /// </summary>
+        private async Task<string> FindLocationIdByNameAsync(string userId, string locationName)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(locationName))
+                {
+                    return null;
+                }
+                
+                // Get all location files
+                var locationsPath = Path.Combine(_dataPath, "userData", userId, "locations");
+                if (!Directory.Exists(locationsPath))
+                {
+                    return null;
+                }
+                
+                foreach (var locationFile in Directory.GetFiles(locationsPath, "*.json"))
+                {
+                    try
+                    {
+                        var fileContent = await File.ReadAllTextAsync(locationFile);
+                        var location = System.Text.Json.JsonSerializer.Deserialize<Location>(fileContent);
+                        
+                        if (location != null && location.Name.Equals(locationName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Extract the ID from the filename
+                            var fileName = Path.GetFileNameWithoutExtension(locationFile);
+                            return fileName;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _loggingService.LogWarning($"Error checking location file {locationFile}: {ex.Message}");
+                    }
+                }
+                
+                _loggingService.LogWarning($"No location found with name '{locationName}' for user {userId}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error finding location by name: {ex.Message}");
+                return null;
+            }
+        }
     }
 } 
