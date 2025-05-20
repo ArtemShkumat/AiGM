@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -9,19 +10,13 @@ namespace AiGMBackEnd.Models
         public string Type { get; set; } = "WORLD";       
         
         [JsonPropertyName("gameTime")]
-        public string GameTime { get; set; }
+        public DateTimeOffset GameTime { get; set; }
         
-        [JsonPropertyName("daysSinceStart")]
-        public int DaysSinceStart { get; set; }
+        [JsonPropertyName("lastRandomEventTime")]
+        public DateTimeOffset? LastRandomEventTime { get; set; }
         
         [JsonPropertyName("currentPlayer")]
         public string CurrentPlayer { get; set; }
-        
-        [JsonPropertyName("worldStateEffects")]
-        public Dictionary<string, string> WorldStateEffects { get; set; } = new Dictionary<string, string>();
-        
-        [JsonPropertyName("lore")]
-        public List<LoreSummary> Lore { get; set; } = new List<LoreSummary>();
         
         [JsonPropertyName("locations")]
         public List<LocationSummary> Locations { get; set; } = new List<LocationSummary>();
@@ -31,20 +26,36 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("quests")]
         public List<QuestSummary> Quests { get; set; } = new List<QuestSummary>();
-    }
-
-    public class LoreSummary
-    {
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
         
-        [JsonPropertyName("title")]
-        public string Title { get; set; }
-        
-        [JsonPropertyName("summary")]
-        public string Summary { get; set; }
+        /// <summary>
+        /// Advances the game time based on a time delta
+        /// </summary>
+        /// <param name="delta">The time delta to apply</param>
+        public void AdvanceTime(TimeDelta delta)
+        {
+            if (delta == null)
+                return;
+                
+            switch (delta.Unit.ToLower())
+            {
+                case "seconds":
+                    GameTime = GameTime.AddSeconds(delta.Amount);
+                    break;
+                case "minutes":
+                    GameTime = GameTime.AddMinutes(delta.Amount);
+                    break;
+                case "hours":
+                    GameTime = GameTime.AddHours(delta.Amount);
+                    break;
+                case "days":
+                    GameTime = GameTime.AddDays(delta.Amount);
+                    break;
+                default:
+                    throw new ArgumentException($"Unknown time unit: {delta.Unit}");
+            }
+        }
     }
-
+   
     public class LocationSummary
     {
         [JsonPropertyName("id")]
@@ -73,17 +84,5 @@ namespace AiGMBackEnd.Models
         
         [JsonPropertyName("title")]
         public string Title { get; set; }
-    }
-
-    public class WorldHistoryLogEntry
-    {
-        [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
-        
-        [JsonPropertyName("event")]
-        public string Event { get; set; }
-        
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
-    }
+    }   
 }

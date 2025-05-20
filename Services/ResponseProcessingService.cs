@@ -8,6 +8,9 @@ using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Hangfire;
+using System.Collections.Generic;
+using AiGMBackEnd.Services.Storage;
+using AiGMBackEnd.Services.Storage.Interfaces;
 
 namespace AiGMBackEnd.Services
 {
@@ -26,6 +29,8 @@ namespace AiGMBackEnd.Services
         private readonly ICombatResponseProcessor _combatResponseProcessor;
         private readonly ILlmResponseDeserializer _llmResponseDeserializer;
         private readonly GameNotificationService _gameNotificationService;
+        private readonly IScenarioProcessor _scenarioProcessor;
+        private readonly IScenarioTemplateStorageService _scenarioTemplateStorageService;
 
         // Deserialization timeout constant
         private static readonly TimeSpan DeserializationTimeout = TimeSpan.FromSeconds(30);
@@ -43,7 +48,9 @@ namespace AiGMBackEnd.Services
             IEnemyStatBlockProcessor enemyStatBlockProcessor,
             ICombatResponseProcessor combatResponseProcessor,
             ILlmResponseDeserializer llmResponseDeserializer,
-            GameNotificationService gameNotificationService)
+            GameNotificationService gameNotificationService,
+            IScenarioProcessor scenarioProcessor,
+            IScenarioTemplateStorageService scenarioTemplateStorageService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -58,6 +65,8 @@ namespace AiGMBackEnd.Services
             _combatResponseProcessor = combatResponseProcessor;
             _llmResponseDeserializer = llmResponseDeserializer;
             _gameNotificationService = gameNotificationService;
+            _scenarioProcessor = scenarioProcessor;
+            _scenarioTemplateStorageService = scenarioTemplateStorageService;
         }
 
         public async Task<ProcessedResult> HandleResponseAsync(string llmResponse, PromptType promptType, string userId, string npcId = null)
@@ -235,7 +244,7 @@ namespace AiGMBackEnd.Services
             }
         }
 
-        public async Task<ProcessedResult> HandleCreateResponseAsync(string llmResponse, PromptType promptType, string userId)
+        public async Task<ProcessedResult> HandleCreateResponseAsync(string llmResponse, PromptType promptType, string userId, bool isStartingScenario, string scenarioId)
         {
             try
             {
@@ -254,7 +263,8 @@ namespace AiGMBackEnd.Services
                     return new ProcessedResult { UserFacingText = string.Empty, Success = false, ErrorMessage = $"Invalid JSON: {ex.Message}" };
                 }
 
-                await ProcessHiddenJsonAsync(jsonContent, promptType, userId);
+                // Call the internal processor, passing the scenario context
+                await ProcessHiddenJsonAsync(jsonContent, promptType, userId, isStartingScenario, scenarioId);
 
                 return new ProcessedResult
                 {
@@ -277,59 +287,103 @@ namespace AiGMBackEnd.Services
             return cleaned;
         }
 
-        private async Task ProcessHiddenJsonAsync(string jsonContent, PromptType promptType, string userId)
+        private async Task ProcessHiddenJsonAsync(string jsonContent, PromptType promptType, string userId, bool isStartingScenario, string scenarioId)
         {
+            JObject jsonData = null;
             try
             {
-                if (promptType == PromptType.DM || promptType == PromptType.NPC || promptType == PromptType.Combat)
+                // Use Newtonsoft.Json for more robust parsing and JObject manipulation
+                jsonData = JObject.Parse(jsonContent);
+
+                // Add metadata if this is part of starting scenario creation
+                if (isStartingScenario)
                 {
-                    _loggingService.LogError($"ProcessHiddenJsonAsync incorrectly called for {promptType}. Should be handled by HandleResponseAsync directly.");
-                    throw new InvalidOperationException($"ProcessHiddenJsonAsync should not be called for {promptType} after refactoring.");
+                    var metadata = new JObject();
+                    metadata["isStartingScenario"] = true;
+                    metadata["scenarioId"] = scenarioId;
+                    jsonData["metadata"] = metadata;
+                    _loggingService.LogInfo($"Added starting scenario metadata. ScenarioId: {scenarioId}");
                 }
 
-                JObject jsonObject;
-                try
-                {
-                    jsonObject = JObject.Parse(jsonContent);
-                }
-                catch (Newtonsoft.Json.JsonException ex)
-                {
-                    _loggingService.LogError($"Failed to parse JSON in ProcessHiddenJsonAsync (Newtonsoft): {ex.Message}. Content: {jsonContent}");
-                    jsonContent = jsonContent.Trim();
-                    jsonObject = JObject.Parse(jsonContent);
-                }
-
+                // Call the appropriate processor
                 switch (promptType)
                 {
+                    case PromptType.CreateLocation:
+                        await _locationProcessor.ProcessAsync(jsonData, userId);
+                        break;
                     case PromptType.CreateQuest:
-                        await _questProcessor.ProcessAsync(jsonObject, userId);
+                        await _questProcessor.ProcessAsync(jsonData, userId);
                         break;
                     case PromptType.CreateNPC:
-                        await _npcProcessor.ProcessAsync(jsonObject, userId);
-                        break;
-                    case PromptType.CreateLocation:
-                        await _locationProcessor.ProcessAsync(jsonObject, userId);
+                        await _npcProcessor.ProcessAsync(jsonData, userId);
                         break;
                     case PromptType.CreatePlayer:
-                        await _playerProcessor.ProcessAsync(jsonObject, userId);
+                        await _playerProcessor.ProcessAsync(jsonData, userId);
+                        break;
+                    case PromptType.Summarize:
+                        // Handle Summarize using the same method as other types
+                        // This should be handled in its own processor eventually
+                        _loggingService.LogWarning($"Summarize handling via ProcessHiddenJsonAsync is not yet fully implemented");
+                        // Skip calling an unimplemented method
                         break;
                     case PromptType.CreateEnemyStatBlock:
-                        await _enemyStatBlockProcessor.ProcessAsync(jsonObject, userId);
+                        await _enemyStatBlockProcessor.ProcessAsync(jsonData, userId);
                         break;
-                    case PromptType.SummarizeCombat:
-                        // Future: Handle summarizing combat results
-                        _loggingService.LogWarning($"SummarizeCombat handling not yet implemented in ProcessHiddenJsonAsync");
+                    case PromptType.BootstrapGameFromSimplePrompt:
+                        // Get the scenario ID from the request, assuming it's passed via RequestMetadata
+                        var scenarioIdFromMetadata = GetScenarioIdFromMetadata(jsonContent);
+                        if (string.IsNullOrEmpty(scenarioIdFromMetadata))
+                        {
+                            // If not in metadata, try to generate a consistent ID from the content
+                            scenarioIdFromMetadata = $"scenario_{DateTime.UtcNow.Ticks}";
+                        }
+                        
+                        // Check if this is a starting scenario from metadata
+                        bool isStartingScenarioFromMetadata = false;
+                        try 
+                        {
+                            var metadataObj = jsonData["metadata"] as JObject;
+                            if (metadataObj != null && metadataObj["isStartingScenario"] != null)
+                            {
+                                bool.TryParse(metadataObj["isStartingScenario"].ToString(), out isStartingScenarioFromMetadata);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _loggingService.LogWarning($"Error extracting isStartingScenario flag: {ex.Message}");
+                        }
+                        
+                        await _scenarioProcessor.ProcessAsync(jsonData, scenarioIdFromMetadata, userId, isStartingScenarioFromMetadata);
                         break;
                     default:
-                        _loggingService.LogWarning($"Unhandled PromptType in ProcessHiddenJsonAsync: {promptType}");
+                        _loggingService.LogWarning($"Unsupported prompt type for ProcessHiddenJsonAsync: {promptType}");
                         break;
                 }
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing hidden JSON for {promptType}: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                _loggingService.LogError($"Error in ProcessHiddenJsonAsync for {promptType}, user {userId}: {ex.Message}");
                 throw;
             }
+        }
+
+        // Helper method to extract scenario ID from metadata if available
+        private string GetScenarioIdFromMetadata(string jsonContent)
+        {
+            try
+            {
+                var jsonObject = JObject.Parse(jsonContent);
+                var metadata = jsonObject["metadata"] as JObject;
+                if (metadata != null)
+                {
+                    return metadata["scenarioId"]?.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogWarning($"Error extracting scenario ID from metadata: {ex.Message}");
+            }
+            return null;
         }
 
         /// <summary>
@@ -454,6 +508,68 @@ namespace AiGMBackEnd.Services
             }
             
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Handles the response from scenario template generation
+        /// </summary>
+        public async Task HandleScenarioTemplateResponseAsync(string llmResponse, string templateId, string templateName)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Processing scenario template response for template ID {templateId}");
+                
+                if (string.IsNullOrEmpty(llmResponse))
+                {
+                    _loggingService.LogWarning("Empty scenario template response received");
+                    throw new InvalidOperationException("LLM response was empty");
+                }
+                
+                // Deserialize the response into a ScenarioTemplate
+                var template = System.Text.Json.JsonSerializer.Deserialize<ScenarioTemplate>(
+                    llmResponse, 
+                    new JsonSerializerOptions 
+                    { 
+                        PropertyNameCaseInsensitive = true,
+                        AllowTrailingCommas = true
+                    });
+                
+                if (template == null)
+                {
+                    _loggingService.LogError("Failed to deserialize scenario template response");
+                    throw new InvalidOperationException("Failed to deserialize scenario template response");
+                }
+                
+                // Set the template ID and name
+                template.TemplateId = templateId;
+                template.TemplateName = templateName;
+                
+                // Ensure we have initialized collections
+                if (template.Npcs == null) template.Npcs = new List<NpcStub>();
+                if (template.Locations == null) template.Locations = new List<LocationStub>();
+                if (template.Quests == null) template.Quests = new List<QuestStub>();
+                if (template.Events == null) template.Events = new List<EventStub>();
+                
+                // Log the counts
+                _loggingService.LogInfo($"Scenario template contains: {template.Npcs.Count} NPCs, " +
+                                       $"{template.Locations.Count} locations, {template.Quests.Count} quests, " +
+                                       $"{template.Events.Count} events");
+                
+                // Save the template
+                await _scenarioTemplateStorageService.SaveTemplateAsync(template);
+                
+                _loggingService.LogInfo($"Successfully saved scenario template {templateName} (ID: {templateId})");
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                _loggingService.LogError($"JSON error processing scenario template response: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error processing scenario template response: {ex.Message}");
+                throw;
+            }
         }
     }
 }

@@ -3,32 +3,31 @@
   "properties": {
     "type": { "type": "string", "enum": ["LOCATION"], "description": "Base object type" },
     "locationType": { "type": "string", "enum": ["Wilds"], "description": "Specific location type" },
-    "id": { "type": "string", "description": "Unique identifier for the location" },
+    "id": { "type": "string", "description": "Unique identifier for the location (Provided by application)" },
     "name": { "type": "string", "description": "Name of the wilderness area (e.g., Shadowfen Mire, Frostpeak Mountains)" },
     "description": { "type": "string", "description": "Overall description of the area's environment, climate, and general atmosphere" },
-    "knownToPlayer": { "type": "boolean", "description": "Whether the player knows of this location" },
-    "connectedLocations": { "type": "array", "items": { "type": "string" }, "description": "IDs of directly connected locations (e.g., roads to Settlements, entrances to Delves)" },
-    "parentLocation": { "type": "string", "description": "ID of the parent location (typically null for large wilderness areas)" },
-    "npcs": { "type": "array", "items": { "type": "string" }, "description": "IDs of NPCs who might be encountered in this wilderness area (e.g., hermits, rangers, monsters)" },
+    "parentLocationId": { "type": "string", "description": "ID of the parent location (e.g., Region ID, provided by application)" },
+    "typicalOccupants": { "type": "string", "description": "Free-form description of common wildlife, monsters, or infrequent travelers." },
+    "currentCondition": { "type": "string", "description": "Description of the current condition of the place (e.g., 'in it's normal condition - still unvisited by the player')." },
     "terrain": { "type": "string", "description": "Dominant terrain type (e.g., Forest, Swamp, Mountain, Desert)" },
     "dangers": { "type": "string", "description": "Description of common environmental hazards or hostile creatures" },
-    "danger_level": { "type": "integer", "description": "Subjective danger level (e.g., 1-5 scale)" },
+    "danger_level": { "type": "integer", "description": "Subjective danger level (e.g., 1-10 scale)" },
     "points_of_interest": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string" },
-          "description": { "type": "string" },
-          "hinting_at": { "type": "string", "description": "What secret, plot hook, or information this POI might reveal" }
-        },
-        "required": ["name", "description", "hinting_at"]
+         "type": "object",
+         "properties": {
+           "name": { "type": "string" },
+           "description": { "type": "string" },
+           "hinting_at": { "type": "string", "description": "What secret, plot hook, or information this POI might reveal" }
+         },
+         "required": ["name", "description", "hinting_at"]
       }
     }
   },
   "required": [
-    "type", "locationType", "id", "name", "description", "knownToPlayer", 
-    "connectedLocations", "parentLocation", "npcs", 
+    "type", "locationType", "id", "name", "description",
+    "parentLocationId", "typicalOccupants", "currentCondition",
     "terrain", "dangers", "danger_level", "points_of_interest"
   ]
 } 

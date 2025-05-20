@@ -1,0 +1,42 @@
+{
+  "TemplateId": "This will be filled in by the system",
+  "TemplateName": "This will be filled in by the system",
+  "GameSettings": {
+    "Name": "Descriptive name for the game setting",
+    "Description": "Brief overview of the game setting's theme, tone, and key features",
+    "Genre": "Fantasy, Science Fiction, Western, etc.",
+    "StartingLocationId": "leave as empty string - will be filled in during instantiation"
+  },
+  "Npcs": [
+    {
+      "Name": "Character Name",
+      "Description": "Brief description of character (role, motivation, notable traits)"
+    }
+  ],
+  "Locations": [
+    {
+      "Name": "Location Name",
+      "Description": "Brief description of the location (type, purpose, notable features)"
+    }
+  ],
+  "Quests": [
+    {
+      "Name": "Quest Name",
+      "Description": "Brief description of the quest (goal, key NPCs, locations involved)"
+    }
+  ],
+  "Events": [
+    {
+      "Name": "Event Name",
+      "Summary": "Brief description of what happens during this event",
+      "TriggerType": "Time, LocationChange, or FirstLocationEntry",
+      "TriggerValue": {
+        "TargetTime": "For Time triggers - when the event should occur (e.g., '3 days after game start')",
+        "TimeType": "Absolute or Relative",
+        "LocationId": "For LocationChange/FirstLocationEntry triggers - leave empty, will be filled during instantiation",
+        "LocationName": "For LocationChange/FirstLocationEntry triggers - name of the location where event triggers"
+      },
+      "Context": "Additional information about the event's purpose or special conditions"
+    }
+  ]
+} 

@@ -24,16 +24,13 @@ namespace AiGMBackEnd.Models.Locations
         [JsonPropertyName("description")]
         public string Description { get; set; }
 
-        [JsonPropertyName("knownToPlayer")]
-        public bool KnownToPlayer { get; set; }
-
-        [JsonPropertyName("connectedLocations")]
-        public List<string> ConnectedLocations { get; set; } = new List<string>();
-
         [JsonPropertyName("parentLocation")]
         public string ParentLocation { get; set; }
 
-        [JsonPropertyName("npcs")]
-        public List<string> Npcs { get; set; } = new List<string>();
+        [JsonPropertyName("typicalOccupants")]
+        public string TypicalOccupants { get; set; } = string.Empty;
+
+        [JsonPropertyName("currentCondition")]
+        public string CurrentCondition { get; set; } = "in it's normal condition - still unvisited by the player";
     }
 }

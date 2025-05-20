@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
     "userFacingText": {
@@ -13,7 +14,7 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["NPC", "LOCATION", "QUEST"],
+            "enum": ["NPC", "LOCATION", "QUEST", "ENEMY_STAT_BLOCK", "event"],
             "description": "Type of entity being created"
           },
           "id": {
@@ -29,10 +30,34 @@
             "type": "string",
             "description": "Required for NPCs"
           },
-          "locationType": {
-            "type": "string",
-            "enum": ["Building", "Settlement", "Delve", "Wilds"],
+          "locationDetails": {
+            "type": "object",
+            "properties": {
+              "parentLocationId": { "type": "string" },
+              "locationType": { "type": "string" }
+            },
+            "required": ["parentLocationId", "locationType"],
             "description": "Required for locations"
+          },
+          "eventDetails": {
+            "type": "object",
+            "properties": {
+              "summary": {
+                "type": "string",
+                "description": "Summary of the event, which will be shown to the DM when triggered."
+              },
+              "triggerType": {
+                "type": "string",
+                "enum": ["Time", "LocationChange", "FirstLocationEntry"],
+                "description": "The type of trigger that will cause this event to occur."
+              },
+              "triggerValue": {
+                "type": "object",
+                "description": "The specific trigger condition details."
+              }
+            },
+            "required": ["summary", "triggerType", "triggerValue"],
+            "description": "Required for events"
           }
         },
         "required": ["type", "id", "name", "context"]
@@ -133,8 +158,7 @@
                     "type": "string"
                   },
                   "description": {
-                    "type": "string",
-                    "description": "Needed for adding"
+                    "type": "string"
                   },
                   "action": {
                     "type": "string",
@@ -171,21 +195,24 @@
               "type": "string",
               "enum": ["WORLD"]
             },
-            "gameTime": {
-              "type": "string"
-            },
-            "daysSinceStart": {
-              "type": "integer"
-            },
-            "worldStateEffects": {
+            "timeDelta": { 
               "type": "object",
               "properties": {
-                "effects": {
+                "amount": {
+                  "type": "integer",
+                  "minimum": 1 
+                },
+                "unit": {
                   "type": "string",
-                  "description": "Placeholder for world state effects"
+                  "enum": [ "seconds", "minutes", "hours", "days"
+                  ]
                 }
-              }
-            }
+              },
+              "required": [
+                "amount",
+                "unit"
+              ]
+            }            
           },
           "required": ["type"]
         },
@@ -206,15 +233,6 @@
               "currentLocationId": {
                 "type": "string"
               },
-              "knownToPlayer": {
-                "type": "boolean"
-              },
-              "knowsPlayer": {
-                "type": "boolean"
-              },
-              "visibleToPlayer": {
-                "type": "boolean"
-              },
               "visualDescription": {
                 "type": "object",
                 "properties": {
@@ -234,51 +252,6 @@
               },
               "dispositionTowardsPlayer": {
                 "type": "string"
-              },
-              "knownEntities": {
-                "type": "object",
-                "properties": {
-                  "npcsKnown": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "Name or ID of the known NPC being updated/added/removed"
-                        },
-                        "levelOfFamiliarity": {
-                          "type": "string"
-                        },
-                        "disposition": {
-                          "type": "string"
-                        },
-                        "action": {
-                          "type": "string",
-                          "enum": ["Add", "Remove"]
-                        }
-                      },
-                      "required": ["name", "action"]
-                    }
-                  },
-                  "locationsKnown": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "locationId": {
-                          "type": "string",
-                          "description": "ID of the location"
-                        },
-                        "action": {
-                          "type": "string",
-                          "enum": ["Add", "Remove"]
-                        }
-                      },
-                      "required": ["locationId", "action"]
-                    }
-                  }
-                }
               },
               "inventory": {
                 "type": "array",
@@ -316,35 +289,11 @@
                 "type": "string",
                 "description": "The unique identifier of the location being updated"
               },
-              "type": {
-                "type": "string",
-                "enum": ["LOCATION"]
-              },
-              "knownToPlayer": {
-                "type": "boolean"
-              },
-              "npcs": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "npcId": {
-                      "type": "string",
-                      "description": "ID of the NPC"
-                    },
-                    "action": {
-                      "type": "string",
-                      "enum": ["Add", "Remove"]
-                    }
-                  },
-                  "required": ["npcId", "action"]
-                }
-              },
-              "parentLocation": {
+              "currentCondition": {
                 "type": "string"
               }
             },
-            "required": ["type"]
+            "required": ["id", "currentCondition"]
           }
         }
       }

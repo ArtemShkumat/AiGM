@@ -50,6 +50,7 @@ namespace AiGMBackEnd.Services.Processors
         private readonly IServiceProvider _serviceProvider;
         private readonly GameNotificationService _notificationService;
         private readonly IInventoryStorageService _inventoryStorageService;
+        private readonly IEventProcessor _eventProcessor;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public UpdateProcessor(
@@ -61,7 +62,8 @@ namespace AiGMBackEnd.Services.Processors
             IQuestProcessor questProcessor,
             INPCProcessor npcProcessor,
             GameNotificationService notificationService,
-            IInventoryStorageService inventoryStorageService)
+            IInventoryStorageService inventoryStorageService,
+            IEventProcessor eventProcessor)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -72,6 +74,7 @@ namespace AiGMBackEnd.Services.Processors
             _npcProcessor = npcProcessor;
             _notificationService = notificationService;
             _inventoryStorageService = inventoryStorageService;
+            _eventProcessor = eventProcessor;
 
             _jsonSerializerOptions = new JsonSerializerOptions
             {
@@ -221,7 +224,7 @@ namespace AiGMBackEnd.Services.Processors
                         if (entityHook is NpcCreationHook npcHook)
                         {
                             jobId = BackgroundJob.Enqueue(() =>
-                                _serviceProvider.GetService<HangfireJobsService>().CreateNpcAsync(userId, npcHook.Id, npcHook.Name, npcHook.Context, npcHook.CurrentLocationId));
+                                _serviceProvider.GetService<HangfireJobsService>().CreateNpcAsync(userId, npcHook.Id, npcHook.Name, npcHook.Context, npcHook.CurrentLocationId, false, null));
                             _loggingService.LogInfo($"Scheduled NPC creation job for {npcHook.Id}, job ID: {jobId}");
                         }
                         else { throw new InvalidCastException("Mismatched hook type for NPC"); }
@@ -231,7 +234,7 @@ namespace AiGMBackEnd.Services.Processors
                         if (entityHook is LocationCreationHook locHook)
                         {
                             jobId = BackgroundJob.Enqueue(() =>
-                                _serviceProvider.GetService<HangfireJobsService>().CreateLocationAsync(userId, locHook.Id, locHook.Name, locHook.LocationType, locHook.Context));
+                                _serviceProvider.GetService<HangfireJobsService>().CreateLocationAsync(userId, locHook.Id, locHook.Name, locHook.LocationType, locHook.Context, null, false, null));
                             _loggingService.LogInfo($"Scheduled location creation job for {locHook.Id}, job ID: {jobId}");
                         }
                          else { throw new InvalidCastException("Mismatched hook type for LOCATION"); }
@@ -245,6 +248,14 @@ namespace AiGMBackEnd.Services.Processors
                             _loggingService.LogInfo($"Scheduled quest creation job for {questHook.Id}, job ID: {jobId}");
                         }
                          else { throw new InvalidCastException("Mismatched hook type for QUEST"); }
+                        break;
+                        
+                    case "EVENT":
+                        // Convert hook data to JObject which is the format expected by the processor
+                        var eventData = JObject.FromObject(entityHook);
+                        jobId = BackgroundJob.Enqueue(() =>
+                            _serviceProvider.GetService<IEventProcessor>().ProcessAsync(eventData, userId));
+                        _loggingService.LogInfo($"Scheduled event creation job for {entityId}, job ID: {jobId}");
                         break;
 
                     default:
@@ -286,8 +297,28 @@ namespace AiGMBackEnd.Services.Processors
                 if (partialUpdates.World != null)
                 {
                     _loggingService.LogInfo($"Processing world updates for user {userId}");
+                    
+                    // Handle timeDelta specifically
+                    if (partialUpdates.World.TimeDelta != null)
+                    {
+                        var world = await _storageService.GetWorldAsync(userId);
+                        if (world != null)
+                        {
+                            // Apply the time delta to the game time
+                            world.AdvanceTime(partialUpdates.World.TimeDelta);
+                            _loggingService.LogInfo($"Advanced game time to: {world.GameTime}");
+                            
+                            // Save the updated world
+                            await _storageService.SaveAsync(userId, "world", world);
+                        }
+                    }
+                    
+                    // Process any other world updates using the existing mechanism
                     string updateJson = System.Text.Json.JsonSerializer.Serialize(partialUpdates.World, _jsonSerializerOptions);
-                    await UpdateEntityAsync(userId, "", "world", updateJson);
+                    if (!string.IsNullOrEmpty(updateJson) && updateJson != "{}" && updateJson != "{\"type\":\"WORLD\"}")
+                    {
+                        await UpdateEntityAsync(userId, "", "world", updateJson);
+                    }
                 }
                 
                 // Process NPC entries
@@ -416,13 +447,6 @@ namespace AiGMBackEnd.Services.Processors
                 await _serviceProvider.GetService<HangfireJobsService>().SummarizeConversationAsync(userId);
                 _loggingService.LogInfo($"Triggered conversation summarization for user {userId} after location change");
                 
-                // Hide all NPCs in the previous location by setting VisibleToPlayer to false
-                if (!string.IsNullOrEmpty(previousLocationId))
-                {
-                    int updatedCount = await _storageService.HideNpcsInLocationAsync(userId, previousLocationId);
-                    _loggingService.LogInfo($"Updated visibility for {updatedCount} NPCs in previous location {previousLocationId}");
-                }
-                
                 return true;
             }
             
@@ -450,28 +474,13 @@ namespace AiGMBackEnd.Services.Processors
             }
             
             // Handle Location with NPCs array special case
-            if (entityType == "location" && updateData is LocationUpdatePayload locationUpdate && locationUpdate.Npcs != null && locationUpdate.Npcs.Any())
-            {
-                await ProcessLocationNpcsUpdateAsync(userId, entityId, locationUpdate.Npcs);
-                
-                // If there are other properties to update, create a copy without the Npcs property
-                var locationUpdateWithoutNpcs = new LocationUpdatePayload
+            if (entityType == "location" && updateData is LocationUpdatePayload locationUpdate)
+            {                
+                // If no properties to update, just return
+                if (string.IsNullOrEmpty(locationUpdate.ParentLocation))
                 {
-                    Id = locationUpdate.Id,
-                    KnownToPlayer = locationUpdate.KnownToPlayer,
-                    ParentLocation = locationUpdate.ParentLocation
-                };
-                
-                // Check if there are actually other properties to update besides Npcs
-                if (locationUpdateWithoutNpcs.KnownToPlayer != null || !string.IsNullOrEmpty(locationUpdateWithoutNpcs.ParentLocation))
-                {
-                     _loggingService.LogInfo($"Processing remaining location properties for {entityId}");
-                     updateData = locationUpdateWithoutNpcs;
-                }
-                else
-                {
-                     _loggingService.LogInfo($"Only NPC updates found for location {entityId}. Skipping further processing for this update object.");
-                     return; // No other properties to update
+                     _loggingService.LogInfo($"No updatable properties found for location {entityId}. Skipping further processing for this update object.");
+                     return; // No properties to update
                 }
             }
             
@@ -609,6 +618,8 @@ namespace AiGMBackEnd.Services.Processors
                 {
                     await _inventoryStorageService.RemoveItemFromPlayerInventoryAsync(userId, itemName, quantity);
                     _loggingService.LogInfo($"Removed {quantity}x {itemName} from player inventory");
+                    // Mark this item for removal to prevent double-processing
+                    indicesToRemove.Add(i);
                 }
                 else
                 {
@@ -860,7 +871,7 @@ namespace AiGMBackEnd.Services.Processors
             {
                 // Check if the only thing serialized was an empty inventory list we already processed
                 var tempDeserialize = System.Text.Json.JsonSerializer.Deserialize<NpcUpdatePayload>(updateJson, _jsonSerializerOptions);
-                if (tempDeserialize != null && (tempDeserialize.VisibleToPlayer != null || tempDeserialize.VisualDescription != null)) // Add other NPC fields here if needed
+                if (tempDeserialize != null && (tempDeserialize.VisualDescription != null || tempDeserialize.CurrentGoal != null || tempDeserialize.DispositionTowardsPlayer != null || tempDeserialize.CurrentLocationId != null)) // Updated NPC fields
                 {
                      await UpdateEntityAsync(userId, "npcs", npcId, updateJson);
                 }
@@ -981,85 +992,7 @@ namespace AiGMBackEnd.Services.Processors
                 int indexToRemove = indicesToRemove[i];
                 inventoryUpdates.RemoveAt(indexToRemove);
             }
-        }
-
-        /// <summary>
-        /// Processes location updates that include NPC list changes (Add/Remove).
-        /// </summary>
-        private async Task ProcessLocationNpcsUpdateAsync(string userId, string locationId, List<NpcListUpdateItem> npcUpdates)
-        {
-            if (npcUpdates == null || !npcUpdates.Any())
-            {
-                return;
-            }
-            
-            _loggingService.LogInfo($"Processing {npcUpdates.Count} NPC updates for location {locationId}");
-            
-            // Load the current location
-            var location = await _storageService.GetLocationAsync(userId, locationId);
-            if (location == null)
-            {
-                _loggingService.LogWarning($"Cannot process NPC updates for non-existent location: {locationId}");
-                return;
-            }
-            
-            // Initialize NPCs list if it's null
-            if (location.Npcs == null)
-            {
-                location.Npcs = new List<string>();
-            }
-            
-            // Keep track of modifications
-            bool locationModified = false;
-            
-            // Process each NPC update
-            foreach (var npcUpdate in npcUpdates)
-            {
-                string npcId = npcUpdate.NpcId;
-                if (string.IsNullOrEmpty(npcId))
-                {
-                    _loggingService.LogWarning("Skipping NPC update with missing NPC ID");
-                    continue;
-                }
-                
-                // Handle based on action
-                if (npcUpdate.Action == UpdateAction.Add)
-                {
-                    // Add NPC to location if it's not already there
-                    if (!location.Npcs.Contains(npcId))
-                    {
-                        location.Npcs.Add(npcId);
-                        locationModified = true;
-                        _loggingService.LogInfo($"Added NPC {npcId} to location {locationId}");
-                    }
-                    else
-                    {
-                        _loggingService.LogInfo($"NPC {npcId} already in location {locationId}, skipping add");
-                    }
-                }
-                else if (npcUpdate.Action == UpdateAction.Remove)
-                {
-                    // Remove NPC from location
-                    if (location.Npcs.Contains(npcId))
-                    {
-                        location.Npcs.Remove(npcId);
-                        locationModified = true;
-                        _loggingService.LogInfo($"Removed NPC {npcId} from location {locationId}");
-                    }
-                    else
-                    {
-                        _loggingService.LogInfo($"NPC {npcId} not in location {locationId}, skipping remove");
-                    }
-                }
-            }
-            
-            // Save the updated location if modified
-            if (locationModified)
-            {
-                await _storageService.SaveAsync(userId, $"locations/{locationId}", location);
-                _loggingService.LogInfo($"Saved updated NPCs for location {locationId}");
-            }
-        }
+        }        
     }
 }
    

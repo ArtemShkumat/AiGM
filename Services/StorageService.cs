@@ -88,20 +88,20 @@ namespace AiGMBackEnd.Services
             await _entityStorageService.GetPlayerAsync(userId);
 
         // World accessors
-        public async Task<World> GetWorldAsync(string userId) => 
-            await _entityStorageService.GetWorldAsync(userId);
+        public async Task<World> GetWorldAsync(string userId, string scenarioId = null) => 
+            await _entityStorageService.GetWorldAsync(userId, scenarioId);
 
         // Game Setting accessors
-        public async Task<GameSetting> GetGameSettingAsync(string userId) => 
-            await _entityStorageService.GetGameSettingAsync(userId);
+        public async Task<GameSetting> GetGameSettingAsync(string userId, string scenarioId = null) => 
+            await _entityStorageService.GetGameSettingAsync(userId, scenarioId);
 
         // Game Preferences accessors
         public async Task<GamePreferences> GetGamePreferencesAsync(string userId) => 
             await _entityStorageService.GetGamePreferencesAsync(userId);
 
         // Location accessors
-        public async Task<Location> GetLocationAsync(string userId, string locationId) => 
-            await _entityStorageService.GetLocationAsync(userId, locationId);
+        public async Task<Location> GetLocationAsync(string userId, string locationId, string scenarioId = null) => 
+            await _entityStorageService.GetLocationAsync(userId, locationId, scenarioId);
 
         // NPC accessors
         public async Task<Npc> GetNpcAsync(string userId, string npcId) => 
@@ -116,13 +116,7 @@ namespace AiGMBackEnd.Services
         
         public async Task<List<Npc>> GetAllNpcsAsync(string gameId) => 
             await _entityStorageService.GetAllNpcsAsync(gameId);
-        
-        public async Task<List<Npc>> GetAllVisibleNpcsAsync(string gameId) => 
-            await _entityStorageService.GetAllVisibleNpcsAsync(gameId);
-
-        public async Task<List<NpcInfo>> GetVisibleNpcsInLocationAsync(string gameId, string locationId) => 
-            await _entityStorageService.GetVisibleNpcsInLocationAsync(gameId, locationId);
-        
+       
         public async Task<List<Quest>> GetActiveQuestsAsync(string userId, List<string> activeQuestIds) => 
             await _entityStorageService.GetActiveQuestsAsync(userId, activeQuestIds);
 
@@ -208,21 +202,12 @@ namespace AiGMBackEnd.Services
 
         /// <summary>
         /// Synchronizes the world.json file with all existing entities in the game directory structure.
-        /// This method scans the NPCs, locations, quests, and lore folders and updates the world.json file accordingly.
+        /// This method scans the NPCs, locations, quests, and folders and updates the world.json file accordingly.
         /// </summary>
         /// <param name="userId">The user/game ID</param>
         /// <returns>Task representing the asynchronous operation</returns>
         public async Task SyncWorldWithEntitiesAsync(string userId) => 
-            await _worldSyncService.SyncWorldWithEntitiesAsync(userId);
-            
-        /// <summary>
-        /// Updates all NPCs in a specific location to set their VisibleToPlayer property to false
-        /// </summary>
-        /// <param name="userId">The user/game ID</param>
-        /// <param name="locationId">The location ID to process</param>
-        /// <returns>The number of NPCs that were updated</returns>
-        public async Task<int> HideNpcsInLocationAsync(string userId, string locationId) =>
-            await _worldSyncService.HideNpcsInLocationAsync(userId, locationId);
+            await _worldSyncService.SyncWorldWithEntitiesAsync(userId);        
 
         #endregion
 
@@ -298,6 +283,71 @@ namespace AiGMBackEnd.Services
         public async Task DeleteCombatStateAsync(string userId) =>
             await _combatStateService.DeleteCombatStateAsync(userId);
 
+        #endregion
+
+        // Add this method to the StorageService class
+        public async Task<string> GetCreateScenarioTemplateAsync(string fileName)
+        {
+            try
+            {
+                string path = Path.Combine("PromptTemplates", "Create", "Scenario", fileName);
+                return await File.ReadAllTextAsync(path);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error reading create scenario template '{fileName}': {ex.Message}");
+                throw;
+            }
+        }
+
+        #region Scenario File Operations
+        
+        /// <summary>
+        /// Creates the folder structure for a scenario
+        /// </summary>
+        /// <param name="scenarioId">The scenario ID</param>
+        /// <param name="userId">The user ID, if this is a user-created scenario</param>
+        /// <param name="isStartingScenario">Whether this is a starting scenario template</param>
+        /// <returns>Task representing the async operation</returns>
+        public async Task CreateScenarioFolderStructureAsync(string scenarioId, string userId, bool isStartingScenario) =>
+            await _gameScenarioService.CreateScenarioFolderStructureAsync(scenarioId, userId, isStartingScenario);
+        
+        /// <summary>
+        /// Saves a JSON file for a scenario
+        /// </summary>
+        /// <param name="scenarioId">The scenario ID</param>
+        /// <param name="fileName">The file name to save</param>
+        /// <param name="jsonData">The JSON data to save</param>
+        /// <param name="userId">The user ID, if this is a user-created scenario</param>
+        /// <param name="isStartingScenario">Whether this is a starting scenario template</param>
+        /// <returns>Task representing the async operation</returns>
+        public async Task SaveScenarioFileAsync(string scenarioId, string fileName, JToken jsonData, string userId, bool isStartingScenario) =>
+            await _gameScenarioService.SaveScenarioFileAsync(scenarioId, fileName, jsonData, userId, isStartingScenario);
+        
+        /// <summary>
+        /// Saves a location file for a scenario
+        /// </summary>
+        /// <param name="scenarioId">The scenario ID</param>
+        /// <param name="locationId">The location ID</param>
+        /// <param name="locationData">The location data to save</param>
+        /// <param name="userId">The user ID, if this is a user-created scenario</param>
+        /// <param name="isStartingScenario">Whether this is a starting scenario template</param>
+        /// <returns>Task representing the async operation</returns>
+        public async Task SaveScenarioLocationAsync(string scenarioId, string locationId, JToken locationData, string userId, bool isStartingScenario) =>
+            await _gameScenarioService.SaveScenarioLocationAsync(scenarioId, locationId, locationData, userId, isStartingScenario);
+        
+        /// <summary>
+        /// Saves an NPC file for a scenario
+        /// </summary>
+        /// <param name="scenarioId">The scenario ID</param>
+        /// <param name="npcId">The NPC ID</param>
+        /// <param name="npcData">The NPC data to save</param>
+        /// <param name="userId">The user ID, if this is a user-created scenario</param>
+        /// <param name="isStartingScenario">Whether this is a starting scenario template</param>
+        /// <returns>Task representing the async operation</returns>
+        public async Task SaveScenarioNpcAsync(string scenarioId, string npcId, JToken npcData, string userId, bool isStartingScenario) =>
+            await _gameScenarioService.SaveScenarioNpcAsync(scenarioId, npcId, npcData, userId, isStartingScenario);
+        
         #endregion
     }
 }

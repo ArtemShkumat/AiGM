@@ -5,65 +5,137 @@ User Prompt: Create a Delve location using this info:
 {
     "id": "loc_green_pines_stop",
     "name": "Green Pines Rest Stop",
-    "location_type": "Delve",
+    "locationType": "Delve",
     "context": "A rest stop that the player is considering looting in the middle of loc_outskirts."
 }
 
 Your Response:
 
 {
-  "id": "loc_green_pines_stop",
   "type": "LOCATION",
+  "locationType": "Delve",
+  "id": "loc_green_pines_stop",
   "name": "Green Pines Rest Stop",
-  "location_type": "Delve",
   "description": "An old highway rest stop half-buried in overgrowth. Signs of hasty evacuation and rot linger in the air.",
-  "purpose": "Originally a traveler's respite with bathrooms, a convenience store, and a maintenance bunker. Now partially collapsed and infested by infected.",
   "parentLocationId": "loc_outskirts",
-  "connectedLocationIds": []
-  ,
-  "rooms": [
+  "typicalOccupants": "Infected humanoids in various stages of decay, rats, and possibly a few desperate scavengers hiding from the infected.",
+  "currentCondition": "in it's normal condition - still unvisited by the player",
+  "purpose": "Originally a traveler's respite with bathrooms, a convenience store, and a maintenance bunker. Now partially collapsed and infested by infected.",
+  "delve_rooms": [
     {
-      "room_number": 1,
       "role": "Entrance",
       "name": "Front Lobby",
       "description": "A shattered glass door opens onto a tiled lobby, with dried blood trails leading behind the front counter.",
-      "hazard_or_guardian": "A barricaded door rattles from the other side, suggesting infected trapped within."
+      "challenge": "A barricaded door rattles from the other side, suggesting infected trapped within.",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
+      "points_of_interest": [
+        {
+          "name": "Blood Trail",
+          "description": "Dried blood smears leading from the entrance to behind the counter.",
+          "hinting_at": "Someone was dragged here, possibly while still alive, suggesting recent activity."
+        },
+        {
+          "name": "Notice Board",
+          "description": "A cork board with tattered notices and maps still pinned to it.",
+          "hinting_at": "Maps showing alternative routes and nearby locations that might be worth exploring."
+        }
+      ],
+      "valuables": []
     },
     {
-      "room_number": 2,
-      "role": "Puzzle or Roleplay Challenge",
+      "role": "Puzzle",
       "name": "Staff Lounge",
       "description": "Overturned chairs, a locked safe bolted under a table, and a keypad locker scrawled with partially scratched digits.",
-      "puzzle_or_roleplay_challenge": "One digit on the locker keypad is illegible. Clues in the lounge hint at the missing number."
+      "challenge": "One digit on the locker keypad is illegible. Clues in the lounge hint at the missing number.",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
+      "points_of_interest": [
+        {
+          "name": "Keypad Locker",
+          "description": "A metal locker with a digital keypad, one digit partially scratched out.",
+          "hinting_at": "The locker likely contains valuable supplies or weapons secured by staff."
+        },
+        {
+          "name": "Employee Records",
+          "description": "A scattered logbook with staff birthdates and anniversary dates.",
+          "hinting_at": "The missing keypad number could be related to these personal dates."
+        }
+      ],
+      "valuables": []
     },
     {
-      "room_number": 3,
-      "role": "Trick or Setback",
+      "role": "Setback",
       "name": "Collapsed Corridor",
       "description": "A hallway partially caved in. A dangling corpse with a backpack sways from exposed rebar above a heap of debris.",
-      "trick_or_setback": "Unstable rubble�attempting to retrieve the backpack risks a partial collapse or attracting nearby infected."
+      "challenge": "Unstable rubble—attempting to retrieve the backpack risks a partial collapse or attracting nearby infected.",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
+      "points_of_interest": [
+        {
+          "name": "Dangling Corpse",
+          "description": "A desiccated body impaled on rebar, wearing a backpack that looks relatively intact.",
+          "hinting_at": "The victim may have been a survivor with valuable supplies in the backpack."
+        },
+        {
+          "name": "Structural Cracks",
+          "description": "Large fissures in the remaining ceiling, suggesting further collapse is imminent.",
+          "hinting_at": "Any loud noise or significant movement could bring down the rest of the corridor."
+        }
+      ],
+      "valuables": []
     },
     {
-      "room_number": 4,
-      "role": "Climax Conflict",
+      "role": "Climax",
       "name": "Stockroom Nest",
       "description": "The stockroom reeks of ammonia and rot. Several infected hunker in the shadows between toppled shelves.",
-      "climax_conflict": "Any disturbance provokes a swarm of infected. This is the most dangerous encounter in the rest stop."
+      "challenge": "Any disturbance provokes a swarm of infected. This is the most dangerous encounter in the rest stop.",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
+      "points_of_interest": [
+        {
+          "name": "Infectation Nest",
+          "description": "A grotesque pile of organic matter where the infected seem to congregate.",
+          "hinting_at": "The infected may be protecting something valuable at the center of their nest."
+        },
+        {
+          "name": "Supply Manifest",
+          "description": "A clipboard with a list of stored supplies, some items checked off.",
+          "hinting_at": "Not all supplies have been taken, suggesting valuable items might remain hidden."
+        }
+      ],
+      "valuables": []
     },
     {
-      "room_number": 5,
-      "role": "Reward or Revelation",
+      "role": "Reward",
       "name": "Maintenance Bunker",
       "description": "A cramped subterranean shelter lit by flickering emergency lights. Supplies lie scattered among tool racks and an old generator hums faintly.",
-      "reward_or_revelation": "A functioning shortwave radio and handwritten notes detail local survivor outposts and scavenging routes.",
+      "challenge": "Reaching this secure area requires navigating past or eliminating the infected in the stockroom.",
+      "currentCondition": "in it's normal condition - still unvisited by the player",
+      "points_of_interest": [
+        {
+          "name": "Emergency Protocols Manual",
+          "description": "A binder containing emergency response procedures and facility maps.",
+          "hinting_at": "Maps of other nearby facilities that might contain similar bunkers or supplies."
+        },
+        {
+          "name": "Survival Log",
+          "description": "A handwritten journal detailing one survivor's experiences after the collapse.",
+          "hinting_at": "Information about safe havens, dangerous areas, and other survivors in the region."
+        }
+      ],
       "valuables": [
         {
           "name": "Shortwave Radio",
-          "why_its_here": "The bunker�s last occupant used it to monitor survivor broadcasts.",
+          "why_its_here": "The bunker's last occupant used it to monitor survivor broadcasts.",
           "description": "Operational but crackling with static.",
           "quantity": 1,
           "value": 75,
           "where_exactly": "Placed on a metal table next to a hand-crank lamp."
+        },
+        {
+          "name": "Emergency Medical Kit",
+          "why_its_here": "Standard issue for the maintenance bunker's emergency supplies.",
+          "description": "A sturdy case containing antibiotics, painkillers, and wound dressing materials.",
+          "quantity": 1,
+          "value": 50,
+          "where_exactly": "Inside a wall-mounted cabinet marked with a red cross."
         }
       ]
     }

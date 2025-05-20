@@ -10,14 +10,22 @@ namespace AiGMBackEnd.Models.Prompts.Sections
         private readonly string _locationId;
         private readonly string _context;
         private readonly string _locationType;
+        private readonly string _parentLocationId;
         private readonly bool _detailed;
 
-        public CreateLocationSection(string locationName, string locationId, string context, string locationType, bool detailed = true)
+        public CreateLocationSection(
+            string locationId,
+            string locationName, 
+            string locationType, 
+            string context, 
+            string parentLocationId = null,
+            bool detailed = true)
         {
-            _locationName = locationName;
             _locationId = locationId;
+            _locationName = locationName;
             _locationType = locationType;
             _context = context;
+            _parentLocationId = parentLocationId;
             _detailed = detailed;
         }
 
@@ -34,18 +42,20 @@ namespace AiGMBackEnd.Models.Prompts.Sections
             {
                 creationRequestDetails = new
                 {
-                    name = _locationName,
                     id = _locationId,
+                    name = _locationName,
+                    locationType = _locationType,
                     context = _context,
-                    locationType = _locationType
+                    parentLocationId = _parentLocationId
                 };
             }
             else
             {
                 creationRequestDetails = new
                 {
+                    id = _locationId,
                     name = _locationName,
-                    id = _locationId
+                    parentLocationId = _parentLocationId
                 };
             }
 

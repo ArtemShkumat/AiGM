@@ -12,8 +12,11 @@ namespace AiGMBackEnd.Services.Storage
 {
     public class EntityStorageService : BaseStorageService, IEntityStorageService
     {
-        public EntityStorageService(LoggingService loggingService) : base(loggingService)
+        private readonly IGameScenarioService _gameScenarioService;
+
+        public EntityStorageService(LoggingService loggingService, IGameScenarioService gameScenarioService) : base(loggingService)
         {
+            _gameScenarioService = gameScenarioService;
         }
 
         #region Entity-specific accessor methods
@@ -25,14 +28,28 @@ namespace AiGMBackEnd.Services.Storage
         }
 
         // World accessors
-        public async Task<World> GetWorldAsync(string userId)
+        public async Task<World> GetWorldAsync(string userId, string scenarioId = null)
         {
+            // If scenarioId is provided, load from scenario data
+            if (!string.IsNullOrEmpty(scenarioId))
+            {
+                return await _gameScenarioService.LoadScenarioSettingAsync<World>(scenarioId, "world.json");
+            }
+            
+            // Otherwise, load from user data
             return await LoadAsync<World>(userId, "world");
         }
 
         // Game Setting accessors
-        public async Task<GameSetting> GetGameSettingAsync(string userId)
+        public async Task<GameSetting> GetGameSettingAsync(string userId, string scenarioId = null)
         {
+            // If scenarioId is provided, load from scenario data
+            if (!string.IsNullOrEmpty(scenarioId))
+            {
+                return await _gameScenarioService.LoadScenarioSettingAsync<GameSetting>(scenarioId, "gameSetting.json");
+            }
+            
+            // Otherwise, load from user data
             return await LoadAsync<GameSetting>(userId, "gameSetting");
         }
 
@@ -43,10 +60,21 @@ namespace AiGMBackEnd.Services.Storage
         }
 
         // Location accessors
-        public async Task<Location> GetLocationAsync(string userId, string locationId)
+        public async Task<Location> GetLocationAsync(string userId, string locationId, string scenarioId = null)
         {
             try
             {
+                // Check if we need to load from scenario data
+                if (!string.IsNullOrEmpty(scenarioId))
+                {
+                    var scenarioLocation = await _gameScenarioService.LoadScenarioSettingAsync<Location>(scenarioId, $"locations/{locationId}.json");
+                    if (scenarioLocation != null)
+                    {
+                        return scenarioLocation;
+                    }
+                }
+                
+                // Try to load from user data if not found in scenario or if no scenarioId provided
                 var fileId = $"locations/{locationId}";
                 var filePath = GetFilePath(userId, fileId);
                 
@@ -156,65 +184,7 @@ namespace AiGMBackEnd.Services.Storage
                 _loggingService.LogError($"Error getting all NPCs: {ex.Message}");
                 throw;
             }
-        }
-        
-        // Method to get all visible NPCs in a game
-        public async Task<List<Npc>> GetAllVisibleNpcsAsync(string gameId)
-        {
-            try
-            {
-                var allNpcs = await GetAllNpcsAsync(gameId);
-                return allNpcs.Where(npc => npc.VisibleToPlayer).ToList();
-            }
-            catch (Exception ex)
-            {
-                _loggingService.LogError($"Error getting visible NPCs: {ex.Message}");
-                throw;
-            }
-        }
-
-        public async Task<List<StorageService.NpcInfo>> GetVisibleNpcsInLocationAsync(string gameId, string locationId)
-        {
-            try
-            {
-                var visibleNpcs = new List<StorageService.NpcInfo>();
-                var npcsPath = Path.Combine(_dataPath, "userData", gameId, "npcs");
-                
-                if (!Directory.Exists(npcsPath))
-                {
-                    return visibleNpcs;
-                }
-                
-                foreach (var npcFile in Directory.GetFiles(npcsPath, "*.json"))
-                {
-                    try
-                    {
-                        var npcJson = await File.ReadAllTextAsync(npcFile);
-                        var npc = System.Text.Json.JsonSerializer.Deserialize<Npc>(npcJson);
-                        
-                        if (npc.VisibleToPlayer && npc.CurrentLocationId == locationId)
-                        {
-                            visibleNpcs.Add(new StorageService.NpcInfo
-                            {
-                                Id = npc.Id,
-                                Name = npc.Name
-                            });
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _loggingService.LogWarning($"Error reading NPC file {npcFile}: {ex.Message}");
-                    }
-                }
-                
-                return visibleNpcs;
-            }
-            catch (Exception ex)
-            {
-                _loggingService.LogError($"Error getting visible NPCs: {ex.Message}");
-                throw;
-            }
-        }
+        }                
         
         // Method to get all quests in a game
         public async Task<List<Quest>> GetAllQuestsAsync(string gameId)

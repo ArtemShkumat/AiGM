@@ -4,7 +4,11 @@ using Hangfire.Dashboard;
 using AiGMBackEnd.Services;
 using AiGMBackEnd.Services.Processors;
 using AiGMBackEnd.Services.Storage;
+using AiGMBackEnd.Services.Storage.Interfaces;
+using AiGMBackEnd.Services.Triggers;
 using AiGMBackEnd.Hubs;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,7 +57,14 @@ builder.Services.AddSingleton<IConversationLogService, ConversationLogService>()
 builder.Services.AddSingleton<IRecentEventsService, RecentEventsService>();
 builder.Services.AddSingleton<IEnemyStatBlockService, EnemyStatBlockService>();
 builder.Services.AddSingleton<ICombatStateService, CombatStateService>();
+builder.Services.AddSingleton<IEventStorageService, EventStorageService>();
+builder.Services.AddSingleton<IScenarioTemplateStorageService, ScenarioTemplateStorageService>();
 builder.Services.AddSingleton<StorageService>();
+
+// Register event trigger evaluators
+builder.Services.AddSingleton<ITriggerEvaluator, TimeTriggerEvaluator>();
+builder.Services.AddSingleton<ITriggerEvaluator, LocationChangeTriggerEvaluator>();
+builder.Services.AddSingleton<ITriggerEvaluator, FirstLocationEntryTriggerEvaluator>();
 
 // Register notification service
 builder.Services.AddSingleton<GameNotificationService>();
@@ -78,6 +89,11 @@ builder.Services.AddSingleton<IUpdateProcessor, UpdateProcessor>();
 builder.Services.AddSingleton<ISummarizePromptProcessor, SummarizePromptProcessor>();
 builder.Services.AddSingleton<IEnemyStatBlockProcessor, EnemyStatBlockProcessor>();
 builder.Services.AddSingleton<ICombatResponseProcessor, CombatResponseProcessor>();
+builder.Services.AddSingleton<IEventProcessor, EventProcessor>();
+
+// Register scenario processor using a factory for lazy loading to break circular dependencies
+// This needs to be registered before services that depend on it
+builder.Services.AddSingleton<IScenarioProcessor, ScenarioProcessor>();
 
 // Register CombatPromptBuilder (if not already there - assuming it exists)
 // If CombatPromptBuilder is not part of a broader registration, add it explicitly

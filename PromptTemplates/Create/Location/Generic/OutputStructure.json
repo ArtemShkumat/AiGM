@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "properties": {
+    "type": { 
+      "type": "string", 
+      "enum": ["LOCATION"], 
+      "description": "Base object type, must be LOCATION."
+    },
+    "locationType": { 
+      "type": "string", 
+      "description": "The specific type of location being created (e.g., Region, Landmark, Realm, Country, etc.). This string is provided by the application based on the request."
+    },
+    "id": { 
+      "type": "string", 
+      "description": "Unique identifier for the location (Provided by application)."
+    },
+    "name": { 
+      "type": "string", 
+      "description": "Name of the location (e.g., The Whispering Peaks, Market District Plaza, Realm of Eldoria)."
+    },
+    "description": { 
+      "type": "string", 
+      "description": "A detailed description of the location's key characteristics, atmosphere, and notable features, appropriate for its type and scale."
+    },
+    "parentLocationId": { 
+      "type": "string", 
+      "nullable": true,
+      "description": "ID of the parent location (Provided by application). Should be null for top-level locations like Realms."
+    },
+    "typicalOccupants": { 
+      "type": "string", 
+      "nullable": true,
+      "description": "Optional: Free-form description of typical occupants/creatures found at this location."
+    },
+    "currentCondition": { 
+      "type": "string", 
+      "description": "Description of the current condition of the place (e.g., 'in it's normal condition - still unvisited by the player')."
+    },
+    "history": { 
+      "type": "string", 
+      "nullable": true,
+      "description": "Optional: Brief relevant history of the location."
+    }
+  },
+  "required": [
+    "type", 
+    "locationType", 
+    "id", 
+    "name", 
+    "description",
+    "currentCondition"
+  ]
+} 

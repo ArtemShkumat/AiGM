@@ -1,70 +1,4 @@
 ---
-# EXAMPLE: Player enters a location
-USER:
-{
-  "playerContext": {
-    "type": "PLAYER",
-    "currentLocationId": "loc_mainStreet"
-  },
-  "connectedLocations": [
-    {
-      "id": "loc_rustyAnchorTavern",
-      "npcs": [
-        {
-          "id": "npc_redBeardedBarkeep",
-          "currentLocationId": "loc_rustyAnchorTavern",
-          "visibleToPlayer": false,
-          "knownToPlayer": false,
-          "knowsPlayer": false
-        },
-        {
-          "id": "npc_hoodedFigure",
-          "currentLocationId": "loc_rustyAnchorTavern",
-          "visibleToPlayer": false,
-          "knownToPlayer": false,
-          "knowsPlayer": false
-        }
-      ]
-    }
-  ],
-  "npcsPresentInThisLocation": [
-    {
-      "id": "npc_johnTheBaptist",
-      "currentLocationId": "loc_mainStreet",
-      "visibleToPlayer": true
-    }
-  ],
-  "playerInput": "I walk into the tavern and look around."
-}
-
-RESPONSE:
-{
-  "userFacingText": "You leave John The Baptist behind. The Rusty Anchor tavern welcomes you with a blast of warm air and the rich aroma of spiced mead. A crackling hearth dominates the far wall, casting dancing shadows across the weathered wooden tables. Several patrons huddle in small groups - sailors sharing tall tales, a pair of merchants haggling over a contract, and a hooded figure sitting alone in the corner, occasionally glancing toward the door.",
-  "partialUpdates": {
-    "player": {
-      "type": "PLAYER",
-      "currentLocationId": "loc_rustyAnchorTavern"
-    },
-    "npcEntries": [
-      {
-        "id": "npc_johnTheBaptist",
-        "type": "NPC",
-        "visibleToPlayer": false
-      },
-      {
-        "id": "npc_redBeardedBarkeep",
-        "type": "NPC",
-        "visibleToPlayer": true
-      },
-      {
-        "id": "npc_hoodedFigure",
-        "type": "NPC",
-        "visibleToPlayer": true
-      }
-    ]
-  }
-}
----
 # EXAMPLE: Player looks around, seeking new NPCs in a busy street.
 USER:
 {
@@ -74,6 +8,36 @@ USER:
 RESPONSE:
 {
   "userFacingText": "As you look around the village, you notice a few other villagers going about their business. A pair of children play a simple game of tag near the well, their laughter a momentary spark of joy in the somber atmosphere. An older woman sweeps the stoop of her home, her brow furrowed with worry as she glances toward the mountains. You can also see a few weathered-looking miners trudging back from work. They carry heavy sacks slung over their shoulders and their faces are grim."
+}
+---
+# EXAMPLE: Random Event triggered by Random-Event Directive
+USER:
+{
+  "playerInput": "I sit down at a table and order some ale.",
+  "currentLocationDetails": {
+    "id": "loc_silverFoxTavern",
+    "name": "Silver Fox Tavern",
+    "locationType": "BUILDING",
+    "description": "A popular tavern known for its hearty meals and warm atmosphere."
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_bartonInnkeeper",
+      "name": "Barton",
+      "role": "Innkeeper"
+    },
+    {
+      "id": "npc_linaBarmaid",
+      "name": "Lina",
+      "role": "Barmaid"
+    }
+  ],
+  "systemInstructions": "...(other instructions)...\n\n📜 Random‑Event Directive\n• Invent a plausible surprise that happens right now in the player's current location.\n• It must:\n   – be resolvable within one scene or lead into a short side quest;\n   – not invalidate core facts already given;\n   – tie into at least one existing NPC trait, faction, rumour or local environmental tag (e.g. port, mine, wizard‑tower).\n\n...(more instructions)..."
+}
+
+RESPONSE:
+{
+  "userFacingText": "You settle into a vacant table near the hearth, feeling the warmth of the fire after your long journey. Lina nods at your order and brings over a foaming mug of amber ale. 'Here you are,' she says with a polite smile, setting it down before you.\n\nJust as you're about to take your first sip, the tavern door bursts open with a bang. A burly miner stumbles in, his face ashen with panic. 'Barton!' he gasps, leaning against the doorframe. 'There's been a collapse in the east tunnel! Men trapped!'\n\nThe tavern falls silent. Barton vaults over the bar with surprising agility for his size. 'How many?' he demands, already reaching for his coat.\n\n'At least three,' the miner pants. 'Crews gathering now. Need every able hand.'\n\nBarton turns to the room, his expression grim. 'You heard him. Anyone willing to help, follow Durnik to the mines.' Several patrons rise immediately, abandoning their drinks. Lina begins packing bandages and salves into a basket, her movements quick and practiced.\n\nThe emergency has clearly disrupted the peaceful evening you had planned. The rescue effort sounds urgent - miners' lives hang in the balance."
 }
 ---
 # EXAMPLE: Player engages an NPC not present in existing NPC list.
@@ -96,42 +60,6 @@ RESPONSE:
   ]
 }
 ---
-# EXAMPLE: Player meets an NPC and they introduce themselves to each other
-USER:
-{
-  "playerContext": {
-    "type": "PLAYER",
-    "name": "Alaric",
-    "currentLocationId": "loc_marketSquare"
-  },
-  "npcsPresentInThisLocation": [
-    {
-      "id": "npc_merchantTomas",
-      "name": "Tomas",
-      "currentLocationId": "loc_marketSquare",
-      "visibleToPlayer": true,
-      "knownToPlayer": false,
-      "knowsPlayer": false
-    }
-  ],
-  "playerInput": "I approach the merchant at his stall. \"Good day! I'm Alaric, new to these parts. What's your name?\""
-}
-
-RESPONSE:
-{
-  "userFacingText": "The merchant looks up from arranging a display of colorful fabrics. He's a middle-aged man with salt-and-pepper hair and weathered hands that speak of years of work. His initially cautious expression softens at your friendly approach.\nThe merchant replies, 'Tomas is the name. Welcome to our town, Alaric. Always good to see a new face, though times are... difficult. What brings you here?'",
-  "partialUpdates": {
-    "npcEntries": [
-      {
-        "id": "npc_merchantTomas",
-        "type": "NPC",
-        "knownToPlayer": true,
-        "knowsPlayer": true
-      }
-    ]
-  }
-}
----
 # EXAMPLE: Player discovers a new location with connections to existing NPCs and potential quests
 USER:
 {
@@ -144,10 +72,7 @@ USER:
     {
       "id": "npc_merchantTomas",
       "name": "Tomas",
-      "currentLocationId": "loc_marketSquare",
-      "visibleToPlayer": true,
-      "knownToPlayer": true,
-      "knowsPlayer": true
+      "currentLocationId": "loc_marketSquare"
     }
   ],
   "playerInput": "I ask Tomas, \"I've heard rumors of an abandoned mine north of town that might have valuable ore deposits. Do you know anything about it?\""
@@ -227,44 +152,7 @@ RESPONSE:
     "player": {
       "type": "PLAYER",
       "currentLocationId": "loc_silverFoxTavern"
-    },
-    "locationEntries": [
-      {
-        "id": "loc_silverFoxTavern",
-        "type": "LOCATION",
-        "npcs": [
-          {
-            "npcId": "npc_bartonInnkeeper",
-            "action": "Add"
-          },
-          {
-            "npcId": "npc_linaBarmaid",
-            "action": "Add"
-          },
-          {
-            "npcId": "npc_oldTobin",
-            "action": "Add"
-          }
-        ]
-      }
-    ],
-    "npcEntries": [
-       {
-        "id": "npc_bartonInnkeeper",
-        "type": "NPC",
-        "visibleToPlayer": true
-      },
-      {
-        "id": "npc_linaBarmaid",
-        "type": "NPC",
-        "visibleToPlayer": true
-      },
-      {
-        "id": "npc_oldTobin",
-        "type": "NPC",
-        "visibleToPlayer": true
-      }
-    ]
+    }
   }
 }
 
@@ -285,8 +173,6 @@ USER:
       "id": "npc_woundedGuard",
       "name": "Wounded Guard",
       "currentLocationId": "loc_townSquare",
-      "visibleToPlayer": true,
-      "knownToPlayer": true,
       "visualDescription": {
         "condition": "The guard is badly injured and struggling to stand."
       }
@@ -343,8 +229,6 @@ USER:
       "id": "npc_captainHarlowe",
       "name": "Captain Harlowe",
       "currentLocationId": "loc_guardsBarracks",
-      "visibleToPlayer": true,
-      "knownToPlayer": true,
       "dispositionTowardsPlayer": "Friendly"
     }
   ],
@@ -413,7 +297,16 @@ USER:
 
 RESPONSE:
 {
-  "userFacingText": "You wave farewell to the last of the village guards and turn your steps towards the west. The well-trodden path soon gives way to a narrower trail as the sounds of the village fade behind you. The air grows cooler and damper as the trees of the Sunken Forest loom ahead, their gnarled branches interlocking overhead like skeletal fingers, casting the path in perpetual twilight.\n\nAfter walking for about an hour, the trees press in even closer, and the silence is broken only by the crunch of your boots on the damp earth and the occasional drip of moisture from the canopy. The path ahead seems to split. One way leads slightly downhill into an area choked with thick, thorny bushes, while the other climbs gently towards a ridge where the trees thin out slightly. Which way do you proceed?"
+  "userFacingText": "You wave farewell to the last of the village guards and turn your steps towards the west. The well-trodden path soon gives way to a narrower trail as the sounds of the village fade behind you. The air grows cooler and damper as the trees of the Sunken Forest loom ahead, their gnarled branches interlocking overhead like skeletal fingers, casting the path in perpetual twilight.\n\nAfter walking for about an hour, the trees press in even closer, and the silence is broken only by the crunch of your boots on the damp earth and the occasional drip of moisture from the canopy. The path ahead seems to split. One way leads slightly downhill into an area choked with thick, thorny bushes, while the other climbs gently towards a ridge where the trees thin out slightly. Which way do you proceed?",
+  "partialUpdates": {
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 1,
+        "unit": "hours"
+      }
+    }
+  }
 }
 ---
 # EXAMPLE: Player departs a location and begins travel (Leading to Encounter/Challenge - based on user provided scenario)
@@ -433,9 +326,7 @@ USER:
     {
       "id": "npc_smithRuna",
       "name": "Smith Runa",
-      "currentLocationId": "loc_ancientForge",
-      "visibleToPlayer": true,
-      "knownToPlayer": true
+      "currentLocationId": "loc_ancientForge"
     }
   ],
   "playerInput": "I leave the forge and head south towards Whispering Pass."
@@ -443,7 +334,16 @@ USER:
 
 RESPONSE:
 {
-  "userFacingText": "You gather your belongings, sling your dark sword across your back, and prepare to depart the Ancient Forge. Smith Runa barely acknowledges your departure beyond a curt nod, her focus already returned to the unyielding metal on her anvil. Leaving the forge, you step out into the crisp mountain air. The village of Emberhold spreads out below you in the valley, smoke curling lazily from chimneys, looking deceptively peaceful from this height.\n\nThe path leads southward, gradually ascending towards the imposing peaks of the Ember Mountains. As the afternoon wears on, the sun begins its descent, painting the sky in hues of orange and purple. The entrance to Whispering Pass looms before you – a stark, shadowed cleft in the mountainside. A palpable wind whistles through the gap, carrying an unsettling, mournful sound. The air grows colder as you step into the pass proper. The path narrows, flanked by steep, rocky walls, and loose scree shifts underfoot, making the going treacherous. Looking ahead, the pass seems to twist out of sight around a rocky outcrop. The wind howls more fiercely here, echoing strangely off the stone. Do you press forward cautiously, mindful of the unstable footing, or try to move quickly through this exposed section?"
+  "userFacingText": "You gather your belongings, sling your dark sword across your back, and prepare to depart the Ancient Forge. Smith Runa barely acknowledges your departure beyond a curt nod, her focus already returned to the unyielding metal on her anvil. Leaving the forge, you step out into the crisp mountain air. The village of Emberhold spreads out below you in the valley, smoke curling lazily from chimneys, looking deceptively peaceful from this height.\n\nThe path leads southward, gradually ascending towards the imposing peaks of the Ember Mountains. As the afternoon wears on, the sun begins its descent, painting the sky in hues of orange and purple. The entrance to Whispering Pass looms before you – a stark, shadowed cleft in the mountainside. A palpable wind whistles through the gap, carrying an unsettling, mournful sound. The air grows colder as you step into the pass proper. The path narrows, flanked by steep, rocky walls, and loose scree shifts underfoot, making the going treacherous. Looking ahead, the pass seems to twist out of sight around a rocky outcrop. The wind howls more fiercely here, echoing strangely off the stone. Do you press forward cautiously, mindful of the unstable footing, or try to move quickly through this exposed section?",
+  "partialUpdates": {
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 3,
+        "unit": "hours"
+      }
+    }
+  }
 }
 ---
 # EXAMPLE: Player explicitly attacks an NPC
@@ -459,9 +359,6 @@ USER:
       "id": "npc_banditLeader",
       "name": "Rolf",
       "currentLocationId": "loc_forestPath",
-      "visibleToPlayer": true,
-      "knownToPlayer": true,
-      "knowsPlayer": true,
       "dispositionTowardsPlayer": "Hostile"
     }
   ],
@@ -505,12 +402,17 @@ RESPONSE:
     }
   ],
   "partialUpdates": {
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 20,
+        "unit": "minutes"
+      }
+    },
     "npcEntries": [
       {
         "id": "npc_mineCrawler",
         "type": "NPC",
-        "visibleToPlayer": true,
-        "knownToPlayer": true,
         "dispositionTowardsPlayer": "Hostile"
       }
     ]
@@ -531,10 +433,7 @@ USER:
     {
       "id": "npc_guardCaptain",
       "name": "Captain Voss",
-      "currentLocationId": "loc_cityGuardpost",
-      "visibleToPlayer": true,
-      "knownToPlayer": true,
-      "knowsPlayer": true
+      "currentLocationId": "loc_cityGuardpost"
     }
   ],
   "playerInput": "I try to sneak past the sleeping guard to get the key hanging on the wall."
@@ -572,9 +471,7 @@ USER:
     {
       "id": "npc_villageMerchant",
       "name": "Village Merchant",
-      "currentLocationId": "loc_marketplace",
-      "visibleToPlayer": true,
-      "knownToPlayer": true
+      "currentLocationId": "loc_marketplace"
     }
   ],
   "playerInput": "That sounds fair. I'll take the 15 gold."
@@ -638,6 +535,13 @@ RESPONSE:
           "quantity": 1,
           "action": "Remove"
         }]
+    },
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 5,
+        "unit": "minutes"
+      }
     }
   }
 }
@@ -677,7 +581,16 @@ USER:
 
 RESPONSE:
 {
-  "userFacingText": "You run your hands around the statue's base but can't find anything. Time is ticking, and you might have missed something crucial. You'll have to either search another part of the room or find better lighting or a new approach."
+  "userFacingText": "You run your hands around the statue's base but can't find anything. Time is ticking, and you might have missed something crucial. You'll have to either search another part of the room or find better lighting or a new approach.",
+  "partialUpdates": {
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 15,
+        "unit": "minutes"
+      }
+    }
+  }
 }
 ---
 # EXAMPLE: Hacking a Corporate Door Lock (Impossible)
@@ -824,6 +737,13 @@ RESPONSE:
           "quantity": 1,
           "action": "Add"
         }]
+    },
+    "world": {
+      "type": "WORLD",
+      "timeDelta": {
+        "amount": 45,
+        "unit": "minutes"
+      }
     }
   }
 }
@@ -948,10 +868,6 @@ USER:
     "type": "PLAYER",
     "currentLocationId": "loc_cozyInnRoom"
   },
-  "worldContext": {
-    "gameTime": "Day 2, 08:00",
-    "daysSinceStart": 2
-  },
   "playerInput": "I decide to rest in my room until the next morning to recover."
 }
 
@@ -961,8 +877,10 @@ RESPONSE:
   "partialUpdates": {
     "world": {
       "type": "WORLD",
-      "gameTime": "Day 3, 08:00",
-      "daysSinceStart": 3
+      "timeDelta": {
+        "amount": 9,
+        "unit": "hours"
+      }
     }
   }
 }
@@ -978,8 +896,7 @@ USER:
     {
       "id": "npc_merchantTomas",
       "name": "Tomas",
-      "currentLocationId": "loc_marketSquare",
-      "visibleToPlayer": true
+      "currentLocationId": "loc_marketSquare"
     }
   ],
   "playerInput": "I ask Tomas what he thinks about the recent disappearances."
@@ -1052,5 +969,190 @@ RESPONSE:
       ]
     }
   }
+}
+---
+# EXAMPLE: Creating a timed event
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_tavernInn"
+  },
+  "playerInput": "I ask the innkeeper about the rumored goblin raids nearby."
+}
+
+RESPONSE:
+{
+  "userFacingText": "The innkeeper leans in, lowering her voice. 'Aye, the rumors are true,' she says grimly. 'Traders have been attacked on the eastern road for the past fortnight. The town guard sent a patrol yesterday to investigate. They should be back by tomorrow morning with news.' She wipes a mug with her apron. 'If you're heading east, might be wise to wait until we know what we're dealing with.'",
+  "newEntities": [
+    {
+      "type": "event",
+      "id": "event_guardPatrolReturns",
+      "name": "Guard Patrol Returns",
+      "context": "The town guard patrol returns from investigating goblin raids on the eastern road. This event should trigger automatically tomorrow morning.",
+      "eventDetails": {
+        "summary": "The town guard patrol returns from investigating goblin raids. They have discovered a small goblin camp in the hills and learned valuable information. The patrol captain can now be found at the guardhouse with his report.",
+        "triggerType": "Time",
+        "triggerValue": {
+          "type": "time",
+          "triggerTime": "+1.days"
+        }
+      }
+    }
+  ]
+}
+---
+# EXAMPLE: Creating a location-based event
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_marketplace"
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_travelingMerchant",
+      "name": "Rodrik the Merchant",
+      "currentLocationId": "loc_marketplace"
+    }
+  ],
+  "playerInput": "I buy a map from Rodrik and ask him to mark any interesting locations nearby."
+}
+
+RESPONSE:
+{
+  "userFacingText": "Rodrik unfurls an aged parchment map on his stall. 'Five silver,' he says, and when you pay, he takes out a charcoal pencil and marks several locations. 'There's an old watchtower here,' he says, circling a spot near the river. 'Abandoned years ago, but still standing. And here...' he marks a spot in the forest to the north, 'there's a shrine that locals say has healing properties. Worth a visit if you're injured.' He hands you the map with a smile. 'Safe travels, friend.'",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "currencies": [
+        {
+          "name": "Silver",
+          "amount": 5,
+          "action": "Remove"
+        }
+      ],
+      "inventory": [
+        {
+          "name": "Detailed Regional Map",
+          "quantity": 1,
+          "action": "Add"
+        }
+      ]
+    }
+  },
+  "newEntities": [
+    {
+      "type": "event",
+      "id": "event_abandonedWatchtower",
+      "name": "Discover Abandoned Watchtower",
+      "context": "Event that triggers when the player first enters the abandoned watchtower location.",
+      "eventDetails": {
+        "summary": "The player enters the abandoned watchtower for the first time. They discover signs of recent occupation, including still-warm ashes from a campfire and discarded supplies bearing the emblem of a mercenary company. This should create an atmosphere of unease, as if someone was here very recently and may return.",
+        "triggerType": "FirstLocationEntry",
+        "triggerValue": {
+          "type": "location",
+          "locationId": "loc_abandonedWatchtower",
+          "mustBeFirstVisit": true
+        }
+      }
+    },
+    {
+      "type": "event",
+      "id": "event_healingShrine",
+      "name": "Discover Forest Shrine",
+      "context": "Event that triggers whenever the player enters the healing shrine location.",
+      "eventDetails": {
+        "summary": "When the player enters the forest shrine, they feel a sense of peace. If the player is injured (check player condition), the waters of the small spring bubble with magical energy, and drinking from them will restore some health. If the player is healthy, the waters remain still but still feel refreshing.",
+        "triggerType": "LocationChange",
+        "triggerValue": {
+          "type": "location",
+          "locationId": "loc_forestShrine",
+          "mustBeFirstVisit": false
+        }
+      }
+    }
+  ]
+}
+---
+# EXAMPLE: Creating an event chain
+USER:
+{
+  "playerContext": {
+    "type": "PLAYER",
+    "name": "Alaric",
+    "currentLocationId": "loc_villageSmithy"
+  },
+  "npcsPresentInThisLocation": [
+    {
+      "id": "npc_blacksmith",
+      "name": "Galen the Blacksmith",
+      "currentLocationId": "loc_villageSmithy"
+    }
+  ],
+  "playerInput": "I commission a special sword from Galen, paying him 30 gold for the work."
+}
+
+RESPONSE:
+{
+  "userFacingText": "Galen weighs the gold in his palm, then nods appreciatively. 'A fine commission,' he says, examining your specifications. 'I'll need to work the forge day and night, but I should have it ready in three days' time.' He stores the gold in a small lockbox and pulls out a length of parchment, sketching the design. 'Steel with a touch of silver for balance, edge sharp enough to split a hair. Come back then and it'll be waiting.'",
+  "partialUpdates": {
+    "player": {
+      "type": "PLAYER",
+      "currencies": [
+        {
+          "name": "Gold",
+          "amount": 30,
+          "action": "Remove"
+        }
+      ]
+    }
+  },
+  "newEntities": [
+    {
+      "type": "event",
+      "id": "event_swordProgress1",
+      "name": "Sword Crafting Progress - Day 1",
+      "context": "First stage of the sword crafting process, occurs 1 day after commissioning the sword.",
+      "eventDetails": {
+        "summary": "If the player visits the smithy, Galen will be hard at work on the sword. The basic shape has been hammered out but much work remains. He'll report that progress is good and confirm it will be ready in two more days.",
+        "triggerType": "Time",
+        "triggerValue": {
+          "type": "time",
+          "triggerTime": "+1.days"
+        }
+      }
+    },
+    {
+      "type": "event",
+      "id": "event_swordProgress2",
+      "name": "Sword Crafting Progress - Day 2",
+      "context": "Second stage of the sword crafting process, occurs 2 days after commissioning the sword.",
+      "eventDetails": {
+        "summary": "If the player visits the smithy, the sword is taking shape nicely. Galen has added the silver inlay and is working on the handle. He'll mention needing to quench the blade overnight and that it will be ready tomorrow as promised.",
+        "triggerType": "Time",
+        "triggerValue": {
+          "type": "time",
+          "triggerTime": "+2.days"
+        }
+      }
+    },
+    {
+      "type": "event",
+      "id": "event_swordComplete",
+      "name": "Sword Crafting Complete",
+      "context": "Final stage of the sword crafting process, occurs 3 days after commissioning the sword.",
+      "eventDetails": {
+        "summary": "The sword is ready for collection. When the player visits the smithy, Galen will proudly present the finished masterpiece. The blade gleams with a perfect edge and elegant silver inlays. The player should receive the 'Fine Steel Sword' item with enhanced stats. If the player doesn't visit within a day, Galen will send word to them that their commission is complete.",
+        "triggerType": "Time",
+        "triggerValue": {
+          "type": "time",
+          "triggerTime": "+3.days"
+        }
+      }
+    }
+  ]
 }
 ---

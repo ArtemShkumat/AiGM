@@ -31,14 +31,11 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                     type = _npc.Type,
                     name = _npc.Name,
                     visualDescription = _npc.VisualDescription,
-                    knownToPlayer = _npc.KnownToPlayer,
-                    knowsPlayer = _npc.KnowsPlayer,
-                    visibleToPlayer = _npc.VisibleToPlayer,
                     backstory = _npc.Backstory,
+                    race = _npc.Race,
                     age = _npc.Age,
                     currentGoal = _npc.CurrentGoal,
-                    dispositionTowardsPlayer = _npc.DispositionTowardsPlayer,
-                    questInvolvement = _npc.QuestInvolvement
+                    dispositionTowardsPlayer = _npc.DispositionTowardsPlayer
                 };
             }
             

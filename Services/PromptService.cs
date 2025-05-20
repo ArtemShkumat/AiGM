@@ -1,9 +1,13 @@
 using AiGMBackEnd.Models;
 using AiGMBackEnd.Models.Prompts;
 using AiGMBackEnd.Services.PromptBuilders;
+using AiGMBackEnd.Services.Storage;
+using AiGMBackEnd.Services.Triggers;
 using System.Text;
 using System;
 using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AiGMBackEnd.Services
 {
@@ -18,7 +22,9 @@ namespace AiGMBackEnd.Services
         Summarize,
         Combat,
         CreateEnemyStatBlock,
-        SummarizeCombat
+        SummarizeCombat,
+        BootstrapGameFromSimplePrompt,
+        GenerateScenarioTemplate
     }
 
     public class PromptService
@@ -29,7 +35,10 @@ namespace AiGMBackEnd.Services
 
         public PromptService(
             StorageService storageService,
-            LoggingService loggingService)
+            LoggingService loggingService,
+            IEventStorageService eventStorageService,
+            IEnumerable<ITriggerEvaluator> triggerEvaluators,
+            ITemplateService templateService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
@@ -37,7 +46,7 @@ namespace AiGMBackEnd.Services
             // Initialize prompt builders
             _promptBuilders = new Dictionary<PromptType, IPromptBuilder>
             {
-                { PromptType.DM, new DMPromptBuilder(storageService, loggingService) },
+                { PromptType.DM, new DMPromptBuilder(storageService, loggingService, eventStorageService, triggerEvaluators) },
                 { PromptType.NPC, new NPCPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateQuest, new CreateQuestPromptBuilder(storageService, loggingService) },
                 { PromptType.CreateNPC, new CreateNPCPromptBuilder(storageService, loggingService) },
@@ -46,7 +55,9 @@ namespace AiGMBackEnd.Services
                 { PromptType.Summarize, new SummarizePromptBuilder(storageService, loggingService) },
                 { PromptType.CreateEnemyStatBlock, new CreateEnemyStatBlockPromptBuilder(storageService, loggingService) },
                 { PromptType.Combat, new CombatPromptBuilder(storageService, loggingService) },
-                { PromptType.SummarizeCombat, new SummarizeCombatPromptBuilder(storageService, loggingService) }
+                { PromptType.SummarizeCombat, new SummarizeCombatPromptBuilder(storageService, loggingService) },
+                { PromptType.BootstrapGameFromSimplePrompt, new BootstrapGameFromSimplePromptBuilder(storageService, loggingService) },
+                { PromptType.GenerateScenarioTemplate, new GenerateScenarioTemplatePromptBuilder(templateService, loggingService) }
             };
         }
 

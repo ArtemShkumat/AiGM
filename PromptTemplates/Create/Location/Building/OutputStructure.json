@@ -3,31 +3,34 @@
   "properties": {
     "type": { "type": "string", "enum": ["LOCATION"], "description": "Base object type" },
     "locationType": { "type": "string", "enum": ["Building"], "description": "Specific location type" },
-    "id": { "type": "string", "description": "Unique identifier for the location" },
+    "id": { "type": "string", "description": "Unique identifier for the location (Provided by application)" },
     "name": { "type": "string", "description": "Name of the building" },
     "description": { "type": "string", "description": "Overall description of the building's context or surroundings" },
-    "knownToPlayer": { "type": "boolean", "description": "Whether the player knows of this location" },
-    "connectedLocations": { "type": "array", "items": { "type": "string" }, "description": "IDs of directly connected locations" },
-    "parentLocation": { "type": "string", "description": "ID of the parent location (e.g., Settlement ID if building is inside one)" },
-    "npcs": { "type": "array", "items": { "type": "string" }, "description": "IDs of NPCs currently present in the building (top level)" },
+    "parentLocationId": { "type": "string", "description": "ID of the parent location (e.g., District or Settlement ID, provided by application)" },
+    "typicalOccupants": { "type": "string", "description": "Free-form description of typical occupants/creatures." },
+    "currentCondition": { "type": "string", "description": "Description of the current condition of the place (e.g., 'in it's normal condition - still unvisited by the player')." },
     "exterior_description": { "type": "string", "description": "Description of the building's exterior appearance" },
     "purpose": { "type": "string", "description": "The primary function or purpose of the building" },
     "history": { "type": "string", "description": "The known or relevant history of the building" },
     "floors": {
       "type": "array",
+      "description": "List of floors in the building. LLM uses names, application generates IDs.",
       "items": {
         "type": "object",
         "properties": {
           "floor_name": { "type": "string", "description": "Name of the floor (e.g., Ground Floor, Attic)" },
           "description": { "type": "string", "description": "General description of the floor" },
+          "currentCondition": { "type": "string", "description": "Description of the current condition of the floor (e.g., 'in it's normal condition - still unvisited by the player')." },
           "rooms": {
             "type": "array",
+            "description": "List of rooms on this floor. LLM uses names, application generates IDs.",
             "items": {
               "type": "object",
               "properties": {
                 "name": { "type": "string", "description": "Name of the room (e.g., Kitchen, Study)" },
                 "type": { "type": "string", "description": "Functional type of the room (e.g., Bedroom, Workshop)" },
                 "description": { "type": "string", "description": "Detailed description of the room's contents and atmosphere" },
+                "currentCondition": { "type": "string", "description": "Description of the current condition of the room (e.g., 'in it's normal condition - still unvisited by the player')." },
                 "points_of_interest": {
                   "type": "array",
                   "items": {
@@ -53,21 +56,19 @@
                     },
                     "required": ["name", "why_its_here", "description", "quantity", "value"]
                   }
-                },
-                "npcs": { "type": "array", "items": { "type": "string" }, "description": "IDs of NPCs currently in this specific room" },
-                "connected_rooms": { "type": "array", "items": { "type": "string" }, "description": "Names of other rooms on the same floor this room connects to" }
+                }
               },
-              "required": ["name", "type", "description", "points_of_interest", "valuables", "npcs", "connected_rooms"]
+              "required": ["name", "type", "description", "currentCondition", "points_of_interest", "valuables"]
             }
           }
         },
-        "required": ["floor_name", "description", "rooms"]
+        "required": ["floor_name", "description", "currentCondition", "rooms"]
       }
     }
   },
   "required": [
-    "type", "locationType", "id", "name", "description", "knownToPlayer", 
-    "connectedLocations", "parentLocation", "npcs", 
+    "type", "locationType", "id", "name", "description", 
+    "parentLocationId", "typicalOccupants", "currentCondition",
     "exterior_description", "purpose", "history", "floors"
   ]
 } 

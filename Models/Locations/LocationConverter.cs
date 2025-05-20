@@ -36,7 +36,8 @@ namespace AiGMBackEnd.Models.Locations
                     "building" => JsonSerializer.Deserialize<Building>(json, newOptions),
                     "settlement" => JsonSerializer.Deserialize<Settlement>(json, newOptions),
                     "wilds" => JsonSerializer.Deserialize<Wilds>(json, newOptions),
-                    _ => throw new JsonException($"Unknown location type: {locationType}")
+                    // Fallback to GenericLocation for any other type
+                    _ => JsonSerializer.Deserialize<GenericLocation>(json, newOptions)
                 };
             }
             
@@ -70,8 +71,11 @@ namespace AiGMBackEnd.Models.Locations
                 case Wilds wilds:
                     JsonSerializer.Serialize(writer, wilds, newOptions);
                     break;
+                case GenericLocation generic:
+                    JsonSerializer.Serialize(writer, generic, newOptions);
+                    break;
                 default:
-                    throw new JsonException($"Unknown location type: {value.GetType().Name}");
+                    throw new JsonException($"Unknown location type during serialization: {value.GetType().Name}");
             }
         }
     }

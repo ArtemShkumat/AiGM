@@ -8,6 +8,7 @@ using static AiGMBackEnd.Services.StorageService;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Hangfire;
+using AiGMBackEnd.Models;
 
 namespace AiGMBackEnd.Services
 {
@@ -143,13 +144,13 @@ namespace AiGMBackEnd.Services
                         case "NPC":
                             var npcName = reference.ReferenceId.Replace("npc_", "").Replace("_", " ");
                             jobId = BackgroundJob.Enqueue(() => 
-                                _hangfireJobsService.CreateNpcAsync(userId, reference.ReferenceId, npcName, contextMessage, null));
+                                _hangfireJobsService.CreateNpcAsync(userId, reference.ReferenceId, npcName, contextMessage, null, false, null));
                             break;
                             
                         case "LOCATION":
                             var locName = reference.ReferenceId.Replace("loc_", "").Replace("_", " ");
                             jobId = BackgroundJob.Enqueue(() => 
-                                _hangfireJobsService.CreateLocationAsync(userId, reference.ReferenceId, locName, "BUILDING", contextMessage));
+                                _hangfireJobsService.CreateLocationAsync(userId, reference.ReferenceId, locName, "BUILDING", contextMessage, null, false, null));
                             break;
                             
                         case "QUEST":
@@ -196,6 +197,42 @@ namespace AiGMBackEnd.Services
             }
             
             return string.Empty;
+        }
+
+        public async Task<string> BootstrapGameFromSimplePromptAsync(CreateScenarioRequest request, bool isStartingScenario = false)
+        {
+            try
+            {
+                _loggingService.LogInfo($"Starting game creation from simple prompt: {request.ScenarioPrompt}");
+                
+                // Generate a scenario ID
+                string scenarioId = $"scenario_{Guid.NewGuid().ToString()}";
+                
+                // Use admin user ID for starting scenarios, otherwise require a user ID
+                string userId = isStartingScenario ? "admin" : string.Empty;
+                
+                // Create the prompt request for scenario generation
+                var promptRequest = new PromptRequest
+                {
+                    PromptType = PromptType.BootstrapGameFromSimplePrompt,
+                    UserId = userId,
+                    UserInput = request.ScenarioPrompt,
+                    ScenarioId = scenarioId
+                };
+                
+                // Using Hangfire for background processing
+                string jobId = BackgroundJob.Enqueue<HangfireJobsService>(x => 
+                    x.BootstrapGameFromSimplePromptAsync(userId, scenarioId, request.ScenarioPrompt, isStartingScenario));
+                
+                _loggingService.LogInfo($"Enqueued {(isStartingScenario ? "starting " : "")}game bootstrap job from simple prompt, ID: {jobId}");
+                
+                return scenarioId;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"Error creating game from simple prompt: {ex.Message}");
+                throw;
+            }
         }
     }
 }

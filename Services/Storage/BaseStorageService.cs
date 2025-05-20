@@ -120,7 +120,17 @@ namespace AiGMBackEnd.Services.Storage
 
         public string GetFilePath(string userId, string fileId)
         {
-            return Path.Combine(_dataPath, "userData", userId, $"{fileId}.json");
+            // Check if fileId already contains path information (e.g., "locations/loc_id")
+            if (fileId.Contains(Path.DirectorySeparatorChar) || fileId.Contains(Path.AltDirectorySeparatorChar))
+            {
+                // Assume the fileId is relative to the userId directory and includes the .json extension
+                return Path.Combine(_dataPath, "userData", userId, $"{fileId}.json");
+            }
+            else
+            {
+                // Legacy behavior for top-level files like player.json, world.json
+                return Path.Combine(_dataPath, "userData", userId, $"{fileId}.json");
+            }
         }
         
         // Helper method to copy directory and its contents

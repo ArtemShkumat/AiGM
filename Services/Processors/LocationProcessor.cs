@@ -6,6 +6,9 @@ using AiGMBackEnd.Services;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.IO;
+using AiGMBackEnd.Services.Storage;
 
 namespace AiGMBackEnd.Services.Processors
 {
@@ -14,443 +17,457 @@ namespace AiGMBackEnd.Services.Processors
         private readonly StorageService _storageService;
         private readonly LoggingService _loggingService;
         private readonly GameNotificationService _gameNotificationService;
+        private readonly IGameScenarioService _gameScenarioService;
+
+        // Define constants for location types used internally
+        private const string LocationTypeBuilding = "building";
+        private const string LocationTypeDelve = "delve";
+        private const string LocationTypeSettlement = "settlement";
+        private const string LocationTypeWilds = "wilds";
+        private const string LocationTypeFloor = "floor";
+        private const string LocationTypeRoom = "room";
+        private const string LocationTypeDistrict = "district";
+        private const string LocationTypeDelveRoom = "delveroom";
 
         public LocationProcessor(
             StorageService storageService,
             LoggingService loggingService,
-            GameNotificationService gameNotificationService)
+            GameNotificationService gameNotificationService,
+            IGameScenarioService gameScenarioService)
         {
             _storageService = storageService;
             _loggingService = loggingService;
             _gameNotificationService = gameNotificationService;
+            _gameScenarioService = gameScenarioService;
         }
 
         public async Task ProcessAsync(JObject locationData, string userId)
         {
-            string? locationId = locationData["id"]?.ToString();
-            string? locationType = locationData["locationType"]?.ToString();
+            List<Task> nestedSaveTasks = new List<Task>(); // Initialize here for the non-scenario case
 
             try
             {
-                _loggingService.LogInfo($"Processing location creation (Type: {locationType ?? "Unknown"}) for ID: {locationId ?? "Unknown"} using direct deserialization.");
+                _loggingService.LogInfo("Processing location creation from LLM response.");
 
-                // Instead of trying to deserialize to abstract Location class, use type-specific deserialization
-                Location location;
-                
-                switch (locationType?.ToLower())
+                // Check if this is for a starting scenario
+                bool isStartingScenario = false;
+                var metadata = locationData["metadata"] as JObject;
+                if (metadata != null && metadata["isStartingScenario"] != null)
                 {
-                    case "building":
-                        location = ProcessBuilding(locationData);
-                        break;
-                    case "delve":
-                        location = ProcessDelve(locationData);
-                        break;
-                    case "settlement":
-                        location = ProcessSettlement(locationData);
-                        break;
-                    case "wilds":
-                        location = ProcessWilds(locationData);
-                        break;
-                    default:
-                        _loggingService.LogError($"Unknown or unsupported location type: {locationType}");
-                        await _gameNotificationService.NotifyErrorAsync(userId, $"Unknown or unsupported location type: {locationType}");
-                        return; // Return early without processing further
+                    bool.TryParse(metadata["isStartingScenario"].ToString(), out isStartingScenario);
                 }
 
-                // Set common properties immediately after type-specific deserialization
-                if (location != null)
+                // Extract basic properties
+                string locationId = locationData["id"]?.ToString();
+                if (string.IsNullOrEmpty(locationId))
                 {
-                    location.LocationType = locationType;
-                    location.Id = locationId;
-                    location.Name = locationData["name"]?.ToString() ?? "Unknown Location";
-                    location.Description = locationData["description"]?.ToString();
-                    location.KnownToPlayer = locationData["knownToPlayer"]?.Value<bool>() ?? false;
-                    
-                    if (string.IsNullOrEmpty(location.Type) || location.Type != "LOCATION")
-                    {
-                        _loggingService.LogWarning($"Location base type mismatch or missing for {location.Id}. Setting to 'LOCATION'.");
-                        location.Type = "LOCATION";
-                    }
-                }
-
-                if (location == null || string.IsNullOrEmpty(location.Id) || string.IsNullOrEmpty(location.LocationType))
-                {
-                    _loggingService.LogError("Failed to create location data, or ID/LocationType is missing.");
-                    _loggingService.LogWarning($"Attempted location creation for ID: {locationId ?? "Not Found"}, Type: {locationType ?? "Not Found"}");
-                    await _gameNotificationService.NotifyErrorAsync(userId, "Failed to create location: missing required information.");
+                    _loggingService.LogError("Missing locationId in location data");
                     return;
                 }
-                
-                if (locationData["connectedLocations"] is JArray connectedLocations)
+
+                // Ensure locationType is present in the main JObject for dispatching
+                string locationTypeValue = locationData["locationType"]?.ToString();
+                 if (string.IsNullOrEmpty(locationTypeValue))
                 {
-                    foreach (var conn in connectedLocations)
-                    {
-                        var connStr = conn.ToString();
-                        if (!string.IsNullOrEmpty(connStr))
+                    _loggingService.LogError($"Missing locationType in location data for {locationId}");
+                    return;
+                }
+                locationData["type"] = "LOCATION"; // Ensure base type is set
+
+                // Determine the specific location type to process nested structures
+                Location locationModel = null; // C# model only needed for non-scenario case
+
+                // Process nested structures based on type
+                switch (locationTypeValue.ToLower())
+                {
+                    case LocationTypeBuilding:
+                        if (isStartingScenario)
                         {
-                            location.ConnectedLocations.Add(connStr);
+                            await ProcessBuildingNestedAsync(locationData, null, userId, true, null);
                         }
+                        else
+                        {
+                            Building buildingModel = locationData.ToObject<Building>(JsonSerializer.CreateDefault()); // Deserialize
+                            locationModel = buildingModel;
+                            await ProcessBuildingNestedAsync(locationData, buildingModel, userId, false, nestedSaveTasks);
+                        }
+                        break;
+                    case LocationTypeSettlement:
+                         if (isStartingScenario)
+                        {
+                            await ProcessSettlementNestedAsync(locationData, null, userId, true, null);
+                        }
+                        else
+                        {
+                            Settlement settlementModel = locationData.ToObject<Settlement>(JsonSerializer.CreateDefault()); // Deserialize
+                            locationModel = settlementModel;
+                            await ProcessSettlementNestedAsync(locationData, settlementModel, userId, false, nestedSaveTasks);
+                        }
+                        break;
+                    case LocationTypeDelve:
+                         if (isStartingScenario)
+                        {
+                            await ProcessDelveNestedAsync(locationData, null, userId, true, null);
+                        }
+                        else
+                        {
+                            Delve delveModel = locationData.ToObject<Delve>(JsonSerializer.CreateDefault()); // Deserialize
+                            locationModel = delveModel;
+                            await ProcessDelveNestedAsync(locationData, delveModel, userId, false, nestedSaveTasks);
+                        }
+                        break;
+                    case LocationTypeWilds:
+                        // Wilds only has POIs which don't need separate IDs/files currently
+                        if (!isStartingScenario)
+                        {
+                            Wilds wildsModel = locationData.ToObject<Wilds>(JsonSerializer.CreateDefault()); // Deserialize
+                            locationModel = wildsModel;
+                            ProcessWildsNested(locationData, wildsModel); // Sync POIs to C# model
+                        }
+                        // No nested file saving needed for Wilds POIs
+                        break;
+                    default:
+                         _loggingService.LogInfo($"Location type '{locationTypeValue}' for {locationId} has no specific nested structures to process.");
+                         if (!isStartingScenario)
+                         {
+                            // Still need to deserialize to save the C# model if it's a generic type
+                            locationModel = locationData.ToObject<GenericLocation>(JsonSerializer.CreateDefault());
+                         }
+                         break;
+                }
+
+                // Perform saving based on scenario flag
+                if (isStartingScenario)
+                {
+                    string scenarioId = metadata?["scenarioId"]?.ToString();
+                    if (string.IsNullOrEmpty(scenarioId))
+                    {
+                        _loggingService.LogError($"Missing scenarioId in metadata for starting scenario location {locationId}");
+                        return;
+                    }
+                    await _gameScenarioService.SaveScenarioLocationAsync(scenarioId, locationId, locationData, userId, isStartingScenario);
+                    _loggingService.LogInfo($"Saved starting scenario location {locationId} (with nested IDs) to scenario {scenarioId}");
+                }
+                else
+                {
+                    // Wait for any nested location saves to complete
+                    if (nestedSaveTasks.Any())
+                    {
+                         await Task.WhenAll(nestedSaveTasks);
+                         _loggingService.LogInfo($"Completed saving {nestedSaveTasks.Count} nested locations for {locationId}.");
+                    }
+                   
+                    // Save the parent C# model (which now contains ID lists for nested items)
+                    if (locationModel != null) // Ensure we have a deserialized model
+                    {
+                         await _storageService.SaveAsync(userId, $"locations/{locationId}", locationModel);
+                         _loggingService.LogInfo($"Successfully processed and saved PARENT location {locationId} (C# Model) for user {userId}");
+                    }
+                    else
+                    {
+                        _loggingService.LogError($"Failed to save parent location {locationId} for user {userId} because C# model was null.");
                     }
                 }
-                
-                if (locationData["parentLocation"] != null)
-                {
-                    location.ParentLocation = locationData["parentLocation"]?.ToString();
-                }
-                
-                if (locationData["npcs"] is JArray npcs)
-                {
-                    foreach (var npc in npcs)
-                    {
-                        var npcStr = npc.ToString();
-                        if (!string.IsNullOrEmpty(npcStr))
-                        {
-                            location.Npcs.Add(npcStr);
-                        }
-                    }
-                }
-                
-                await _storageService.SaveAsync(userId, $"locations/{location.Id}", location);
-                _loggingService.LogInfo($"Successfully processed and saved location: {location.Id} (Type: {location.LocationType})");
             }
-            catch (JsonSerializationException jsonEx)
+            catch (JsonException jsonEx)
             {
-                _loggingService.LogError($"JSON deserialization error processing location ({locationType ?? "Unknown"}) creation for ID {locationId ?? "Unknown"}: {jsonEx.Message}");
-                _loggingService.LogInfo($"Problematic JSON data: {locationData.ToString()}");
-                await _gameNotificationService.NotifyErrorAsync(userId, $"Error creating location: {jsonEx.Message}");
-                throw;
+                 _loggingService.LogError($"JSON Error processing location creation: {jsonEx.Message}\nData: {locationData.ToString(Newtonsoft.Json.Formatting.None)}");
+                 throw;
             }
             catch (Exception ex)
             {
-                _loggingService.LogError($"Error processing location ({locationType ?? "Unknown"}) creation for ID {locationId ?? "Unknown"}: {ex.Message}");
-                _loggingService.LogInfo($"JSON data during error: {locationData.ToString()}");
-                await _gameNotificationService.NotifyErrorAsync(userId, $"Error creating location: {ex.Message}");
+                _loggingService.LogError($"Error processing location creation: {ex.Message}\nStackTrace: {ex.StackTrace}");
                 throw;
             }
         }
-        
-        private Wilds ProcessWilds(JObject locationData)
+
+        private string GenerateNestedLocationId(string parentId, string itemType, string itemName)
         {
-            var wilds = new Wilds
+            var sanitizedName = Regex.Replace(itemName.ToLower(), @"[^a-z0-9]+", "_").Trim('_');
+            const int MaxNameLength = 30;
+            if (sanitizedName.Length > MaxNameLength) sanitizedName = sanitizedName.Substring(0, MaxNameLength);
+            if (string.IsNullOrWhiteSpace(sanitizedName) || sanitizedName == "_")
             {
-                Terrain = locationData["terrain"]?.ToString(),
-                Dangers = locationData["dangers"]?.ToString()
-            };
-            
-            if (locationData["points_of_interest"] is JArray poisArray)
+                sanitizedName = Guid.NewGuid().ToString("N").Substring(0, 8);
+            }
+
+            return $"{parentId}_{itemType}_{sanitizedName}";
+        }
+
+        private List<PointOfInterest> ProcessPointsOfInterest(JToken? poisToken)
+        {
+            var pois = new List<PointOfInterest>();
+            if (poisToken is JArray poisArray)
             {
                 foreach (var poiData in poisArray)
                 {
                     if (poiData is JObject poiObj)
                     {
-                        var poi = new PointOfInterest
+                        pois.Add(new PointOfInterest
                         {
-                            Name = poiObj["name"]?.ToString(),
+                            Name = poiObj["name"]?.ToString() ?? "Unnamed POI",
                             Description = poiObj["description"]?.ToString(),
-                            HintingAt = poiObj["hinting_at"]?.ToString()
-                        };
-                        
-                        wilds.PointsOfInterest.Add(poi);
+                            HintingAt = poiObj["hinting_at"]?.ToString() ?? string.Empty
+                        });
                     }
                 }
             }
-            
-            return wilds;
+            return pois;
         }
-        
-        private Delve ProcessDelve(JObject locationData)
+
+        private List<Valuable> ProcessValuables(JToken? valuablesToken)
         {
-            var delve = new Delve
-            {
-                Purpose = locationData["purpose"]?.ToString()
-            };
-            
-            if (locationData["entrance_room"] is JObject entranceRoomObj)
-            {
-                delve.EntranceRoom = new EntranceRoom
-                {
-                    RoomNumber = entranceRoomObj["room_number"]?.Value<int>() ?? 1,
-                    Role = entranceRoomObj["role"]?.ToString() ?? "Entrance",
-                    Name = entranceRoomObj["name"]?.ToString(),
-                    Description = entranceRoomObj["description"]?.ToString(),
-                    HazardOrGuardian = entranceRoomObj["hazard_or_guardian"]?.ToString()
-                };
-                
-                ProcessRoomValuables(entranceRoomObj, delve.EntranceRoom.Valuables);
-            }
-            
-            if (locationData["puzzle_room"] is JObject puzzleRoomObj)
-            {
-                delve.PuzzleRoom = new PuzzleRoom
-                {
-                    RoomNumber = puzzleRoomObj["room_number"]?.Value<int>() ?? 2,
-                    Role = puzzleRoomObj["role"]?.ToString() ?? "Puzzle",
-                    Name = puzzleRoomObj["name"]?.ToString(),
-                    Description = puzzleRoomObj["description"]?.ToString(),
-                    PuzzleOrRoleplayChallenge = puzzleRoomObj["puzzle_or_roleplay_challenge"]?.ToString()
-                };
-                
-                ProcessRoomValuables(puzzleRoomObj, delve.PuzzleRoom.Valuables);
-            }
-            
-            if (locationData["setback_room"] is JObject setbackRoomObj)
-            {
-                delve.SetbackRoom = new SetbackRoom
-                {
-                    RoomNumber = setbackRoomObj["room_number"]?.Value<int>() ?? 3,
-                    Role = setbackRoomObj["role"]?.ToString() ?? "Setback",
-                    Name = setbackRoomObj["name"]?.ToString(),
-                    Description = setbackRoomObj["description"]?.ToString(),
-                    TrickOrSetback = setbackRoomObj["trick_or_setback"]?.ToString()
-                };
-                
-                ProcessRoomValuables(setbackRoomObj, delve.SetbackRoom.Valuables);
-            }
-            
-            if (locationData["climax_room"] is JObject climaxRoomObj)
-            {
-                delve.ClimaxRoom = new ClimaxRoom
-                {
-                    RoomNumber = climaxRoomObj["room_number"]?.Value<int>() ?? 4,
-                    Role = climaxRoomObj["role"]?.ToString() ?? "Climax",
-                    Name = climaxRoomObj["name"]?.ToString(),
-                    Description = climaxRoomObj["description"]?.ToString(),
-                    ClimaxConflict = climaxRoomObj["climax_conflict"]?.ToString(),
-                    HazardOrGuardian = climaxRoomObj["hazard_or_guardian"]?.ToString()
-                };
-                
-                ProcessRoomValuables(climaxRoomObj, delve.ClimaxRoom.Valuables);
-            }
-            
-            if (locationData["reward_room"] is JObject rewardRoomObj)
-            {
-                delve.RewardRoom = new RewardRoom
-                {
-                    RoomNumber = rewardRoomObj["room_number"]?.Value<int>() ?? 5,
-                    Role = rewardRoomObj["role"]?.ToString() ?? "Reward",
-                    Name = rewardRoomObj["name"]?.ToString(),
-                    Description = rewardRoomObj["description"]?.ToString(),
-                    RewardOrRevelation = rewardRoomObj["reward_or_revelation"]?.ToString()
-                };
-                
-                ProcessRoomValuables(rewardRoomObj, delve.RewardRoom.Valuables);
-            }
-            
-            return delve;
-        }
-        
-        private void ProcessRoomValuables(JObject roomObj, List<DelveValuable> valuablesList)
-        {
-            if (roomObj["valuables"] is JArray valuablesArray)
+            var valuables = new List<Valuable>();
+            if (valuablesToken is JArray valuablesArray)
             {
                 foreach (var valuableData in valuablesArray)
                 {
                     if (valuableData is JObject valuableObj)
                     {
-                        var valuable = new DelveValuable
+                        var valuable = new Valuable
                         {
-                            Name = valuableObj["name"]?.ToString(),
-                            WhyItsHere = valuableObj["why_its_here"]?.ToString(),
+                            Name = valuableObj["name"]?.ToString() ?? "Unnamed Valuable",
+                            WhyItsHere = valuableObj["why_its_here"]?.ToString() ?? string.Empty,
                             Description = valuableObj["description"]?.ToString(),
                             Quantity = valuableObj["quantity"]?.Value<int>() ?? 1,
-                            Value = valuableObj["value"]?.Value<int>() ?? 0,
-                            WhereExactly = valuableObj["where_exactly"]?.ToString()
+                            Value = valuableObj["value"]?.Value<int>() ?? 0
                         };
-                        
-                        valuablesList.Add(valuable);
+                        valuables.Add(valuable);
                     }
                 }
             }
+            return valuables;
         }
-        
-        private Building ProcessBuilding(JObject locationData)
+
+        private async Task ProcessBuildingNestedAsync(JObject locationData, Building building, string userId, bool isStartingScenario, List<Task> nestedSaveTasks)
         {
-            var building = new Building
+            // Use parent ID from building model if available (non-scenario), otherwise from JObject
+            string parentBuildingId = isStartingScenario ? locationData["id"]?.ToString() : building?.Id;
+             if (string.IsNullOrEmpty(parentBuildingId))
             {
-                Purpose = locationData["purpose"]?.ToString(),
-                History = locationData["history"]?.ToString(),
-                ExteriorDescription = locationData["exterior_description"]?.ToString()
-            };
-            
+                 _loggingService.LogError("Cannot generate nested IDs for building, parent ID is missing.");
+                 return;
+            }
+
+            // Only initialize C# list if not a starting scenario
+            if (!isStartingScenario && building != null)
+            {
+                building.FloorIds = new List<string>();
+            }
+
             if (locationData["floors"] is JArray floorsArray)
             {
                 foreach (var floorData in floorsArray)
                 {
                     if (floorData is JObject floorObj)
                     {
-                        var floor = new Floor
+                        string floorName = floorObj["floor_name"]?.ToString() ?? $"Unnamed_{LocationTypeFloor}";
+                        string floorId = GenerateNestedLocationId(parentBuildingId, LocationTypeFloor, floorName);
+
+                        // Add ID directly to JObject for starting scenarios
+                        if (isStartingScenario)
                         {
-                            FloorName = floorObj["floor_name"]?.ToString(),
-                            Description = floorObj["description"]?.ToString()
-                        };
-                        
-                        if (floorObj["rooms"] is JArray roomsArray)
-                        {
-                            foreach (var roomData in roomsArray)
-                            {
-                                if (roomData is JObject roomObj)
-                                {
-                                    var room = new Room
-                                    {
-                                        Name = roomObj["name"]?.ToString(),
-                                        Type = roomObj["type"]?.ToString(),
-                                        Description = roomObj["description"]?.ToString()
-                                    };
-                                    
-                                    if (roomObj["points_of_interest"] is JArray poisArray)
-                                    {
-                                        foreach (var poiData in poisArray)
-                                        {
-                                            if (poiData is JObject poiObj)
-                                            {
-                                                var poi = new PointOfInterest
-                                                {
-                                                    Name = poiObj["name"]?.ToString(),
-                                                    Description = poiObj["description"]?.ToString(),
-                                                    HintingAt = poiObj["hinting_at"]?.ToString()
-                                                };
-                                                
-                                                room.PointsOfInterest.Add(poi);
-                                            }
-                                        }
-                                    }
-                                    
-                                    if (roomObj["valuables"] is JArray valuablesArray)
-                                    {
-                                        foreach (var valuableData in valuablesArray)
-                                        {
-                                            if (valuableData is JObject valuableObj)
-                                            {
-                                                var valuable = new Valuable
-                                                {
-                                                    Name = valuableObj["name"]?.ToString(),
-                                                    Description = valuableObj["description"]?.ToString()
-                                                };
-                                                
-                                                room.Valuables.Add(valuable);
-                                            }
-                                        }
-                                    }
-                                    
-                                    if (roomObj["npcs"] is JArray npcsArray)
-                                    {
-                                        foreach (var npc in npcsArray)
-                                        {
-                                            var npcStr = npc.ToString();
-                                            if (!string.IsNullOrEmpty(npcStr))
-                                            {
-                                                room.Npcs.Add(npcStr);
-                                            }
-                                        }
-                                    }
-                                    
-                                    if (roomObj["connected_rooms"] is JArray connectedRoomsArray)
-                                    {
-                                        foreach (var connectedRoom in connectedRoomsArray)
-                                        {
-                                            var roomStr = connectedRoom.ToString();
-                                            if (!string.IsNullOrEmpty(roomStr))
-                                            {
-                                                room.ConnectedRooms.Add(roomStr);
-                                            }
-                                        }
-                                    }
-                                    
-                                    floor.Rooms.Add(room);
-                                }
-                            }
+                            floorObj["id"] = floorId;
+                            floorObj["parentLocationId"] = parentBuildingId;
+                            floorObj["locationType"] = LocationTypeFloor;
+                            floorObj["currentCondition"] = "in it's normal condition - still unvisited by the player";
                         }
-                        
-                        building.Floors.Add(floor);
+                        else // Existing logic for live game data
+                        {
+                            if (building == null) { _loggingService.LogError("Building model is null in non-scenario nested processing."); return; } // Safety check
+                            var floorLocation = new GenericLocation
+                            {
+                                Id = floorId,
+                                Name = floorName,
+                                LocationType = LocationTypeFloor,
+                                ParentLocation = parentBuildingId,
+                                Description = floorObj["description"]?.ToString(),
+                                CurrentCondition = floorObj["currentCondition"]?.ToString() ?? "in it's normal condition - still unvisited by the player",
+                                Type = "LOCATION"
+                            };
+                            nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{floorId}", floorLocation));
+                            building.FloorIds.Add(floorId);
+                        }
+
+                        // Process rooms recursively, passing the flag
+                        await ProcessRoomsNestedAsync(floorObj, floorId, userId, isStartingScenario, nestedSaveTasks);
                     }
                 }
             }
-            
-            return building;
+            await Task.CompletedTask;
         }
-        
-        private Settlement ProcessSettlement(JObject locationData)
+
+        // Helper method specifically for rooms, called from ProcessBuildingNestedAsync
+        private async Task ProcessRoomsNestedAsync(JObject floorObj, string floorId, string userId, bool isStartingScenario, List<Task> nestedSaveTasks)
         {
-            var settlement = new Settlement
+             if (floorObj["rooms"] is JArray roomsArray)
+             {
+                 foreach (var roomData in roomsArray)
+                 {
+                     if (roomData is JObject roomObj)
+                     {
+                         string roomName = roomObj["name"]?.ToString() ?? $"Unnamed_{LocationTypeRoom}";
+                         string roomId = GenerateNestedLocationId(floorId, LocationTypeRoom, roomName);
+
+                         if (isStartingScenario)
+                         {
+                            roomObj["id"] = roomId;
+                            roomObj["parentLocationId"] = floorId;
+                            roomObj["locationType"] = LocationTypeRoom;
+                            roomObj["currentCondition"] = "in it's normal condition - still unvisited by the player";
+                         }
+                         else
+                         {
+                             var roomLocation = new GenericLocation
+                             {
+                                 Id = roomId,
+                                 Name = roomName,
+                                 LocationType = LocationTypeRoom,
+                                 ParentLocation = floorId,
+                                 Description = roomObj["description"]?.ToString(),
+                                 CurrentCondition = roomObj["currentCondition"]?.ToString() ?? "in it's normal condition - still unvisited by the player",
+                                 Type = "LOCATION"
+                             };
+                             nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{roomId}", roomLocation));
+                             // Note: Rooms are not currently added to Floor.RoomIds, logic assumes direct lookup or exploration
+                         }
+                     }
+                 }
+             }
+            await Task.CompletedTask;
+        }
+
+        // Updated method signature to include isStartingScenario
+        private async Task ProcessSettlementNestedAsync(JObject locationData, Settlement settlement, string userId, bool isStartingScenario, List<Task> nestedSaveTasks)
+        {
+            // Use parent ID from settlement model if available (non-scenario), otherwise from JObject
+            string parentSettlementId = isStartingScenario ? locationData["id"]?.ToString() : settlement?.Id;
+            if (string.IsNullOrEmpty(parentSettlementId))
             {
-                Purpose = locationData["purpose"]?.ToString(),
-                History = locationData["history"]?.ToString(),
-                Size = locationData["size"]?.ToString(),
-                Population = locationData["population"]?.Value<int>() ?? 0
-            };
-            
+                 _loggingService.LogError("Cannot generate nested IDs for settlement, parent ID is missing.");
+                 return;
+            }
+
+            // Only initialize C# list if not a starting scenario
+            if (!isStartingScenario && settlement != null)
+            {
+                 settlement.DistrictIds = new List<string>();
+            }
+           
             if (locationData["districts"] is JArray districtsArray)
             {
                 foreach (var districtData in districtsArray)
                 {
                     if (districtData is JObject districtObj)
                     {
-                        var district = new District
+                        string districtName = districtObj["name"]?.ToString() ?? $"Unnamed_{LocationTypeDistrict}";
+                        string districtId = GenerateNestedLocationId(parentSettlementId, LocationTypeDistrict, districtName);
+
+                        if (isStartingScenario)
                         {
-                            Name = districtObj["name"]?.ToString(),
-                            Description = districtObj["description"]?.ToString()
-                        };
-                        
-                        if (districtObj["connected_districts"] is JArray connectedDistrictsArray)
-                        {
-                            foreach (var connectedDistrict in connectedDistrictsArray)
-                            {
-                                var districtStr = connectedDistrict.ToString();
-                                if (!string.IsNullOrEmpty(districtStr))
-                                {
-                                    district.ConnectedDistricts.Add(districtStr);
-                                }
-                            }
+                            districtObj["id"] = districtId;
+                            districtObj["parentLocationId"] = parentSettlementId;
+                            districtObj["locationType"] = LocationTypeDistrict;
+                            districtObj["currentCondition"] = "in it's normal condition - still unvisited by the player";
                         }
-                        
-                        if (districtObj["points_of_interest"] is JArray poisArray)
+                        else // Existing logic for live game data
                         {
-                            foreach (var poiData in poisArray)
+                            if (settlement == null) { _loggingService.LogError("Settlement model is null in non-scenario nested processing."); return; } // Safety check
+                            var districtLocation = new GenericLocation
                             {
-                                if (poiData is JObject poiObj)
-                                {
-                                    var poi = new PointOfInterest
-                                    {
-                                        Name = poiObj["name"]?.ToString(),
-                                        Description = poiObj["description"]?.ToString(),
-                                        HintingAt = poiObj["hinting_at"]?.ToString()
-                                    };
-                                    
-                                    district.PointsOfInterest.Add(poi);
-                                }
-                            }
+                                Id = districtId,
+                                Name = districtName,
+                                LocationType = LocationTypeDistrict,
+                                ParentLocation = parentSettlementId,
+                                Description = districtObj["description"]?.ToString(),
+                                TypicalOccupants = districtObj["typicalOccupants"]?.ToString() ?? string.Empty,
+                                CurrentCondition = districtObj["currentCondition"]?.ToString() ?? "in it's normal condition - still unvisited by the player",
+                                Type = "LOCATION"
+                            };
+                            nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{districtId}", districtLocation));
+                            settlement.DistrictIds.Add(districtId);
                         }
-                        
-                        if (districtObj["npcs"] is JArray npcsArray)
-                        {
-                            foreach (var npc in npcsArray)
-                            {
-                                var npcStr = npc.ToString();
-                                if (!string.IsNullOrEmpty(npcStr))
-                                {
-                                    district.Npcs.Add(npcStr);
-                                }
-                            }
-                        }
-                        
-                        if (districtObj["buildings"] is JArray buildingsArray)
-                        {
-                            foreach (var building in buildingsArray)
-                            {
-                                var buildingStr = building.ToString();
-                                if (!string.IsNullOrEmpty(buildingStr))
-                                {
-                                    district.Buildings.Add(buildingStr);
-                                }
-                            }
-                        }
-                        
-                        settlement.Districts.Add(district);
                     }
                 }
             }
-            
-            return settlement;
+            await Task.CompletedTask;
+        }
+
+        // Updated method signature to include isStartingScenario
+        private async Task ProcessDelveNestedAsync(JObject locationData, Delve delve, string userId, bool isStartingScenario, List<Task> nestedSaveTasks)
+        {
+            // Use parent ID from delve model if available (non-scenario), otherwise from JObject
+            string parentDelveId = isStartingScenario ? locationData["id"]?.ToString() : delve?.Id;
+             if (string.IsNullOrEmpty(parentDelveId))
+            {
+                 _loggingService.LogError("Cannot generate nested IDs for delve, parent ID is missing.");
+                 return;
+            }
+
+            // Only initialize C# list if not a starting scenario
+            if (!isStartingScenario && delve != null)
+            {
+                delve.DelveRoomIds = new List<string>();
+            }
+
+            if (locationData["delve_rooms"] is JArray roomsArray)
+            {
+                foreach (var roomData in roomsArray)
+                {
+                    if (roomData is JObject roomObj)
+                    {
+                        string roomName = roomObj["name"]?.ToString() ?? $"Unnamed_{LocationTypeDelveRoom}";
+                        string roomId = GenerateNestedLocationId(parentDelveId, LocationTypeDelveRoom, roomName);
+
+                        if (isStartingScenario)
+                        {
+                            string role = roomObj["role"]?.ToString() ?? "Unknown Role";
+                            string challenge = roomObj["challenge"]?.ToString() ?? "No specific challenge described.";
+                            string baseDescription = roomObj["description"]?.ToString() ?? string.Empty;
+                            string combinedDescription = $@"Role: {role}
+Challenge: {challenge}
+
+{baseDescription}";
+
+                            roomObj["id"] = roomId;
+                            roomObj["parentLocationId"] = parentDelveId;
+                            roomObj["description"] = combinedDescription; // Update description in JObject too
+                            roomObj["locationType"] = LocationTypeDelveRoom;
+                            roomObj["currentCondition"] = "in it's normal condition - still unvisited by the player";
+                        }
+                        else // Existing logic for live game data
+                        {
+                             if (delve == null) { _loggingService.LogError("Delve model is null in non-scenario nested processing."); return; } // Safety check
+                             string role = roomObj["role"]?.ToString() ?? "Unknown Role";
+                            string challenge = roomObj["challenge"]?.ToString() ?? "No specific challenge described.";
+                            string baseDescription = roomObj["description"]?.ToString() ?? string.Empty;
+                            string combinedDescription = $@"Role: {role}
+Challenge: {challenge}
+
+{baseDescription}";
+
+                            var roomLocation = new GenericLocation
+                            {
+                                Id = roomId,
+                                Name = roomName,
+                                LocationType = LocationTypeDelveRoom,
+                                ParentLocation = parentDelveId,
+                                Description = combinedDescription,
+                                CurrentCondition = roomObj["currentCondition"]?.ToString() ?? "in it's normal condition - still unvisited by the player",
+                                Type = "LOCATION"
+                            };
+                            nestedSaveTasks.Add(_storageService.SaveAsync(userId, $"locations/{roomId}", roomLocation));
+                            delve.DelveRoomIds.Add(roomId);
+                        }
+                    }
+                }
+            }
+            await Task.CompletedTask;
+        }
+
+        private void ProcessWildsNested(JObject locationData, Wilds wilds)
+        {
+            wilds.PointsOfInterest = ProcessPointsOfInterest(locationData["points_of_interest"]);
         }
     }
 } 

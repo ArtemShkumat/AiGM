@@ -1,16 +1,7 @@
 {
   "type": "WORLD",
   "gameTime": "2023-07-15T08:15:00Z",
-  "daysSinceStart": 1,
   "currentPlayer": "",
-  "worldStateEffects": {
-    "weather": "clear",
-    "season": "summer",
-    "temperature": "warm"
-  },
-
-  "lore": [],
-
   "locations": [
     {
       "id": "loc_stJosephHospital",

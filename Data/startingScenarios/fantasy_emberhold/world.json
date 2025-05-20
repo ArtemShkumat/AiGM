@@ -1,20 +1,7 @@
 {
   "type": "WORLD",
   "gameTime": "1247-05-15T14:30:00Z",
-  "daysSinceStart": 1,
   "currentPlayer": "",
-  "worldStateEffects": {
-    "weather": "clear",
-    "season": "spring"
-  },
-
-  "lore": [
-    {
-      "id": "lore_emberCrystal",
-      "title": "The Ember Crystal",
-      "summary": "An ancient artifact said to contain the essence of a primordial fire spirit. It once protected Emberhold from the harsh winters, but has been stolen."
-    }
-  ],
 
   "locations": [
     {

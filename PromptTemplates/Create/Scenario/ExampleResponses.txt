@@ -1,0 +1,205 @@
+---Example 1---
+// request:
+// Prompt: "Gritty Cyberpunk City"
+
+// response:
+{
+  "gameSetting": {
+    "gameName": "Neon Dystopia",
+    "genre": "Cyberpunk",
+    "theme": "Noir Investigation",
+    "setting": "The year is 2077. Neo-Kyoto sprawls under perpetual rain and the neon glow of towering corporate arcologies. Megacorporations rule from above, while the streets below are a chaotic mix of augmented street samurai, data-hacking netrunners, black market bio-clinics, and desperate citizens. Cybernetic enhancement is common, often necessary for survival, but carries the risk of cyberpsychosis. The omnipresent City AI monitors everything, but even its digital eyes can't penetrate the deepest shadows of the underworld.",
+    "description": "A gritty noir adventure in the rain-soaked, neon-lit streets of a cyberpunk metropolis.",
+    "startingLocationId": "settlement_sector_7",
+    "currencies": ["Euro-Yen Credits"],
+    "economy": "Currency: Euro-Yen Credits (¥€).\nTypical costs: Synth-Noodle bowl: ¥€10. Shot of cheap synth-booze: ¥€5. Dose of 'Glimmer' stim: ¥€50. Basic data chip: ¥€100. Cramped sleep-pod rental (8 hours): ¥€40. Back-alley cyber-repair (minor): ¥€300+. Basic pistol: ¥€500.\nTypical incomes (Sector 7): Unskilled labor (day): ¥€50-80. Info brokering (minor job): ¥€200-500. Street samurai merc work (risky gig): ¥€1000+. Corporate wageslave (low-tier): ¥€1500/month.",
+    "gameTime": "2077-10-23 09:00"
+  },
+  "locations": [
+    {
+      "id": "realm_earth_2077",
+      "name": "Earth 2077",
+      "description": "A world scarred by ecological collapse and corporate warfare.",
+      "locationType": "Realm",
+      "parentLocationId": null
+    },
+    {
+      "id": "country_pacific_consortium",
+      "name": "Pacific Consortium",
+      "description": "An economic bloc dominated by Japanese and Californian corporations.",
+      "locationType": "Country",
+      "parentLocationId": "realm_earth_2077"
+    },
+    {
+      "id": "region_neo_kyoto",
+      "name": "Neo-Kyoto Metropolitan Axis",
+      "description": "A vast urban sprawl known for its advanced technology and deep social divides.",
+      "locationType": "Region",
+      "parentLocationId": "country_pacific_consortium"
+    },
+    {
+      "id": "settlement_sector_7",
+      "name": "Sector 7 (The Gutters)",
+      "description": "A densely packed, lower-class district known for its black markets, noodle stalls, and frequent gang violence.",
+      "locationType": "Settlement",
+      "parentLocationId": "region_neo_kyoto"
+    },
+    {
+      "id": "building_last_byte_bar",
+      "name": "The Last Byte Bar",
+      "description": "A dimly lit, smoke-filled dive bar frequented by information brokers and street-level operatives.",
+      "locationType": "Building",
+      "parentLocationId": "settlement_sector_7"
+    },
+    {
+      "id": "building_doc_ratchets_clinic",
+      "name": "Doc Ratchet's Cyber-Clinic",
+      "description": "A back-alley clinic offering cheap, often unlicensed, cybernetic repairs and installations.",
+      "locationType": "Building",
+      "parentLocationId": "settlement_sector_7"
+    },
+    {
+      "id": "wilds_toxic_canals",
+      "name": "The Toxic Canals",
+      "description": "Polluted waterways surrounding Sector 7, used for illicit transport and waste disposal.",
+      "locationType": "Wilds",
+      "parentLocationId": "region_neo_kyoto"
+    },
+    {
+      "id": "delve_abandoned_subway_tunnels",
+      "name": "Abandoned Subway Tunnels",
+      "description": "A maze of crumbling tunnels beneath the city, now home to squatters and worse.",
+      "locationType": "Delve",
+      "parentLocationId": "region_neo_kyoto"
+    }
+  ],
+  "npcs": [
+    {
+      "id": "npc_fixer_slick",
+      "name": "Slick",
+      "description": "A nervous-looking information broker who haunts The Last Byte Bar, always watching the door.",
+      "initialLocationId": "building_last_byte_bar"
+    },
+    {
+      "id": "npc_ripperdoc_ratchet",
+      "name": "Doc Ratchet",
+      "description": "A gruff, heavily augmented ripperdoc with greasy overalls and a surprisingly steady hand.",
+      "initialLocationId": "building_doc_ratchets_clinic"
+    },
+    {
+      "id": "npc_gang_leader_spike",
+      "name": "Spike",
+      "description": "Leader of the 'Chrome Skulls' boostergang, known for his chrome mohawk and violent temper.",
+      "initialLocationId": "settlement_sector_7"
+    },
+    {
+      "id": "npc_food_vendor_mama_yama",
+      "name": "Mama Yama",
+      "description": "Runs a popular noodle stall in Sector 7, seems to know everyone's business.",
+      "initialLocationId": "settlement_sector_7"
+    }
+  ]
+}
+
+---Example 2---
+// request:
+// Prompt: "Westeros"
+
+// response:
+{
+  "gameSetting": {
+    "gameName": "Echoes of Winter",
+    "genre": "Low Fantasy",
+    "theme": "Political Intrigue & Survival",
+    "setting": "Westeros, a continent roughly the size of South America, dominates the known world. It is divided into the Seven Kingdoms, though the number is now nominal following Aegon's Conquest centuries ago. These lands are ruled from the Iron Throne in King's Landing by House Baratheon, though the recent death of King Robert has sown seeds of discord. Summers span decades and winters can last a lifetime. The current long summer is fading, and whispers of 'Winter is Coming' hold a tangible dread. Magic is rare and often mistrusted, viewed as legend or dangerous sorcery. Beyond the massive ice structure known as The Wall lies the untamed land of the Wildlings and rumored, darker things. Great Houses (Stark, Lannister, Tully, Arryn, Greyjoy, Tyrell, Martell) vie for power through alliances, marriages, and sometimes, war. Loyalty is valued but often fragile.",
+    "description": "A low-fantasy saga set in the politically charged continent of Westeros, where seasons are long and winter threatens all.",
+    "startingLocationId": "settlement_winter_village",
+    "currencies": ["Gold Dragons", "Silver Stags", "Copper Pennies"],
+    "economy": "Currency conversion: 1 Gold Dragon = 210 Silver Stags = 11760 Copper Pennies.\nTypical costs (Winter Village/North): Loaf of bread: 3 Pennies. Mug of ale: 2 Pennies. Bowl of stew: 1 Stag. Inn stay (common): 5 Stags/night. Basic dagger: 10 Dragons. Traveler's clothes: 1 Dragon. Horse (average): 50 Dragons.\nTypical incomes (North): Farmhand: 1-2 Stags/day. Village guard: 5 Stags/day. Skilled craftsperson: 10-20 Stags/day. Minor landed knight: 50-100 Dragons/year.",
+    "gameTime": "298 AC, End of Summer, Day 1, Morning"
+  },
+  "locations": [
+    {
+      "id": "realm_known_world",
+      "name": "The Known World",
+      "description": "Includes the continents of Westeros and Essos, separated by the Narrow Sea.",
+      "locationType": "Realm",
+      "parentLocationId": null
+    },
+    {
+      "id": "country_westeros",
+      "name": "Westeros",
+      "description": "The primary continent, comprising the Seven Kingdoms under the Iron Throne.",
+      "locationType": "Country",
+      "parentLocationId": "realm_known_world"
+    },
+    {
+      "id": "region_the_north",
+      "name": "The North",
+      "description": "A vast, sparsely populated region ruled by House Stark from Winterfell. Known for harsh winters and hardy people.",
+      "locationType": "Region",
+      "parentLocationId": "country_westeros"
+    },
+    {
+      "id": "settlement_winter_village",
+      "name": "Winter Village",
+      "description": "A small, hardy village south of Winterfell, preparing for the coming winter. Relies on hunting and subsistence farming.",
+      "locationType": "Settlement",
+      "parentLocationId": "region_the_north"
+    },
+    {
+      "id": "building_hunters_rest_inn",
+      "name": "Hunter's Rest Inn",
+      "description": "A simple, smoky inn catering to locals and the rare traveler. Known for its strong ale and venison stew.",
+      "locationType": "Building",
+      "parentLocationId": "settlement_winter_village"
+    },
+    {
+      "id": "building_village_sept",
+      "name": "Village Sept",
+      "description": "A small stone sept, modest compared to southern structures, offering comfort to followers of the Seven.",
+      "locationType": "Building",
+      "parentLocationId": "settlement_winter_village"
+    },
+    {
+      "id": "wilds_wolfswood_fringe",
+      "name": "Wolfswood Fringe",
+      "description": "The edges of the vast, ancient Wolfswood forest. Dangerous for the unwary.",
+      "locationType": "Wilds",
+      "parentLocationId": "region_the_north"
+    },
+    {
+      "id": "delve_old_barrow",
+      "name": "Old Barrow",
+      "description": "An ancient burial mound rumored to be haunted by the spirits of the First Men.",
+      "locationType": "Delve",
+      "parentLocationId": "region_the_north"
+    }
+  ],
+  "npcs": [
+    {
+      "id": "npc_innkeeper_masha",
+      "name": "Masha",
+      "description": "The stern but fair owner of the Hunter's Rest Inn. Seen many winters.",
+      "initialLocationId": "building_hunters_rest_inn"
+    },
+    {
+      "id": "npc_septa_lyra",
+      "name": "Septa Lyra",
+      "description": "A young, kind septa tending the village sept, worried about the encroaching cold.",
+      "initialLocationId": "building_village_sept"
+    },
+    {
+      "id": "npc_stark_man_at_arms_fered",
+      "name": "Fered",
+      "description": "A young man-at-arms sworn to House Stark, patrolling near the village. Wary of strangers.",
+      "initialLocationId": "settlement_winter_village"
+    },
+    {
+      "id": "npc_hunter_robbard",
+      "name": "Robbard",
+      "description": "A grizzled hunter often found near the Wolfswood Fringe, knows the dangers of the forest.",
+      "initialLocationId": "wilds_wolfswood_fringe"
+    }
+  ]
+} 

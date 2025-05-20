@@ -22,12 +22,16 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 var outputStructure = await _storageService.GetCreateNpcTemplateAsync("OutputStructure.json");
                 var exampleResponses = await _storageService.GetCreateNpcTemplateAsync("ExampleResponses.txt");
 
+                // Extract scenario ID from request if provided
+                string scenarioId = request.ScenarioId;
+                
+                _loggingService.LogInfo($"Loading data for NPC creation - UserId: {request.UserId}, ScenarioId: {scenarioId}");
+
                 // Load world data for context
-                var world = await _storageService.GetWorldAsync(request.UserId);
-                var gameSetting = await _storageService.GetGameSettingAsync(request.UserId);
+                var world = await _storageService.GetWorldAsync(request.UserId, scenarioId);
+                var gameSetting = await _storageService.GetGameSettingAsync(request.UserId, scenarioId);
                 var gamePreferences = await _storageService.GetGamePreferencesAsync(request.UserId);
-                //var player = await _storageService.GetPlayerAsync(request.UserId);
-                var location = await _storageService.GetLocationAsync(request.UserId, request.NpcLocation);
+                var location = await _storageService.GetLocationAsync(request.UserId, request.NpcLocation, scenarioId);
 
                 // Create the system prompt builder
                 var systemPromptBuilder = new StringBuilder();

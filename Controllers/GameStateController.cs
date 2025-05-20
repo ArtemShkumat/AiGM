@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using static AiGMBackEnd.Services.StorageService;
 
 namespace AiGMBackEnd.Controllers
 {
@@ -45,7 +46,7 @@ namespace AiGMBackEnd.Controllers
                 var currentLocationId = player.CurrentLocationId;
                 
                 // Get visible NPCs in the location
-                var visibleNpcs = await _storageService.GetVisibleNpcsInLocationAsync(gameId, currentLocationId);
+                var visibleNpcs = await _storageService.GetNpcsInLocationAsync(gameId, currentLocationId);
                 
                 // Get location data
                 var location = await _storageService.GetLocationAsync(gameId, currentLocationId);
@@ -54,7 +55,11 @@ namespace AiGMBackEnd.Controllers
                 {
                     GameId = gameId,
                     CurrentLocationId = currentLocationId,
-                    VisibleNpcs = visibleNpcs
+                    VisibleNpcs = visibleNpcs.Select(npc => new NpcInfo
+                    {
+                        Id = npc.Id,
+                        Name = npc.Name
+                    }).ToList()
                 };
                 
                 if (location != null)
@@ -70,27 +75,7 @@ namespace AiGMBackEnd.Controllers
                 _loggingService.LogError($"Error getting scene for game {gameId}: {ex.Message}");
                 return StatusCode(500, $"Error retrieving scene: {ex.Message}");
             }
-        }
-
-        [HttpGet("visibleNpcs")]
-        public async Task<IActionResult> GetVisibleNpcs(string gameId)
-        {
-            if (string.IsNullOrEmpty(gameId))
-            {
-                return BadRequest("GameId is required");
-            }
-            
-            try
-            {
-                var visibleNpcs = await _storageService.GetAllVisibleNpcsAsync(gameId);
-                return Ok(visibleNpcs);
-            }
-            catch (Exception ex)
-            {
-                _loggingService.LogError($"Error getting visible NPCs for game {gameId}: {ex.Message}");
-                return StatusCode(500, $"Error retrieving visible NPCs: {ex.Message}");
-            }
-        }
+        }        
 
         [HttpGet("player")]
         public async Task<IActionResult> GetPlayerInfo(string gameId)

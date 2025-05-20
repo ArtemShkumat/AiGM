@@ -40,10 +40,7 @@ namespace AiGMBackEnd.Services.PromptBuilders
                 // Add game setting and preferences using section helpers
                 new GameSettingSection(gameSetting).AppendTo(promptContentBuilder);
                 new GamePreferencesSection(gamePreferences).AppendTo(promptContentBuilder);
-
-                // Add world context
-                new WorldLoreSummarySection(world).AppendTo(promptContentBuilder);
-
+                
                 // Add player ID info
                 promptContentBuilder.AppendLine("# Player Info");
                 promptContentBuilder.AppendLine($"Player ID: {request.UserId}");

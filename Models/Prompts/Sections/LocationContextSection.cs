@@ -8,15 +8,19 @@ namespace AiGMBackEnd.Models.Prompts.Sections
     {
         private readonly Location _location;
         private readonly bool _detailed;
+        private readonly string _title;
 
-        public LocationContextSection(Location location, bool detailed = true)
+        public LocationContextSection(Location location, string title = "locationContext", bool detailed = true)
         {
             _location = location;
             _detailed = detailed;
+            _title = title;
         }
 
         public override void AppendTo(StringBuilder builder)
         {
+            builder.AppendLine($"{_title}:");
+            
             var options = new JsonSerializerOptions
             {
                 WriteIndented = true
@@ -32,8 +36,7 @@ namespace AiGMBackEnd.Models.Prompts.Sections
                     id = _location.Id,
                     name = _location.Name,
                     description = _location.Description,
-                    type = _location.Type,
-                    connectedLocations = _location.ConnectedLocations
+                    type = _location.Type
                 };
                 builder.AppendLine(JsonSerializer.Serialize(simplifiedLocation, options));
             }
