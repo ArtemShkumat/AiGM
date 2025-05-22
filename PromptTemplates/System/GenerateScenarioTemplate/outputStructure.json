@@ -1,42 +1,139 @@
 {
-  "TemplateId": "This will be filled in by the system",
-  "TemplateName": "This will be filled in by the system",
-  "GameSettings": {
-    "Name": "Descriptive name for the game setting",
-    "Description": "Brief overview of the game setting's theme, tone, and key features",
-    "Genre": "Fantasy, Science Fiction, Western, etc.",
-    "StartingLocationId": "leave as empty string - will be filled in during instantiation"
-  },
-  "Npcs": [
-    {
-      "Name": "Character Name",
-      "Description": "Brief description of character (role, motivation, notable traits)"
-    }
-  ],
-  "Locations": [
-    {
-      "Name": "Location Name",
-      "Description": "Brief description of the location (type, purpose, notable features)"
-    }
-  ],
-  "Quests": [
-    {
-      "Name": "Quest Name",
-      "Description": "Brief description of the quest (goal, key NPCs, locations involved)"
-    }
-  ],
-  "Events": [
-    {
-      "Name": "Event Name",
-      "Summary": "Brief description of what happens during this event",
-      "TriggerType": "Time, LocationChange, or FirstLocationEntry",
-      "TriggerValue": {
-        "TargetTime": "For Time triggers - when the event should occur (e.g., '3 days after game start')",
-        "TimeType": "Absolute or Relative",
-        "LocationId": "For LocationChange/FirstLocationEntry triggers - leave empty, will be filled during instantiation",
-        "LocationName": "For LocationChange/FirstLocationEntry triggers - name of the location where event triggers"
+  "type": "object",
+  "properties": {
+    "TemplateId": {
+      "type": "string",
+      "description": "This will be filled in by the system"
+    },
+    "TemplateName": {
+      "type": "string",
+      "description": "This will be filled in by the system"
+    },
+    "GameSettings": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Descriptive name for the game setting"
+        },
+        "Description": {
+          "type": "string",
+          "description": "Brief overview of the game setting's theme, tone, and key features"
+        },
+        "Genre": {
+          "type": "string",
+          "description": "Fantasy, Science Fiction, Western, etc."
+        },
+        "StartingLocationId": {
+          "type": "string",
+          "description": "Will be filled in during instantiation"
+        }
       },
-      "Context": "Additional information about the event's purpose or special conditions"
+      "required": ["Name", "Description", "Genre"]
+    },
+    "Npcs": {
+      "type": "array",
+      "description": "List of NPCs in the game scenario",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Character Name"
+          },
+          "Description": {
+            "type": "string",
+            "description": "Brief description of character (role, motivation, notable traits)"
+          }
+        },
+        "required": ["Name", "Description"]
+      }
+    },
+    "Locations": {
+      "type": "array",
+      "description": "List of locations in the game scenario",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Location Name"
+          },
+          "Description": {
+            "type": "string",
+            "description": "Brief description of the location (type, purpose, notable features)"
+          }
+        },
+        "required": ["Name", "Description"]
+      }
+    },
+    "Quests": {
+      "type": "array",
+      "description": "List of quests in the game scenario",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Quest Name"
+          },
+          "Description": {
+            "type": "string",
+            "description": "Brief description of the quest (goal, key NPCs, locations involved)"
+          }
+        },
+        "required": ["Name", "Description"]
+      }
+    },
+    "Events": {
+      "type": "array",
+      "description": "List of events in the game scenario",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Event Name"
+          },
+          "Summary": {
+            "type": "string",
+            "description": "Brief description of what happens during this event"
+          },
+          "TriggerType": {
+            "type": "string",
+            "enum": ["Time", "LocationChange", "FirstLocationEntry"],
+            "description": "The type of trigger that will cause this event to occur"
+          },
+          "TriggerValue": {
+            "type": "object",
+            "properties": {
+              "TargetTime": {
+                "type": "string",
+                "description": "For Time triggers - when the event should occur (e.g., '3 days after game start')"
+              },
+              "TimeType": {
+                "type": "string",
+                "enum": ["Absolute", "Relative"],
+                "description": "Whether the time is absolute or relative"
+              },
+              "LocationId": {
+                "type": "string",
+                "description": "For LocationChange/FirstLocationEntry triggers - will be filled during instantiation"
+              },
+              "LocationName": {
+                "type": "string",
+                "description": "For LocationChange/FirstLocationEntry triggers - name of the location where event triggers"
+              }
+            }
+          },
+          "Context": {
+            "type": "string",
+            "description": "Additional information about the event's purpose or special conditions"
+          }
+        },
+        "required": ["Name", "Summary", "TriggerType", "TriggerValue"]
+      }
     }
-  ]
+  },
+  "required": ["TemplateId", "TemplateName", "GameSettings", "Npcs", "Locations"]
 } 
